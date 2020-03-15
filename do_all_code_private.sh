@@ -1,7 +1,6 @@
 #!/bin/bash
 # Should contain code which, when run, executes all of the publicly runnable code that produces any result in the paper
 # If there are proprietary data, the commands to produce results from that data should be included
-# even if the data are not there
 
 if [ $# -gt 1 ]; then
   echo "usage:   "$toolRoot/${0##*/}" [Public | Private] "
@@ -20,9 +19,9 @@ else
 fi
 
 if [[ "$PubOrPri" == "Private" ]]; then
-    /bin/bash do_all_code_private.sh
+    /bin/bash do_all_code_pri.sh
 fi
 
-# Now execute the 'public' code; this command is the only one that will exist in the "public" version of the repo
-/bin/bash do_all_code.sh
+# Now execute the 'public' code 
+/bin/bash do_all_code_pub.sh
 
