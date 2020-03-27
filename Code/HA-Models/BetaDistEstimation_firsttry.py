@@ -18,8 +18,9 @@ from HARK.cstwMPC.SetupParamsCSTW import init_infinite
 
 TypeCount = 8    # Number of consumer types with heterogeneous discount factors
 AdjFactor = 1.0  # Factor by which to scale all of MPCs in Table 9
+#T_kill = 400     # Don't let agents live past this age
 T_kill = 100     # Don't let agents live past this age
-Splurge = 0.0    # Consumers automatically spend this amount of any lottery prize
+Splurge = 0.7    # Consumers automatically spend this amount of any lottery prize
 do_secant = True # If True, calculate MPC by secant, else point MPC
 drop_corner = False # If True, ignore upper left corner when calculating distance
 
@@ -28,10 +29,12 @@ drop_corner = False # If True, ignore upper left corner when calculating distanc
 
 base_params = deepcopy(init_infinite)
 ### NOTE: These parameters below are ANNUAL calibrations, we will want a quarterly model - stick with the parameterization from init_infinite for now
-#base_params['LivPrb'] = [0.975]
-#base_params['Rfree'] = 1.04/base_params['LivPrb'][0]
-#base_params['PermShkStd'] = [0.1]
-#base_params['TranShkStd'] = [0.1]
+#base_params['LivPrb'] = [0.975**0.25]
+base_params['LivPrb'] = [0.975]
+#base_params['Rfree'] = (1.04**0.25)/base_params['LivPrb'][0]
+base_params['Rfree'] = 1.04/base_params['LivPrb'][0]
+base_params['PermShkStd'] = [0.1]
+base_params['TranShkStd'] = [0.1]
 base_params['T_age'] = T_kill # Kill off agents if they manage to achieve T_kill working years
 base_params['AgentCount'] = 10000
 base_params['pLvlInitMean'] = np.log(23.72) # From Table 1, in thousands of USD
@@ -51,6 +54,8 @@ MPC_target = AdjFactor*MPC_target_base
 # Define the four lottery sizes, in thousands of USD; these are eyeballed centers/averages
 
 lottery_size = np.array([1.625, 3.3741, 7.129, 40.0])
+
+#%%
 
 # Make several consumer types to be used during estimation
 
@@ -153,7 +158,7 @@ def FagerengObjFunc(center,spread,verbose=False):
         print (center, spread, distance)
     return distance
 
-# Conduct the estimation
+#%% Conduct the estimation
 
 guess = [0.92,0.03]
 f_temp = lambda x : FagerengObjFunc(x[0],x[1])
