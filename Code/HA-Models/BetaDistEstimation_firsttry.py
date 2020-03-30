@@ -1,5 +1,4 @@
 # Import python tools
-
 import sys
 import os
 
@@ -7,8 +6,8 @@ import numpy as np
 import random
 from copy import deepcopy
 
-# Import needed tools from HARK
 
+# Import needed tools from HARK
 from HARK.utilities import approxUniform, getPercentiles
 from HARK.parallel import multiThreadCommands
 from HARK.estimation import minimizeNelderMead
@@ -16,24 +15,18 @@ from HARK.ConsumptionSaving.ConsIndShockModel import *
 from HARK.cstwMPC.SetupParamsCSTW import init_infinite
 
 # Set key problem-specific parameters
-
-TypeCount =  1   # Number of consumer types with heterogeneous discount factors
+TypeCount =  8   # Number of consumer types with heterogeneous discount factors
 AdjFactor = 1.0  # Factor by which to scale all of MPCs in Table 9
-T_kill = 400     # Don't let agents live past this age
-#T_kill = 100     # Don't let agents live past this age
-Splurge = 0.0    # Consumers automatically spend this amount of any lottery prize
+T_kill = 400     # Don't let agents live past this age (expressed in quarters)
+Splurge = 0.7    # Consumers automatically spend this amount of any lottery prize
 do_secant = True # If True, calculate MPC by secant, else point MPC
 drop_corner = False # If True, ignore upper left corner when calculating distance
 
 
 # Set standard HARK parameter values
-
 base_params = deepcopy(init_infinite)
-### NOTE: These parameters below are ANNUAL calibrations, we will want a quarterly model - stick with the parameterization from init_infinite for now
 base_params['LivPrb'] = [0.975**0.25]
-#base_params['LivPrb'] = [0.975]
 base_params['Rfree'] = (1.04**0.25)/base_params['LivPrb'][0]
-#base_params['Rfree'] = 1.04/base_params['LivPrb'][0]
 base_params['PermShkStd'] = [0.1]
 base_params['TranShkStd'] = [0.1]
 base_params['T_age'] = T_kill # Kill off agents if they manage to achieve T_kill working years
@@ -44,7 +37,6 @@ base_params['pLvlInitMean'] = np.log(23.72) # From Table 1, in thousands of USD
 base_params['T_sim'] = 100 # No point simulating past when agents would be killed off
 
 # Define the MPC targets from Fagereng et al Table 9; element i,j is lottery quartile i, deposit quartile j
-
 MPC_target_base = np.array([[1.047, 0.745, 0.720, 0.490],
                             [0.762, 0.640, 0.559, 0.437],
                             [0.663, 0.546, 0.390, 0.386],
@@ -53,7 +45,6 @@ MPC_target = AdjFactor*MPC_target_base
 
 
 # Define the four lottery sizes, in thousands of USD; these are eyeballed centers/averages
-
 lottery_size = np.array([1.625, 3.3741, 7.129, 40.0])
 
 #%%
@@ -121,14 +112,14 @@ def FagerengObjFunc(center,spread,verbose=False):
     
     for ThisType in EstTypeList:
         
-        c_base = np.zeros((ThisType.AgentCount,4)) #c_base (in case of no lottery win) for each quarter
-        c_base_Lvl = np.zeros((ThisType.AgentCount,4))
-        c_actu = np.zeros((ThisType.AgentCount,4,4)) #c_actu (actual consumption in case of lottery win in one random quarter) for each quarter
-        c_actu_Lvl = np.zeros((ThisType.AgentCount,4,4))
-        a_actu = np.zeros((ThisType.AgentCount,4,4)) #a_actu captures the actual market resources after potential lottery win was added and c_actu deducted
+        c_base = np.zeros((ThisType.AgentCount,4))      #c_base (in case of no lottery win) for each quarter
+        c_base_Lvl = np.zeros((ThisType.AgentCount,4))  #same in levels
+        c_actu = np.zeros((ThisType.AgentCount,4,4))    #c_actu (actual consumption in case of lottery win in one random quarter) for each quarter and lottery size
+        c_actu_Lvl = np.zeros((ThisType.AgentCount,4,4))#same in levels
+        a_actu = np.zeros((ThisType.AgentCount,4,4))    #a_actu captures the actual market resources after potential lottery win (last index) was added and c_actu deducted
         
-        LotteryWin = np.zeros((ThisType.AgentCount,4)) 
-        # Array with AgentCount x 4 periods many entries; there is only one 1 in each row indicating the quarter of the Lottery win for the agent in each row
+         # LotteryWin is an array with AgentCount x 4 periods many entries; there is only one 1 in each row indicating the quarter of the Lottery win for the agent in each row
+        LotteryWin = np.zeros((ThisType.AgentCount,4))   
         for i in range(ThisType.AgentCount):
             LotteryWin[i,random.randint(0,3)] = 1
         
@@ -137,44 +128,30 @@ def FagerengObjFunc(center,spread,verbose=False):
             # Simulate forward for one quarter
             ThisType.simulate(1)           
             
-#            # Determine whether Lottery win occurs in this quarter
-#            if LotteryWinHasNotOccuredYet:
-#                if period < 3: #we are not in the last quarter
-#                    LotteryWinThisQuarter = random.randint(1,4)<=1 #25% chance of receiving lottery this quarter
-#                    LotteryWinHasNotOccuredYet = LotteryWinThisQuarter==0
-#                else: #we are in the last quarter
-#                    LotteryWinThisQuarter = True; #If lottery hasn't been won yet, Win is certain in the last quarter
-#                    LotteryWinHasNotOccuredYet = False;
-#            else:
-#                LotteryWinThisQuarter = False;
-#                
-#            print('LotteryWinThisQuarter',LotteryWinThisQuarter)
-#            print('LotteryWinHasNotOccuredYet',LotteryWinHasNotOccuredYet)
-                
-                
-            c_base[:,period] = ThisType.cNrmNow #Consumption in absence of lottery win
+            # capture base consumption which is consumption in absence of lottery win
+            c_base[:,period] = ThisType.cNrmNow 
             c_base_Lvl[:,period] = c_base[:,period] * ThisType.pLvlNow
-            MPC_this_type = np.zeros((ThisType.AgentCount,4)) #Empty array 
             
+            MPC_this_type = np.zeros((ThisType.AgentCount,4)) #Empty array, MPC for each Lottery size and agent
             
-            for k in range(4): # Get MPC for all agents of this type for different lottery sizes
+            for k in range(4): # Loop through different lottery sizes
                 
-                Llvl = lottery_size[k]*LotteryWin[:,period]  #Lottery win occurs only if LotteryWinThisQuarter = True
-                Lnrm = np.divide(Llvl,ThisType.pLvlNow)
-                SplurgeNrm = np.multiply(Splurge/ThisType.pLvlNow,LotteryWin[:,period] ) #Splurge occurs only if LotteryWinThisQuarter = True
+                Llvl = lottery_size[k]*LotteryWin[:,period]  #Lottery win occurs only if LotteryWin = 1 for that agent
+                Lnrm = Llvl/ThisType.pLvlNow
+                SplurgeNrm = Splurge/ThisType.pLvlNow*LotteryWin[:,period]  #Splurge occurs only if LotteryWin = 1 for that agent
                 
                 if period == 0:
                     m_adj = ThisType.mNrmNow + Lnrm - SplurgeNrm
                     c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
                     c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
-                    a_actu[:,period,k] = ThisType.mNrmNow + Lnrm - c_actu[:,period,k]
+                    a_actu[:,period,k] = ThisType.mNrmNow + Lnrm - c_actu[:,period,k] #save for next periods
                 else:  
-                    m_adj = a_actu[:,period-1,k]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - SplurgeNrm
+                    m_adj = a_actu[:,period-1,k]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - SplurgeNrm #continue with resources from last period
                     c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
                     c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
                     a_actu[:,period,k] = a_actu[:,period-1,k]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - c_actu[:,period,k]               
                             
-                if period == 3: #last period
+                if period == 3: #last period, compare levels of actual and base consumption relative to lottery size
                     MPC_this_type[:,k] = (np.sum(c_actu_Lvl[:,:,k],axis=1) - np.sum(c_base_Lvl,axis=1))/(lottery_size[k])
                 
         # Sort the MPCs into the proper MPC sets
@@ -190,7 +167,6 @@ def FagerengObjFunc(center,spread,verbose=False):
             MPC_array = np.concatenate(MPC_set_list[k][q])
             simulated_MPC_means[k,q] = np.mean(MPC_array)
             
-
     # Calculate Euclidean distance between simulated MPC averages and Table 9 targets
     diff = simulated_MPC_means - MPC_target
     if drop_corner:
@@ -200,28 +176,26 @@ def FagerengObjFunc(center,spread,verbose=False):
         print(simulated_MPC_means)
     else:
         print (center, spread, distance)
-    return [distance,simulated_MPC_means,Lnrm,c_actu_Lvl, c_base_Lvl,LotteryWin]
+    return distance
+    #return [distance,simulated_MPC_means,c_actu_Lvl,c_base_Lvl,LotteryWin]
 
 
 #%% Test function
-guess = [0.96,0.01]
-[distance,simulated_MPC_means,Lnrm,c_actu_Lvl, c_base_Lvl,LotteryWin]=FagerengObjFunc(guess[0],guess[1])
-print(simulated_MPC_means)
-print(c_actu_Lvl[0:5,:])
-print(c_base_Lvl[0:5,:])
-print(LotteryWin[0:5,:])
-#%% Create matrix
+#guess = [0.96,0.03]
+#[distance,simulated_MPC_means,c_actu_Lvl,c_base_Lvl,LotteryWin]=FagerengObjFunc(guess[0],guess[1])
+#print('MPC in first year \n', simulated_MPC_means,'\n')
+#print('Difference between actual and base consumption: \n',c_actu_Lvl[0:5,:,1]-c_base_Lvl[0:5,:],'\n')
+#print('Lottery win indicator: \n', LotteryWin[0:5,:],'\n')
 
+#%% Conduct the estimation
 
-##%% Conduct the estimation
-#
-#guess = [0.92,0.03]
-#f_temp = lambda x : FagerengObjFunc(x[0],x[1])
-#opt_params = minimizeNelderMead(f_temp, guess, verbose=True)
-#print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and "splurge amount" of $' + str(1000*Splurge))
-#print('Optimal (beta,nabla) is ' + str(opt_params) + ', simulated MPCs are:')
-#dist = FagerengObjFunc(opt_params[0],opt_params[1],True)
-#print('Distance from Fagereng et al Table 9 is ' + str(dist))
+guess = [0.96,0.03]
+f_temp = lambda x : FagerengObjFunc(x[0],x[1])
+opt_params = minimizeNelderMead(f_temp, guess, verbose=True)
+print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and "splurge amount" of $' + str(1000*Splurge))
+print('Optimal (beta,nabla) is ' + str(opt_params) + ', simulated MPCs are:')
+dist = FagerengObjFunc(opt_params[0],opt_params[1],True)
+print('Distance from Fagereng et al Table 9 is ' + str(dist))
 
 
     
