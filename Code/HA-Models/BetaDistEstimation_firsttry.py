@@ -122,8 +122,10 @@ def FagerengObjFunc(center,spread,verbose=False):
     for ThisType in EstTypeList:
         
         c_base = np.zeros((ThisType.AgentCount,4)) #c_base (in case of no lottery win) for each quarter
-        c_actu = np.zeros((ThisType.AgentCount,4)) #c_actu (actual consumption in case of lottery win in one random quarter) for each quarter
-        a_actu = np.zeros((ThisType.AgentCount,4)) #a_actu captures the actual market resources after potential lottery win was added and c_actu deducted
+        c_base_Lvl = np.zeros((ThisType.AgentCount,4))
+        c_actu = np.zeros((ThisType.AgentCount,4,4)) #c_actu (actual consumption in case of lottery win in one random quarter) for each quarter
+        c_actu_Lvl = np.zeros((ThisType.AgentCount,4,4))
+        a_actu = np.zeros((ThisType.AgentCount,4,4)) #a_actu captures the actual market resources after potential lottery win was added and c_actu deducted
         
         LotteryWin = np.zeros((ThisType.AgentCount,4)) 
         # Array with AgentCount x 4 periods many entries; there is only one 1 in each row indicating the quarter of the Lottery win for the agent in each row
@@ -151,6 +153,7 @@ def FagerengObjFunc(center,spread,verbose=False):
                 
                 
             c_base[:,period] = ThisType.cNrmNow #Consumption in absence of lottery win
+            c_base_Lvl[:,period] = c_base[:,period] * ThisType.pLvlNow
             MPC_this_type = np.zeros((ThisType.AgentCount,4)) #Empty array 
             
             
@@ -162,15 +165,17 @@ def FagerengObjFunc(center,spread,verbose=False):
                 
                 if period == 0:
                     m_adj = ThisType.mNrmNow + Lnrm - SplurgeNrm
-                    c_actu[:,period] = ThisType.cFunc[0](m_adj) + SplurgeNrm
-                    a_actu[:,period] = ThisType.mNrmNow + Lnrm - c_actu[:,period]
+                    c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
+                    c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
+                    a_actu[:,period,k] = ThisType.mNrmNow + Lnrm - c_actu[:,period,k]
                 else:  
-                    m_adj = a_actu[:,period-1]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - SplurgeNrm
-                    c_actu[:,period] = ThisType.cFunc[0](m_adj) + SplurgeNrm
-                    a_actu[:,period] = a_actu[:,period-1]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - c_actu[:,period]               
+                    m_adj = a_actu[:,period-1,k]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - SplurgeNrm
+                    c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
+                    c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
+                    a_actu[:,period,k] = a_actu[:,period-1,k]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - c_actu[:,period,k]               
                             
                 if period == 3: #last period
-                    MPC_this_type[:,k] = (np.sum(c_actu,axis=1) - np.sum(c_base,axis=1))/(lottery_size[k]/ThisType.pLvlNow)
+                    MPC_this_type[:,k] = (np.sum(c_actu_Lvl[:,:,k],axis=1) - np.sum(c_base_Lvl,axis=1))/(lottery_size[k])
                 
         # Sort the MPCs into the proper MPC sets
         for q in range(4):
@@ -195,15 +200,15 @@ def FagerengObjFunc(center,spread,verbose=False):
         print(simulated_MPC_means)
     else:
         print (center, spread, distance)
-    return [distance,simulated_MPC_means,Lnrm,c_actu, c_base,LotteryWin]
+    return [distance,simulated_MPC_means,Lnrm,c_actu_Lvl, c_base_Lvl,LotteryWin]
 
 
 #%% Test function
 guess = [0.96,0.01]
-[distance,simulated_MPC_means,Lnrm,c_actu, c_base,LotteryWin]=FagerengObjFunc(guess[0],guess[1])
+[distance,simulated_MPC_means,Lnrm,c_actu_Lvl, c_base_Lvl,LotteryWin]=FagerengObjFunc(guess[0],guess[1])
 print(simulated_MPC_means)
-print(c_actu[0:5,:])
-print(c_base[0:5,:])
+print(c_actu_Lvl[0:5,:])
+print(c_base_Lvl[0:5,:])
 print(LotteryWin[0:5,:])
 #%% Create matrix
 
