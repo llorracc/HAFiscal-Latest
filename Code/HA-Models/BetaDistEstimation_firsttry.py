@@ -1,11 +1,9 @@
 # Import python tools
 import sys
 import os
-
 import numpy as np
 import random
 from copy import deepcopy
-
 
 # Import needed tools from HARK
 from HARK.utilities import approxUniform, getPercentiles
@@ -15,26 +13,25 @@ from HARK.ConsumptionSaving.ConsIndShockModel import *
 from HARK.cstwMPC.SetupParamsCSTW import init_infinite
 
 # Set key problem-specific parameters
-TypeCount =  8   # Number of consumer types with heterogeneous discount factors
-AdjFactor = 1.0  # Factor by which to scale all of MPCs in Table 9
-T_kill = 400     # Don't let agents live past this age (expressed in quarters)
-Splurge = 0.7    # Consumers automatically spend this amount of any lottery prize
-do_secant = True # If True, calculate MPC by secant, else point MPC
-drop_corner = False # If True, ignore upper left corner when calculating distance
-
+TypeCount =  8      # Number of consumer types with heterogeneous discount factors
+AdjFactor = 1.0     # Factor by which to scale all of MPCs in Table 9
+T_kill = 400        # Don't let agents live past this age (expressed in quarters)
+Splurge = 0.7       # Consumers automatically spend this amount of any lottery prize
+do_secant = True    # If True, calculate MPC by secant, else point MPC
+drop_corner = True  # If True, ignore upper left corner when calculating distance
 
 # Set standard HARK parameter values
 base_params = deepcopy(init_infinite)
-base_params['LivPrb'] = [0.975**0.25]
-base_params['Rfree'] = (1.04**0.25)/base_params['LivPrb'][0]
-base_params['PermShkStd'] = [0.1]
-base_params['TranShkStd'] = [0.1]
-base_params['T_age'] = T_kill # Kill off agents if they manage to achieve T_kill working years
-base_params['AgentCount'] = 10000
-base_params['pLvlInitMean'] = np.log(23.72) # From Table 1, in thousands of USD
+base_params['LivPrb']       = [0.99375]                     #from cstwMPC paper
+base_params['Rfree']        = 1.01/base_params['LivPrb'][0] #from cstwMPC paper
+base_params['PermShkStd']   = [(0.01*4/11)**0.5]            #from cstwMPC paper
+base_params['TranShkStd']   = [(0.01*4)**0.5]               #from cstwMPC paper
+base_params['T_age']        = T_kill        # Kill off agents if they manage to achieve T_kill working years
+base_params['AgentCount']   = 10000         # Number of agents per instance of IndShockConsType
+base_params['pLvlInitMean'] = np.log(23.72) # From Table 1, in thousands of USD (Q-I: where is this from?)
 
-#### T_sim needs to be long enough to reach the ergodic distribution, maybe longer that 1000
-base_params['T_sim'] = 100 # No point simulating past when agents would be killed off
+# T_sim needs to be long enough to reach the ergodic distribution
+base_params['T_sim'] = 100
 
 # Define the MPC targets from Fagereng et al Table 9; element i,j is lottery quartile i, deposit quartile j
 MPC_target_base = np.array([[1.047, 0.745, 0.720, 0.490],
@@ -46,6 +43,46 @@ MPC_target = AdjFactor*MPC_target_base
 
 # Define the four lottery sizes, in thousands of USD; these are eyeballed centers/averages
 lottery_size = np.array([1.625, 3.3741, 7.129, 40.0])
+
+#%% Checking when ergodic distribution is reached
+
+CheckType = IndShockConsumerType(**base_params)
+CheckType(DiscFac = 0.96)   # Check only for center Disc Fac
+CheckType(T_sim = 1000)    # Simulate long enough to reach SS
+CheckType.track_vars = ['aNrmNow']
+CheckType.solve()
+CheckType.initializeSim()
+CheckType.simulate()
+
+SS_Tol = 0.01 
+# allow for a SS_Tol % change from one period to the next;
+# if SS_Tol 0.01, then the moments under consideration of aNrm need to change 
+# less than 0.01 % for the SS to be reached
+
+Mean_i = 2 #start point
+# Check when the % change in aNrmNow becomes smaller than SS_Tol
+while 100*abs( (np.mean(CheckType.aNrmNow) - np.mean(CheckType.aNrmNow_hist[Mean_i-1])) / np.mean(CheckType.aNrmNow))  > SS_Tol:
+  Mean_i += 1
+  if Mean_i==CheckType.T_sim+1:
+      break
+
+if Mean_i <= CheckType.T_sim:
+    print('The simulation reached a constant mean aNrm value after ', Mean_i, ' periods.')
+else:
+    print('The simulation never reached a constant mean aNrm value.')
+    
+Std_i = 2
+while 100*abs( (np.std(CheckType.aNrmNow) - np.std(CheckType.aNrmNow_hist[Std_i-1])) / np.std(CheckType.aNrmNow) ) > SS_Tol:
+  Std_i += 1
+  if Std_i==CheckType.T_sim+1:
+      break
+
+if Std_i <= CheckType.T_sim:
+    print('The simulation reached a constant std aNrm value after ', Std_i, ' periods.')
+else:
+    print('The simulation never reached a constant std aNrm value.')
+
+
 
 #%%
 
@@ -97,33 +134,40 @@ def FagerengObjFunc(center,spread,verbose=False):
         for n in range(3):
             WealthQ[ThisType.aLvlNow > quartile_cuts[n]] += 1
         ThisType(WealthQ = WealthQ)
+       
+        
+    N_Quarter_Sim = 16; # Needs to be dividable by four
+    N_Year_Sim = int(N_Quarter_Sim/4);
 
     # Keep track of MPC sets in lists of lists of arrays
     MPC_set_list = [ [[],[],[],[]],
                      [[],[],[],[]],
                      [[],[],[],[]],
                      [[],[],[],[]] ]
-
-    # Calculate the MPC for each of the four lottery sizes for all agents
-    ## NOTE - this is calculated as though the model is ANNUAL. Need to redo
-    ## for the quarterly model. Best is probably to assume an equal probability
-    ## of the lottery arriving in each of the four quarters, and make sure
-    ## what we calculate matches what Fagereng et al estimate
+    
+    EmptyList = [[],[],[],[]]
+    MPC_set_list = [deepcopy(EmptyList),deepcopy(EmptyList),deepcopy(EmptyList),deepcopy(EmptyList)]
+    MPC_Lists = [deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list)]    
+    
     
     for ThisType in EstTypeList:
         
-        c_base = np.zeros((ThisType.AgentCount,4))      #c_base (in case of no lottery win) for each quarter
-        c_base_Lvl = np.zeros((ThisType.AgentCount,4))  #same in levels
-        c_actu = np.zeros((ThisType.AgentCount,4,4))    #c_actu (actual consumption in case of lottery win in one random quarter) for each quarter and lottery size
-        c_actu_Lvl = np.zeros((ThisType.AgentCount,4,4))#same in levels
-        a_actu = np.zeros((ThisType.AgentCount,4,4))    #a_actu captures the actual market resources after potential lottery win (last index) was added and c_actu deducted
-        
+        c_base = np.zeros((ThisType.AgentCount,N_Quarter_Sim))      #c_base (in case of no lottery win) for each quarter
+        c_base_Lvl = np.zeros((ThisType.AgentCount,N_Quarter_Sim))  #same in levels
+        c_actu = np.zeros((ThisType.AgentCount,N_Quarter_Sim,4))    #c_actu (actual consumption in case of lottery win in one random quarter) for each quarter and lottery size
+        c_actu_Lvl = np.zeros((ThisType.AgentCount,N_Quarter_Sim,4))#same in levels
+        a_actu = np.zeros((ThisType.AgentCount,N_Quarter_Sim,4))    #a_actu captures the actual market resources after potential lottery win (last index) was added and c_actu deducted
+        T_hist = np.zeros((ThisType.AgentCount,N_Quarter_Sim))
+        P_hist = np.zeros((ThisType.AgentCount,N_Quarter_Sim)) 
+            
          # LotteryWin is an array with AgentCount x 4 periods many entries; there is only one 1 in each row indicating the quarter of the Lottery win for the agent in each row
-        LotteryWin = np.zeros((ThisType.AgentCount,4))   
-        for i in range(ThisType.AgentCount):
-            LotteryWin[i,random.randint(0,3)] = 1
+        LotteryWin = np.zeros((ThisType.AgentCount,N_Quarter_Sim))   
+        # for i in range(ThisType.AgentCount):
+        #     LotteryWin[i,random.randint(0,3)] = 1
+            
+        MPC_this_type = np.zeros((ThisType.AgentCount,4,int(N_Quarter_Sim/4))) #Empty array, MPC for each Lottery size and agent
         
-        for period in range(4): #Simulate for 4 quarters as opposed to 1 year
+        for period in range(N_Quarter_Sim): #Simulate for 4 quarters as opposed to 1 year
             
             # Simulate forward for one quarter
             ThisType.simulate(1)           
@@ -132,8 +176,7 @@ def FagerengObjFunc(center,spread,verbose=False):
             c_base[:,period] = ThisType.cNrmNow 
             c_base_Lvl[:,period] = c_base[:,period] * ThisType.pLvlNow
             
-            MPC_this_type = np.zeros((ThisType.AgentCount,4)) #Empty array, MPC for each Lottery size and agent
-            
+        
             for k in range(4): # Loop through different lottery sizes
                 
                 Llvl = lottery_size[k]*LotteryWin[:,period]  #Lottery win occurs only if LotteryWin = 1 for that agent
@@ -146,29 +189,36 @@ def FagerengObjFunc(center,spread,verbose=False):
                     c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
                     a_actu[:,period,k] = ThisType.mNrmNow + Lnrm - c_actu[:,period,k] #save for next periods
                 else:  
+                    T_hist[:,period] = ThisType.TranShkNow 
+                    P_hist[:,period] = ThisType.PermShkNow
                     m_adj = a_actu[:,period-1,k]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - SplurgeNrm #continue with resources from last period
                     c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
                     c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
-                    a_actu[:,period,k] = a_actu[:,period-1,k]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - c_actu[:,period,k]               
-                            
-                if period == 3: #last period, compare levels of actual and base consumption relative to lottery size
-                    MPC_this_type[:,k] = (np.sum(c_actu_Lvl[:,:,k],axis=1) - np.sum(c_base_Lvl,axis=1))/(lottery_size[k])
+                    a_actu[:,period,k] = a_actu[:,period-1,k]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - c_actu[:,period,k] 
+                    
+                if period%4 + 1 == 4: #if we are in the 4th quarter of a year
+                    year = int((period+1)/4)
+                    c_actu_Lvl_year = c_actu_Lvl[:,(year-1)*4:year*4,k]
+                    c_base_Lvl_year = c_base_Lvl[:,(year-1)*4:year*4]
+                    MPC_this_type[:,k,year-1] = (np.sum(c_actu_Lvl_year,axis=1) - np.sum(c_base_Lvl_year,axis=1))#/(lottery_size[k])
                 
         # Sort the MPCs into the proper MPC sets
         for q in range(4):
             these = ThisType.WealthQ == q
             for k in range(4):
-                MPC_set_list[k][q].append(MPC_this_type[these,k])
+                for y in range(4):
+                    MPC_Lists[k][q][y].append(MPC_this_type[these,k,y])
 
     # Calculate average within each MPC set
-    simulated_MPC_means = np.zeros((4,4))
+    simulated_MPC_means = np.zeros((4,4,N_Year_Sim))
     for k in range(4):
         for q in range(4):
-            MPC_array = np.concatenate(MPC_set_list[k][q])
-            simulated_MPC_means[k,q] = np.mean(MPC_array)
+            for y in range(4):
+                MPC_array = np.concatenate(MPC_Lists[k][q][y])
+                simulated_MPC_means[k,q,y] = np.mean(MPC_array)
             
     # Calculate Euclidean distance between simulated MPC averages and Table 9 targets
-    diff = simulated_MPC_means - MPC_target
+    diff = simulated_MPC_means[:,:,0] - MPC_target
     if drop_corner:
         diff[0,0] = 0.0
     distance = np.sqrt(np.sum((diff)**2))
@@ -176,26 +226,47 @@ def FagerengObjFunc(center,spread,verbose=False):
         print(simulated_MPC_means)
     else:
         print (center, spread, distance)
-    return distance
-    #return [distance,simulated_MPC_means,c_actu_Lvl,c_base_Lvl,LotteryWin]
+    #return distance
+    return [distance,simulated_MPC_means,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]
 
 
 #%% Test function
-#guess = [0.96,0.03]
-#[distance,simulated_MPC_means,c_actu_Lvl,c_base_Lvl,LotteryWin]=FagerengObjFunc(guess[0],guess[1])
-#print('MPC in first year \n', simulated_MPC_means,'\n')
-#print('Difference between actual and base consumption: \n',c_actu_Lvl[0:5,:,1]-c_base_Lvl[0:5,:],'\n')
-#print('Lottery win indicator: \n', LotteryWin[0:5,:],'\n')
+guess = [0.96,0.03]
+[distance,simulated_MPC_means,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(guess[0],guess[1])
+print('MPC in first year \n', simulated_MPC_means[:,:,0],'\n')
+print('MPCX in year t+1 \n', simulated_MPC_means[:,:,1],'\n')
+print('MPCX in year t+2 \n', simulated_MPC_means[:,:,2],'\n')
+print('MPCX in year t+3 \n', simulated_MPC_means[:,:,3],'\n')
+
+## Output for debugging purposes
+print('Difference between actual and base consumption: \n',c_actu_Lvl[0:5,:,1]-c_base_Lvl[0:5,:],'\n')
+print('Lottery win indicator: \n', LotteryWin[0:5,:],'\n')
+
+x=(c_actu_Lvl[:,1,1]-c_base_Lvl[:,1])>0
+
+#%% Plot the evolution of MPC and MPCX
+
+import matplotlib.pyplot as plt
+for lottSize in range(4):
+    plt.subplot(2,2,lottSize+1)
+    for q in range(4):
+        labStr = "Wealth Q=" + str(q)
+        plt.plot(simulated_MPC_means[lottSize,q,:], label=labStr)
+        plt.xticks(ticks=range(4))
+    plt.title('Lottery size = %d' %lottSize)
+plt.subplots_adjust(hspace=0.6, wspace=0.4)
+plt.legend(loc='best')
+plt.show()
 
 #%% Conduct the estimation
 
-guess = [0.96,0.03]
-f_temp = lambda x : FagerengObjFunc(x[0],x[1])
-opt_params = minimizeNelderMead(f_temp, guess, verbose=True)
-print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and "splurge amount" of $' + str(1000*Splurge))
-print('Optimal (beta,nabla) is ' + str(opt_params) + ', simulated MPCs are:')
-dist = FagerengObjFunc(opt_params[0],opt_params[1],True)
-print('Distance from Fagereng et al Table 9 is ' + str(dist))
+# guess = [0.96,0.03]
+# f_temp = lambda x : FagerengObjFunc(x[0],x[1])
+# opt_params = minimizeNelderMead(f_temp, guess, verbose=True)
+# print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and "splurge amount" of $' + str(1000*Splurge))
+# print('Optimal (beta,nabla) is ' + str(opt_params) + ', simulated MPCs are:')
+# dist = FagerengObjFunc(opt_params[0],opt_params[1],True)
+# print('Distance from Fagereng et al Table 9 is ' + str(dist))
 
 
     
