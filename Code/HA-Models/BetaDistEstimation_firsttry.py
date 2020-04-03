@@ -22,12 +22,12 @@ drop_corner = True  # If True, ignore upper left corner when calculating distanc
 
 # Set standard HARK parameter values
 base_params = deepcopy(init_infinite)
-base_params['LivPrb']       = [0.99375]                     #from cstwMPC paper
-base_params['Rfree']        = 1.01/base_params['LivPrb'][0] #from cstwMPC paper
-base_params['PermShkStd']   = [(0.01*4/11)**0.5]            #from cstwMPC paper
-base_params['TranShkStd']   = [(0.01*4)**0.5]               #from cstwMPC paper
-base_params['T_age']        = T_kill        # Kill off agents if they manage to achieve T_kill working years
-base_params['AgentCount']   = 10000         # Number of agents per instance of IndShockConsType
+base_params['LivPrb']       = [0.995]                       #from stickyE paper
+base_params['Rfree']        = 1.015/base_params['LivPrb'][0]#from stickyE paper
+base_params['PermShkStd']   = [0.003**0.5]                  #from stickyE paper
+base_params['TranShkStd']   = [0.120**0.5]                  #from stickyE paper
+base_params['T_age']        = 400           # Kill off agents if they manage to achieve T_kill working years
+base_params['AgentCount']   = 10            # Number of agents per instance of IndShockConsType
 base_params['pLvlInitMean'] = np.log(23.72) # From Table 1, in thousands of USD (Q-I: where is this from?)
 
 # T_sim needs to be long enough to reach the ergodic distribution
