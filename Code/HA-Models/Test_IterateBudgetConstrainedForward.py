@@ -15,7 +15,7 @@ base_params['Rfree']        = 1.015/base_params['LivPrb'][0]#from stickyE paper
 base_params['PermShkStd']   = [0.003**0.5]                  #from stickyE paper
 base_params['TranShkStd']   = [0.120**0.5]                  #from stickyE paper
 base_params['T_age']        = 400           # Kill off agents if they manage to achieve T_kill working years
-base_params['AgentCount']   = 10            # Number of agents per instance of IndShockConsType
+base_params['AgentCount']   = 1             # Number of agents per instance of IndShockConsType
 base_params['pLvlInitMean'] = np.log(23.72) # From Table 1, in thousands of USD (Q-I: where is this from?)
 
 # T_sim needs to be long enough to reach the ergodic distribution
@@ -49,9 +49,10 @@ for period in range(1,CheckType.T_sim):
 # I am only checking for the first agent
 Diff_in_c = abs(c[:,0]-CheckType.cNrmNow_hist[:,0])
 # This difference should be zero
-y= np.where(Diff_in_c>1e-1)
+y= np.where(Diff_in_c>1e-10)
 # For these periods it's not zero
-print(y)    
+print('C_Diff is not zero for indices: ', y,'\n')    
+print('TransShokNow is exactly 1 for indices', np.where(CheckType.TranShkNow_hist==1),'\n')
     
 
 
@@ -80,7 +81,11 @@ for period in range(1,CheckType.T_sim):
 # I am only checking for the first agent
 Diff_in_c = abs(c[:,0]-CheckType.cNrmNow_hist[:,0])
 # This difference should be zero
-y= np.where(Diff_in_c>1e-1)
+y= np.where(Diff_in_c>1e-10)
 # For these periods it's not zero
-print(y)  
+print('C_Diff is not zero for indices: ', y,'\n')    
+print('TransShockNow is exactly 1 for indices', np.where(CheckType.TranShkNow_hist==1),'\n')
+    
+
+
    

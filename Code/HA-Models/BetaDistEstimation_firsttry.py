@@ -48,7 +48,7 @@ lottery_size = np.array([1.625, 3.3741, 7.129, 40.0])
 
 CheckType = IndShockConsumerType(**base_params)
 CheckType(DiscFac = 0.96)   # Check only for center Disc Fac
-CheckType(T_sim = 1000)    # Simulate long enough to reach SS
+CheckType(T_sim = 2000)    # Simulate long enough to reach SS
 CheckType.track_vars = ['aNrmNow']
 CheckType.solve()
 CheckType.initializeSim()
