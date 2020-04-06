@@ -27,11 +27,11 @@ base_params['Rfree']        = 1.015/base_params['LivPrb'][0]#from stickyE paper
 base_params['PermShkStd']   = [0.003**0.5]                  #from stickyE paper
 base_params['TranShkStd']   = [0.120**0.5]                  #from stickyE paper
 base_params['T_age']        = 400           # Kill off agents if they manage to achieve T_kill working years
-base_params['AgentCount']   = 10            # Number of agents per instance of IndShockConsType
+base_params['AgentCount']   = 10000         # Number of agents per instance of IndShockConsType
 base_params['pLvlInitMean'] = np.log(23.72) # From Table 1, in thousands of USD (Q-I: where is this from?)
 
 # T_sim needs to be long enough to reach the ergodic distribution
-base_params['T_sim'] = 100
+base_params['T_sim'] = 1000
 
 # Define the MPC targets from Fagereng et al Table 9; element i,j is lottery quartile i, deposit quartile j
 MPC_target_base = np.array([[1.047, 0.745, 0.720, 0.490],
@@ -46,43 +46,59 @@ lottery_size = np.array([1.625, 3.3741, 7.129, 40.0])
 
 #%% Checking when ergodic distribution is reached
 
-CheckType = IndShockConsumerType(**base_params)
-CheckType(DiscFac = 0.96)   # Check only for center Disc Fac
-CheckType(T_sim = 2000)    # Simulate long enough to reach SS
-CheckType.track_vars = ['aNrmNow']
-CheckType.solve()
-CheckType.initializeSim()
-CheckType.simulate()
+def CheckErgodicDistribution(CheckType,Ergodic_Tol):
+    '''
+    This function checks, for an instance of the IndShockConsumerType, how many
+    periods need to be simulated until the ergodic distribution of wealth has 
+    been reached. The ergodic distribution is assumed to be reached when the 
+    percentage change in mean and std of the wealth distribution is smaller 
+    than Ergodic_Tol.
 
-SS_Tol = 0.01 
-# allow for a SS_Tol % change from one period to the next;
-# if SS_Tol 0.01, then the moments under consideration of aNrm need to change 
-# less than 0.01 % for the SS to be reached
+    Inputs
+    ----------
+    CheckType : IndShockConsumerType
+        Instance of cons type which is simulated.
+    Ergodic_Tol : float
+        Ergodic distribution is reached when the percentage difference in 
+        mean and std of the wealth distribution does not change by more than 
+        Ergodic_Tol from one period to the next.
 
-Mean_i = 2 #start point
-# Check when the % change in aNrmNow becomes smaller than SS_Tol
-while 100*abs( (np.mean(CheckType.aNrmNow) - np.mean(CheckType.aNrmNow_hist[Mean_i-1])) / np.mean(CheckType.aNrmNow))  > SS_Tol:
-  Mean_i += 1
-  if Mean_i==CheckType.T_sim+1:
-      break
+    Returns
+    -------
+    Text output
+    '''
 
-if Mean_i <= CheckType.T_sim:
-    print('The simulation reached a constant mean aNrm value after ', Mean_i, ' periods.')
-else:
-    print('The simulation never reached a constant mean aNrm value.')
+    CheckType.track_vars = ['aNrmNow']
+    CheckType.solve()
+    CheckType.initializeSim()
+    CheckType.simulate()
     
-Std_i = 2
-while 100*abs( (np.std(CheckType.aNrmNow) - np.std(CheckType.aNrmNow_hist[Std_i-1])) / np.std(CheckType.aNrmNow) ) > SS_Tol:
-  Std_i += 1
-  if Std_i==CheckType.T_sim+1:
-      break
+    Mean_aNrmNow = np.mean(CheckType.aNrmNow_hist,axis=1)
+    Std_aNrmNow = np.std(CheckType.aNrmNow_hist,axis=1) 
+    Perc_Change_Mean_aNrmNow = 100*abs(Mean_aNrmNow[1:CheckType.T_sim] - Mean_aNrmNow[0:CheckType.T_sim-1])/Mean_aNrmNow[1:CheckType.T_sim]
+    Perc_Change_Std_aNrmNow = 100*abs(Std_aNrmNow[1:CheckType.T_sim] - Std_aNrmNow[0:CheckType.T_sim-1])/Std_aNrmNow[1:CheckType.T_sim]
+    
+    
+    Periods_Above_Tol = np.argwhere(Perc_Change_Mean_aNrmNow>Ergodic_Tol)+2
+    LastPeriod_Above_Tol = int(max(Periods_Above_Tol))
+    if LastPeriod_Above_Tol < CheckType.T_sim-50: # Last period should at least be 50 periods before end
+        print('The simulation required ', LastPeriod_Above_Tol, ' periods for the change in mean wealth to become permanently smaller than ', Ergodic_Tol, '%.')
+    else:
+        print('The simulation never reached a stable mean wealth value below the imposed tolerance of ', Ergodic_Tol, '%.')
+      
+        
+    Periods_Above_Tol = np.argwhere(Perc_Change_Std_aNrmNow>Ergodic_Tol)+2
+    LastPeriod_Above_Tol = int(max(Periods_Above_Tol)) 
+    if LastPeriod_Above_Tol < CheckType.T_sim-50:
+        print('The simulation required ', LastPeriod_Above_Tol, ' periods for the change in the standard deviation of wealth to become permanently smaller than ', Ergodic_Tol, '%.')
+    else:
+        print('The simulation never reached a stable standard deviation of wealth value below the imposed tolerance of ', Ergodic_Tol, '%.')
+      
 
-if Std_i <= CheckType.T_sim:
-    print('The simulation reached a constant std aNrm value after ', Std_i, ' periods.')
-else:
-    print('The simulation never reached a constant std aNrm value.')
-
-
+CheckType = IndShockConsumerType(**base_params)
+CheckType(DiscFac = 0.96)  # Check only for center Disc Fac
+CheckType(T_sim = 1000)
+CheckErgodicDistribution(CheckType,2)
 
 #%%
 
@@ -162,8 +178,8 @@ def FagerengObjFunc(center,spread,verbose=False):
             
          # LotteryWin is an array with AgentCount x 4 periods many entries; there is only one 1 in each row indicating the quarter of the Lottery win for the agent in each row
         LotteryWin = np.zeros((ThisType.AgentCount,N_Quarter_Sim))   
-        # for i in range(ThisType.AgentCount):
-        #     LotteryWin[i,random.randint(0,3)] = 1
+        for i in range(ThisType.AgentCount):
+            LotteryWin[i,random.randint(0,3)] = 1
             
         MPC_this_type = np.zeros((ThisType.AgentCount,4,int(N_Quarter_Sim/4))) #Empty array, MPC for each Lottery size and agent
         
@@ -200,7 +216,7 @@ def FagerengObjFunc(center,spread,verbose=False):
                     year = int((period+1)/4)
                     c_actu_Lvl_year = c_actu_Lvl[:,(year-1)*4:year*4,k]
                     c_base_Lvl_year = c_base_Lvl[:,(year-1)*4:year*4]
-                    MPC_this_type[:,k,year-1] = (np.sum(c_actu_Lvl_year,axis=1) - np.sum(c_base_Lvl_year,axis=1))#/(lottery_size[k])
+                    MPC_this_type[:,k,year-1] = (np.sum(c_actu_Lvl_year,axis=1) - np.sum(c_base_Lvl_year,axis=1))/(lottery_size[k])
                 
         # Sort the MPCs into the proper MPC sets
         for q in range(4):
