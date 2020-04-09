@@ -16,14 +16,14 @@ from HARK.cstwMPC.SetupParamsCSTW import init_infinite
 TypeCount =  8      # Number of consumer types with heterogeneous discount factors
 AdjFactor = 1.0     # Factor by which to scale all of MPCs in Table 9
 T_kill = 400        # Don't let agents live past this age (expressed in quarters)
-Splurge = 0.0       # Consumers automatically spend this amount of any lottery prize
+Splurge = 0.7       # Consumers automatically spend this amount of any lottery prize
 do_secant = True    # If True, calculate MPC by secant, else point MPC
 drop_corner = True  # If True, ignore upper left corner when calculating distance
 
 # Set standard HARK parameter values
 base_params = deepcopy(init_infinite)
 base_params['LivPrb']       = [0.995]                       #from stickyE paper
-base_params['Rfree']        = 1.015/base_params['LivPrb'][0]#from stickyE paper
+base_params['Rfree']        = 1.015                         #from stickyE paper
 base_params['PermShkStd']   = [0.003**0.5]                  #from stickyE paper
 base_params['TranShkStd']   = [0.120**0.5]                  #from stickyE paper
 base_params['T_age']        = 400           # Kill off agents if they manage to achieve T_kill working years
@@ -31,8 +31,7 @@ base_params['AgentCount']   = 10000         # Number of agents per instance of I
 base_params['pLvlInitMean'] = np.log(23.72) # From Table 1, in thousands of USD (Q-I: where is this from?)
 
 # T_sim needs to be long enough to reach the ergodic distribution
-base_params['T_sim'] = 1000
-
+base_params['T_sim'] = 800
 # Define the MPC targets from Fagereng et al Table 9; element i,j is lottery quartile i, deposit quartile j
 MPC_target_base = np.array([[1.047, 0.745, 0.720, 0.490],
                             [0.762, 0.640, 0.559, 0.437],
@@ -95,10 +94,10 @@ def CheckErgodicDistribution(CheckType,Ergodic_Tol):
         print('The simulation never reached a stable standard deviation of wealth value below the imposed tolerance of ', Ergodic_Tol, '%.')
       
 
-# CheckType = IndShockConsumerType(**base_params)
-# CheckType(DiscFac = 0.96)  # Check only for center Disc Fac
-# CheckType(T_sim = 1000)
-# CheckErgodicDistribution(CheckType,2)
+CheckType = IndShockConsumerType(**base_params)
+CheckType(DiscFac = 0.96)  # Check only for center Disc Fac
+CheckType(T_sim = 1000)
+CheckErgodicDistribution(CheckType,2)
 
 #%%
 
@@ -207,6 +206,9 @@ def FagerengObjFunc(center,spread,verbose=False):
                 else:  
                     T_hist[:,period] = ThisType.TranShkNow 
                     P_hist[:,period] = ThisType.PermShkNow
+                    for i_agent in range(ThisType.AgentCount):
+                        if ThisType.TranShkNow[i_agent] == 1.0:
+                            a_actu[i_agent,period-1,k] = np.exp(base_params['aNrmInitMean'])
                     m_adj = a_actu[:,period-1,k]*base_params['Rfree']/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - SplurgeNrm #continue with resources from last period
                     c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
                     c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
@@ -255,10 +257,10 @@ print('MPCX in year t+2 \n', simulated_MPC_means[:,:,2],'\n')
 print('MPCX in year t+3 \n', simulated_MPC_means[:,:,3],'\n')
 
 ## Output for debugging purposes
-print('Difference between actual and base consumption: \n',c_actu_Lvl[0:5,:,1]-c_base_Lvl[0:5,:],'\n')
-print('Lottery win indicator: \n', LotteryWin[0:5,:],'\n')
+# print('Difference between actual and base consumption: \n',c_actu_Lvl[0:5,:,2]-c_base_Lvl[0:5,:],'\n')
+# print('Lottery win indicator: \n', LotteryWin[0:5,:],'\n')
 
-x=(c_actu_Lvl[:,1,1]-c_base_Lvl[:,1])>0
+# x=(c_actu_Lvl[:,1,0]-c_base_Lvl[:,1])>0
 
 #%% Plot the evolution of MPC and MPCX
 
@@ -283,12 +285,3 @@ plt.show()
 # print('Optimal (beta,nabla) is ' + str(opt_params) + ', simulated MPCs are:')
 # dist = FagerengObjFunc(opt_params[0],opt_params[1],True)
 # print('Distance from Fagereng et al Table 9 is ' + str(dist))
-
-
-    
-
-
-
-
-
-

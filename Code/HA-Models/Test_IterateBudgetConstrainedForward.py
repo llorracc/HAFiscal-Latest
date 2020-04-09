@@ -60,35 +60,7 @@ print('TransShokNow is exactly 1 for indices', np.where(CheckType.TranShkNow_his
     
 
 
-#%% Test 2
 
-
-# Simulating manually from start onwards
-c = np.zeros((CheckType.T_sim,CheckType.AgentCount))
-a = np.zeros((CheckType.T_sim,CheckType.AgentCount))
-a[0,:] = CheckType.aNrmNow_hist[0,:]
-
-AlwaysStartFromCorrect_a = True
-
-for period in range(1,CheckType.T_sim):
-    if AlwaysStartFromCorrect_a:
-        aLvl = CheckType.aNrmNow_hist[period-1,:]*CheckType.pLvlNow_hist[period-1]
-        m_adjLvl = aLvl*base_params['Rfree'] + CheckType.TranShkNow_hist[period]*CheckType.pLvlNow_hist[period]
-        m_adj = m_adjLvl/CheckType.pLvlNow_hist[period]
-    else:
-        aLvl = a[period-1,:]*CheckType.pLvlNow_hist[period-1]
-        m_adjLvl = aLvl*base_params['Rfree'] + CheckType.TranShkNow_hist[period]*CheckType.pLvlNow_hist[period]
-        m_adj = m_adjLvl/CheckType.pLvlNow_hist[period]
-    c[period,:] = CheckType.cFunc[0](m_adj)
-    a[period,:] = m_adj - c[period,:]
-
-# I am only checking for the first agent
-Diff_in_c = abs(c[:,0]-CheckType.cNrmNow_hist[:,0])
-# This difference should be zero
-y= np.where(Diff_in_c>1e-10)
-# For these periods it's not zero
-print('C_Diff is not zero for indices: ', y,'\n')    
-print('TransShockNow is exactly 1 for indices', np.where(CheckType.TranShkNow_hist==1),'\n')
     
 
 
