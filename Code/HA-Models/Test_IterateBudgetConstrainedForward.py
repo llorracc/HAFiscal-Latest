@@ -40,9 +40,13 @@ AlwaysStartFromCorrect_a = True
 
 for period in range(1,CheckType.T_sim):
     if AlwaysStartFromCorrect_a:
-        m_adj = CheckType.aNrmNow_hist[period-1,:]*base_params['Rfree']/CheckType.PermShkNow_hist[period] + CheckType.TranShkNow_hist[period]
+        if CheckType.TranShkNow_hist[period] != 1:
+            m_adj = CheckType.aNrmNow_hist[period-1,:]*base_params['Rfree']/CheckType.PermShkNow_hist[period] + CheckType.TranShkNow_hist[period]
+        else:
+            m_adj = np.exp(base_params['aNrmInitMean'])*base_params['Rfree']/CheckType.PermShkNow_hist[period] + CheckType.TranShkNow_hist[period]
     else:
         m_adj = a[period-1,:]*base_params['Rfree']/CheckType.PermShkNow_hist[period] + CheckType.TranShkNow_hist[period]
+        
     c[period,:] = CheckType.cFunc[0](m_adj)
     a[period,:] = m_adj - c[period,:]
 

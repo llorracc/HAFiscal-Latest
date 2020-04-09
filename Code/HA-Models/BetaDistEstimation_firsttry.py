@@ -16,7 +16,7 @@ from HARK.cstwMPC.SetupParamsCSTW import init_infinite
 TypeCount =  8      # Number of consumer types with heterogeneous discount factors
 AdjFactor = 1.0     # Factor by which to scale all of MPCs in Table 9
 T_kill = 400        # Don't let agents live past this age (expressed in quarters)
-Splurge = 0.7       # Consumers automatically spend this amount of any lottery prize
+Splurge = 0.0       # Consumers automatically spend this amount of any lottery prize
 do_secant = True    # If True, calculate MPC by secant, else point MPC
 drop_corner = True  # If True, ignore upper left corner when calculating distance
 
@@ -95,10 +95,10 @@ def CheckErgodicDistribution(CheckType,Ergodic_Tol):
         print('The simulation never reached a stable standard deviation of wealth value below the imposed tolerance of ', Ergodic_Tol, '%.')
       
 
-CheckType = IndShockConsumerType(**base_params)
-CheckType(DiscFac = 0.96)  # Check only for center Disc Fac
-CheckType(T_sim = 1000)
-CheckErgodicDistribution(CheckType,2)
+# CheckType = IndShockConsumerType(**base_params)
+# CheckType(DiscFac = 0.96)  # Check only for center Disc Fac
+# CheckType(T_sim = 1000)
+# CheckErgodicDistribution(CheckType,2)
 
 #%%
 
