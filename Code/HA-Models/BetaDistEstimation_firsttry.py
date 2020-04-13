@@ -16,7 +16,7 @@ from HARK.cstwMPC.SetupParamsCSTW import init_infinite
 TypeCount =  8      # Number of consumer types with heterogeneous discount factors
 AdjFactor = 1.0     # Factor by which to scale all of MPCs in Table 9
 T_kill = 400        # Don't let agents live past this age (expressed in quarters)
-Splurge = 0.7       # Consumers automatically spend this amount of any lottery prize
+Splurge = 1.2775    # Consumers automatically spend this amount of any lottery prize
 do_secant = True    # If True, calculate MPC by secant, else point MPC
 drop_corner = True  # If True, ignore upper left corner when calculating distance
 
@@ -112,7 +112,7 @@ for j in range(TypeCount):
     
 # Define the objective function
 
-def FagerengObjFunc(center,spread,verbose=False):
+def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False):
     '''
     Objective function for the quick and dirty structural estimation to fit
     Fagereng, Holm, and Natvik's Table 9 results with a basic infinite horizon
@@ -196,7 +196,7 @@ def FagerengObjFunc(center,spread,verbose=False):
                 
                 Llvl = lottery_size[k]*LotteryWin[:,period]  #Lottery win occurs only if LotteryWin = 1 for that agent
                 Lnrm = Llvl/ThisType.pLvlNow
-                SplurgeNrm = Splurge/ThisType.pLvlNow*LotteryWin[:,period]  #Splurge occurs only if LotteryWin = 1 for that agent
+                SplurgeNrm = SplurgeEstimate/ThisType.pLvlNow*LotteryWin[:,period]  #Splurge occurs only if LotteryWin = 1 for that agent
                 
                 if period == 0:
                     m_adj = ThisType.mNrmNow + Lnrm - SplurgeNrm
@@ -243,14 +243,15 @@ def FagerengObjFunc(center,spread,verbose=False):
     if verbose:
         print(simulated_MPC_means)
     else:
-        print (center, spread, distance)
+        #print (center, spread, distance)
+        print (SplurgeEstimate, distance)
     #return distance
     return [distance,simulated_MPC_means,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]
 
 
 #%% Test function
-guess = [0.96,0.03]
-[distance,simulated_MPC_means,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(guess[0],guess[1])
+beta_dist_estimate = [0.9868607230094457,0.006068381572212068]
+[distance,simulated_MPC_means,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(Splurge,beta_dist_estimate[0],beta_dist_estimate[1])
 print('MPC in first year \n', simulated_MPC_means[:,:,0],'\n')
 print('MPCX in year t+1 \n', simulated_MPC_means[:,:,1],'\n')
 print('MPCX in year t+2 \n', simulated_MPC_means[:,:,2],'\n')
@@ -278,10 +279,11 @@ plt.show()
 
 #%% Conduct the estimation
 
-# guess = [0.96,0.03]
-# f_temp = lambda x : FagerengObjFunc(x[0],x[1])
-# opt_params = minimizeNelderMead(f_temp, guess, verbose=True)
-# print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and "splurge amount" of $' + str(1000*Splurge))
-# print('Optimal (beta,nabla) is ' + str(opt_params) + ', simulated MPCs are:')
-# dist = FagerengObjFunc(opt_params[0],opt_params[1],True)
-# print('Distance from Fagereng et al Table 9 is ' + str(dist))
+beta_dist_estimate = [0.9868607230094457,0.006068381572212068]
+f_temp = lambda x : FagerengObjFunc(x,beta_dist_estimate[0],beta_dist_estimate[1])
+SplurgeEstimateStart = [0.7]
+opt_splurge = minimizeNelderMead(f_temp, SplurgeEstimateStart, verbose=True)
+print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and (beta,nabla) of ' + str(beta_dist_estimate))
+print('Optimal splurge is ' + str(opt_splurge) )
+# REsult is 1.2775
+# distance is 0.7057710207647322
