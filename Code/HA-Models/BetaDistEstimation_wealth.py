@@ -109,10 +109,15 @@ else:
         Population = Params.pop_sim_agg_point
     else:
         Population = Params.pop_sim_ind_point
+    
+
 
 # Make AgentTypes for estimation
 PerpetualYouthType = cstwMPCagent(**Params.init_infinite)
 PerpetualYouthType.AgeDstn = np.array(1.0)
+# Set Borrowing constraint to -5 of permanent income
+# since a quarterly model, -20 of qu. permanent income
+PerpetualYouthType.BoroCnstArt = -20
 EstimationAgentList = []
 for n in range(pref_type_count):
     EstimationAgentList.append(deepcopy(PerpetualYouthType))
@@ -137,6 +142,7 @@ EstimationEconomy.act_T = Params.T_sim_PY
 EstimationEconomy.ignore_periods = Params.ignore_periods_PY
 
 
+#%%
 # Estimate the model as requested
 if run_estimation:
     print('Beginning an estimation with the specification name ' + spec_name + '...')
