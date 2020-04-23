@@ -58,6 +58,38 @@ import SetupParamsCSTW as Params
 
 mystr = lambda number : "{:.3f}".format(number)
 
+
+#%% Minimum example to understand natural borrowing constraint 
+
+# Make AgentTypes for estimation
+Test = cstwMPCagent(**Params.init_infinite)
+Test.solve()
+print('BoroCnstArt',Test.BoroCnstArt)
+print('IncUnemp:',Test.IncUnemp)
+print('UnempPrb:',Test.UnempPrb)
+print('Limit:',Test.solution[0].cFunc.functions[0].x_list[0])
+
+
+# Make AgentTypes for estimation
+Test2 = cstwMPCagent(**Params.init_infinite)
+Test2.IncUnemp = 0.68 #net unemp replacement rate in Norway
+Test2.solve()
+print('BoroCnstArt',Test2.BoroCnstArt)
+print('IncUnemp:',Test2.IncUnemp)
+print('UnempPrb:',Test2.UnempPrb)
+print('Limit:',Test2.solution[0].cFunc.functions[0].x_list[0])
+
+# Make AgentTypes for estimation
+Test3 = cstwMPCagent(**Params.init_infinite)
+Test3.BoroCnstArt = -20 #5 times perm (annual) income
+Test3.IncUnemp = 0.68
+
+Test3.solve()
+print('BoroCnstArt',Test3.BoroCnstArt)
+print('IncUnemp:',Test3.IncUnemp)
+print('UnempPrb:',Test3.UnempPrb)
+print('Limit:',Test3.solution[0].cFunc.functions[0].x_list[0])
+
 #%%
 run_estimation = True
 dist_type = 'uniform'
@@ -118,6 +150,10 @@ PerpetualYouthType.AgeDstn = np.array(1.0)
 # Set Borrowing constraint to -5 of permanent income
 # since a quarterly model, -20 of qu. permanent income
 PerpetualYouthType.BoroCnstArt = -20
+PerpetualYouthType.IncUnemp = 0.68
+
+#%%
+
 EstimationAgentList = []
 for n in range(pref_type_count):
     EstimationAgentList.append(deepcopy(PerpetualYouthType))
@@ -131,6 +167,10 @@ market_dict = copy(Params.init_market)
 market_dict['AggShockBool'] = do_agg_shocks
 market_dict['Population'] = Population
 EstimationEconomy = cstwMPCmarket(**market_dict)
+
+# set Replacement rate to 68% following https://stats.oecd.org/Index.aspx?DataSetCode=NRR
+EstimationEconomy.IncUnemp = 0.68
+
 EstimationEconomy.agents = EstimationAgentList
 EstimationEconomy.KYratioTarget = KY_target
 EstimationEconomy.LorenzTarget = lorenz_target
@@ -140,6 +180,17 @@ EstimationEconomy.PopGroFac = 1.0
 EstimationEconomy.TypeWeight = [1.0]
 EstimationEconomy.act_T = Params.T_sim_PY
 EstimationEconomy.ignore_periods = Params.ignore_periods_PY
+
+#%%
+
+
+
+#%%
+center=0.9879177102415481
+spread=0.004534079415384556
+EstimationEconomy(LorenzBool = False, ManyStatsBool = False) # Make sure we're not wasting time calculating stuff
+EstimationEconomy.distributeParams(param_name,pref_type_count,center,spread,dist_type) # Distribute parameters
+EstimationEconomy.solve()
 
 
 #%%
@@ -161,7 +212,7 @@ if run_estimation:
                                                         spread = spread,
                                                         dist_type = dist_type)
         t_start = clock()
-        spread_estimate = (minimize_scalar(paramDistObjective,bracket=spread_range,tol=1e-4,method='brent')).x
+        spread_estimate = (minimize_scalar(paramDistObjective,bracket=spread_range,tol=1e-2,method='brent')).x
         center_estimate = EstimationEconomy.center_save
         t_end = clock()
     else:
@@ -173,7 +224,7 @@ if run_estimation:
                                              spread = 0.0,
                                              dist_type = dist_type)
         t_start = clock()
-        center_estimate = brentq(paramPointObjective,param_range[0],param_range[1],xtol=1e-6)
+        center_estimate = brentq(paramPointObjective,param_range[0],param_range[1],xtol=1e-2)
         spread_estimate = 0.0
         t_end = clock()
 
