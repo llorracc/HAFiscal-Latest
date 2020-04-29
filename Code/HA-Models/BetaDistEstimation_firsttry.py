@@ -6,7 +6,8 @@ import random
 from copy import deepcopy
 
 # Import needed tools from HARK
-from HARK.utilities import approxUniform, getPercentiles
+from HARK.distribution import approxUniform
+from HARK.utilities import getPercentiles
 from HARK.parallel import multiThreadCommands
 from HARK.estimation import minimizeNelderMead
 from HARK.ConsumptionSaving.ConsIndShockModel import *

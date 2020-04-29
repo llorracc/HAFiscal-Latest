@@ -42,9 +42,9 @@ import os
 import numpy as np
 from copy import copy, deepcopy
 from time import clock
-from HARK.utilities import approxMeanOneLognormal, combineIndepDstns, approxUniform, \
-                           getPercentiles, getLorenzShares, calcSubpopAvg, approxLognormal
-from HARK.simulation import drawDiscrete
+from HARK.distribution import approxMeanOneLognormal, combineIndepDstns, approxUniform, approxLognormal
+from HARK.utilities import getPercentiles, getLorenzShares, calcSubpopAvg
+from HARK.distribution import DiscreteDistribution
 from HARK import Market
 import HARK.ConsumptionSaving.ConsIndShockModel as Model
 from HARK.ConsumptionSaving.ConsAggShockModel import CobbDouglasEconomy, AggShockConsumerType
@@ -59,36 +59,6 @@ import SetupParamsCSTW as Params
 mystr = lambda number : "{:.3f}".format(number)
 
 
-#%% Minimum example to understand natural borrowing constraint 
-
-# Make AgentTypes for estimation
-Test = cstwMPCagent(**Params.init_infinite)
-Test.solve()
-print('BoroCnstArt',Test.BoroCnstArt)
-print('IncUnemp:',Test.IncUnemp)
-print('UnempPrb:',Test.UnempPrb)
-print('Limit:',Test.solution[0].cFunc.functions[0].x_list[0])
-
-
-# Make AgentTypes for estimation
-Test2 = cstwMPCagent(**Params.init_infinite)
-Test2.IncUnemp = 0.68 #net unemp replacement rate in Norway
-Test2.solve()
-print('BoroCnstArt',Test2.BoroCnstArt)
-print('IncUnemp:',Test2.IncUnemp)
-print('UnempPrb:',Test2.UnempPrb)
-print('Limit:',Test2.solution[0].cFunc.functions[0].x_list[0])
-
-# Make AgentTypes for estimation
-Test3 = cstwMPCagent(**Params.init_infinite)
-Test3.BoroCnstArt = -20 #5 times perm (annual) income
-Test3.IncUnemp = 0.68
-
-Test3.solve()
-print('BoroCnstArt',Test3.BoroCnstArt)
-print('IncUnemp:',Test3.IncUnemp)
-print('UnempPrb:',Test3.UnempPrb)
-print('Limit:',Test3.solution[0].cFunc.functions[0].x_list[0])
 
 #%%
 run_estimation = True
@@ -126,7 +96,7 @@ if do_liquid:
     KY_target = 9.2088
 else: # This is hacky until I can find the liquid wealth data and import it
     lorenz_target = np.array([-0.042, -0.022, 0.080,0.294]) 
-    lorenz_target_interp = np.interp(np.arange(0.01,1.00,0.01),np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]),np.array([-0.039, -0.042, -0.039, -0.022, 0.017, 0.080, 0.17, 0.294, 0.472, 1]))
+    lorenz_target_interp = np.interp(np.arange(0.01,1.00,0.01),np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 0.999, 1.0]),np.array([-0.039, -0.042, -0.039, -0.022, 0.017, 0.080, 0.17, 0.294, 0.472, 0.602, 0.777, 0.891, 1]))
     lorenz_long_data = np.hstack((np.array(0.0),lorenz_target_interp,np.array(1.0)))  
     KY_target = 9.2088
     
@@ -149,8 +119,9 @@ PerpetualYouthType = cstwMPCagent(**Params.init_infinite)
 PerpetualYouthType.AgeDstn = np.array(1.0)
 # Set Borrowing constraint to -5 of permanent income
 # since a quarterly model, -20 of qu. permanent income
-PerpetualYouthType.BoroCnstArt = -20
+#PerpetualYouthType.BoroCnstArt = -20
 PerpetualYouthType.IncUnemp = 0.68
+PerpetualYouthType.update()
 
 #%%
 
@@ -180,9 +151,6 @@ EstimationEconomy.PopGroFac = 1.0
 EstimationEconomy.TypeWeight = [1.0]
 EstimationEconomy.act_T = Params.T_sim_PY
 EstimationEconomy.ignore_periods = Params.ignore_periods_PY
-
-#%%
-
 
 
 #%%
@@ -241,3 +209,59 @@ if run_estimation:
     EstimationEconomy.spread_estimate = spread_estimate
     EstimationEconomy.showManyStats(spec_name)
     print('These results have been saved to ./Code/Results/' + spec_name + '.txt\n\n')
+
+
+#%%
+# np.savetxt('Results/IncUnemp86_BoroConst20_LorenzLong_hist.dat', EstimationEconomy.LorenzLong_hist)
+# np.savetxt('Results/IncUnemp86_BoroConst20_ignore_periods.dat', [EstimationEconomy.ignore_periods])
+# np.savetxt('Results/IncUnemp86_BoroConst20_LorenzData.dat', EstimationEconomy.LorenzData)
+
+# np.savetxt('Results/BoroConst20_LorenzLong_hist.dat', EstimationEconomy.LorenzLong_hist)
+# np.savetxt('Results/BoroConst20_ignore_periods.dat', [EstimationEconomy.ignore_periods])
+# np.savetxt('Results/BoroConst20_LorenzData.dat', EstimationEconomy.LorenzData)
+
+# np.savetxt('Results/LorenzLong_hist.dat', EstimationEconomy.LorenzLong_hist)
+# np.savetxt('Results/ignore_periods.dat', [EstimationEconomy.ignore_periods])
+# np.savetxt('Results/LorenzData.dat', EstimationEconomy.LorenzData)
+    
+np.savetxt('Results/IncUnemp86_LorenzLong_hist.dat', EstimationEconomy.LorenzLong_hist)
+np.savetxt('Results/IncUnemp86_ignore_periods.dat', [EstimationEconomy.ignore_periods])
+np.savetxt('Results/IncUnemp86_LorenzData.dat', EstimationEconomy.LorenzData)
+    
+#%%
+
+IncUnemp86_BoroConst20_LorenzLong_hist = np.loadtxt('Results/IncUnemp86_BoroConst20_LorenzLong_hist.dat')
+IncUnemp86_BoroConst20_ignore_periods = np.loadtxt('Results/IncUnemp86_BoroConst20_ignore_periods.dat')
+IncUnemp86_BoroConst20_LorenzData = np.loadtxt('Results/IncUnemp86_BoroConst20_LorenzData.dat')
+
+BoroConst20_LorenzLong_hist = np.loadtxt('Results/BoroConst20_LorenzLong_hist.dat')
+BoroConst20_ignore_periods = np.loadtxt('Results/BoroConst20_ignore_periods.dat')
+BoroConst20_LorenzData = np.loadtxt('Results/BoroConst20_LorenzData.dat')
+
+IncUnemp86_LorenzLong_hist = np.loadtxt('Results/IncUnemp86_LorenzLong_hist.dat')
+IncUnemp86_ignore_periods = np.loadtxt('Results/IncUnemp86_ignore_periods.dat')
+IncUnemp86_LorenzData = np.loadtxt('Results/IncUnemp86_LorenzData.dat')
+
+LorenzLong_hist = np.loadtxt('Results/LorenzLong_hist.dat')
+ignore_periods = np.loadtxt('Results/ignore_periods.dat')
+LorenzData = np.loadtxt('Results/LorenzData.dat')
+
+
+#%%
+LorenzSim_IncUnemp86_BoroConst20    = np.hstack((np.array(0.0),np.mean(np.array(IncUnemp86_BoroConst20_LorenzLong_hist)[EstimationEconomy.ignore_periods:,:],axis=0),np.array(1.0)))
+LorenzSim_BoroConst20               = np.hstack((np.array(0.0),np.mean(np.array(BoroConst20_LorenzLong_hist)[EstimationEconomy.ignore_periods:,:],axis=0),np.array(1.0)))
+LorenzSim_IncUnemp86                = np.hstack((np.array(0.0),np.mean(np.array(IncUnemp86_LorenzLong_hist)[EstimationEconomy.ignore_periods:,:],axis=0),np.array(1.0)))
+LorenzSim                           = np.hstack((np.array(0.0),np.mean(np.array(LorenzLong_hist)[EstimationEconomy.ignore_periods:,:],axis=0),np.array(1.0)))
+
+LorenzAxis = np.arange(101,dtype=float)
+line1,=plt.plot(LorenzAxis,EstimationEconomy.LorenzData,'-k',linewidth=2,label='Data')
+line2,=plt.plot(LorenzAxis,LorenzSim,'--b',linewidth=1.5,label='Base model')
+line3,=plt.plot(LorenzAxis,LorenzSim_BoroConst20,'--g',linewidth=2,label='BoroCnstArt = -20')
+line4,=plt.plot(LorenzAxis,LorenzSim_IncUnemp86,'--c',linewidth=2,label='IncUnemp = 0.68')
+line5,=plt.plot(LorenzAxis,LorenzSim_IncUnemp86_BoroConst20,'--r',linewidth=1.5,label='BoroCnstArt - 20, IncUnemp = 0.68')
+plt.xlabel('Income percentile',fontsize=12)
+plt.ylabel('Cumulative wealth share',fontsize=12)
+plt.ylim([-0.05,1.0])
+plt.legend(handles=[line1,line2,line3,line4,line5])
+plt.show()
+
