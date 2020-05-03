@@ -42,9 +42,12 @@ import os
 import numpy as np
 from copy import copy, deepcopy
 from time import clock
-from HARK.utilities import approxMeanOneLognormal, combineIndepDstns, approxUniform, \
-                           getPercentiles, getLorenzShares, calcSubpopAvg, approxLognormal
-from HARK.simulation import drawDiscrete
+
+# new way of loading modules
+from HARK.distribution import approxMeanOneLognormal, combineIndepDstns, approxUniform, approxLognormal
+from HARK.utilities import getPercentiles, getLorenzShares, calcSubpopAvg
+from HARK.distribution import DiscreteDistribution
+
 from HARK import Market
 import HARK.ConsumptionSaving.ConsIndShockModel as Model
 from HARK.ConsumptionSaving.ConsAggShockModel import CobbDouglasEconomy, AggShockConsumerType
@@ -88,16 +91,16 @@ else:
 ### ACTUAL WORK BEGINS BELOW THIS LINE  #######################################
 ###############################################################################
 
+
   
+# Set targets for K/Y and the Lorenz curve based on the data
 if do_liquid:
     lorenz_target = np.array([0.0024, 0.0168, 0.0591, 0.1653]) # Data from Elin for financial assets in 2017
     lorenz_target_interp = np.interp(np.arange(0.01,1.00,0.01),np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 0.999, 1.0]),np.array([0.0003, 0.0024, 0.0073, 0.0168, 0.0331, 0.0591, 0.0997, 0.1653, 0.2827, 0.3912, 0.5883, 0.7824, 1])) 
-    lorenz_long_data = np.hstack((np.array(0.0),lorenz_target_interp,np.array(1.0))) 
     KY_target = 9.2088 #This is not correct and taken from below
 else: # This is hacky until I can find the liquid wealth data and import it
     lorenz_target = np.array([-0.0388, -0.0182, 0.0856, 0.3024]) # Data from Elin for net wealth in 2017
-    #I set value at 0.01 at about 1/10 of the value at 0.1 following the logic in data file
-    lorenz_target_interp = np.interp(np.arange(0.01,1.00,0.01),np.array([0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 0.999, 1.0]),np.array([-0.005, -0.0363, -0.0388, -0.0359, -0.0182, 0.0217, 0.0856, 0.1768, 0.3024, 0.4824, 0.6145, 0.7902, 0.9001, 1]))
+    lorenz_target_interp = np.interp(np.arange(0.01,1.00,0.01),np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 0.999, 1.0]),np.array([-0.0363, -0.0388, -0.0359, -0.0182, 0.0217, 0.0856, 0.1768, 0.3024, 0.4824, 0.6145, 0.7902, 0.9001, 1]))
     lorenz_long_data = np.hstack((np.array(0.0),lorenz_target_interp,np.array(1.0)))  
     KY_target = 9.2088
     
@@ -121,7 +124,7 @@ PerpetualYouthType.AgeDstn = np.array(1.0)
 # Set Borrowing constraint to -5 of permanent income
 # since a quarterly model, -20 of qu. permanent income
 #PerpetualYouthType.BoroCnstArt = -20
-#PerpetualYouthType.IncUnemp = 0.68
+PerpetualYouthType.IncUnemp = 0.68
 PerpetualYouthType.update()
 
 #%%
@@ -139,7 +142,10 @@ market_dict = copy(Params.init_market)
 market_dict['AggShockBool'] = do_agg_shocks
 market_dict['Population'] = Population
 EstimationEconomy = cstwMPCmarket(**market_dict)
-EstimationEconomy.IncUnemp = PerpetualYouthType.IncUnemp
+
+# set Replacement rate to 68% following https://stats.oecd.org/Index.aspx?DataSetCode=NRR
+EstimationEconomy.IncUnemp = 0.68
+
 EstimationEconomy.agents = EstimationAgentList
 EstimationEconomy.KYratioTarget = KY_target
 EstimationEconomy.LorenzTarget = lorenz_target
@@ -166,7 +172,7 @@ if run_estimation:
     
     # Choose the bounding region for the parameter search
     param_range = [0.95,0.995]
-    spread_range = [0.004,0.008]
+    spread_range = [0.006,0.008]
 
     if do_param_dist:
         # Run the param-dist estimation
@@ -218,17 +224,13 @@ if run_estimation:
 # np.savetxt('Results/BoroConst20_ignore_periods.dat', [EstimationEconomy.ignore_periods])
 # np.savetxt('Results/BoroConst20_LorenzData.dat', EstimationEconomy.LorenzData)
 
-np.savetxt('Results/LorenzLong_hist.dat', EstimationEconomy.LorenzLong_hist)
-np.savetxt('Results/ignore_periods.dat', [EstimationEconomy.ignore_periods])
-np.savetxt('Results/LorenzData.dat', EstimationEconomy.LorenzData)
-
-# np.savetxt('Results/Liquid_LorenzLong_hist.dat', EstimationEconomy.LorenzLong_hist)
-# np.savetxt('Results/Liquid_ignore_periods.dat', [EstimationEconomy.ignore_periods])
-# np.savetxt('Results/Liquid_LorenzData.dat', EstimationEconomy.LorenzData)
+# np.savetxt('Results/LorenzLong_hist.dat', EstimationEconomy.LorenzLong_hist)
+# np.savetxt('Results/ignore_periods.dat', [EstimationEconomy.ignore_periods])
+# np.savetxt('Results/LorenzData.dat', EstimationEconomy.LorenzData)
     
-# np.savetxt('Results/IncUnemp86_LorenzLong_hist.dat', EstimationEconomy.LorenzLong_hist)
-# np.savetxt('Results/IncUnemp86_ignore_periods.dat', [EstimationEconomy.ignore_periods])
-# np.savetxt('Results/IncUnemp86_LorenzData.dat', EstimationEconomy.LorenzData)
+np.savetxt('Results/IncUnemp86_LorenzLong_hist.dat', EstimationEconomy.LorenzLong_hist)
+np.savetxt('Results/IncUnemp86_ignore_periods.dat', [EstimationEconomy.ignore_periods])
+np.savetxt('Results/IncUnemp86_LorenzData.dat', EstimationEconomy.LorenzData)
     
 #%%
 
@@ -256,7 +258,7 @@ LorenzSim_IncUnemp86                = np.hstack((np.array(0.0),np.mean(np.array(
 LorenzSim                           = np.hstack((np.array(0.0),np.mean(np.array(LorenzLong_hist)[EstimationEconomy.ignore_periods:,:],axis=0),np.array(1.0)))
 
 LorenzAxis = np.arange(101,dtype=float)
-line1,=plt.plot(LorenzAxis,EstimationEconomy.LorenzData,'-k',linewidth=2,label='Data: Net Wealth')
+line1,=plt.plot(LorenzAxis,EstimationEconomy.LorenzData,'-k',linewidth=2,label='Data')
 line2,=plt.plot(LorenzAxis,LorenzSim,'--b',linewidth=1.5,label='Base model')
 line3,=plt.plot(LorenzAxis,LorenzSim_BoroConst20,'--g',linewidth=2,label='BoroCnstArt = -20')
 line4,=plt.plot(LorenzAxis,LorenzSim_IncUnemp86,'--c',linewidth=2,label='IncUnemp = 0.68')
@@ -267,18 +269,3 @@ plt.ylim([-0.05,1.0])
 plt.legend(handles=[line1,line2,line3,line4,line5])
 plt.show()
 
-#%%
-
-Liquid_LorenzLong_hist = np.loadtxt('Results/Liquid_LorenzLong_hist.dat')
-Liquid_LorenzData = np.loadtxt('Results/Liquid_LorenzData.dat')
-
-Liquid_LorenzSim  = np.hstack((np.array(0.0),np.mean(np.array(Liquid_LorenzLong_hist)[400:,:],axis=0),np.array(1.0)))
-
-LorenzAxis = np.arange(101,dtype=float)
-line1,=plt.plot(LorenzAxis,Liquid_LorenzData,'-k',linewidth=2,label='Data: Liquid Wealth')
-line2,=plt.plot(LorenzAxis,Liquid_LorenzSim,'--m',linewidth=1.5,label='BoroCnstArt = 0, IncUnemp = 0.68')
-plt.xlabel('Income percentile',fontsize=12)
-plt.ylabel('Cumulative wealth share',fontsize=12)
-plt.ylim([-0.05,1.0])
-plt.legend(handles=[line1,line2])
-plt.show()
