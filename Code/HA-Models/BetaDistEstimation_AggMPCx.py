@@ -17,7 +17,7 @@ from HARK.cstwMPC.SetupParamsCSTW import init_infinite
 TypeCount =  8      # Number of consumer types with heterogeneous discount factors
 AdjFactor = 1.0     # Factor by which to scale all of MPCs in Table 9
 T_kill = 400        # Don't let agents live past this age (expressed in quarters)
-Splurge = 1.0000    # Consumers automatically spend this amount of any lottery prize
+Splurge = 0.4000    # Consumers automatically spend this share of any lottery prize
 do_secant = True    # If True, calculate MPC by secant, else point MPC
 drop_corner = True  # If True, ignore upper left corner when calculating distance
 
@@ -45,7 +45,7 @@ Agg_MPCX_target = np.array([0.5056845, 0.1759051, 0.1035106, 0.0444222, 0.033661
 
 # Define the four lottery sizes, in thousands of USD; these are eyeballed centers/averages
 # 5th element is used as rep. lottery win to get at aggregate MPC / MPCX 
-lottery_size = np.array([1.625, 3.3741, 7.129, 40.0, 10])
+lottery_size = np.array([1.625, 3.3741, 7.129, 40.0, 7.129])
 
 #%% Checking when ergodic distribution is reached
 
@@ -199,7 +199,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
                 
                 Llvl = lottery_size[k]*LotteryWin[:,period]  #Lottery win occurs only if LotteryWin = 1 for that agent
                 Lnrm = Llvl/ThisType.pLvlNow
-                SplurgeNrm = SplurgeEstimate/ThisType.pLvlNow*LotteryWin[:,period]  #Splurge occurs only if LotteryWin = 1 for that agent
+                SplurgeNrm = SplurgeEstimate*Lnrm  #Splurge occurs only if LotteryWin = 1 for that agent
                 
                 if period == 0:
                     m_adj = ThisType.mNrmNow + Lnrm - SplurgeNrm
@@ -271,8 +271,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     if verbose:
         print(simulated_MPC_means)
     else:
-        print (center, spread, distance)
-        print (SplurgeEstimate, distance)
+        print (SplurgeEstimate, center, spread, distance)
         
     if estimation_mode:
         return distance
@@ -319,7 +318,7 @@ plt.show()
 
 beta_dist_estimate = [0.986,0.0076]
 f_temp = lambda x : FagerengObjFunc(x,beta_dist_estimate[0],beta_dist_estimate[1])
-SplurgeEstimateStart = np.array([1.5])
+SplurgeEstimateStart = np.array([0.4])
 opt_splurge = minimizeNelderMead(f_temp, SplurgeEstimateStart, verbose=True)
 print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and (beta,nabla) of ' + str(beta_dist_estimate))
 print('Optimal splurge is ' + str(opt_splurge) )
@@ -343,7 +342,7 @@ plt.show()
 
 
 guess = [0.986,0.0076]
-Splurge = 4;
+Splurge = 0.4;
 f_temp = lambda x : FagerengObjFunc(Splurge,x[0],x[1])
 opt_params = minimizeNelderMead(f_temp, guess, verbose=True, xtol=1e-3, ftol=1e-3)
 print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and "splurge amount" of $' + str(1000*Splurge))
