@@ -46,6 +46,8 @@ Agg_MPCX_target = np.array([0.5056845, 0.1759051, 0.1035106, 0.0444222, 0.033661
 # Define the four lottery sizes, in thousands of USD; these are eyeballed centers/averages
 # 5th element is used as rep. lottery win to get at aggregate MPC / MPCX 
 lottery_size = np.array([1.625, 3.3741, 7.129, 40.0, 7.129])
+RandomLotteryWin = True #if True, then the 5th element will be replaced with a random
+# Lottery size win draw from the 1st to 4th element for each agent
 
 #%% Checking when ergodic distribution is reached
 
@@ -198,8 +200,16 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
             for k in range(N_Lottery_Win_Sizes): # Loop through different lottery sizes
                 
                 Llvl = lottery_size[k]*LotteryWin[:,period]  #Lottery win occurs only if LotteryWin = 1 for that agent
+                
+                if RandomLotteryWin and k == 5:
+                    for i in range(ThisType.AgentCount):
+                        Llvl[i] = lottery_size[random.randint(0,3)]*LotteryWin[i,period]
+                
                 Lnrm = Llvl/ThisType.pLvlNow
                 SplurgeNrm = SplurgeEstimate*Lnrm  #Splurge occurs only if LotteryWin = 1 for that agent
+                
+
+                        
                 
                 if period == 0:
                     m_adj = ThisType.mNrmNow + Lnrm - SplurgeNrm
