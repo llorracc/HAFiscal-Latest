@@ -49,62 +49,6 @@ lottery_size = np.array([1.625, 3.3741, 7.129, 40.0, 7.129])
 RandomLotteryWin = True #if True, then the 5th element will be replaced with a random
 # Lottery size win draw from the 1st to 4th element for each agent
 
-#%% Checking when ergodic distribution is reached
-
-def CheckErgodicDistribution(CheckType,Ergodic_Tol):
-    '''
-    This function checks, for an instance of the IndShockConsumerType, how many
-    periods need to be simulated until the ergodic distribution of wealth has 
-    been reached. The ergodic distribution is assumed to be reached when the 
-    percentage change in mean and std of the wealth distribution is smaller 
-    than Ergodic_Tol.
-
-    Inputs
-    ----------
-    CheckType : IndShockConsumerType
-        Instance of cons type which is simulated.
-    Ergodic_Tol : float
-        Ergodic distribution is reached when the percentage difference in 
-        mean and std of the wealth distribution does not change by more than 
-        Ergodic_Tol from one period to the next.
-
-    Returns
-    -------
-    Text output
-    '''
-
-    CheckType.track_vars = ['aNrmNow']
-    CheckType.solve()
-    CheckType.initializeSim()
-    CheckType.simulate()
-    
-    Mean_aNrmNow = np.mean(CheckType.aNrmNow_hist,axis=1)
-    Std_aNrmNow = np.std(CheckType.aNrmNow_hist,axis=1) 
-    Perc_Change_Mean_aNrmNow = 100*abs(Mean_aNrmNow[1:CheckType.T_sim] - Mean_aNrmNow[0:CheckType.T_sim-1])/Mean_aNrmNow[1:CheckType.T_sim]
-    Perc_Change_Std_aNrmNow = 100*abs(Std_aNrmNow[1:CheckType.T_sim] - Std_aNrmNow[0:CheckType.T_sim-1])/Std_aNrmNow[1:CheckType.T_sim]
-    
-    
-    Periods_Above_Tol = np.argwhere(Perc_Change_Mean_aNrmNow>Ergodic_Tol)+2
-    LastPeriod_Above_Tol = int(max(Periods_Above_Tol))
-    if LastPeriod_Above_Tol < CheckType.T_sim-50: # Last period should at least be 50 periods before end
-        print('The simulation required ', LastPeriod_Above_Tol, ' periods for the change in mean wealth to become permanently smaller than ', Ergodic_Tol, '%.')
-    else:
-        print('The simulation never reached a stable mean wealth value below the imposed tolerance of ', Ergodic_Tol, '%.')
-      
-        
-    Periods_Above_Tol = np.argwhere(Perc_Change_Std_aNrmNow>Ergodic_Tol)+2
-    LastPeriod_Above_Tol = int(max(Periods_Above_Tol)) 
-    if LastPeriod_Above_Tol < CheckType.T_sim-50:
-        print('The simulation required ', LastPeriod_Above_Tol, ' periods for the change in the standard deviation of wealth to become permanently smaller than ', Ergodic_Tol, '%.')
-    else:
-        print('The simulation never reached a stable standard deviation of wealth value below the imposed tolerance of ', Ergodic_Tol, '%.')
-      
-
-# CheckType = IndShockConsumerType(**base_params)
-# CheckType(DiscFac = 0.96)  # Check only for center Disc Fac
-# CheckType(T_sim = 1000)
-# CheckErgodicDistribution(CheckType,2)
-
 #%%
 
 # Make several consumer types to be used during estimation
@@ -118,7 +62,7 @@ for j in range(TypeCount):
     
 # Define the objective function
 
-def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=True):
+def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=True,target='AGG_MPC'):
     '''
     Objective function for the quick and dirty structural estimation to fit
     Fagereng, Holm, and Natvik's Table 9 results with a basic infinite horizon
@@ -269,13 +213,18 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
       
     diff_Agg_MPC = simulated_MPC_mean_add_Lottery_Bin - Agg_MPCX_target
     distance_Agg_MPC = np.sqrt(np.sum((diff_Agg_MPC)**2))     
-    
+    distance_Agg_MPC_24 = np.sqrt(np.sum((diff_Agg_MPC[2:4])**2))
+    distance_Agg_MPC_01 = np.sqrt(np.sum((diff_Agg_MPC[0:1])**2))
     
     target = 'AGG_MPC'
     if target == 'MPC':
         distance = distance_MPC
     elif target == 'AGG_MPC':
         distance = distance_Agg_MPC
+    elif target == 'AGG_MPC_234':
+        distance = distance_Agg_MPC_24
+    elif target == 'MPC_plus_AGG_MPC_1':
+        distance = distance_MPC + distance_Agg_MPC_01
         
         
     if verbose:
@@ -324,66 +273,61 @@ plt.subplots_adjust(hspace=0.6, wspace=0.4)
 plt.legend(loc='best')
 plt.show()
 
-#%% Conduct the estimation for splurge
 
-beta_dist_estimate = [0.986,0.0076]
-f_temp = lambda x : FagerengObjFunc(x,beta_dist_estimate[0],beta_dist_estimate[1])
-SplurgeEstimateStart = np.array([0.4])
-opt_splurge = minimizeNelderMead(f_temp, SplurgeEstimateStart, verbose=True)
-print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and (beta,nabla) of ' + str(beta_dist_estimate))
-print('Optimal splurge is ' + str(opt_splurge) )
+# #%% Conduct the estimation for beta, dist and splurge
 
-[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(opt_splurge,beta_dist_estimate[0],beta_dist_estimate[1],estimation_mode=False)
-print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')#%% Plot aggregate MPC and MPCX
-print('Distance for Agg MPC is', distance_Agg_MPC, '\n')
-print('Distance for MPC matrix is', distance_MPC, '\n')
+# guess_splurge_beta_nabla = [0.4,0.986,0.0076]
+# f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2])
+# opt = minimizeNelderMead(f_temp, guess_splurge_beta_nabla, verbose=True)
+# print('Finished estimating')
+# print('Optimal splurge is ' + str(opt[0]) )
+# print('Optimal (beta,nabla) is ' + str(opt[1]) + ',' + str(opt[2]))
 
-import matplotlib.pyplot as plt
-xAxis = np.arange(0,5)
-line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
-line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
-plt.legend(handles=[line1,line2])
-plt.title('Aggregate MPC from lottery win')
-plt.xlabel('Year')
-plt.show()
+# [distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(opt[0],opt[1],opt[2],estimation_mode=False)
+# print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')#%% Plot aggregate MPC and MPCX
+# print('Distance for Agg MPC is', distance_Agg_MPC, '\n')
+# print('Distance for MPC matrix is', distance_MPC, '\n')
 
-#%% Conduct the estimation for beta, dist and splurge
-
-guess_splurge_beta_nabla = [0.4,0.986,0.0076]
-f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2])
-opt = minimizeNelderMead(f_temp, guess_splurge_beta_nabla, verbose=True)
-print('Finished estimating')
-print('Optimal splurge is ' + str(opt[0]) )
-print('Optimal (beta,nabla) is ' + str(opt[1]) + ',' + str(opt[2]))
-
-[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(opt[0],opt[1],opt[2],estimation_mode=False)
-print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')#%% Plot aggregate MPC and MPCX
-print('Distance for Agg MPC is', distance_Agg_MPC, '\n')
-print('Distance for MPC matrix is', distance_MPC, '\n')
-
-import matplotlib.pyplot as plt
-xAxis = np.arange(0,5)
-line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
-line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
-plt.legend(handles=[line1,line2])
-plt.title('Aggregate MPC from lottery win')
-plt.xlabel('Year')
-plt.show()
-
-#%% Conduct the estimation for beta dist
+# import matplotlib.pyplot as plt
+# xAxis = np.arange(0,5)
+# line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
+# line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
+# plt.legend(handles=[line1,line2])
+# plt.title('Aggregate MPC from lottery win')
+# plt.xlabel('Year')
+# plt.show()
 
 
-guess = [0.986,0.0076]
-Splurge = 0.4
-f_temp = lambda x : FagerengObjFunc(Splurge,x[0],x[1])
-opt_params = minimizeNelderMead(f_temp, guess, verbose=True, xtol=1e-3, ftol=1e-3)
-print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and "splurge amount" of $' + str(1000*Splurge))
-print('Optimal (beta,nabla) is ' + str(opt_params) + ', simulated MPCs are:')
-dist = FagerengObjFunc(opt_params[0],opt_params[1],True)
-print('Distance from Fagereng et al Table 9 is ' + str(dist))
+#%% Conduct estimation with beta / nabla targeting AGG MPCX for t+2,3,4, while splurge targets MPC and Agg MPCX for t+1
 
-[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(Splurge,opt_params[0],opt_params[1],estimation_mode=False)
-print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')#%% Plot aggregate MPC and MPCX
+guess_splurge_factor = [0.4]
+current_beta_nabla = [0.986,0.0076]
+
+def Outer_Loop(splurge):
+    global current_beta_nabla
+    #Given that splurge, what is the optimal beta nabla to minimize AGG_MPC_234
+    Inner_Loop(splurge)
+    #Given that splurge, and optimal beta and nabla (for that splurge), what's the distance for MPC_plus_AGG_MPC_1
+    dist = FagerengObjFunc(splurge,current_beta_nabla[0],current_beta_nabla[1],target='MPC_plus_AGG_MPC_1')
+    print('Distance for MPC_plus_AGG_MPC_1 is', dist, '\n')
+    return dist
+       
+    
+def Inner_Loop(splurge):
+    global current_beta_nabla
+    f_inner_temp = lambda x : FagerengObjFunc(splurge,x[0],x[1],target='AGG_MPC_234')
+    print('\n' + 'Estimating optimal beta and nabla for splurge factor = ', splurge, '\n')
+    opt_current_beta_nabla = minimizeNelderMead(f_inner_temp, current_beta_nabla, xtol=1e-3, ftol=1e-3, verbose=True)
+    current_beta_nabla = opt_current_beta_nabla
+    print('Current optimal (beta,nabla), for splurge factor = ', splurge, '  is ' + str(current_beta_nabla[0]) + ',' + str(current_beta_nabla[1]) + '\n')
+    
+    
+
+f_outer_temp = lambda x : Outer_Loop(x)
+opt = minimizeNelderMead(f_outer_temp, guess_splurge_factor, verbose=True, xtol=1e-3, ftol=1e-3)
+
+
+[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(opt,current_beta_nabla[0],current_beta_nabla[1],estimation_mode=False)
 print('Distance for Agg MPC is', distance_Agg_MPC, '\n')
 print('Distance for MPC matrix is', distance_MPC, '\n')
 
