@@ -6,12 +6,15 @@ import random
 from copy import deepcopy
 
 # Import needed tools from HARK
-from HARK.utilities import approxUniform
+from HARK.utilities import approxUniform, getLorenzShares
 from HARK.utilities import getPercentiles
 from HARK.parallel import multiThreadCommands
 from HARK.estimation import minimizeNelderMead
 from HARK.ConsumptionSaving.ConsIndShockModel import *
 from HARK.cstwMPC.SetupParamsCSTW import init_infinite
+
+# for plotting
+import matplotlib.pyplot as plt
 
 # Set key problem-specific parameters
 TypeCount =  8      # Number of consumer types with heterogeneous discount factors
@@ -29,11 +32,10 @@ base_params['PermShkStd']   = [0.003**0.5]                  #from stickyE paper
 base_params['TranShkStd']   = [0.120**0.5]                  #from stickyE paper
 base_params['T_age']        = 400           # Kill off agents if they manage to achieve T_kill working years
 base_params['AgentCount']   = 10000         # Number of agents per instance of IndShockConsType
-base_params['pLvlInitMean'] = np.log(23.72) # From Table 1, in thousands of USD (Q-I: where is this from?)
 
-# Norway specific assumptions
-# base_params['BoroCnstArt']  = -20 
-base_params['IncUnemp']     = 0.68 
+# Edmund, chose one of these
+base_params['pLvlInitMean'] = np.log(23.72) 
+#base_params['pLvlInitMean'] = 0
 
 # T_sim needs to be long enough to reach the ergodic distribution
 base_params['T_sim'] = 800
@@ -53,62 +55,6 @@ lottery_size = np.array([1.625, 3.3741, 7.129, 40.0, 7.129])
 RandomLotteryWin = True #if True, then the 5th element will be replaced with a random
 # Lottery size win draw from the 1st to 4th element for each agent
 
-#%% Checking when ergodic distribution is reached
-
-def CheckErgodicDistribution(CheckType,Ergodic_Tol):
-    '''
-    This function checks, for an instance of the IndShockConsumerType, how many
-    periods need to be simulated until the ergodic distribution of wealth has 
-    been reached. The ergodic distribution is assumed to be reached when the 
-    percentage change in mean and std of the wealth distribution is smaller 
-    than Ergodic_Tol.
-
-    Inputs
-    ----------
-    CheckType : IndShockConsumerType
-        Instance of cons type which is simulated.
-    Ergodic_Tol : float
-        Ergodic distribution is reached when the percentage difference in 
-        mean and std of the wealth distribution does not change by more than 
-        Ergodic_Tol from one period to the next.
-
-    Returns
-    -------
-    Text output
-    '''
-
-    CheckType.track_vars = ['aNrmNow']
-    CheckType.solve()
-    CheckType.initializeSim()
-    CheckType.simulate()
-    
-    Mean_aNrmNow = np.mean(CheckType.aNrmNow_hist,axis=1)
-    Std_aNrmNow = np.std(CheckType.aNrmNow_hist,axis=1) 
-    Perc_Change_Mean_aNrmNow = 100*abs(Mean_aNrmNow[1:CheckType.T_sim] - Mean_aNrmNow[0:CheckType.T_sim-1])/Mean_aNrmNow[1:CheckType.T_sim]
-    Perc_Change_Std_aNrmNow = 100*abs(Std_aNrmNow[1:CheckType.T_sim] - Std_aNrmNow[0:CheckType.T_sim-1])/Std_aNrmNow[1:CheckType.T_sim]
-    
-    
-    Periods_Above_Tol = np.argwhere(Perc_Change_Mean_aNrmNow>Ergodic_Tol)+2
-    LastPeriod_Above_Tol = int(max(Periods_Above_Tol))
-    if LastPeriod_Above_Tol < CheckType.T_sim-50: # Last period should at least be 50 periods before end
-        print('The simulation required ', LastPeriod_Above_Tol, ' periods for the change in mean wealth to become permanently smaller than ', Ergodic_Tol, '%.')
-    else:
-        print('The simulation never reached a stable mean wealth value below the imposed tolerance of ', Ergodic_Tol, '%.')
-      
-        
-    Periods_Above_Tol = np.argwhere(Perc_Change_Std_aNrmNow>Ergodic_Tol)+2
-    LastPeriod_Above_Tol = int(max(Periods_Above_Tol)) 
-    if LastPeriod_Above_Tol < CheckType.T_sim-50:
-        print('The simulation required ', LastPeriod_Above_Tol, ' periods for the change in the standard deviation of wealth to become permanently smaller than ', Ergodic_Tol, '%.')
-    else:
-        print('The simulation never reached a stable standard deviation of wealth value below the imposed tolerance of ', Ergodic_Tol, '%.')
-      
-
-# CheckType = IndShockConsumerType(**base_params)
-# CheckType(DiscFac = 0.96)  # Check only for center Disc Fac
-# CheckType(T_sim = 1000)
-# CheckErgodicDistribution(CheckType,2)
-
 #%%
 
 # Make several consumer types to be used during estimation
@@ -122,7 +68,7 @@ for j in range(TypeCount):
     
 # Define the objective function
 
-def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=True):
+def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=True,target='AGG_MPC'):
     '''
     Objective function for the quick and dirty structural estimation to fit
     Fagereng, Holm, and Natvik's Table 9 results with a basic infinite horizon
@@ -143,6 +89,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     distance : float
         Euclidean distance between simulated MPCs and (adjusted) Table 9 MPCs.
     '''
+    
     # Give our consumer types the requested discount factor distribution
     beta_set = approxUniform(N=TypeCount,bot=center-spread,top=center+spread)[1]
     for j in range(TypeCount):
@@ -160,6 +107,12 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
             WealthQ[ThisType.aLvlNow > quartile_cuts[n]] += 1
         ThisType(WealthQ = WealthQ)
        
+    # Get wealth quartile cutoffs to plot Lorenz curve
+    order = np.argsort(WealthNow)
+    WealthNow_sorted = WealthNow[order]
+    Lorenz_Data = getLorenzShares(WealthNow_sorted,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
+    Lorenz_Data = np.hstack((np.array(0.0),Lorenz_Data,np.array(1.0)))  
+
         
     N_Quarter_Sim = 20; # Needs to be dividable by four
     N_Year_Sim = int(N_Quarter_Sim/4)
@@ -273,13 +226,18 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
       
     diff_Agg_MPC = simulated_MPC_mean_add_Lottery_Bin - Agg_MPCX_target
     distance_Agg_MPC = np.sqrt(np.sum((diff_Agg_MPC)**2))     
-    
+    distance_Agg_MPC_24 = np.sqrt(np.sum((diff_Agg_MPC[2:4])**2))
+    distance_Agg_MPC_01 = np.sqrt(np.sum((diff_Agg_MPC[0:1])**2))
     
     target = 'AGG_MPC'
     if target == 'MPC':
         distance = distance_MPC
     elif target == 'AGG_MPC':
         distance = distance_Agg_MPC
+    elif target == 'AGG_MPC_234':
+        distance = distance_Agg_MPC_24
+    elif target == 'MPC_plus_AGG_MPC_1':
+        distance = distance_MPC + distance_Agg_MPC_01
         
         
     if verbose:
@@ -290,66 +248,17 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     if estimation_mode:
         return distance
     else:
-        return [distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]
+        return [distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data]
 
 
 #%% Test function
+
+
 beta_dist_estimate = [0.986,0.0076] #from liquid wealth estimation
-[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(Splurge,beta_dist_estimate[0],beta_dist_estimate[1],estimation_mode=False)
-print('MPC in first year \n', simulated_MPC_means[:,:,0],'\n')
-print('MPCX in year t+1 \n', simulated_MPC_means[:,:,1],'\n')
-print('MPCX in year t+2 \n', simulated_MPC_means[:,:,2],'\n')
-print('MPCX in year t+3 \n', simulated_MPC_means[:,:,3],'\n')
-print('MPCX in year t+4 \n', simulated_MPC_means[:,:,4],'\n')
+[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data]=FagerengObjFunc(Splurge,beta_dist_estimate[0],beta_dist_estimate[1],estimation_mode=False)
+print('Agg MPC year t to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')
 
-print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')
 
-#%% Plot aggregate MPC and MPCX
-import matplotlib.pyplot as plt
-xAxis = np.arange(0,5)
-line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
-line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
-plt.legend(handles=[line1,line2])
-plt.title('Aggregate MPC from lottery win')
-plt.xlabel('Year')
-plt.show()
-
-#%% Plot the evolution of MPC and MPCX
-
-import matplotlib.pyplot as plt
-for lottSize in range(4):
-    plt.subplot(2,2,lottSize+1)
-    for q in range(4):
-        labStr = "Wealth Q=" + str(q)
-        plt.plot(simulated_MPC_means[lottSize,q,:], label=labStr)
-        plt.xticks(ticks=range(4))
-    plt.title('Lottery size = %d' %lottSize)
-plt.subplots_adjust(hspace=0.6, wspace=0.4)
-plt.legend(loc='best')
-plt.show()
-
-#%% Conduct the estimation for splurge
-
-beta_dist_estimate = [0.986,0.0076]
-f_temp = lambda x : FagerengObjFunc(x,beta_dist_estimate[0],beta_dist_estimate[1])
-SplurgeEstimateStart = np.array([0.4])
-opt_splurge = minimizeNelderMead(f_temp, SplurgeEstimateStart, verbose=True)
-print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and (beta,nabla) of ' + str(beta_dist_estimate))
-print('Optimal splurge is ' + str(opt_splurge) )
-
-[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(opt_splurge,beta_dist_estimate[0],beta_dist_estimate[1],estimation_mode=False)
-print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')#%% Plot aggregate MPC and MPCX
-print('Distance for Agg MPC is', distance_Agg_MPC, '\n')
-print('Distance for MPC matrix is', distance_MPC, '\n')
-
-import matplotlib.pyplot as plt
-xAxis = np.arange(0,5)
-line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
-line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
-plt.legend(handles=[line1,line2])
-plt.title('Aggregate MPC from lottery win')
-plt.xlabel('Year')
-plt.show()
 
 #%% Conduct the estimation for beta, dist and splurge
 
@@ -360,7 +269,7 @@ print('Finished estimating')
 print('Optimal splurge is ' + str(opt[0]) )
 print('Optimal (beta,nabla) is ' + str(opt[1]) + ',' + str(opt[2]))
 
-[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(opt[0],opt[1],opt[2],estimation_mode=False)
+[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data]=FagerengObjFunc(opt[0],opt[1],opt[2],estimation_mode=False,target='AGG_MPC')
 print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')#%% Plot aggregate MPC and MPCX
 print('Distance for Agg MPC is', distance_Agg_MPC, '\n')
 print('Distance for MPC matrix is', distance_MPC, '\n')
@@ -374,28 +283,7 @@ plt.title('Aggregate MPC from lottery win')
 plt.xlabel('Year')
 plt.show()
 
-#%% Conduct the estimation for beta dist
 
 
-guess = [0.986,0.0076]
-Splurge = 0.4
-f_temp = lambda x : FagerengObjFunc(Splurge,x[0],x[1])
-opt_params = minimizeNelderMead(f_temp, guess, verbose=True, xtol=1e-3, ftol=1e-3)
-print('Finished estimating for scaling factor of ' + str(AdjFactor) + ' and "splurge amount" of $' + str(1000*Splurge))
-print('Optimal (beta,nabla) is ' + str(opt_params) + ', simulated MPCs are:')
-dist = FagerengObjFunc(opt_params[0],opt_params[1],True)
-print('Distance from Fagereng et al Table 9 is ' + str(dist))
 
-[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(Splurge,opt_params[0],opt_params[1],estimation_mode=False)
-print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')#%% Plot aggregate MPC and MPCX
-print('Distance for Agg MPC is', distance_Agg_MPC, '\n')
-print('Distance for MPC matrix is', distance_MPC, '\n')
 
-import matplotlib.pyplot as plt
-xAxis = np.arange(0,5)
-line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
-line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
-plt.legend(handles=[line1,line2])
-plt.title('Aggregate MPC from lottery win')
-plt.xlabel('Year')
-plt.show()

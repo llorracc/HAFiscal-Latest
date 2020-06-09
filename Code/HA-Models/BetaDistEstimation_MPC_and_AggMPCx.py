@@ -6,12 +6,15 @@ import random
 from copy import deepcopy
 
 # Import needed tools from HARK
-from HARK.utilities import approxUniform
+from HARK.utilities import approxUniform, getLorenzShares
 from HARK.utilities import getPercentiles
 from HARK.parallel import multiThreadCommands
 from HARK.estimation import minimizeNelderMead
 from HARK.ConsumptionSaving.ConsIndShockModel import *
 from HARK.cstwMPC.SetupParamsCSTW import init_infinite
+
+# for plotting
+import matplotlib.pyplot as plt
 
 # Set key problem-specific parameters
 TypeCount =  8      # Number of consumer types with heterogeneous discount factors
@@ -30,6 +33,17 @@ base_params['TranShkStd']   = [0.120**0.5]                  #from stickyE paper
 base_params['T_age']        = 400           # Kill off agents if they manage to achieve T_kill working years
 base_params['AgentCount']   = 10000         # Number of agents per instance of IndShockConsType
 base_params['pLvlInitMean'] = np.log(23.72) # From Table 1, in thousands of USD (Q-I: where is this from?)
+
+# Norway specific assumptions
+# base_params['BoroCnstArt']  = -20 
+# base_params['IncUnemp']     = 0.68 
+
+# Use params from cstwMPC paper
+# base_params['LivPrb']       = [0.99375]
+# base_params['Rfree']        = 1.016
+base_params['PermShkStd']   = [0.06]                  
+base_params['TranShkStd']   = [0.2] 
+#base_params['pLvlInitMean'] = [0] 
 
 # T_sim needs to be long enough to reach the ergodic distribution
 base_params['T_sim'] = 800
@@ -83,6 +97,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     distance : float
         Euclidean distance between simulated MPCs and (adjusted) Table 9 MPCs.
     '''
+    
     # Give our consumer types the requested discount factor distribution
     beta_set = approxUniform(N=TypeCount,bot=center-spread,top=center+spread)[1]
     for j in range(TypeCount):
@@ -100,6 +115,12 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
             WealthQ[ThisType.aLvlNow > quartile_cuts[n]] += 1
         ThisType(WealthQ = WealthQ)
        
+    # Get wealth quartile cutoffs to plot Lorenz curve
+    order = np.argsort(WealthNow)
+    WealthNow_sorted = WealthNow[order]
+    Lorenz_Data = getLorenzShares(WealthNow_sorted,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
+    Lorenz_Data = np.hstack((np.array(0.0),Lorenz_Data,np.array(1.0)))  
+
         
     N_Quarter_Sim = 20; # Needs to be dividable by four
     N_Year_Sim = int(N_Quarter_Sim/4)
@@ -235,12 +256,12 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     if estimation_mode:
         return distance
     else:
-        return [distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]
+        return [distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data]
 
 
 #%% Test function
 beta_dist_estimate = [0.986,0.0076] #from liquid wealth estimation
-[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(Splurge,beta_dist_estimate[0],beta_dist_estimate[1],estimation_mode=False)
+[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data]=FagerengObjFunc(Splurge,beta_dist_estimate[0],beta_dist_estimate[1],estimation_mode=False)
 print('MPC in first year \n', simulated_MPC_means[:,:,0],'\n')
 print('MPCX in year t+1 \n', simulated_MPC_means[:,:,1],'\n')
 print('MPCX in year t+2 \n', simulated_MPC_means[:,:,2],'\n')
@@ -259,6 +280,14 @@ plt.title('Aggregate MPC from lottery win')
 plt.xlabel('Year')
 plt.show()
 
+#%% Create Lorenz curve
+LorenzAxis = np.arange(101,dtype=float)
+line1,=plt.plot(LorenzAxis,Lorenz_Data,'-k',linewidth=2,label='Lorenz')
+plt.xlabel('Income percentile',fontsize=12)
+plt.ylabel('Cumulative wealth share',fontsize=12)
+plt.legend(handles=[line1])
+plt.show()
+
 #%% Plot the evolution of MPC and MPCX
 
 import matplotlib.pyplot as plt
@@ -274,28 +303,28 @@ plt.legend(loc='best')
 plt.show()
 
 
-# #%% Conduct the estimation for beta, dist and splurge
+#%% Conduct the estimation for beta, dist and splurge
 
-# guess_splurge_beta_nabla = [0.4,0.986,0.0076]
-# f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2])
-# opt = minimizeNelderMead(f_temp, guess_splurge_beta_nabla, verbose=True)
-# print('Finished estimating')
-# print('Optimal splurge is ' + str(opt[0]) )
-# print('Optimal (beta,nabla) is ' + str(opt[1]) + ',' + str(opt[2]))
+guess_splurge_beta_nabla = [0.4,0.986,0.0076]
+f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2])
+opt = minimizeNelderMead(f_temp, guess_splurge_beta_nabla, verbose=True)
+print('Finished estimating')
+print('Optimal splurge is ' + str(opt[0]) )
+print('Optimal (beta,nabla) is ' + str(opt[1]) + ',' + str(opt[2]))
 
-# [distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(opt[0],opt[1],opt[2],estimation_mode=False)
-# print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')#%% Plot aggregate MPC and MPCX
-# print('Distance for Agg MPC is', distance_Agg_MPC, '\n')
-# print('Distance for MPC matrix is', distance_MPC, '\n')
+[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data]=FagerengObjFunc(opt[0],opt[1],opt[2],estimation_mode=False,target='AGG_MPC')
+print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin, '\n')#%% Plot aggregate MPC and MPCX
+print('Distance for Agg MPC is', distance_Agg_MPC, '\n')
+print('Distance for MPC matrix is', distance_MPC, '\n')
 
-# import matplotlib.pyplot as plt
-# xAxis = np.arange(0,5)
-# line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
-# line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
-# plt.legend(handles=[line1,line2])
-# plt.title('Aggregate MPC from lottery win')
-# plt.xlabel('Year')
-# plt.show()
+import matplotlib.pyplot as plt
+xAxis = np.arange(0,5)
+line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
+line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
+plt.legend(handles=[line1,line2])
+plt.title('Aggregate MPC from lottery win')
+plt.xlabel('Year')
+plt.show()
 
 
 #%% Conduct estimation with beta / nabla targeting AGG MPCX for t+2,3,4, while splurge targets MPC and Agg MPCX for t+1
@@ -327,7 +356,7 @@ f_outer_temp = lambda x : Outer_Loop(x)
 opt = minimizeNelderMead(f_outer_temp, guess_splurge_factor, verbose=True, xtol=1e-3, ftol=1e-3)
 
 
-[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,T_hist,P_hist]=FagerengObjFunc(opt,current_beta_nabla[0],current_beta_nabla[1],estimation_mode=False)
+[distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data]=FagerengObjFunc(opt,current_beta_nabla[0],current_beta_nabla[1],estimation_mode=False)
 print('Distance for Agg MPC is', distance_Agg_MPC, '\n')
 print('Distance for MPC matrix is', distance_MPC, '\n')
 
@@ -339,3 +368,17 @@ plt.legend(handles=[line1,line2])
 plt.title('Aggregate MPC from lottery win')
 plt.xlabel('Year')
 plt.show()
+
+#%% Create Lorenz curve
+
+print('Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data[20], Lorenz_Data[40], Lorenz_Data[60], Lorenz_Data[80], '\n')
+
+LorenzAxis = np.arange(101,dtype=float)
+line1,=plt.plot(LorenzAxis,Lorenz_Data,'-k',linewidth=2,label='Lorenz')
+plt.xlabel('Income percentile',fontsize=12)
+plt.ylabel('Cumulative wealth share',fontsize=12)
+plt.legend(handles=[line1])
+plt.show()
+
+
+
