@@ -18,17 +18,16 @@ from builtins import range
 import os
 import numpy as np
 from copy import copy
-from HARK.utilities import approxUniform, approxMeanOneLognormal, combineIndepDstns
+from HARK.distribution import Lognormal, MeanOneLogNormal, Uniform, combineIndepDstns, DiscreteDistribution
 
 # Choose directory paths relative to the StickyE files
 # See: https://stackoverflow.com/questions/918154/relative-paths-in-python
 my_file_path = os.path.dirname(os.path.abspath(__file__))
 
-calibration_dir = os.path.join(my_file_path, "../../Calibration/") # Absolute directory for primitive parameter files
-tables_dir = os.path.join(my_file_path, "../../Tables/")       # Absolute directory for saving tex tables
+calibration_dir = os.path.join(my_file_path, "./Calibration/") # Absolute directory for primitive parameter files
+tables_dir = os.path.join(my_file_path, "./Tables/")       # Absolute directory for saving tex tables
 results_dir = os.path.join(my_file_path, "./Results/")         # Absolute directory for saving output files
-figures_dir = os.path.join(my_file_path, "../../Figures/")     # Absolute directory for saving figures
-empirical_dir = os.path.join(my_file_path, "../Empirical/")    # Absolute directory with empirical files
+figures_dir = os.path.join(my_file_path, "./Figures/")     # Absolute directory for saving figures
 
 def importParam(param_name):
     return float(np.max(np.genfromtxt(calibration_dir + param_name + '.txt')))
@@ -87,6 +86,11 @@ DiscFacMeanDSGE_parker = 0.93286
 DiscFacSpread_parker = 0.0641
 IncUnemp_parker = 0.3
 
+# Test with smaller run
+periods_to_sim = 4000
+AgentCount = 2000
+TypeCount_parker = 2
+
 # Choose parameters for the Markov models
 StateCount = 11         # Number of discrete states in the Markov specifications
 PermGroFacMin = 0.9925  # Minimum value of aggregate permanent growth in Markov specifications
@@ -125,23 +129,32 @@ PolyMrkvArrayAlt += (1.-UpdatePrb)*np.eye(StateCount) # Move that probability we
 # Transitory aggregate shocks are interpreted to be much larger when not updating.
 PermShkAggVarAlt = PermShkAggVar/UpdatePrb
 PermShkAggStdAlt = np.sqrt(PermShkAggVarAlt)
-PermShkAggDstnAlt_update = approxMeanOneLognormal(5,PermShkAggStdAlt)
-TranShkAggDstnAlt_update = approxMeanOneLognormal(5,np.sqrt(TranShkAggVar))
+#PermShkAggDstnAlt_update = approxMeanOneLognormal(5,PermShkAggStdAlt)
+PermShkAggDstnAlt_update = MeanOneLogNormal(sigma=PermShkAggStdAlt).approx(5, tail_N=0)
+#TranShkAggDstnAlt_update = approxMeanOneLognormal(5,np.sqrt(TranShkAggVar))
+TranShkAggDstnAlt_update = MeanOneLogNormal(sigma=np.sqrt(TranShkAggVar)).approx(5, tail_N=0)
 AggShkDstnAlt_update = combineIndepDstns(PermShkAggDstnAlt_update,TranShkAggDstnAlt_update)
-AggShkDstnAlt_update[0] *= UpdatePrb
-PermShkAggDstnAlt_dont = [np.array([1.0]),np.array([1.0])] # Degenerate distribution
-TranShkAggDstnAlt_dont = approxMeanOneLognormal(5,np.sqrt(TranShkAggVar + PermShkAggVar/UpdatePrb))
+AggShkDstnAlt_update.pmf *= UpdatePrb
+#PermShkAggDstnAlt_dont = [np.array([1.0]),np.array([1.0])] # Degenerate distribution
+PermShkAggDstnAlt_dont = Uniform(bot=1.0, top=1.0).approx(N=1)
+#TranShkAggDstnAlt_dont = approxMeanOneLognormal(5,np.sqrt(TranShkAggVar + PermShkAggVar/UpdatePrb))
+TranShkAggDstnAlt_dont = MeanOneLogNormal(sigma=np.sqrt(TranShkAggVar + PermShkAggVar/UpdatePrb)).approx(5, tail_N=0)
 AggShkDstnAlt_dont = combineIndepDstns(PermShkAggDstnAlt_dont,TranShkAggDstnAlt_dont)
-AggShkDstnAlt_dont[0] *= 1.-UpdatePrb
-AggShkDstnAlt = StateCount*[[np.concatenate([AggShkDstnAlt_update[n],AggShkDstnAlt_dont[n]]) for n in range(3)]]
-
+AggShkDstnAlt_dont.pmf *= 1.-UpdatePrb
+AggShkDstnAlt = DiscreteDistribution(StateCount*[[np.concatenate([AggShkDstnAlt_update.pmf,AggShkDstnAlt_dont.pmf]) ]],
+                                     StateCount*[[np.concatenate([AggShkDstnAlt_update.X[n],AggShkDstnAlt_dont.X[n]]) for n in range(2)]])
 
 # Define the set of discount factors that agents have (for SOE and DSGE models)
-DiscFacSetSOE  = approxUniform(N=TypeCount,bot=DiscFacMeanSOE-DiscFacSpread,top=DiscFacMeanSOE+DiscFacSpread)[1]
-DiscFacSetDSGE = approxUniform(N=TypeCount,bot=DiscFacMeanDSGE-DiscFacSpread,top=DiscFacMeanDSGE+DiscFacSpread)[1]
-DiscFacSetSOE_parker  = approxUniform(N=TypeCount_parker,
-                                      bot=DiscFacMeanSOE_parker-DiscFacSpread_parker,
-                                      top=DiscFacMeanSOE_parker+DiscFacSpread_parker)[1]
+#DiscFacSetSOE  = approxUniform(N=TypeCount,bot=DiscFacMeanSOE-DiscFacSpread,top=DiscFacMeanSOE+DiscFacSpread)[1]
+DiscFacSetSOE  = Uniform(bot=DiscFacMeanSOE-DiscFacSpread,top=DiscFacMeanSOE+DiscFacSpread).approx(N=TypeCount).X
+#DiscFacSetDSGE = approxUniform(N=TypeCount,bot=DiscFacMeanDSGE-DiscFacSpread,top=DiscFacMeanDSGE+DiscFacSpread)[1]
+DiscFacSetDSGE = Uniform(bot=DiscFacMeanDSGE-DiscFacSpread,top=DiscFacMeanDSGE+DiscFacSpread).approx(N=TypeCount).X
+#DiscFacSetSOE_parker  = approxUniform(N=TypeCount_parker,
+#                                      bot=DiscFacMeanSOE_parker-DiscFacSpread_parker,
+#                                      top=DiscFacMeanSOE_parker+DiscFacSpread_parker)[1]
+DiscFacSetSOE_parker  = Uniform(bot=DiscFacMeanSOE_parker-DiscFacSpread_parker,
+                                top=DiscFacMeanSOE_parker+DiscFacSpread_parker
+                                ).approx(N=TypeCount_parker).X
 
 ###############################################################################
 
