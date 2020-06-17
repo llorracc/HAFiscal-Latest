@@ -86,17 +86,18 @@ DiscFacMeanDSGE_parker = 0.93286
 DiscFacSpread_parker = 0.0641
 IncUnemp_parker = 0.3
 
-# Test with smaller run
-periods_to_sim = 4000
-AgentCount = 2000
-TypeCount_parker = 2
-
 # Choose parameters for the Markov models
 StateCount = 11         # Number of discrete states in the Markov specifications
 PermGroFacMin = 0.9925  # Minimum value of aggregate permanent growth in Markov specifications
 PermGroFacMax = 1.0075  # Maximum value of aggregate permanent growth in Markov specifications
 Persistence = 0.5       # Base probability that macroeconomic Markov state stays the same; else moves up or down by 1
 RegimeChangePrb = 0.00  # Probability of "regime change", randomly jumping to any Markov state (not used in paper)
+
+# Test with smaller run
+periods_to_sim = 4000
+AgentCount = 2000
+StateCount = 2
+TypeCount_parker = 2
 
 # Make the Markov array with chosen states, persistence, and regime change probability
 PolyMrkvArray = np.zeros((StateCount,StateCount))

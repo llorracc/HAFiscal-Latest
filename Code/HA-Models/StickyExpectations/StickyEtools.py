@@ -78,15 +78,15 @@ def makeStickyEdataFile(Economy,ignore_periods,description='',filename=None,save
     # Extract time series data from the economy
     if hasattr(Economy,'agents'): # If this is a heterogeneous agent specification...
         if len(Economy.agents) > 1:
-            pLvlAll_hist = np.concatenate([this_type.pLvlTrue_hist for this_type in Economy.agents],axis=1)
-            aLvlAll_hist = np.concatenate([this_type.aLvlNow_hist for this_type in Economy.agents],axis=1)
-            cLvlAll_hist = np.concatenate([this_type.cLvlNow_hist for this_type in Economy.agents],axis=1)
-            yLvlAll_hist = np.concatenate([this_type.yLvlNow_hist for this_type in Economy.agents],axis=1)
+            pLvlAll_hist = np.concatenate([this_type.history['pLvlTrue'] for this_type in Economy.agents],axis=1)
+            aLvlAll_hist = np.concatenate([this_type.history['aLvlNow'] for this_type in Economy.agents],axis=1)
+            cLvlAll_hist = np.concatenate([this_type.history['cLvlNow'] for this_type in Economy.agents],axis=1)
+            yLvlAll_hist = np.concatenate([this_type.history['yLvlNow'] for this_type in Economy.agents],axis=1)
         else: # Don't duplicate the data unless necessary (with one type, concatenating is useless)
-            pLvlAll_hist = Economy.agents[0].pLvlTrue_hist
-            aLvlAll_hist = Economy.agents[0].aLvlNow_hist
-            cLvlAll_hist = Economy.agents[0].cLvlNow_hist
-            yLvlAll_hist = Economy.agents[0].yLvlNow_hist
+            pLvlAll_hist = Economy.agents[0].history['pLvlTrue']
+            aLvlAll_hist = Economy.agents[0].history['aLvlNow']
+            cLvlAll_hist = Economy.agents[0].history['cLvlNow']
+            yLvlAll_hist = Economy.agents[0].history['yLvlNow']
         # PermShkAggHist needs to be shifted one period forward
         PlvlAgg_hist = np.cumprod(np.concatenate(([1.0],Economy.PermShkAggHist[:-1]),axis=0))
         AlvlAgg_hist = np.mean(aLvlAll_hist,axis=1) # Level of aggregate assets
@@ -98,7 +98,7 @@ def makeStickyEdataFile(Economy,ignore_periods,description='',filename=None,save
 
         if calc_micro_stats: # Only calculate stats if requested.  This is a memory hog with many simulated periods
             micro_stat_periods = int((Economy.agents[0].T_sim-ignore_periods)*0.1)
-            not_newborns = (np.concatenate([this_type.t_age_hist[(ignore_periods+1):(ignore_periods+micro_stat_periods),:] for this_type in Economy.agents],axis=1) > 1).flatten()
+            not_newborns = (np.concatenate([this_type.history['t_age'][(ignore_periods+1):(ignore_periods+micro_stat_periods),:] for this_type in Economy.agents],axis=1) > 1).flatten()
             Logc = np.log(cLvlAll_hist[ignore_periods:(ignore_periods+micro_stat_periods),:])
             DeltaLogc = (Logc[1:] - Logc[0:-1]).flatten()
             DeltaLogc_trimmed = DeltaLogc[not_newborns]
@@ -111,7 +111,7 @@ def makeStickyEdataFile(Economy,ignore_periods,description='',filename=None,save
             Logy = np.log(yLvlAll_hist[ignore_periods:(ignore_periods+micro_stat_periods),:])
             Logy_trimmed = Logy
             Logy_trimmed[np.isinf(Logy)] = np.nan
-            birth_events = np.concatenate([this_type.t_age_hist == 1 for this_type in Economy.agents],axis=1)
+            birth_events = np.concatenate([this_type.history['t_age'] == 1 for this_type in Economy.agents],axis=1)
             vBirth = calcValueAtBirth(cLvlAll_hist[ignore_periods:,:],birth_events[ignore_periods:,:],PlvlAgg_hist[ignore_periods:],Economy.MrkvNow_hist[ignore_periods:],Economy.agents[0].DiscFac,Economy.agents[0].CRRA)
 
         BigTheta_hist = Economy.TranShkAggHist
@@ -124,14 +124,14 @@ def makeStickyEdataFile(Economy,ignore_periods,description='',filename=None,save
                 ExpectedR_hist = Economy.Rfunc(ExpectedKLRatio_hist)
 
     else: # If this is a representative agent specification...
-        PlvlAgg_hist = Economy.pLvlTrue_hist.flatten()
-        ClvlAgg_hist = Economy.cLvlNow_hist.flatten()
+        PlvlAgg_hist = Economy.history['pLvlTrue'].flatten()
+        ClvlAgg_hist = Economy.history['cLvlNow'].flatten()
         CnrmAgg_hist = ClvlAgg_hist/PlvlAgg_hist.flatten()
         YnrmAgg_hist = Economy.yNrmTrue_hist.flatten()
         YlvlAgg_hist = YnrmAgg_hist*PlvlAgg_hist.flatten()
-        AlvlAgg_hist = Economy.aLvlNow_hist.flatten()
+        AlvlAgg_hist = Economy.history['aLvlNow'].flatten()
         AnrmAgg_hist = AlvlAgg_hist/PlvlAgg_hist.flatten()
-        BigTheta_hist = Economy.TranShkNow_hist.flatten()
+        BigTheta_hist = Economy.history['TranShkNow'].flatten()
         if hasattr(Economy,'MrkvNow'):
             Mrkv_hist = Economy.MrkvNow_hist
 
@@ -1090,14 +1090,14 @@ def extractSampleMicroData(Economy, num_periods, AgentCount, ignore_periods):
 
     # Now pull out agent data
     agent = Economy.agents[0]
-    c_matrix = deepcopy(agent.cLvlNow_hist[(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
-    y_matrix = deepcopy(agent.yLvlNow_hist[(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
-    total_trans_shk_matrix = deepcopy(agent.TranShkNow_hist[(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
+    c_matrix = deepcopy(agent.history['cLvlNow'][(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
+    y_matrix = deepcopy(agent.history['yLvlNow'][(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
+    total_trans_shk_matrix = deepcopy(agent.history['TranShkNow'][(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
     trans_shk_matrix = total_trans_shk_matrix/(np.array(agg_trans_shk_matrix)*np.array(wRte_matrix))[:,None]
-    a_matrix = deepcopy(agent.aLvlNow_hist[(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
-    pLvlTrue_matrix = deepcopy(agent.pLvlTrue_hist[(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
+    a_matrix = deepcopy(agent.history['aLvlNow'][(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
+    pLvlTrue_matrix = deepcopy(agent.history['pLvlTrue'][(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
     a_matrix_nrm = a_matrix/pLvlTrue_matrix
-    age_matrix = deepcopy(agent.t_age_hist[(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
+    age_matrix = deepcopy(agent.history['t_age'][(ignore_periods+1):ignore_periods+num_periods+1,0:AgentCount])
 
     # Put nan's in so that we do not regress over periods where agents die
     newborn = age_matrix == 1

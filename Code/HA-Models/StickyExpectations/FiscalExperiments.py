@@ -119,15 +119,13 @@ if __name__ == '__main__':
         makeStickyEdataFile(StickySOmarkovEconomy,ignore_periods,description=desc,filename=name,save_data=save_data)
 
     # Run the "Parker experiment"
-    if run_parker and run_models:
+#    if run_parker and run_models:
         t_start = time()
         
         # First, clear the simulation histories for all of the types to free up memory space;
         # this allows the economy to be copied without blowing up the computer.
-        attr_list = ['aLvlNow','cLvlNow','yLvlNow','pLvlTrue','t_age','TranShkNow']
         for agent in StickySOmarkovEconomy.agents:
-            for attr in attr_list:
-                delattr(agent,attr+'_hist')
+            delattr(agent,'history')
             agent.track_vars = [] # Don't need to track any simulated variables
             
         # The market is at the end of its pre-generated simulated shock history, so it needs to be
