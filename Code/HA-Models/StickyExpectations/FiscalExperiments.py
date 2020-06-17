@@ -9,10 +9,10 @@ from builtins import range
 import numpy as np
 from time import time
 from copy import deepcopy
-from StickyEmodel import StickyEmarkovConsumerType, StickySmallOpenMarkovEconomy, makeStickyEdataFile
+from StickyEmodel import StickyEmarkovConsumerType, StickySmallOpenMarkovEconomy
 import matplotlib.pyplot as plt
 import StickyEparams as Params
-from StickyEtools import runParkerExperiment
+from StickyEtools import runParkerExperiment, makeStickyEdataFile
 
 
 ignore_periods = Params.ignore_periods # Number of simulated periods to ignore as a "burn-in" phase
