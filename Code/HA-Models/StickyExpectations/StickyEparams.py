@@ -1,16 +1,7 @@
 '''
-This module holds calibrated parameter dictionaries for the cAndCwithStickyE paper.
-It defines dictionaries for the six types of models in cAndCwithStickyE:
-
-1) Small open economy
-2) Small open Markov economy
-3) Cobb-Douglas closed economy
-4) Cobb-Douglas closed Markov economy
-5) Representative agent economy
-6) Markov representative agent economy
-
-For the first four models (heterogeneous agents), it defines dictionaries for
-the Market instance as well as the consumers themselves.  All parameters are quarterly.
+This module holds calibrated parameter dictionaries for a small open economy
+sticky expectations model with a tax cut experiment embedded in the Markov 
+set up
 '''
 from __future__ import division
 from builtins import range
@@ -58,52 +49,32 @@ TranShkVar = TranShkVarAnn*4.                    # Variance of idiosyncratic tra
 #PermShkVar = old_div(PermShkVarAnn,4.)           # Variance of idiosyncratic permanent shocks
 PermShkVar = PermShkVarAnn/4.0
 
-# Choose basic simulation parameters
-periods_to_sim = 21010 # Total number of periods to simulate; this might be increased by DSGEmarkov model
-ignore_periods = 1000  # Number of simulated periods to ignore (in order to ensure we are near steady state)
-interval_size = 200    # Number of periods in each subsample interval
-AgentCount = 20000     # Total number of agents to simulate in the economy
+## Choose basic simulation parameters
+#periods_to_sim = 21010 # Total number of periods to simulate; this might be increased by DSGEmarkov model
+#ignore_periods = 1000  # Number of simulated periods to ignore (in order to ensure we are near steady state)
+#interval_size = 200    # Number of periods in each subsample interval
+#AgentCount = 20000     # Total number of agents to simulate in the economy
 max_t_between_updates = None # Maximum number of periods an agent will go between updating (can be None)
 
-# Choose extent of discount factor heterogeneity (inapplicable to representative agent models)
-# These parameters are used in all specifications of the main text
-TypeCount = 1                  # Number of heterogeneous discount factor types
-DiscFacMeanSOE  = DiscFacSOE   # Central value of intertemporal discount factor for SOE model
-DiscFacMeanDSGE = DiscFacDSGE  # ...for HA-DSGE and RA
-DiscFacSpread = 0.0            # Half-width of intertemporal discount factor band, a la cstwMPC
-IncUnemp = 0.0                 # Zero unemployment benefits as baseline
+TypeCount = 11
+DiscFacMeanSOE = 0.93286
+DiscFacSpread = 0.0641
+IncUnemp = 0.3
 
-# These parameters were estimated to match the distribution of liquid wealth a la
-# cstwMPC in the file BetaDistEstimation.py; these use unemployment benefits of 30%.
-# To reproduce the excess sensitivity experiment in the paper, uncomment these lines.
-TypeCount_parker = 11
-DiscFacMeanSOE_parker = 0.93286
-DiscFacMeanDSGE_parker = 0.93286
-DiscFacSpread_parker = 0.0641
-IncUnemp_parker = 0.3
-
-# Choose parameters for the Markov models
-StateCount = 11         # Number of discrete states in the Markov specifications
-PermGroFacMin = 0.9925  # Minimum value of aggregate permanent growth in Markov specifications
-PermGroFacMax = 1.0075  # Maximum value of aggregate permanent growth in Markov specifications
-Persistence = 0.5       # Base probability that macroeconomic Markov state stays the same; else moves up or down by 1
-RegimeChangePrb = 0.00  # Probability of "regime change", randomly jumping to any Markov state (not used in paper)
-
-# Test with smaller run
-periods_to_sim = 400
-AgentCount = 200
+periods_to_sim = 1200
+AgentCount = 5000
 StateCount = 4
-TypeCount_parker = 2
-income_increase = 1.2
+TypeCount = 2
+income_increase = 1.02
+expected_tax_cut_duration = 8 #expected to last 2 years
 
-MrkvArray = np.array([ [1.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.8, 0.2], [0.0, 0.0, 0.8, 0.2], [1.0, 0.0, 0.0, 0.0]])
+prob_end = 1.0/expected_tax_cut_duration
+MrkvArray = np.array([ [1.0, 0.0, 0.0, 0.0], [0.0, 0.0, 1.0-prob_end, prob_end], [0.0, 0.0, 1.0-prob_end, prob_end], [1.0, 0.0, 0.0, 0.0]])
 PermGroFacSet = np.array([1.0, income_increase, 1.0, 1.0/income_increase])
 
-DiscFacSetSOE  = Uniform(bot=DiscFacMeanSOE-DiscFacSpread,top=DiscFacMeanSOE+DiscFacSpread).approx(N=TypeCount).X
-DiscFacSetDSGE = Uniform(bot=DiscFacMeanDSGE-DiscFacSpread,top=DiscFacMeanDSGE+DiscFacSpread).approx(N=TypeCount).X
-DiscFacSetSOE_parker  = Uniform(bot=DiscFacMeanSOE_parker-DiscFacSpread_parker,
-                                top=DiscFacMeanSOE_parker+DiscFacSpread_parker
-                                ).approx(N=TypeCount_parker).X
+DiscFacSetSOE  = Uniform(bot=DiscFacMeanSOE-DiscFacSpread,
+                                top=DiscFacMeanSOE+DiscFacSpread
+                                ).approx(N=TypeCount).X
 
 ###############################################################################
 

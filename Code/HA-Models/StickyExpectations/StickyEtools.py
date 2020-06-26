@@ -1443,15 +1443,15 @@ def runParkerExperiment(BaseEconomy,BonusSize,T_before_bonus,T_after_bonus,verbo
     cLvl_FrictionlessNone = FrictionlessNoneEconomy.runParkerExperiment(T_sim_parker)
     cLvl_FrictionlessBonus = FrictionlessBonusEconomy.runParkerExperiment(T_sim_parker)
     
-    # Format and save the results of the "Parker experiment"
-    policy_text = 'B' + str(T_before_bonus) + 'A' + str(T_after_bonus) + 'S' + str(int(100*BonusSize))
-    parker_results_sticky = makeParkerExperimentText(BonusLvl,T_before_bonus,cLvl_StickyNone,cLvl_StickyBonus,True,'ParkerResults' + policy_text + 'S')
-    parker_results_frictionless = makeParkerExperimentText(BonusLvl,T_before_bonus,cLvl_FrictionlessNone,cLvl_FrictionlessBonus,False,'ParkerResults' + policy_text + 'F')
-    if verbose:
-        print(parker_results_sticky + '\n')
-        print(parker_results_frictionless + '\n')
+#    # Format and save the results of the "Parker experiment"
+#    policy_text = 'B' + str(T_before_bonus) + 'A' + str(T_after_bonus) + 'S' + str(int(100*BonusSize))
+#    parker_results_sticky = makeParkerExperimentText(BonusLvl,T_before_bonus,cLvl_StickyNone,cLvl_StickyBonus,True,'ParkerResults' + policy_text + 'S')
+#    parker_results_frictionless = makeParkerExperimentText(BonusLvl,T_before_bonus,cLvl_FrictionlessNone,cLvl_FrictionlessBonus,False,'ParkerResults' + policy_text + 'F')
+#    if verbose:
+#        print(parker_results_sticky + '\n')
+#        print(parker_results_frictionless + '\n')
         
-    return None
+    return cLvl_StickyNone, cLvl_StickyBonus, cLvl_FrictionlessNone, cLvl_FrictionlessBonus
     
 
 def makeParkerExperimentText(BonusLvl,T_ahead,cLvlNone_hist,cLvlBonus_hist,sticky_bool,out_filename=None):
@@ -1589,7 +1589,7 @@ def runTaxCutExperiment(BaseEconomy,T_after,num_agg_sims = 20):
                     MrkvNow_hist[t] = MrkvNow
                     MrkvNow = np.searchsorted(cutoffs[MrkvNow, :], draws[t])
                 Economy.MrkvNow_hist = MrkvNow_hist
-                #Economy.MrkvNow_hist[0:9] = np.array([1, 2, 2, 2, 2, 2, 2, 2, 3])
+
                 Economy.makeAggShkHist_fixMrkv()
             for n in range(len(Economy.agents)):
                 Economy.agents[n].getEconomyData(Economy) # Have the consumers inherit relevant objects from the economy

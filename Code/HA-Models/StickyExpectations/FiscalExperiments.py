@@ -14,13 +14,6 @@ import matplotlib.pyplot as plt
 import StickyEparams as Params
 from StickyEtools import runParkerExperiment, runTaxCutExperiment, makeStickyEdataFile
 
-
-ignore_periods = Params.ignore_periods # Number of simulated periods to ignore as a "burn-in" phase
-interval_size = Params.interval_size   # Number of periods in each non-overlapping subsample
-total_periods = Params.periods_to_sim  # Total number of periods in simulation
-interval_count = (total_periods-ignore_periods) // interval_size # Number of intervals in the macro regressions
-my_counts = [interval_size,interval_count]
-long_counts = [interval_size*interval_count,1]
 mystr = lambda number : "{:.3f}".format(number)
 results_dir = Params.results_dir
 
@@ -36,16 +29,9 @@ if __name__ == '__main__':
     verbose_main = True
     save_data = True
     if run_models:
-        # Choose parameter values depending on whether or not the Parker experiment
-        # is being run right now.  The main results use a single discount factor.
-        if not run_parker:
-            TypeCount = Params.TypeCount
-            IncUnemp = Params.IncUnemp
-            DiscFacSetSOE = Params.DiscFacSetSOE
-        else:
-            TypeCount = Params.TypeCount_parker
-            IncUnemp = Params.IncUnemp_parker
-            DiscFacSetSOE = Params.DiscFacSetSOE_parker
+        TypeCount = Params.TypeCount
+        IncUnemp = Params.IncUnemp
+        DiscFacSetSOE = Params.DiscFacSetSOE
         
         # Make consumer types to inhabit the small open Markov economy
         init_dict = deepcopy(Params.init_SOE_mrkv_consumer)
@@ -98,25 +84,6 @@ if __name__ == '__main__':
         t_end = time()
         print('Simulating the sticky small open Markov economy took ' + mystr(t_end-t_start) + ' seconds.')
 
-        # Make results for the sticky small open Markov economy
-        desc = 'Results for the sticky small open Markov economy with update probability ' + mystr(Params.UpdatePrb)
-        name = 'SOEmarkovSticky'
-        makeStickyEdataFile(StickySOmarkovEconomy,ignore_periods,description=desc,filename=name,save_data=save_data,calc_micro_stats=False)
-
-        # Simulate the frictionless small open Markov economy
-        t_start = time()
-        for agent in StickySOmarkovEconomy.agents:
-            agent(UpdatePrb = 1.0)
-        StickySOmarkovEconomy.makeHistory()
-        t_end = time()
-        print('Simulating the frictionless small open Markov economy took ' + mystr(t_end-t_start) + ' seconds.')
-
-        # Make results for the frictionless small open Markov economy
-        desc = 'Results for the frictionless small open Markov economy (update probability 1.0)'
-        name = 'SOEmarkovFrictionless'
-        makeStickyEdataFile(StickySOmarkovEconomy,ignore_periods,description=desc,filename=name,save_data=save_data,calc_micro_stats=False)
-
-
         run_parker = True
         run_tax_cut = True
         if run_parker or run_tax_cut:
@@ -133,19 +100,21 @@ if __name__ == '__main__':
             if run_parker:
                 t_start = time()               
                 # Run Parker experiments for different lead times for the policy
-                runParkerExperiment(StickySOmarkovEconomy,0.05,1,4,True) # One quarter ahead
-                runParkerExperiment(StickySOmarkovEconomy,0.05,2,4,True) # Two quarters ahead
-                runParkerExperiment(StickySOmarkovEconomy,0.05,3,4,True) # Three quarters ahead
+                cLvl_StickyNone_parker, cLvl_StickyBonus, cLvl_FrictionlessNone_parker, cLvl_FrictionlessBonus = runParkerExperiment(StickySOmarkovEconomy,0.05,1,30,True) # One quarter ahead
                 t_end = time()
                 print('Running the "Parker experiment" took ' + str(t_end-t_start) + ' seconds.')
-        
+                plt.plot(cLvl_StickyBonus/cLvl_StickyNone_parker, label="Sticky")
+                plt.plot(cLvl_FrictionlessBonus/cLvl_FrictionlessNone_parker, label="Frictionless")
+                plt.legend(loc="upper right")
+                plt.show()
     #       Run the "Tax Cut experiment"
             if run_tax_cut:
                 t_start = time()
-                cLvl_StickyTaxCut, cLvl_StickyNone, cLvl_FrictionlessTaxCut, cLvl_FrictionlessNone = runTaxCutExperiment(StickySOmarkovEconomy,T_after=30,num_agg_sims=20) 
+                cLvl_StickyTaxCut, cLvl_StickyNone, cLvl_FrictionlessTaxCut, cLvl_FrictionlessNone = runTaxCutExperiment(StickySOmarkovEconomy,T_after=30,num_agg_sims=100) 
                 t_end = time()
                 print('Running the "Tax Cut experiment" took ' + str(t_end-t_start) + ' seconds.')
                 
-                plt.plot(cLvl_StickyTaxCut-cLvl_StickyNone, label="Sticky")
-                plt.plot(cLvl_FrictionlessTaxCut-cLvl_FrictionlessNone, label="Frictionless")
+                plt.plot(cLvl_StickyTaxCut/cLvl_StickyNone, label="Sticky")
+                plt.plot(cLvl_FrictionlessTaxCut/cLvl_FrictionlessNone, label="Frictionless")
                 plt.legend(loc="upper right")
+                plt.show()
