@@ -12,15 +12,13 @@ from copy import deepcopy
 from StickyEmodel import StickyEmarkovConsumerType, StickySmallOpenMarkovEconomy
 import matplotlib.pyplot as plt
 import StickyEparams as Params
-from StickyEtools import runParkerExperiment, makeStickyEdataFile
+from StickyEtools import runParkerExperiment, runTaxCutExperiment, makeStickyEdataFile
 
 
 ignore_periods = Params.ignore_periods # Number of simulated periods to ignore as a "burn-in" phase
 interval_size = Params.interval_size   # Number of periods in each non-overlapping subsample
 total_periods = Params.periods_to_sim  # Total number of periods in simulation
 interval_count = (total_periods-ignore_periods) // interval_size # Number of intervals in the macro regressions
-periods_to_sim_micro = Params.periods_to_sim_micro # To save memory, micro regressions are run on a smaller sample
-AgentCount_micro = Params.AgentCount_micro # To save memory, micro regressions are run on a smaller sample
 my_counts = [interval_size,interval_count]
 long_counts = [interval_size*interval_count,1]
 mystr = lambda number : "{:.3f}".format(number)
@@ -55,7 +53,7 @@ if __name__ == '__main__':
         init_dict['AgentCount'] = Params.AgentCount // TypeCount
         StickySOEmarkovBaseType = StickyEmarkovConsumerType(**init_dict)
         StickySOEmarkovBaseType.IncomeDstn[0] = Params.StateCount*[StickySOEmarkovBaseType.IncomeDstn[0]]
-        StickySOEmarkovBaseType.track_vars = ['aLvlNow','cLvlNow','yLvlNow','pLvlTrue','t_age','TranShkNow']
+        StickySOEmarkovBaseType.track_vars = ['aLvlNow','cLvlNow','yLvlNow','pLvlTrue','pLvlNow','t_age','TranShkNow','MrkvNowPcvd','MrkvNow']
         StickySOEmarkovConsumers = []
         for n in range(TypeCount):
             StickySOEmarkovConsumers.append(deepcopy(StickySOEmarkovBaseType))
@@ -103,7 +101,7 @@ if __name__ == '__main__':
         # Make results for the sticky small open Markov economy
         desc = 'Results for the sticky small open Markov economy with update probability ' + mystr(Params.UpdatePrb)
         name = 'SOEmarkovSticky'
-        makeStickyEdataFile(StickySOmarkovEconomy,ignore_periods,description=desc,filename=name,save_data=save_data)
+        makeStickyEdataFile(StickySOmarkovEconomy,ignore_periods,description=desc,filename=name,save_data=save_data,calc_micro_stats=False)
 
         # Simulate the frictionless small open Markov economy
         t_start = time()
@@ -116,28 +114,38 @@ if __name__ == '__main__':
         # Make results for the frictionless small open Markov economy
         desc = 'Results for the frictionless small open Markov economy (update probability 1.0)'
         name = 'SOEmarkovFrictionless'
-        makeStickyEdataFile(StickySOmarkovEconomy,ignore_periods,description=desc,filename=name,save_data=save_data)
+        makeStickyEdataFile(StickySOmarkovEconomy,ignore_periods,description=desc,filename=name,save_data=save_data,calc_micro_stats=False)
 
-    # Run the "Parker experiment"
-#    if run_parker and run_models:
-        t_start = time()
+
+        run_parker = True
+        run_tax_cut = True
+        if run_parker or run_tax_cut:
+            # First, clear the simulation histories for all of the types to free up memory space;
+            # this allows the economy to be copied without blowing up the computer.
+            for agent in StickySOmarkovEconomy.agents:
+                delattr(agent,'history')
+                agent.track_vars = [] # Don't need to track any simulated variables
+            # The market is at the end of its pre-generated simulated shock history, so it needs to be
+            # reset back to the beginning
+            StickySOmarkovEconomy.Shk_idx = 0
+                
+            #       Run the "Parker experiment"
+            if run_parker:
+                t_start = time()               
+                # Run Parker experiments for different lead times for the policy
+                runParkerExperiment(StickySOmarkovEconomy,0.05,1,4,True) # One quarter ahead
+                runParkerExperiment(StickySOmarkovEconomy,0.05,2,4,True) # Two quarters ahead
+                runParkerExperiment(StickySOmarkovEconomy,0.05,3,4,True) # Three quarters ahead
+                t_end = time()
+                print('Running the "Parker experiment" took ' + str(t_end-t_start) + ' seconds.')
         
-        # First, clear the simulation histories for all of the types to free up memory space;
-        # this allows the economy to be copied without blowing up the computer.
-        for agent in StickySOmarkovEconomy.agents:
-            delattr(agent,'history')
-            agent.track_vars = [] # Don't need to track any simulated variables
-            
-        # The market is at the end of its pre-generated simulated shock history, so it needs to be
-        # reset back to an earlier shock index that has the same Markov state as the current one.
-        MrkvNow = StickySOmarkovEconomy.MrkvNow
-        Shk_idx_reset = np.where(StickySOmarkovEconomy.MrkvNow_hist == MrkvNow)[0][0]
-        StickySOmarkovEconomy.Shk_idx = Shk_idx_reset
-        
-        # Run Parker experiments for different lead times for the policy
-        runParkerExperiment(StickySOmarkovEconomy,0.05,1,4,True) # One quarter ahead
-        runParkerExperiment(StickySOmarkovEconomy,0.05,2,4,True) # Two quarters ahead
-        runParkerExperiment(StickySOmarkovEconomy,0.05,3,4,True) # Three quarters ahead
-        
-        t_end = time()
-        print('Running the "Parker experiment" took ' + str(t_end-t_start) + ' seconds.')
+    #       Run the "Tax Cut experiment"
+            if run_tax_cut:
+                t_start = time()
+                cLvl_StickyTaxCut, cLvl_StickyNone, cLvl_FrictionlessTaxCut, cLvl_FrictionlessNone = runTaxCutExperiment(StickySOmarkovEconomy,T_after=30,num_agg_sims=20) 
+                t_end = time()
+                print('Running the "Tax Cut experiment" took ' + str(t_end-t_start) + ' seconds.')
+                
+                plt.plot(cLvl_StickyTaxCut-cLvl_StickyNone, label="Sticky")
+                plt.plot(cLvl_FrictionlessTaxCut-cLvl_FrictionlessNone, label="Frictionless")
+                plt.legend(loc="upper right")

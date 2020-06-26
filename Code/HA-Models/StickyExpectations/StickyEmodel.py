@@ -287,6 +287,10 @@ class StickyEmarkovConsumerType(AggShockMarkovConsumerType,StickyEconsumerType):
             self.MrkvNowPcvd[self.update] = self.MrkvNow
         else: # This only triggers in the first simulated period
             self.MrkvNowPcvd = np.ones(self.AgentCount,dtype=int)*self.MrkvNow
+            
+        #HACK - replace perceived markov states 2 and 4 with 3 and 0
+        self.MrkvNowPcvd[np.equal(self.MrkvNowPcvd,1)] = 2
+        self.MrkvNowPcvd[np.equal(self.MrkvNowPcvd,3)] = 0
 
 
     def getpLvlError(self):
@@ -691,4 +695,81 @@ class StickySmallOpenMarkovEconomy(SmallOpenMarkovEconomy):
             cLvlMean_hist[t] = np.mean(cLvl_new)
         
         return cLvlMean_hist
+    
+    def runTaxCutExperiment(self,T_sim):
+        '''
+        Simulates T_sim periods of the "Tax Cut experiment"
+        
+        Parameters
+        ----------
+        T_sim : int
+            Number of periods to simulate.
+            
+        Returns
+        -------
+        cLvlMean_hist : np.array
+            Array of size T_sim with population average consumption for each simulated period.
+        '''
+        cLvlMean_hist = np.zeros(T_sim) + np.nan
+        
+#        pLvlMean_hist = np.zeros(T_sim) + np.nan
+#        MrkvMean_hist = np.zeros(T_sim) + np.nan
+        
+        for t in range(T_sim):
+            self.sow()       # Distribute aggregated information/state to agents
+            self.cultivate() # Agents take action
+            self.reap()      # Collect individual data from agents
+            self.mill()      # Process individual data into aggregate data
+            cLvl_new = np.concatenate([self.agents[i].cLvlNow for i in range(len(self.agents))])
+            cLvlMean_hist[t] = np.mean(cLvl_new)
+            
+#            pLvl_new = np.concatenate([self.agents[i].pLvlNow for i in range(len(self.agents))])
+#            pLvlMean_hist[t] = np.mean(pLvl_new)
+#            Mrkv_new = np.concatenate([self.agents[i].MrkvNowPcvd for i in range(len(self.agents))])
+#            MrkvMean_hist[t] = np.mean(Mrkv_new)
+        
+        return cLvlMean_hist #, pLvlMean_hist, MrkvMean_hist
+    
+    def makeAggShkHist_fixMrkv(self):
+        '''
+        Make simulated histories of aggregate transitory and permanent shocks,
+        based on a fixed Mrkv history.
+        Histories are of length self.act_T, for use in the general equilibrium
+        simulation.  
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        '''
+        #self.makeMrkvHist()  # Make a (pseudo)random sequence of Markov states
+        sim_periods = self.act_T
+
+        # For each Markov state in each simulated period, draw the aggregate shocks
+        # that would occur in that state in that period
+        StateCount = self.MrkvArray.shape[0]
+        PermShkAggHistAll = np.zeros((StateCount, sim_periods))
+        TranShkAggHistAll = np.zeros((StateCount, sim_periods))
+        for i in range(StateCount):
+            AggShockDraws = self.AggShkDstn[i].drawDiscrete(N=sim_periods, seed=0)
+            PermShkAggHistAll[i, :] = AggShockDraws[0,:]
+            TranShkAggHistAll[i, :] = AggShockDraws[1,:]
+
+        # Select the actual history of aggregate shocks based on the sequence
+        # of Markov states that the economy experiences
+        PermShkAggHist = np.zeros(sim_periods)
+        TranShkAggHist = np.zeros(sim_periods)
+        for i in range(StateCount):
+            these = i == self.MrkvNow_hist
+            PermShkAggHist[these] = PermShkAggHistAll[i, these]*self.PermGroFacAgg[i]
+            TranShkAggHist[these] = TranShkAggHistAll[i, these]
+
+        # Store the histories
+        self.PermShkAggHist = PermShkAggHist
+        self.TranShkAggHist = TranShkAggHist
+    
+    
             

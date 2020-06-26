@@ -19,6 +19,7 @@ from copy import deepcopy
 import subprocess
 from HARK.utilities import CRRAutility
 from HARK.interpolation import LinearInterp
+from HARK.distribution import Uniform
 from StickyEparams import results_dir, tables_dir, figures_dir, UpdatePrb, PermShkAggVar
 UpdatePrbBase = UpdatePrb
 PermShkAggVarBase = PermShkAggVar
@@ -1531,4 +1532,80 @@ def makeParkerExperimentText(BonusLvl,T_ahead,cLvlNone_hist,cLvlBonus_hist,stick
             f.close()
     
     return output
+
+
+    
+def runTaxCutExperiment(BaseEconomy,T_after,num_agg_sims = 20):
+    '''
+    Run an experiment in which a tax cut increases labor income by a fixed percentage
+    (which needs to be set up in a four state Markov process) for a stochastic 
+    period. Each household only notices that the tax cut has been introduced 
+    when they update, similarly they only notice it has gone when they update.
+    
+    Results are saved to text files in the Results directory.
+    
+    Parameters
+    ----------
+    BaseEconomy : StickySmallOpenMarkovEconomy
+        Baseline economy (used in the "main" part of the work) to be replicated for the experiment.
+    T_after : int
+        Number of periods after the start of the tax cut to simulate and report.
+    num_agg_sims : int
+        Number of different aggregate markov simulations to run
         
+    Returns
+    -------
+    None
+    '''
+    cLvl_StickyTaxCut = np.zeros(T_after)
+    cLvl_StickyNone = np.zeros(T_after)
+    cLvl_FrictionlessTaxCut = np.zeros(T_after)
+    cLvl_FrictionlessNone = np.zeros(T_after)
+    for i in range(4):
+    # Make four copies of the economy: frictionless vs sticky, bonus vs none
+        Economy = deepcopy(BaseEconomy)
+        if i==0 or i==1: #sticky economies
+            for agent in Economy.agents:
+                agent(UpdatePrb = UpdatePrb)
+        if i==2 or i==3: #frictionless economies
+            for agent in Economy.agents:
+                agent(UpdatePrb = 1.0)
+        for n in range(num_agg_sims):
+            Economy.Shk_idx = 0
+            if i==0 or i==2: # no tax cut economies
+                Economy.MrkvNow_init = 0
+                Economy.MrkvNow_hist[:] = 0
+                Economy.makeAggShkHist_fixMrkv()
+            if i==1 or i==3: # tax cut economies
+                Economy.MrkvNow_init = 1
+                Economy.MrkvNow_hist[:] = 0   
+                # Initialize the Markov history and set up transitions
+                MrkvNow_hist = np.zeros(Economy.act_T, dtype=int)
+                cutoffs = np.cumsum(Economy.MrkvArray, axis=1)
+                MrkvNow = Economy.MrkvNow_init
+                t = 0
+                draws = Uniform().draw(N=T_after, seed=75+n)
+                for t in range(draws.size):  # Add act_T_orig more periods
+                    MrkvNow_hist[t] = MrkvNow
+                    MrkvNow = np.searchsorted(cutoffs[MrkvNow, :], draws[t])
+                Economy.MrkvNow_hist = MrkvNow_hist
+                #Economy.MrkvNow_hist[0:9] = np.array([1, 2, 2, 2, 2, 2, 2, 2, 3])
+                Economy.makeAggShkHist_fixMrkv()
+            for n in range(len(Economy.agents)):
+                Economy.agents[n].getEconomyData(Economy) # Have the consumers inherit relevant objects from the economy
+    
+            this_cLvl = Economy.runTaxCutExperiment(T_after)
+
+            if i==0:
+                cLvl_StickyNone += this_cLvl/num_agg_sims
+            if i==1:
+                cLvl_StickyTaxCut += this_cLvl/num_agg_sims
+            if i==2:
+                cLvl_FrictionlessNone += this_cLvl/num_agg_sims
+            if i==3:
+                cLvl_FrictionlessTaxCut += this_cLvl/num_agg_sims
+            
+        
+    return cLvl_StickyTaxCut, cLvl_StickyNone, cLvl_FrictionlessTaxCut, cLvl_FrictionlessNone
+
+

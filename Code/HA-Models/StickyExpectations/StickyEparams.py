@@ -65,10 +65,6 @@ interval_size = 200    # Number of periods in each subsample interval
 AgentCount = 20000     # Total number of agents to simulate in the economy
 max_t_between_updates = None # Maximum number of periods an agent will go between updating (can be None)
 
-# Use smaller sample for micro regression tables to save memory
-periods_to_sim_micro = 4000
-AgentCount_micro = 5000
-
 # Choose extent of discount factor heterogeneity (inapplicable to representative agent models)
 # These parameters are used in all specifications of the main text
 TypeCount = 1                  # Number of heterogeneous discount factor types
@@ -94,65 +90,17 @@ Persistence = 0.5       # Base probability that macroeconomic Markov state stays
 RegimeChangePrb = 0.00  # Probability of "regime change", randomly jumping to any Markov state (not used in paper)
 
 # Test with smaller run
-periods_to_sim = 4000
-AgentCount = 2000
-StateCount = 2
+periods_to_sim = 400
+AgentCount = 200
+StateCount = 4
 TypeCount_parker = 2
+income_increase = 1.2
 
-# Make the Markov array with chosen states, persistence, and regime change probability
-PolyMrkvArray = np.zeros((StateCount,StateCount))
-for i in range(StateCount):
-    for j in range(StateCount):
-        if i==j:
-            PolyMrkvArray[i,j] = Persistence
-        elif (i==(j-1)) or (i==(j+1)):
-            PolyMrkvArray[i,j] = 0.5*(1.0 - Persistence)
-PolyMrkvArray[0,0] += 0.5*(1.0 - Persistence)
-PolyMrkvArray[StateCount-1,StateCount-1] += 0.5*(1.0 - Persistence)
-PolyMrkvArray *= 1.0 - RegimeChangePrb
-PolyMrkvArray += RegimeChangePrb/StateCount
+MrkvArray = np.array([ [1.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.8, 0.2], [0.0, 0.0, 0.8, 0.2], [1.0, 0.0, 0.0, 0.0]])
+PermGroFacSet = np.array([1.0, income_increase, 1.0, 1.0/income_increase])
 
-# Define the set of aggregate permanent growth factors that can occur (Markov specifications only)
-PermGroFacSet = np.exp(np.linspace(np.log(PermGroFacMin),np.log(PermGroFacMax),num=StateCount))
-
-# Make an alternative version of the Markov array in which agents believe that their "sticky expectations"
-# is actually the true shock structure.  That is, that the aggregate state only changes with prob UpdatePrb,
-# but that the state changes are as if ~1/UpdatePrb periods have elapsed.
-t_exp_between_updates = int(np.round(1./UpdatePrb))
-PolyMrkvArrayAlt = PolyMrkvArray
-for t in range(t_exp_between_updates-1): # Premultiply T-1 times
-    PolyMrkvArrayAlt = np.dot(PolyMrkvArray,PolyMrkvArrayAlt)
-PolyMrkvArrayAlt *= UpdatePrb # Scale down all transitions so they only happen with UpdatePrb probability
-PolyMrkvArrayAlt += (1.-UpdatePrb)*np.eye(StateCount) # Move that probability weight to no change
-    
-# In the alternate specification, agents also think that permanent aggregate shocks only
-# happen with UpdatePrb probability, but are 1/UpdatePrb times larger when they do happen.
-# Transitory aggregate shocks are interpreted to be much larger when not updating.
-PermShkAggVarAlt = PermShkAggVar/UpdatePrb
-PermShkAggStdAlt = np.sqrt(PermShkAggVarAlt)
-#PermShkAggDstnAlt_update = approxMeanOneLognormal(5,PermShkAggStdAlt)
-PermShkAggDstnAlt_update = MeanOneLogNormal(sigma=PermShkAggStdAlt).approx(5, tail_N=0)
-#TranShkAggDstnAlt_update = approxMeanOneLognormal(5,np.sqrt(TranShkAggVar))
-TranShkAggDstnAlt_update = MeanOneLogNormal(sigma=np.sqrt(TranShkAggVar)).approx(5, tail_N=0)
-AggShkDstnAlt_update = combineIndepDstns(PermShkAggDstnAlt_update,TranShkAggDstnAlt_update)
-AggShkDstnAlt_update.pmf *= UpdatePrb
-#PermShkAggDstnAlt_dont = [np.array([1.0]),np.array([1.0])] # Degenerate distribution
-PermShkAggDstnAlt_dont = Uniform(bot=1.0, top=1.0).approx(N=1)
-#TranShkAggDstnAlt_dont = approxMeanOneLognormal(5,np.sqrt(TranShkAggVar + PermShkAggVar/UpdatePrb))
-TranShkAggDstnAlt_dont = MeanOneLogNormal(sigma=np.sqrt(TranShkAggVar + PermShkAggVar/UpdatePrb)).approx(5, tail_N=0)
-AggShkDstnAlt_dont = combineIndepDstns(PermShkAggDstnAlt_dont,TranShkAggDstnAlt_dont)
-AggShkDstnAlt_dont.pmf *= 1.-UpdatePrb
-AggShkDstnAlt = DiscreteDistribution(StateCount*[[np.concatenate([AggShkDstnAlt_update.pmf,AggShkDstnAlt_dont.pmf]) ]],
-                                     StateCount*[[np.concatenate([AggShkDstnAlt_update.X[n],AggShkDstnAlt_dont.X[n]]) for n in range(2)]])
-
-# Define the set of discount factors that agents have (for SOE and DSGE models)
-#DiscFacSetSOE  = approxUniform(N=TypeCount,bot=DiscFacMeanSOE-DiscFacSpread,top=DiscFacMeanSOE+DiscFacSpread)[1]
 DiscFacSetSOE  = Uniform(bot=DiscFacMeanSOE-DiscFacSpread,top=DiscFacMeanSOE+DiscFacSpread).approx(N=TypeCount).X
-#DiscFacSetDSGE = approxUniform(N=TypeCount,bot=DiscFacMeanDSGE-DiscFacSpread,top=DiscFacMeanDSGE+DiscFacSpread)[1]
 DiscFacSetDSGE = Uniform(bot=DiscFacMeanDSGE-DiscFacSpread,top=DiscFacMeanDSGE+DiscFacSpread).approx(N=TypeCount).X
-#DiscFacSetSOE_parker  = approxUniform(N=TypeCount_parker,
-#                                      bot=DiscFacMeanSOE_parker-DiscFacSpread_parker,
-#                                      top=DiscFacMeanSOE_parker+DiscFacSpread_parker)[1]
 DiscFacSetSOE_parker  = Uniform(bot=DiscFacMeanSOE_parker-DiscFacSpread_parker,
                                 top=DiscFacMeanSOE_parker+DiscFacSpread_parker
                                 ).approx(N=TypeCount_parker).X
@@ -211,95 +159,14 @@ init_SOE_market = {  'PermShkAggCount': 5,
 
 # Define parameters for the small open Markov economy version of the model
 init_SOE_mrkv_consumer = copy(init_SOE_consumer)
-init_SOE_mrkv_consumer['MrkvArray'] = PolyMrkvArray
-init_SOE_mrkv_consumer['MrkvArrayAlt'] = PolyMrkvArrayAlt
-init_SOE_mrkv_consumer['AggShkDstnAlt'] = AggShkDstnAlt
+init_SOE_mrkv_consumer['MrkvArray'] = MrkvArray
 
 # Define market parameters for the small open Markov economy
 init_SOE_mrkv_market = copy(init_SOE_market)
-init_SOE_mrkv_market['MrkvArray'] = PolyMrkvArray
+init_SOE_mrkv_market['MrkvArray'] = MrkvArray
 init_SOE_mrkv_market['PermShkAggStd'] = StateCount*[init_SOE_market['PermShkAggStd']]
 init_SOE_mrkv_market['TranShkAggStd'] = StateCount*[init_SOE_market['TranShkAggStd']]
 init_SOE_mrkv_market['PermGroFacAgg'] = PermGroFacSet
-init_SOE_mrkv_market['MrkvNow_init'] = StateCount // 2
+init_SOE_mrkv_market['MrkvNow_init'] = 0 # Start at 0 and stay there unless forced out by MIT shock
 init_SOE_mrkv_market['loops_max'] = 1
 
-###############################################################################
-
-# Define parameters for the Cobb-Douglas DSGE version of the model
-init_DSGE_consumer = copy(init_SOE_consumer)
-init_DSGE_consumer['DiscFac'] = DiscFacMeanDSGE
-init_DSGE_consumer['aXtraMax'] = 120.0
-init_DSGE_consumer['MgridBase'] = np.array([0.1,0.3,0.5,0.6,0.7,0.8,0.9,0.98,1.0,1.02,1.1,1.2,1.3,1.4,1.5,1.6,2.0,3.0,5.0])
-
-# Define market parameters for the Cobb-Douglas economy
-init_DSGE_market = copy(init_SOE_market)
-init_DSGE_market.pop('Rfree')
-init_DSGE_market.pop('wRte')
-init_DSGE_market['CRRA'] = CRRA
-init_DSGE_market['DiscFac'] = DiscFacMeanDSGE
-init_DSGE_market['intercept_prev'] = 0.0
-init_DSGE_market['slope_prev'] = 1.0
-init_DSGE_market['DampingFac'] = 0.2
-
-###############################################################################
-
-# Define parameters for the Cobb-Douglas Markov DSGE version of the model
-init_DSGE_mrkv_consumer = copy(init_DSGE_consumer)
-init_DSGE_mrkv_consumer['MrkvArray'] = PolyMrkvArray
-
-# Define market parameters for the Cobb-Douglas Markov economy
-init_DSGE_mrkv_market = copy(init_SOE_mrkv_market)
-init_DSGE_mrkv_market.pop('Rfree')
-init_DSGE_mrkv_market.pop('wRte')
-init_DSGE_mrkv_market['CRRA'] = init_DSGE_mrkv_consumer['CRRA']
-init_DSGE_mrkv_market['DiscFac'] = init_DSGE_mrkv_consumer['DiscFac']
-init_DSGE_mrkv_market['intercept_prev'] = StateCount*[0.0]
-init_DSGE_mrkv_market['slope_prev'] = StateCount*[1.0]
-init_DSGE_mrkv_market['loops_max'] = 10
-
-###############################################################################
-
-# Define parameters for the representative agent version of the model
-init_RA_consumer =  { 'CRRA': CRRA,
-                      'DiscFac': DiscFacMeanDSGE,
-                      'LivPrb': [1.0],
-                      'PermGroFac': [1.0],
-                      'AgentCount': 1,
-                      'aXtraMin': 0.00001,
-                      'aXtraMax': 120.0,
-                      'aXtraNestFac': 3,
-                      'aXtraCount': 48,
-                      'aXtraExtra': [None],
-                      'PermShkStd': [np.sqrt(PermShkAggVar)],
-                      'PermShkCount': 7,
-                      'TranShkStd': [np.sqrt(TranShkAggVar)],
-                      'TranShkCount': 7,
-                      'UnempPrb': 0.0,
-                      'UnempPrbRet': 0.0,
-                      'IncUnemp': 0.0,
-                      'IncUnempRet': 0.0,
-                      'BoroCnstArt':0.0,
-                      'tax_rate':0.0,
-                      'T_retire':0,
-                      'aNrmInitMean' : np.log(0.00001),
-                      'aNrmInitStd' : 0.0,
-                      'pLvlInitMean' : 0.0,
-                      'pLvlInitStd' : 0.0,
-                      'PermGroFacAgg' : 1.0,
-                      'UpdatePrb' : UpdatePrb,
-                      'CapShare' : CapShare,
-                      'DeprFac' : DeprFac,
-                      'T_age' : None,
-                      'T_cycle' : 1,
-                      'T_sim' : periods_to_sim,
-                      'tolerance' : 1e-6
-                    }
-
-###############################################################################
-
-# Define parameters for the Markov representative agent model
-init_RA_mrkv_consumer = copy(init_RA_consumer)
-init_RA_mrkv_consumer['MrkvArray'] = PolyMrkvArray
-init_RA_mrkv_consumer['MrkvNow'] = [StateCount // 2]
-init_RA_mrkv_consumer['PermGroFac'] = [PermGroFacSet]
