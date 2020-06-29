@@ -1561,6 +1561,14 @@ def runTaxCutExperiment(BaseEconomy,T_after,num_agg_sims = 20):
     cLvl_StickyNone = np.zeros(T_after)
     cLvl_FrictionlessTaxCut = np.zeros(T_after)
     cLvl_FrictionlessNone = np.zeros(T_after)
+    for agent in BaseEconomy.agents:
+        agent.pLvlNow_start = agent.pLvlNow
+        agent.pLvlTrue_start = agent.pLvlTrue
+        agent.pLvlErrNow_start = agent.pLvlErrNow
+        agent.aLvlNow_start = agent.aLvlNow
+        agent.aNrmNow_start = agent.aNrmNow
+        agent.mLvlTrueNow_start = agent.mLvlTrueNow
+        agent.mNrmNow_start = agent.mNrmNow
     for i in range(4):
     # Make four copies of the economy: frictionless vs sticky, bonus vs none
         Economy = deepcopy(BaseEconomy)
@@ -1572,6 +1580,14 @@ def runTaxCutExperiment(BaseEconomy,T_after,num_agg_sims = 20):
                 agent(UpdatePrb = 1.0)
         for n in range(num_agg_sims):
             Economy.Shk_idx = 0
+            for agent in Economy.agents:
+                agent.pLvlNow = agent.pLvlNow_start
+                agent.pLvlTrue = agent.pLvlTrue_start
+                agent.pLvlErrNow = agent.pLvlErrNow_start
+                agent.aLvlNow = agent.aLvlNow_start
+                agent.aNrmNow = agent.aNrmNow_start
+                agent.mLvlTrueNow = agent.mLvlTrueNow_start
+                agent.mNrmNow = agent.mNrmNow_start
             if i==0 or i==2: # no tax cut economies
                 Economy.MrkvNow_init = 0
                 Economy.MrkvNow_hist[:] = 0

@@ -109,8 +109,10 @@ if __name__ == '__main__':
                 plt.show()
     #       Run the "Tax Cut experiment"
             if run_tax_cut:
+                num_agg_sims =100
+                T_after = 40
                 t_start = time()
-                cLvl_StickyTaxCut, cLvl_StickyNone, cLvl_FrictionlessTaxCut, cLvl_FrictionlessNone = runTaxCutExperiment(StickySOmarkovEconomy,T_after=30,num_agg_sims=100) 
+                cLvl_StickyTaxCut, cLvl_StickyNone, cLvl_FrictionlessTaxCut, cLvl_FrictionlessNone = runTaxCutExperiment(StickySOmarkovEconomy,T_after=T_after,num_agg_sims=num_agg_sims) 
                 t_end = time()
                 print('Running the "Tax Cut experiment" took ' + str(t_end-t_start) + ' seconds.')
                 
