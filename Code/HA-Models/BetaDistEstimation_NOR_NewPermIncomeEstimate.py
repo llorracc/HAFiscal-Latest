@@ -42,28 +42,24 @@ if  Parametrization == 'NOR_final':
     base_params['LivPrb']       = [0.996]
     base_params['Rfree']        = 1.00496
     base_params['Rsave']        = 1.00496
-    base_params['Rboro']        = 1.20**0.25 #1.20**0.25 #1.00496
-    base_params['pLvlInitMean'] = 0 
+    base_params['Rboro']        = 1.00496 #1.20**0.25
+    base_params['pLvlInitMean'] = 1 
     base_params['UnempPrb']     = 0.044
     base_params['IncUnemp']     = 0.5
     base_params['PermShkStd']   = [(0.02/4)**0.5]
     base_params['TranShkStd']   = [(0.03*4)**0.5]
     base_params['BoroCnstArt']  = -0.8
-    base_params['PermGroFacAgg']= 1.015**0.25 #1.015**0.25
     
     
   
-#guess_splurge_beta_nabla = [0.4,0.98,0.01]
-#guess_splurge_beta_nabla = [0.3,0.95,0.02]
+guess_splurge_beta_nabla = [0.4,0.98,0.01]
+#guess_splurge_beta_nabla = [0.3,0.95,0.01]
 #guess_splurge_beta_nabla = [0.3,0.98,0.02]
-#guess_splurge_beta_nabla = [0.28,0.98,0.01]
-#guess_splurge_beta_nabla = [0.32,0.982, 0.016]  
-#guess_splurge_beta_nabla = [0.32,0.984, 0.0139]  
-#guess_splurge_beta_nabla = [0.32,0.987, 0.0094]
-#guess_splurge_beta_nabla = [0.32,0.987, 0.0094]
-#guess_splurge_beta_nabla = [0.32,0.980, 0.035]
-guess_splurge_beta_nabla = [0.32,0.980, 0.029]
-
+#guess_splurge_beta_nabla = [0.3,0.98,0.01]
+#guess_splurge_beta_nabla = [0.35,0.985,0.04]  
+#guess_splurge_beta_nabla = [0.32,0.98,0.02]
+    
+    
 # Define the MPC targets from Fagereng et al Table 9; element i,j is lottery quartile i, deposit quartile j
 MPC_target_base = np.array([[1.047, 0.745, 0.720, 0.490],
                             [0.762, 0.640, 0.559, 0.437],
@@ -78,7 +74,8 @@ Agg_MPCX_target = np.array([0.5056845, 0.1759051, 0.1035106, 0.0444222, 0.033661
 # 5th element is used as rep. lottery win to get at aggregate MPC / MPCX 
 lottery_size_USD = np.array([1.625, 3.3741, 7.129, 40.0, 7.129])
 lottery_size_NOK = lottery_size_USD * (10/1.1) #in Fagereng et al it is mention that 1000 NOK = 110 USD
-lottery_size = lottery_size_NOK / (270/4); # divide by permanent income.
+# We express lottery winnings relative to permanent income
+lottery_size = lottery_size_NOK / (270/4) # Håkon estimated yearly permanent income to be 270k, i.e. 270/4 on a quarterly basis
 RandomLotteryWin = True #if True, then the 5th element will be replaced with a random lottery size win draw from the 1st to 4th element for each agent
 
 #%%
@@ -329,21 +326,22 @@ plt.show()
 
 from mpl_toolkits import mplot3d
 
-mesh_size_beta = 11
-mesh_size_nabla = 21
+mesh_size = 4
+
+
 
 
 def z_function(x, y, fixed_splurge):
     [distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(fixed_splurge,x,y,estimation_mode=False,target='AGG_MPC')
     return distance_Agg_MPC
 
-beta = np.linspace(0.970, 0.995, mesh_size_beta)
-nabla = np.linspace(0.005, 0.045, mesh_size_nabla)
+beta = np.linspace(0.96, 0.99, mesh_size)
+nabla = np.linspace(0.01, 0.06, mesh_size)
 
 X, Y = np.meshgrid(beta, nabla)
-Z = np.empty([mesh_size_nabla,mesh_size_beta])
-for i in range(mesh_size_beta):
-    for j in range(mesh_size_nabla):
+Z = np.empty([mesh_size,mesh_size])
+for i in range(mesh_size):
+    for j in range(mesh_size):
         Z[j][i] = z_function(beta[i],nabla[j],0.32)
         
 # Z2 = np.empty([mesh_size,mesh_size])
@@ -352,13 +350,6 @@ for i in range(mesh_size_beta):
 #         Z2[j][i] = z_function(beta[i],nabla[j],0.35)    
 
 
-
-# fig = plt.figure()
-# ax = plt.axes(projection="3d")
-# ax.plot_wireframe(X, Y, Z, color='green')
-# ax.set_xlabel('beta')
-# ax.set_ylabel('nabla')
-# ax.set_zlabel('z')
 
 fig = plt.figure()
 ax = plt.axes(projection='3d')
@@ -383,20 +374,20 @@ plt.show()
 # plt.show()
 
 #%%
-# beta_reduced = beta[18:22]
-# nabla_reduced = nabla[0:22]
-# X_reduced, Y_reduced = np.meshgrid(beta_reduced, nabla_reduced)
-# Z_reduced = np.empty([22,4])
-# for i in range(4):
-#     for j in range(22):
-#         Z_reduced[j][i] = Z2[j][i+18]
-# fig = plt.figure()
-# ax = plt.axes(projection='3d')
-# ax.plot_surface(X_reduced, Y_reduced, Z_reduced, rstride=1, cstride=1,
-#                 cmap='winter', edgecolor='none')
-# ax.view_init(-140, 30)
+beta_reduced = beta[18:22]
+nabla_reduced = nabla[0:22]
+X_reduced, Y_reduced = np.meshgrid(beta_reduced, nabla_reduced)
+Z_reduced = np.empty([22,4])
+for i in range(4):
+    for j in range(22):
+        Z_reduced[j][i] = Z2[j][i+18]
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+ax.plot_surface(X_reduced, Y_reduced, Z_reduced, rstride=1, cstride=1,
+                cmap='winter', edgecolor='none')
+ax.view_init(-140, 30)
         
-# #%%
-# for i in range(9):
-#     print(i+16)
+#%%
+for i in range(9):
+    print(i+16)
 
