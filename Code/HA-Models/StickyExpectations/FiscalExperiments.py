@@ -120,3 +120,14 @@ if __name__ == '__main__':
                 plt.plot(cLvl_FrictionlessTaxCut/cLvl_FrictionlessNone, label="Frictionless")
                 plt.legend(loc="upper right")
                 plt.show()
+                
+    #       Make pretty plot
+            if run_parker and run_tax_cut:
+                plt.plot(cLvl_StickyBonus/cLvl_StickyNone_parker, label="Stimulus Payments")
+                plt.plot(cLvl_StickyTaxCut[1:]/cLvl_StickyNone[1:], label="Income Tax Cut")
+                plt.legend(loc="upper right")
+                plt.xlabel('Quarter',fontsize=12)
+                plt.ylabel('Percentage Consumption Increase',fontsize=12)
+                plt.title('Fiscal Experiments')
+                plt.savefig('./Figures/FiscalExperiments.png')
+                plt.show()
