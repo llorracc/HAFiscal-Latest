@@ -12,7 +12,7 @@ from copy import deepcopy
 from StickyEmodel import StickyEmarkovConsumerType, StickySmallOpenMarkovEconomy
 import matplotlib.pyplot as plt
 import StickyEparams as Params
-from StickyEtools import runParkerExperiment, runTaxCutExperiment, makeStickyEdataFile
+from StickyEtools import runParkerExperiment, runTaxCutExperiment
 
 mystr = lambda number : "{:.3f}".format(number)
 results_dir = Params.results_dir
