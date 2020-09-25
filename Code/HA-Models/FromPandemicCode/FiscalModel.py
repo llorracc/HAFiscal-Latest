@@ -25,14 +25,20 @@ class FiscalType(MarkovConsumerType):
         MarkovConsumerType.preSolve(self)
         self.updateSolutionTerminal()
         
-        
     def initializeSim(self):
         MarkovConsumerType.initializeSim(self)
-        if hasattr(self,'T_advance'):
+        if hasattr(self,'use_prestate'):
             self.restoreState()
             self.MrkvArray = self.MrkvArray_sim
+        else:   # set to ergodic unemployment rate during normal times
+            init_unemp_dist = DiscreteDistribution(1.0-self.Urate_normal, np.array([0,1]), seed=self.RNG.randint(0,2**31-1))
+            self.MrkvNow[:] = init_unemp_dist.drawDiscrete(self.AgentCount)
+            if not hasattr(self,'mortality_off'):
+                self.calcAgeDistribution()
+                self.initializeAges()
         if (hasattr(self,'Mrkv_univ') and self.Mrkv_univ is not None):
             self.MrkvNow[:] = self.Mrkv_univ
+
         
         
     def getMortality(self):
@@ -87,6 +93,48 @@ class FiscalType(MarkovConsumerType):
         self.MrkvArray_pcvd = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.Urate_recession_real, self.Uspell_recession_real, self.Rspell_real)
         self.MrkvArray_sim  = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.Urate_recession_pcvd, self.Uspell_recession_pcvd, self.Rspell_pcvd)
     
+    def calcAgeDistribution(self):
+        '''
+        Calculates the long run distribution of t_cycle in the population.
+        '''
+        if self.T_cycle==1:
+            T_cycle_actual = 400
+            LivPrb_array = [[self.LivPrb[0][0]]]*T_cycle_actual
+        else:
+            T_cycle_actual = self.T_cycle
+            LivPrb_array = self.LivPrb
+        AgeMarkov = np.zeros((T_cycle_actual+1,T_cycle_actual+1))
+        for t in range(T_cycle_actual):
+            p = LivPrb_array[t][0]
+            AgeMarkov[t,t+1] = p
+            AgeMarkov[t,0] = 1. - p
+        AgeMarkov[-1,0] = 1.
+        
+        AgeMarkovT = np.transpose(AgeMarkov)
+        vals, vecs = np.linalg.eig(AgeMarkovT)
+        dist = np.abs(np.abs(vals) - 1.)
+        idx = np.argmin(dist)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore") # Ignore warning about casting complex eigenvector to float
+            LRagePrbs = vecs[:,idx].astype(float)
+        LRagePrbs /= np.sum(LRagePrbs)
+        age_vec = np.arange(T_cycle_actual+1).astype(int)
+        self.LRageDstn = DiscreteDistribution(LRagePrbs, age_vec,
+                                seed=self.RNG.randint(0,2**31-1))
+        
+        
+    def initializeAges(self):
+        '''
+        Assign initial values of t_cycle to simulated agents, using the attribute
+        LRageDstn as the distribution of discrete ages.
+        '''
+        age = self.LRageDstn.drawDiscrete(self.AgentCount)
+        age = age.astype(int)
+        if self.T_cycle!=1:
+            self.t_cycle = age
+        self.t_age = age
+    
     def switchToCounterfactualMode(self):
         '''
         Very small method that swaps in the "big" Markov-state versions of some
@@ -107,8 +155,8 @@ class FiscalType(MarkovConsumerType):
         
         # Adjust simulation parameters for the counterfactual experiments
         self.T_sim = T_sim
-        self.track_vars = ['cNrmNow','pLvlNow','Weight','lLvlNow','uNow','wNow','TranShkNow','t_cycle']
-        self.T_advance = None
+        self.track_vars = ['cNrmNow','pLvlNow','aNrmNow','mNrmNow']
+        self.use_prestate = None
         self.MrkvArray_pcvd = self.MrkvArray
         #print('Finished type ' + str(self.seed) + '!')
         
@@ -200,7 +248,8 @@ class FiscalType(MarkovConsumerType):
         self.aNrm_base = self.aNrmNow.copy()
         self.pLvl_base = self.pLvlNow.copy()
         self.Mrkv_base = self.MrkvNow.copy()
-        self.age_base  = self.t_cycle.copy()
+        self.cycle_base  = self.t_cycle.copy()
+        self.age_base  = self.t_age.copy()
         self.t_sim_base = self.t_sim
         self.PlvlAgg_base = self.PlvlAggNow
 
@@ -212,10 +261,54 @@ class FiscalType(MarkovConsumerType):
         self.aNrmNow = self.aNrm_base.copy()
         self.pLvlNow = self.pLvl_base.copy()
         self.MrkvNow = self.Mrkv_base.copy()
-        self.t_cycle = self.age_base.copy()
+        self.t_cycle = self.cycle_base.copy()
         self.t_age   = self.age_base.copy()
         self.PlvlAggNow = self.PlvlAgg_base
         
+    def hitWithRecessionShock(self):
+        '''
+        Alter the Markov state of each simulated agent, jumping some people into
+        recession states
+        '''
+        # Shock unemployment up to ergodic unemployment level in normal or recession state
+        if self.RecessionShock:
+            this_Urate = self.Urate_recession_real
+        else:
+            this_Urate = self.Urate_normal
+        
+        # Draw new Markov states for each agent
+        draws = Uniform(seed=self.RNG.randint(0,2**31-1)).draw(self.AgentCount)
+        draws = self.RNG.permutation(draws)
+        MrkvNew = np.zeros(self.AgentCount, dtype=int)
+        MrkvNew[draws > 1.0-this_Urate] = 1
+        if (self.RecessionShock and not self.R_shared): # If the recssion actually occurs,
+            MrkvNew += 2 # then put everyone into the recession 
+            # This is (momentarily) skipped over if the recession state is shared
+            # rather than idiosyncratic.  See a few lines below.
+        
+        # Move agents to those Markov states 
+        self.MrkvNow = MrkvNew
+        
+        # Take the appropriate shock history for each agent, depending on their state
+        J = self.MrkvArray[0].shape[0]
+        for j in range(J):
+            these = self.MrkvNow == j
+            self.history['who_dies'][:,these] = self.DeathHistAll[j,:,:][:,these]
+            self.history['MrkvNow'][:,these] = self.MrkvHistAll[j,:,:][:,these]
+            self.history['PermShkNow'][:,these] = self.PermShkHistAll[j,:,:][:,these]
+            self.history['TranShkNow'][:,these] = self.TranShkHistAll[j,:,:][:,these]
+      
+#        NEED TO FIX BELOW IF WE WANT SHARED RECESSION - NECESSARY TO CHANGE IF WE WANT SHOCKS TO BE CONTINGENT ON RECESSION STATE
+#        POSSIBLE FIX - TAKE HISTORY FROM PermShkHistCond up to the point where the recession ends, then take history starting 
+#        IN NON_RECESSION STATE THAT FOLLOWS AFTER (NEED TO CALC PROBABILITIES OF BEING IN EACH STATE AFTER RECESSION ENDS BASED ON STATE IN RECESSION)    
+        if self.R_shared:
+            print( "R_shared not implemented yet" )
+#        # If the recession is a common/shared event, rather than idiosyncratic, bump
+#        # everyone into the lockdown state for *exactly* T_lockdown periods
+#        if (self.RecessionShock and self.R_shared):
+#            T = self.T_recession
+#            self.history['MrkvNow'][0:T,:] += 2
+                    
                 
 def solveConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGroFac,
                                  MrkvArray,BoroCnstArt,aXtraGrid,vFuncBool,CubicBool):

@@ -76,15 +76,14 @@ PermGroFac_small = [np.array([1.0]*2)]
 TranShkStd = [0.1]
 PermShkStd = [0.05]
 
-LivPrb       = [np.array([1.0/240.0]*num_MrkvStates)]
-LivPrb_small = [np.array([1.0/240.0]*2)]
+LivPrb       = [1.0-np.array([1.0/240.0]*num_MrkvStates)]
+LivPrb_small = [1.0-np.array([1.0/240.0]*2)]
 # Make a two state Markov array ("small") that is only used when generating the initial distribution of states
 MrkvArray_small = list(MrkvArray_real_i[0:2,0:2] for MrkvArray_real_i in MrkvArray_real)
 
 # Define a parameter dictionary
-init_infhorizon = {"cycles" : 1,
-                "T_cycle": 1,
-                'T_sim': 13,
+init_infhorizon = {"T_cycle": T_cycle,
+                'T_sim': 400, #Simulate up to age 400
                 'T_age': None,
                 'AgentCount': 10000,
                 "PermGroFacAgg": PermGroFacAgg,
@@ -139,6 +138,12 @@ if R_shared:
 TypeShares = [1.0]
 
 # Define a dictionary to represent the baseline scenario
-base_dict = {       }
+base_dict = {'RecessionShock' : False
+             }
+
+# Define a dictionary to mutate baseline for the recession
+recession_changes = {
+        'RecessionShock' : True
+        }
 
 

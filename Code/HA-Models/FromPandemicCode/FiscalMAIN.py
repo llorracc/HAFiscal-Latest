@@ -2,8 +2,9 @@
 This is the main script for the paper
 '''
 from Parameters import T_sim, init_infhorizon, DiscFacDstns,\
-     AgentCountTotal, figs_dir
+     AgentCountTotal, TypeShares, base_dict, recession_changes, figs_dir
 from FiscalModel import FiscalType
+from FiscalTools import runExperiment
 from HARK import multiThreadCommands, multiThreadCommandsFake
 from HARK.distribution import DiscreteDistribution
 from time import time
@@ -20,6 +21,7 @@ if __name__ == '__main__':
     # Make baseline types - for now only one type, might add more
     num_types = 1
     InfHorizonType = FiscalType(**init_infhorizon)
+    InfHorizonType.cycles = 0
     BaseTypeList = [InfHorizonType]
     
     # Fill in the Markov income distribution for each base type
@@ -45,7 +47,7 @@ if __name__ == '__main__':
             TypeList.append(ThisType)
             n += 1
     base_dict['Agents'] = TypeList
-    
+       
     # Solve and simulate each type to get to the initial distribution of states
     # and then prepare for new counterfactual simulations
     t0 = time()
@@ -55,11 +57,21 @@ if __name__ == '__main__':
     t1 = time()
     print('Making the baseline distribution of states and preparing to run counterfactual simulations took ' + mystr(t1-t0) + ' seconds.')
 
+    # Define dictionaries to be used in counterfactual scenarios
+    recession_dict = base_dict.copy()
+    recession_dict.update(**recession_changes)
+
     # Run the baseline consumption level
     t0 = time()
-    C_base, X_base, Z_base, cAll_base, Weight_base, Mrkv_base, U_base, ltAll_base, LT_by_inc_base = runExperiment(**base_dict)
+    base_results = runExperiment(**base_dict)
     t1 = time()
     print('Calculating baseline consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    # Run the recession consumption level
+    t0 = time()
+    recession_results = runExperiment(**recession_dict)
+    t1 = time()
+    print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
  
     t_end = time()
     print('Doing everything took ' + mystr(t_end-t_start) + ' seconds in total.')

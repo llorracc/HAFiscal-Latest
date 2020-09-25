@@ -20,8 +20,8 @@ R_shared = False        # Indicator for whether the recession shared (True) or i
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
 CRRA = 1.0              # Coefficient of relative risk aversion
-PopGroFac = 1.01**0.25  # Population growth factor
-PermGroFacAgg = 1.01**0.25 # Technological growth rate or aggregate productivity growth factor
+PopGroFac = 1.0 #1.01**0.25  # Population growth factor
+PermGroFacAgg = 1.0 #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
 
 IncUnemp = 0.3          # Unemployment benefits replacement rate (proportion of permanent income)
 
