@@ -84,14 +84,14 @@ class FiscalType(MarkovConsumerType):
             self.MrkvNow = self.Mrkv_univ*np.ones(self.AgentCount, dtype=int)
             # ^^ Store the real states but force income shocks to be based on one particular state
             
-        
+    #$$$$$$$$$$    
     def updateMrkvArray(self):
         '''
         Constructs an updated MrkvArray_pcvd attribute to be used in solution (perceived),
         as well as MrkvArray_sim attribute to be used in simulation (actual).
         '''
-        self.MrkvArray_pcvd = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.Urate_recession_real, self.Uspell_recession_real, self.Rspell_real)
-        self.MrkvArray_sim  = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.Urate_recession_pcvd, self.Uspell_recession_pcvd, self.Rspell_pcvd)
+        self.MrkvArray_pcvd = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_real, self.Uspell_recession_real, self.Rspell_real)
+        self.MrkvArray_sim  = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_pcvd, self.Uspell_recession_pcvd, self.Rspell_pcvd)
     
     def calcAgeDistribution(self):
         '''
@@ -276,13 +276,16 @@ class FiscalType(MarkovConsumerType):
         else:
             this_Urate = self.Urate_normal
         
-        # Draw new Markov states for each agent
+        # Draw new Markov states for each agents who are employed
         draws = Uniform(seed=self.RNG.randint(0,2**31-1)).draw(self.AgentCount)
         draws = self.RNG.permutation(draws)
-        MrkvNew = np.zeros(self.AgentCount, dtype=int)
-        MrkvNew[draws > 1.0-this_Urate] = 1
+        MrkvNew = self.MrkvNow
+        old_Urate = self.Urate_normal
+        draws_empy2umemp = draws > 1.0-(this_Urate-old_Urate)/(1.0-old_Urate)
+        MrkvNew[np.logical_and(np.equal(self.MrkvNow,0), draws_empy2umemp) ] = 2 # Move people from employment to unemployment such that total unemployment rate is as required. Don't touch already unemployed people.
+        #$$$$$$$$$$
         if (self.RecessionShock and not self.R_shared): # If the recssion actually occurs,
-            MrkvNew += 2 # then put everyone into the recession 
+            MrkvNew += 3 # then put everyone into the recession 
             # This is (momentarily) skipped over if the recession state is shared
             # rather than idiosyncratic.  See a few lines below.
         

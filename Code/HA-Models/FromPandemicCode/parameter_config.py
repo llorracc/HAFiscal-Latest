@@ -10,6 +10,7 @@ DiscFacSpread = 0.0253  # Half-width of uniform distribution of discount factors
 # Parameters concerning Markov transition matrix
 Urate_normal = 0.05          # Unemployment rate in normal times
 Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
+UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
 Urate_recession_real = 0.1   # Actual unemployment rate in recession
 Uspell_recession_real = 4    # Actual average duration of unemployment spell in recession, in quarters
 Rspell_real = 6              # Actual expected length of recession, in quarters. If R_shared = True, must be an integer
@@ -24,6 +25,7 @@ PopGroFac = 1.0 #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0 #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
 
 IncUnemp = 0.3          # Unemployment benefits replacement rate (proportion of permanent income)
+IncUnempNoBenefits = 0.05          # Unemployment income when benefits run out (proportion of permanent income)
 
 # Parameters concerning the initial distribution of permanent income 
 pLvlInitMean = 0 

@@ -1,6 +1,7 @@
 '''
 This is the main script for the paper
 '''
+#$$$$$$$$$$ represents places in the code that need to be adjusted when the markov state space is changed
 from Parameters import T_sim, init_infhorizon, DiscFacDstns,\
      AgentCountTotal, TypeShares, base_dict, recession_changes, figs_dir
 from FiscalModel import FiscalType
@@ -25,12 +26,14 @@ if __name__ == '__main__':
     BaseTypeList = [InfHorizonType]
     
     # Fill in the Markov income distribution for each base type
-    # NOTE: THIS ASSUMES 4 MARKOV STATES, AND NO LIFECYCLE
+    # NOTE: THIS ASSUMES NO LIFECYCLE
     IncomeDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonType.IncUnemp])])
+    IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonType.IncUnempNoBenefits])])
     IncomeDstn_big = []
     for ThisType in BaseTypeList:
-        IncomeDstn_big.append([ThisType.IncomeDstn[0], IncomeDstn_unemp, ThisType.IncomeDstn[0], IncomeDstn_unemp])
-        ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0], IncomeDstn_unemp]
+        IncomeDstn_big.append([ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,
+                               ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp]) #$$$$$$$$$$ six markov states
+        ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp]
         ThisType.IncomeDstn_big = IncomeDstn_big
             
     # Make the overall list of types
