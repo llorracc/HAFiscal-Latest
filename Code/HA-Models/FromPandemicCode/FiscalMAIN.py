@@ -3,7 +3,9 @@ This is the main script for the paper
 '''
 #$$$$$$$$$$ represents places in the code that need to be adjusted when the markov state space is changed
 from Parameters import T_sim, init_infhorizon, DiscFacDstns,\
-     AgentCountTotal, TypeShares, base_dict, recession_changes, figs_dir
+     AgentCountTotal, TypeShares, base_dict, recession_changes,\
+     UI_changes, recession_UI_changes, TaxCut_changes, recession_TaxCut_changes,\
+     figs_dir
 from FiscalModel import FiscalType
 from FiscalTools import runExperiment
 from HARK import multiThreadCommands, multiThreadCommandsFake
@@ -26,13 +28,20 @@ if __name__ == '__main__':
     BaseTypeList = [InfHorizonType]
     
     # Fill in the Markov income distribution for each base type
+    #$$$$$$$$$$
     # NOTE: THIS ASSUMES NO LIFECYCLE
     IncomeDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonType.IncUnemp])])
     IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonType.IncUnempNoBenefits])])
     IncomeDstn_big = []
     for ThisType in BaseTypeList:
-        IncomeDstn_big.append([ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,
-                               ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp]) #$$$$$$$$$$ six markov states
+        IncomeDstn_taxcut = deepcopy(ThisType.IncomeDstn[0])
+        IncomeDstn_taxcut.X[1] = IncomeDstn_taxcut.X[1]*ThisType.TaxCutIncFactor
+        IncomeDstn_big.append([ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal
+                               ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession
+                               ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, extended UI
+                               ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, extended UI
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp])  # recession, payroll tax cut
         ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp]
         ThisType.IncomeDstn_big = IncomeDstn_big
             
@@ -60,10 +69,6 @@ if __name__ == '__main__':
     t1 = time()
     print('Making the baseline distribution of states and preparing to run counterfactual simulations took ' + mystr(t1-t0) + ' seconds.')
 
-    # Define dictionaries to be used in counterfactual scenarios
-    recession_dict = base_dict.copy()
-    recession_dict.update(**recession_changes)
-
     # Run the baseline consumption level
     t0 = time()
     base_results = runExperiment(**base_dict)
@@ -72,10 +77,61 @@ if __name__ == '__main__':
     
     # Run the recession consumption level
     t0 = time()
+    recession_dict = base_dict.copy()
+    recession_dict.update(**recession_changes)
     recession_results = runExperiment(**recession_dict)
     t1 = time()
     print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    # Run the extended UI consumption level
+    t0 = time()
+    UI_dict = base_dict.copy()
+    UI_dict.update(**UI_changes)
+    UI_results = runExperiment(**UI_dict)
+    t1 = time()
+    print('Calculating extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
+    # Run the recession and extended UI consumption level
+    t0 = time()
+    recession_UI_dict = base_dict.copy()
+    recession_UI_dict.update(**recession_UI_changes)
+    recession_UI_results = runExperiment(**recession_UI_dict)
+    t1 = time()
+    print('Calculating recession and extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    # Run the payroll tax cut consumption level
+    t0 = time()
+    TaxCut_dict = base_dict.copy()
+    TaxCut_dict.update(**TaxCut_changes)
+    TaxCut_results = runExperiment(**TaxCut_dict)
+    t1 = time()
+    print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    # Run the recession and payroll tax cut consumption level
+    t0 = time()
+    recession_TaxCut_dict = base_dict.copy()
+    recession_TaxCut_dict.update(**recession_TaxCut_changes)
+    recession_TaxCut_results = runExperiment(**recession_TaxCut_dict)
+    t1 = time()
+    print('Calculating recession and payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
  
     t_end = time()
     print('Doing everything took ' + mystr(t_end-t_start) + ' seconds in total.')
+    
+    to_plot = 'cLvl_all'
+    plt.plot(np.mean(base_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_results[to_plot],axis=1))
+    plt.plot(np.mean(UI_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_UI_results[to_plot],axis=1))
+    plt.plot(np.mean(TaxCut_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_TaxCut_results[to_plot],axis=1))
+    plt.legend(['base','recession','UI','recession_UI','TaxCut','recession_TaxCut'])
+    plt.title(to_plot)
+    
+    to_plot = 'cLvl_all'
+    plt.plot(np.mean(UI_results[to_plot]-base_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_UI_results[to_plot]-recession_results[to_plot],axis=1))
+    plt.plot(np.mean(TaxCut_results[to_plot]-base_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_TaxCut_results[to_plot]-recession_results[to_plot],axis=1))
+    plt.legend(['UI','recession_UI','TaxCut','recession_TaxCut'])
+    plt.title(to_plot)
     

@@ -26,7 +26,7 @@ DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).appr
 DiscFacDstns = [DiscFacDstn]
 
 #$$$$$$$$$$
-def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, Rspell):
+def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, Rspell, UBspell_extended, PolicyUBspell, PolicyTaxCutspell):
     '''
     Make a Markov transition matrix
     
@@ -44,6 +44,12 @@ def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, 
         Expected length of unemployment spell in a recession
     Rspell: float
         Expected length of a recession
+    UBspell_extended: float
+        Expected length of unemployment benefits WITH extension (if policy remains in place)
+    PolicyUBspell: float
+        Expected length of time the POLICY of entending unemployment benefits remains in place
+    PolicyTaxCutspell: float
+        Expected length of time the policy of payroll tax cuts remains in place
     '''
     U_persist_normal = 1.-1./Uspell_normal
     E_persist_normal = 1.-Urate_normal*(1.-U_persist_normal)/(1.-Urate_normal)
@@ -51,39 +57,44 @@ def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, 
     U_persist_recession = 1.-1./Uspell_recession
     E_persist_recession = 1.-Urate_recession*(1.-U_persist_recession)/(1.-Urate_recession)
     R_persist = 1.-1./Rspell
-    u_n = U_persist_normal
-    e_n = E_persist_normal
-    ub_n = UB_persist_normal
-    u_r = U_persist_recession
-    e_r = E_persist_recession
-    r = R_persist
+    UBpersist_extended = 1.-1./UBspell_extended # persistence of unemployment benefits when they have been extended
+    PolicyUBpersist = 1.-1./PolicyUBspell # persistence of the extended unemployment POLICY (not the benefits themselves)
+    PolicyTaxCutpersist = 1.-1./PolicyTaxCutspell # persistence of the payroll tax cut policy
     
-#    MrkvArray = [np.array([[e_n,           1-e_n,         0.0,       0.0          ],    # Start state: employed,   no recession
-#                           [1-u_n,         u_n,           0.0,       0.0          ],    # Start state: enemployed, no recession
-#                           [e_n*(1-r),     (1-e_n)*(1-r), e_r*r,    (1-e_r)*r     ],    # Start state: employed,   recession
-#                           [(1-u_n)*(1-r), u_n*(1-r),     (1-u_r)*r, u_r*r        ]     # Start state: unemployed, recession
-#                           ])]
+    def small_MrkvArray(e,u,ub):
+        small_MrkvArray = np.array([[e,           0.0,       1-e     ],    # Start state: employed
+                                     [1-u,        u,         0.0     ],    # Start state: unemployed, no benefits
+                                     [1-u,        u*(1-ub),  u*ub   ]])  # Start state: unemployed, benefits
+        return small_MrkvArray
     
-    MrkvArray_normal    = np.array([[e_n,           0.0,           1-e_n     ],    # Start state: employed,   no recession
-                                     [1-u_n,         u_n,           0.0       ],    # Start state: enemployed, no recession, no benefits
-                                     [1-u_n,         u_n*(1-ub_n),  u_n*ub_n  ]])  # Start state: enemployed, no recession, benefits
-
-    MrkvArray_recession = np.array([[e_r,           0.0,           1-e_r     ],    # Start state: employed,   recession
-                                     [1-u_r,         u_r,           0.0       ],    # Start state: enemployed, recession, no benefits
-                                     [1-u_r,         u_r*(1-ub_n),  u_r*ub_n  ]])  # Start state: enemployed, recession, benefits
+    MrkvArray_normal    = small_MrkvArray(E_persist_normal, U_persist_normal, UB_persist_normal)
+    MrkvArray_recession = small_MrkvArray(E_persist_recession, U_persist_recession, UB_persist_normal)
+    MrkvArray_normal_exUB    = small_MrkvArray(E_persist_normal, U_persist_normal, UBpersist_extended)
+    MrkvArray_recession_exUB = small_MrkvArray(E_persist_recession, U_persist_recession, UBpersist_extended)
 
     MrkvArray_1 = np.concatenate((MrkvArray_normal, np.zeros((3,3))),axis=1)      
-    MrkvArray_2 = np.concatenate((MrkvArray_recession*(1-r), MrkvArray_recession*r),axis=1) 
+    MrkvArray_2 = np.concatenate((MrkvArray_recession*(1-R_persist), MrkvArray_recession*R_persist),axis=1) 
     
-    MrkvArray = [np.concatenate((MrkvArray_1, MrkvArray_2),axis = 0)]
-                            
+    MrkvArray_normal_and_recession = [np.concatenate((MrkvArray_1, MrkvArray_2),axis = 0)]
+    
+    MrkvArray_1_exUB = np.concatenate((MrkvArray_normal_exUB*(1-PolicyUBpersist),np.zeros((3,3)),MrkvArray_normal_exUB*PolicyUBpersist,np.zeros((3,3))),axis=1)      
+    MrkvArray_2_exUB = np.concatenate((MrkvArray_recession_exUB*(1-PolicyUBpersist)*(1-R_persist),MrkvArray_recession_exUB*(1-PolicyUBpersist)*R_persist,MrkvArray_recession_exUB*PolicyUBpersist*(1-R_persist),MrkvArray_recession_exUB*PolicyUBpersist*R_persist),axis=1) 
+                
+    MrkvArray_normal_and_recession_UBextension = [np.concatenate((np.concatenate((MrkvArray_normal_and_recession[0], np.zeros((6,6))),axis=1), MrkvArray_1_exUB, MrkvArray_2_exUB),axis = 0)]
+          
+    MrkvArray_1_taxcut = np.concatenate((MrkvArray_normal*(1-PolicyTaxCutpersist),np.zeros((3,9)),MrkvArray_normal*PolicyTaxCutpersist,np.zeros((3,3))),axis=1)      
+    MrkvArray_2_taxcut = np.concatenate((MrkvArray_recession*(1-PolicyTaxCutpersist)*(1-R_persist),MrkvArray_recession*(1-PolicyTaxCutpersist)*R_persist, np.zeros((3,6)),MrkvArray_recession*PolicyTaxCutpersist*(1-R_persist),MrkvArray_recession*PolicyTaxCutpersist*R_persist),axis=1) 
+                
+    MrkvArray_normal_and_recession_UBextension_taxcut = [np.concatenate((np.concatenate((MrkvArray_normal_and_recession_UBextension[0], np.zeros((12,6))),axis=1), MrkvArray_1_taxcut, MrkvArray_2_taxcut),axis = 0)]
+        
+    MrkvArray = MrkvArray_normal_and_recession_UBextension_taxcut
     return MrkvArray
 
 
 # Make Markov transition arrays among discrete states in each period of the lifecycle (ACTUAL / SIMULATION)
-MrkvArray_real = makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession_real, Uspell_recession_real, Rspell_real)
+MrkvArray_real = makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession_real, Uspell_recession_real, Rspell_real, UBspell_extended_real, PolicyUBspell_real, PolicyTaxCutspell_real)
 # Make Markov transition arrays among discrete states in each period of the lifecycle (PERCEIVED / SIMULATION)
-MrkvArray_pcvd = makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession_pcvd, Uspell_recession_pcvd, Rspell_pcvd)
+MrkvArray_pcvd = makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession_pcvd, Uspell_recession_pcvd, Rspell_pcvd, UBspell_extended_pcvd, PolicyUBspell_pcvd, PolicyTaxCutspell_pcvd)
 num_MrkvStates = MrkvArray_real[0].shape[0]
 num_normal_MrkvStates =3
 
@@ -155,6 +166,13 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'Uspell_recession_pcvd' : Uspell_recession_pcvd,
                 'Rspell_pcvd' : Rspell_pcvd,
                 'R_shared' : R_shared,
+                'UBspell_extended_real' : UBspell_extended_real,
+                'UBspell_extended_pcvd' : UBspell_extended_pcvd,
+                'PolicyUBspell_real' : PolicyUBspell_real,
+                'PolicyUBspell_pcvd' : PolicyUBspell_pcvd,
+                'PolicyTaxCutspell_real' : PolicyTaxCutspell_real,
+                'PolicyTaxCutspell_pcvd' : PolicyTaxCutspell_pcvd,
+                'TaxCutIncFactor' : TaxCutIncFactor,
                 'track_vars' : []
                 }
 
@@ -165,15 +183,39 @@ if R_shared:
 TypeShares = [1.0]
 
 # Define a dictionary to represent the baseline scenario
-base_dict = {'RecessionShock' : False
+base_dict = {'RecessionShock' : False,
+             'ExtendedUIShock' : False,
+             'TaxCutShock' : False,
              }
-
 # Define a dictionary to mutate baseline for the recession
 recession_changes = {
-        'RecessionShock' : True
-        }
+             'RecessionShock' : True,
+             'ExtendedUIShock' : False,
+             'TaxCutShock' : False,
+             }
+UI_changes = {
+             'RecessionShock' : False,
+             'ExtendedUIShock' : True,
+             'TaxCutShock' : False,
+             }
+recession_UI_changes = {
+             'RecessionShock' : True,
+             'ExtendedUIShock' : True,
+             'TaxCutShock' : False,
+             }
+TaxCut_changes = {
+             'RecessionShock' : False,
+             'ExtendedUIShock' : False,
+             'TaxCutShock' : True,
+             }
+recession_TaxCut_changes = {
+             'RecessionShock' : True,
+             'ExtendedUIShock' : False,
+             'TaxCutShock' : True,
+             }
 
-quick_test = True
+
+quick_test = False
 if quick_test:
     AgentCountTotal = 10000
     DiscFacCount = 2

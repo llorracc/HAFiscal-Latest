@@ -10,7 +10,7 @@ from HARK import multiThreadCommands, multiThreadCommandsFake
 mystr = lambda x : '{:.2f}'.format(x)
 mystr2 = lambda x : '{:.3f}'.format(x)
 
-def runExperiment(Agents,RecessionShock):
+def runExperiment(Agents,RecessionShock,TaxCutShock,ExtendedUIShock):
     '''
     Conduct an experiment in which the recession hits and/or fiscal policy is initiated.
     
@@ -31,6 +31,8 @@ def runExperiment(Agents,RecessionShock):
     experiment_dict = {
             'use_prestate' : True,
             'RecessionShock' : RecessionShock,
+            'TaxCutShock' : TaxCutShock,
+            'ExtendedUIShock' : ExtendedUIShock
             }
       
     # Begin the experiment by resetting each type's state to the baseline values

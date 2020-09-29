@@ -90,8 +90,8 @@ class FiscalType(MarkovConsumerType):
         Constructs an updated MrkvArray_pcvd attribute to be used in solution (perceived),
         as well as MrkvArray_sim attribute to be used in simulation (actual).
         '''
-        self.MrkvArray_pcvd = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_real, self.Uspell_recession_real, self.Rspell_real)
-        self.MrkvArray_sim  = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_pcvd, self.Uspell_recession_pcvd, self.Rspell_pcvd)
+        self.MrkvArray_pcvd = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_real, self.Uspell_recession_real, self.Rspell_real, self.UBspell_extended_real, self.PolicyUBspell_real, self.PolicyTaxCutspell_real)
+        self.MrkvArray_sim  = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_pcvd, self.Uspell_recession_pcvd, self.Rspell_pcvd, self.UBspell_extended_pcvd, self.PolicyUBspell_pcvd, self.PolicyTaxCutspell_pcvd)
     
     def calcAgeDistribution(self):
         '''
@@ -288,6 +288,13 @@ class FiscalType(MarkovConsumerType):
             MrkvNew += 3 # then put everyone into the recession 
             # This is (momentarily) skipped over if the recession state is shared
             # rather than idiosyncratic.  See a few lines below.
+        if self.ExtendedUIShock:
+            MrkvNew += 6 # put everyone in the extended UI states
+        if self.TaxCutShock:
+            MrkvNew +=12 # put everyone in the tax cut states
+        if (self.ExtendedUIShock and self.TaxCutShock):
+            print("Cannot handle UI and TaxCut experiments at the same time (yet)")
+            return
         
         # Move agents to those Markov states 
         self.MrkvNow = MrkvNew
