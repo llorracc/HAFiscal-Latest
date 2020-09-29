@@ -127,7 +127,7 @@ if __name__ == '__main__':
     t_end = time()
     print('Doing everything took ' + mystr(t_end-t_start) + ' seconds in total.')
     
-    to_plot = 'TranShk_all'
+    to_plot = 'cLvl_all'
     plt.plot(np.mean(base_results[to_plot],axis=1))
     plt.plot(np.mean(recession_results[to_plot],axis=1))
     plt.plot(np.mean(UI_results[to_plot],axis=1))
@@ -136,6 +136,7 @@ if __name__ == '__main__':
     plt.plot(np.mean(recession_TaxCut_results[to_plot],axis=1))
     plt.legend(['base','recession','UI','recession_UI','TaxCut','recession_TaxCut'])
     plt.title(to_plot)
+    plt.savefig(figs_dir +'ScenarioPaths.pdf')
     plt.show()
     
     plt.plot(np.mean(UI_results[to_plot]-base_results[to_plot],axis=1))
@@ -144,6 +145,7 @@ if __name__ == '__main__':
     plt.plot(np.mean(recession_TaxCut_results[to_plot]-recession_results[to_plot],axis=1))
     plt.legend(['UI','recession_UI','TaxCut','recession_TaxCut'])
     plt.title(to_plot + 'Policy vs no policy')
+    plt.savefig(figs_dir +'PolicyVsNoPolicy.pdf')
     plt.show()
     
     # sticky vs frictionless
@@ -154,6 +156,6 @@ if __name__ == '__main__':
     plt.plot(np.mean(recession_TaxCut_results_sticky[to_plot]-recession_TaxCut_results[to_plot],axis=1))
     plt.legend(['recession','UI','recession_UI','TaxCut','recession_TaxCut'])
     plt.title(to_plot + ' Sticky vs Frictionless')
-    plt.savefig(figs_dir +'SticyVsFrictionless.pdf')
+    plt.savefig(figs_dir +'StickyVsFrictionless.pdf')
     plt.show()
     
