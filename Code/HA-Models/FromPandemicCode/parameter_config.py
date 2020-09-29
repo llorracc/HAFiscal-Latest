@@ -26,6 +26,8 @@ PolicyTaxCutspell_real = 8            # Actual    Average duration that policy o
 PolicyTaxCutspell_pcvd = 8            # Perceived Average duration that policy of payroll tax cuts
 TaxCutIncFactor = 1.02      # Amount by which the payroll tax cut increases after-tax income
 
+UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
+
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
 CRRA = 1.0              # Coefficient of relative risk aversion

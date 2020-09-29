@@ -3,7 +3,7 @@ This is the main script for the paper
 '''
 #$$$$$$$$$$ represents places in the code that need to be adjusted when the markov state space is changed
 from Parameters import T_sim, init_infhorizon, DiscFacDstns,\
-     AgentCountTotal, TypeShares, base_dict, recession_changes,\
+     AgentCountTotal, TypeShares, base_dict, recession_changes, sticky_e_changes,\
      UI_changes, recession_UI_changes, TaxCut_changes, recession_TaxCut_changes,\
      figs_dir
 from FiscalModel import FiscalType
@@ -80,6 +80,8 @@ if __name__ == '__main__':
     recession_dict = base_dict.copy()
     recession_dict.update(**recession_changes)
     recession_results = runExperiment(**recession_dict)
+    recession_dict.update(**sticky_e_changes)
+    recession_results_sticky = runExperiment(**recession_dict)
     t1 = time()
     print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
     
@@ -88,6 +90,8 @@ if __name__ == '__main__':
     UI_dict = base_dict.copy()
     UI_dict.update(**UI_changes)
     UI_results = runExperiment(**UI_dict)
+    UI_dict.update(**sticky_e_changes)
+    UI_results_sticky = runExperiment(**UI_dict)
     t1 = time()
     print('Calculating extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
     # Run the recession and extended UI consumption level
@@ -95,6 +99,8 @@ if __name__ == '__main__':
     recession_UI_dict = base_dict.copy()
     recession_UI_dict.update(**recession_UI_changes)
     recession_UI_results = runExperiment(**recession_UI_dict)
+    recession_UI_dict.update(**sticky_e_changes)
+    recession_UI_results_sticky = runExperiment(**recession_UI_dict)
     t1 = time()
     print('Calculating recession and extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
     
@@ -103,6 +109,8 @@ if __name__ == '__main__':
     TaxCut_dict = base_dict.copy()
     TaxCut_dict.update(**TaxCut_changes)
     TaxCut_results = runExperiment(**TaxCut_dict)
+    TaxCut_dict.update(**sticky_e_changes)
+    TaxCut_results_sticky = runExperiment(**TaxCut_dict)
     t1 = time()
     print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
     
@@ -111,13 +119,15 @@ if __name__ == '__main__':
     recession_TaxCut_dict = base_dict.copy()
     recession_TaxCut_dict.update(**recession_TaxCut_changes)
     recession_TaxCut_results = runExperiment(**recession_TaxCut_dict)
+    recession_TaxCut_dict.update(**sticky_e_changes)
+    recession_TaxCut_results_sticky = runExperiment(**recession_TaxCut_dict)
     t1 = time()
     print('Calculating recession and payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
  
     t_end = time()
     print('Doing everything took ' + mystr(t_end-t_start) + ' seconds in total.')
     
-    to_plot = 'cLvl_all'
+    to_plot = 'TranShk_all'
     plt.plot(np.mean(base_results[to_plot],axis=1))
     plt.plot(np.mean(recession_results[to_plot],axis=1))
     plt.plot(np.mean(UI_results[to_plot],axis=1))
@@ -126,12 +136,24 @@ if __name__ == '__main__':
     plt.plot(np.mean(recession_TaxCut_results[to_plot],axis=1))
     plt.legend(['base','recession','UI','recession_UI','TaxCut','recession_TaxCut'])
     plt.title(to_plot)
+    plt.show()
     
-    to_plot = 'cLvl_all'
     plt.plot(np.mean(UI_results[to_plot]-base_results[to_plot],axis=1))
     plt.plot(np.mean(recession_UI_results[to_plot]-recession_results[to_plot],axis=1))
     plt.plot(np.mean(TaxCut_results[to_plot]-base_results[to_plot],axis=1))
     plt.plot(np.mean(recession_TaxCut_results[to_plot]-recession_results[to_plot],axis=1))
     plt.legend(['UI','recession_UI','TaxCut','recession_TaxCut'])
-    plt.title(to_plot)
+    plt.title(to_plot + 'Policy vs no policy')
+    plt.show()
+    
+    # sticky vs frictionless
+    plt.plot(np.mean(recession_results_sticky[to_plot]-recession_results[to_plot],axis=1))
+    plt.plot(np.mean(UI_results_sticky[to_plot]-UI_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_UI_results_sticky[to_plot]-recession_UI_results[to_plot],axis=1))
+    plt.plot(np.mean(TaxCut_results_sticky[to_plot]-TaxCut_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_TaxCut_results_sticky[to_plot]-recession_TaxCut_results[to_plot],axis=1))
+    plt.legend(['recession','UI','recession_UI','TaxCut','recession_TaxCut'])
+    plt.title(to_plot + ' Sticky vs Frictionless')
+    plt.savefig(figs_dir +'SticyVsFrictionless.pdf')
+    plt.show()
     

@@ -4,7 +4,7 @@ import os
 import csv
 from HARK.distribution import Uniform
 from importlib import reload
-figs_dir = '../../Figures/'
+figs_dir = './Figures/'
 
 # Import configurable parameters, and keep them updated through reload
 import parameter_config
@@ -173,6 +173,7 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'PolicyTaxCutspell_real' : PolicyTaxCutspell_real,
                 'PolicyTaxCutspell_pcvd' : PolicyTaxCutspell_pcvd,
                 'TaxCutIncFactor' : TaxCutIncFactor,
+                'UpdatePrb' : 1.0,
                 'track_vars' : []
                 }
 
@@ -186,6 +187,7 @@ TypeShares = [1.0]
 base_dict = {'RecessionShock' : False,
              'ExtendedUIShock' : False,
              'TaxCutShock' : False,
+             'UpdatePrb' : 1.0
              }
 # Define a dictionary to mutate baseline for the recession
 recession_changes = {
@@ -212,6 +214,12 @@ recession_TaxCut_changes = {
              'RecessionShock' : True,
              'ExtendedUIShock' : False,
              'TaxCutShock' : True,
+             }
+sticky_e_changes = {
+             'UpdatePrb' : UpdatePrb
+             }
+frictionless_changes = {
+             'UpdatePrb' : 1.0
              }
 
 

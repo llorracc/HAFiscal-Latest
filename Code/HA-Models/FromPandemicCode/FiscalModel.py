@@ -17,8 +17,8 @@ class FiscalType(MarkovConsumerType):
     
     def __init__(self,cycles=1,time_flow=True,**kwds):
         MarkovConsumerType.__init__(self,cycles=1,time_flow=True,**kwds)
+        self.shock_vars += ['update_draw']
         self.solveOnePeriod = solveConsMarkovALT
-        
         
     def preSolve(self):
         self.MrkvArray = self.MrkvArray_pcvd
@@ -62,12 +62,27 @@ class FiscalType(MarkovConsumerType):
         else:
             return MarkovConsumerType.simDeath(self)
 
-
     def getShocks(self):
         MarkovConsumerType.getShocks(self)
         if (hasattr(self,'Mrkv_univ') and self.Mrkv_univ is not None):
             self.MrkvNow = self.MrkvNow_temp # Make sure real sequence is recorded
-
+        self.update_draw = self.RNG.permutation(np.array(range(self.AgentCount))) # A list permuted integers, low draws will update their aggregate Markov state
+            
+    def getStates(self):
+        MarkovConsumerType.getStates(self)
+        
+        # Initialize the random draw of Pi*N agents who update
+        how_many_update = int(round(self.UpdatePrb*self.AgentCount))
+        self.update = self.update_draw < how_many_update
+        # Only updaters change their perception of the Markov state
+        if hasattr(self,'MrkvNowPcvd'):
+            self.MrkvNowPcvd[self.update] = self.MrkvNow[self.update]
+        else: # This only triggers in the first simulated period
+            self.MrkvNowPcvd = np.ones(self.AgentCount,dtype=int)*self.MrkvNow
+        # update the idiosyncratic state (employed, unemployed with benefits, unemployed without benefits)
+        # but leave the macro state as it is (idiosyncratic state is 'modulo 3')
+        self.MrkvNowPcvd = np.remainder(self.MrkvNow,3) + 3*np.floor_divide(self.MrkvNowPcvd,3)
+        
 
     def getMarkovStates(self):
         '''
@@ -155,7 +170,7 @@ class FiscalType(MarkovConsumerType):
         
         # Adjust simulation parameters for the counterfactual experiments
         self.T_sim = T_sim
-        self.track_vars = ['cNrmNow','pLvlNow','aNrmNow','mNrmNow']
+        self.track_vars = ['cNrmNow','pLvlNow','aNrmNow','mNrmNow','MrkvNowPcvd']
         self.use_prestate = None
         self.MrkvArray_pcvd = self.MrkvArray
         #print('Finished type ' + str(self.seed) + '!')
@@ -168,6 +183,7 @@ class FiscalType(MarkovConsumerType):
         self.MrkvArray = self.MrkvArray_sim
         J = self.MrkvArray[0].shape[0]
         DeathHistAll = np.zeros((J,self.T_sim,self.AgentCount), dtype=bool)
+        UpdateDrawHistAll = np.zeros((J,self.T_sim,self.AgentCount), dtype=int)
         MrkvHistAll = np.zeros((J,self.T_sim,self.AgentCount), dtype=int)
         TranShkHistCond = np.zeros((J,self.T_sim,self.AgentCount))
         PermShkHistCond = np.zeros((J,self.T_sim,self.AgentCount))
@@ -176,6 +192,7 @@ class FiscalType(MarkovConsumerType):
             self.read_shocks = False
             self.makeShockHistory()
             DeathHistAll[j,:,:] = self.history['who_dies']
+            UpdateDrawHistAll[j,:,:] = self.history['update_draw']
             MrkvHistAll[j,:,:] = self.history['MrkvNow']
             PermShkHistCond[j,:,:] = self.history['PermShkNow']
             TranShkHistCond[j,:,:] = self.history['TranShkNow']
@@ -194,6 +211,7 @@ class FiscalType(MarkovConsumerType):
         
         # Store as attributes of self
         self.DeathHistAll = DeathHistAll
+        self.UpdateDrawHistAll = UpdateDrawHistAll
         self.MrkvHistAll = MrkvHistAll
         self.PermShkHistAll = PermShkHistAll
         self.TranShkHistAll = TranShkHistAll
@@ -248,6 +266,7 @@ class FiscalType(MarkovConsumerType):
         self.aNrm_base = self.aNrmNow.copy()
         self.pLvl_base = self.pLvlNow.copy()
         self.Mrkv_base = self.MrkvNow.copy()
+        self.MrkvPcvd_base = self.MrkvNowPcvd.copy()
         self.cycle_base  = self.t_cycle.copy()
         self.age_base  = self.t_age.copy()
         self.t_sim_base = self.t_sim
@@ -261,6 +280,7 @@ class FiscalType(MarkovConsumerType):
         self.aNrmNow = self.aNrm_base.copy()
         self.pLvlNow = self.pLvl_base.copy()
         self.MrkvNow = self.Mrkv_base.copy()
+        self.MrkvNowPcvd = self.MrkvPcvd_base.copy()
         self.t_cycle = self.cycle_base.copy()
         self.t_age   = self.age_base.copy()
         self.PlvlAggNow = self.PlvlAgg_base
@@ -304,6 +324,7 @@ class FiscalType(MarkovConsumerType):
         for j in range(J):
             these = self.MrkvNow == j
             self.history['who_dies'][:,these] = self.DeathHistAll[j,:,:][:,these]
+            self.history['update_draw'][:,these] = self.UpdateDrawHistAll[j,:,:][:,these]
             self.history['MrkvNow'][:,these] = self.MrkvHistAll[j,:,:][:,these]
             self.history['PermShkNow'][:,these] = self.PermShkHistAll[j,:,:][:,these]
             self.history['TranShkNow'][:,these] = self.TranShkHistAll[j,:,:][:,these]
@@ -318,6 +339,34 @@ class FiscalType(MarkovConsumerType):
 #        if (self.RecessionShock and self.R_shared):
 #            T = self.T_recession
 #            self.history['MrkvNow'][0:T,:] += 2
+                   
+    def getControls(self):
+        '''
+        Calculates consumption for each consumer of this type using the consumption functions.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        '''
+        cNrmNow = np.zeros(self.AgentCount) + np.nan
+        MPCnow = np.zeros(self.AgentCount) + np.nan
+        J = self.MrkvArray[0].shape[0]
+        
+        MrkvBoolArray = np.zeros((J,self.AgentCount), dtype=bool)
+        for j in range(J):
+            MrkvBoolArray[j,:] = j == self.MrkvNowPcvd # Agents choose control based on *perceived* Markov state
+        
+        for t in range(self.T_cycle):
+            right_t = t == self.t_cycle
+            for j in range(J):
+                these = np.logical_and(right_t, MrkvBoolArray[j,:])
+                cNrmNow[these], MPCnow[these] = self.solution[t].cFunc[j].eval_with_derivative(self.mNrmNow[these])
+        self.cNrmNow = cNrmNow
+        self.MPCnow  = MPCnow
                     
                 
 def solveConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGroFac,
