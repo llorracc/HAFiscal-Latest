@@ -10,7 +10,8 @@ from HARK import multiThreadCommands, multiThreadCommandsFake
 mystr = lambda x : '{:.2f}'.format(x)
 mystr2 = lambda x : '{:.3f}'.format(x)
 
-def runExperiment(Agents,RecessionShock,TaxCutShock,ExtendedUIShock, UpdatePrb):
+def runExperiment(Agents,RecessionShock = False,TaxCutShock = False, \
+                  ExtendedUIShock =False, UpdatePrb = 1.0, Splurge = 0.0):
     '''
     Conduct an experiment in which the recession hits and/or fiscal policy is initiated.
     
@@ -60,6 +61,8 @@ def runExperiment(Agents,RecessionShock,TaxCutShock,ExtendedUIShock, UpdatePrb):
     mNrm_all = np.concatenate([ThisType.history['mNrmNow'] for ThisType in Agents], axis=1)
     aNrm_all = np.concatenate([ThisType.history['aNrmNow'] for ThisType in Agents], axis=1)
     cLvl_all = cNrm_all*pLvl_all
+    # Calculate Splurge results (agents splurge on some of their income, and follow model for the rest)
+    cLvl_all_splurge = (1.0-Splurge)*cLvl_all + Splurge*pLvl_all*TranShk_all
     # Get initial Markov states
     Mrkv_init = np.concatenate([ThisType.history['MrkvNow'][0,:] for ThisType in Agents])
     return_dict = {'cNrm_all' : cNrm_all,
@@ -69,6 +72,7 @@ def runExperiment(Agents,RecessionShock,TaxCutShock,ExtendedUIShock, UpdatePrb):
                    'Mrkv_hist' : Mrkv_hist,
                    'Mrkv_init' : Mrkv_init,
                    'mNrm_all' : mNrm_all,
-                   'aNrm_all' : aNrm_all}
+                   'aNrm_all' : aNrm_all,
+                   'cLvl_all_splurge' : cLvl_all_splurge}
     return return_dict
 

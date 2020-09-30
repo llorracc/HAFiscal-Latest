@@ -187,7 +187,8 @@ TypeShares = [1.0]
 base_dict = {'RecessionShock' : False,
              'ExtendedUIShock' : False,
              'TaxCutShock' : False,
-             'UpdatePrb' : 1.0
+             'UpdatePrb' : 1.0,
+             'Splurge' : Splurge
              }
 # Define a dictionary to mutate baseline for the recession
 recession_changes = {

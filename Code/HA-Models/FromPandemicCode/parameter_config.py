@@ -27,6 +27,7 @@ PolicyTaxCutspell_pcvd = 8            # Perceived Average duration that policy o
 TaxCutIncFactor = 1.02      # Amount by which the payroll tax cut increases after-tax income
 
 UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
+Splurge = 0.32      # amount of income that is splurged
 
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)

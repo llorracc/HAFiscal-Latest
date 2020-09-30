@@ -127,7 +127,7 @@ if __name__ == '__main__':
     t_end = time()
     print('Doing everything took ' + mystr(t_end-t_start) + ' seconds in total.')
     
-    to_plot = 'cLvl_all'
+    to_plot = 'cLvl_all_splurge'
     plt.plot(np.mean(base_results[to_plot],axis=1))
     plt.plot(np.mean(recession_results[to_plot],axis=1))
     plt.plot(np.mean(UI_results[to_plot],axis=1))
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     plt.plot(np.mean(recession_TaxCut_results[to_plot],axis=1))
     plt.legend(['base','recession','UI','recession_UI','TaxCut','recession_TaxCut'])
     plt.title(to_plot)
-    plt.savefig(figs_dir +'ScenarioPaths.pdf')
+    plt.savefig(figs_dir +'ScenarioPaths_'+to_plot+'.pdf')
     plt.show()
     
     plt.plot(np.mean(UI_results[to_plot]-base_results[to_plot],axis=1))
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     plt.plot(np.mean(recession_TaxCut_results[to_plot]-recession_results[to_plot],axis=1))
     plt.legend(['UI','recession_UI','TaxCut','recession_TaxCut'])
     plt.title(to_plot + 'Policy vs no policy')
-    plt.savefig(figs_dir +'PolicyVsNoPolicy.pdf')
+    plt.savefig(figs_dir +'PolicyVsNoPolicy_'+to_plot+'.pdf')
     plt.show()
     
     # sticky vs frictionless
@@ -156,6 +156,30 @@ if __name__ == '__main__':
     plt.plot(np.mean(recession_TaxCut_results_sticky[to_plot]-recession_TaxCut_results[to_plot],axis=1))
     plt.legend(['recession','UI','recession_UI','TaxCut','recession_TaxCut'])
     plt.title(to_plot + ' Sticky vs Frictionless')
-    plt.savefig(figs_dir +'StickyVsFrictionless.pdf')
+    plt.savefig(figs_dir +'StickyVsFrictionless_'+to_plot+'.pdf')
     plt.show()
     
+    # sticky vs frictionless
+    plt.plot(np.mean(base_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_results_sticky[to_plot],axis=1))
+    plt.plot(np.mean(recession_UI_results_sticky[to_plot],axis=1))
+    plt.plot(np.mean(recession_TaxCut_results_sticky[to_plot],axis=1))
+    plt.legend(['Baseline','recession frictionless','recession sticky','recession_UI sticky','recession_TaxCut sticky'])
+    plt.title(to_plot + ' Sticky vs Frictionless')
+    plt.savefig(figs_dir +'StickyVsFrictionless2_'+to_plot+'.pdf')
+    plt.show()
+    
+    # Splurge vs no-splurge
+    to_plot = 'cLvl_all'
+    to_plot2 = 'cLvl_all_splurge'
+    plt.plot(np.mean(base_results[to_plot2]-base_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_results[to_plot2]-recession_results[to_plot],axis=1))
+    plt.plot(np.mean(UI_results[to_plot2]-UI_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_UI_results[to_plot2]-recession_UI_results[to_plot],axis=1))
+    plt.plot(np.mean(TaxCut_results[to_plot2]-TaxCut_results[to_plot],axis=1))
+    plt.plot(np.mean(recession_TaxCut_results[to_plot2]-recession_TaxCut_results[to_plot],axis=1))
+    plt.legend(['base','recession','UI','recession_UI','TaxCut','recession_TaxCut'])
+    plt.title(to_plot)
+    plt.savefig(figs_dir +'consumption_splurge_vs_not.pdf')
+    plt.show()
