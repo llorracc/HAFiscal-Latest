@@ -69,11 +69,16 @@ if __name__ == '__main__':
     t1 = time()
     print('Making the baseline distribution of states and preparing to run counterfactual simulations took ' + mystr(t1-t0) + ' seconds.')
 
+
     # Run the baseline consumption level
     t0 = time()
     base_results = runExperiment(**base_dict)
     t1 = time()
     print('Calculating baseline consumption took ' + mystr(t1-t0) + ' seconds.')
+
+    
+    
+    #%%
     
     # Run the recession consumption level
     t0 = time()
@@ -126,6 +131,34 @@ if __name__ == '__main__':
  
     t_end = time()
     print('Doing everything took ' + mystr(t_end-t_start) + ' seconds in total.')
+    
+    #%% Fiscal expenditure effectiveness
+    
+    to_plot1 = 'NPV_AggCons'
+    to_plot2 = 'NPV_AggIncome'
+    
+    AddCons = UI_results[to_plot1]-base_results[to_plot1]
+    AddInc  = UI_results[to_plot2]-base_results[to_plot2]
+    Multiplier = AddCons/AddInc
+    print('Consumption multiplier for UI exenstion: ', Multiplier)
+    
+    AddCons = recession_UI_results[to_plot1]-recession_results[to_plot1]
+    AddInc  = recession_UI_results[to_plot2]-recession_results[to_plot2]
+    Multiplier = AddCons/AddInc
+    print('Consumption multiplier for UI exenstion during recession: ', Multiplier)
+   
+    
+    AddCons = TaxCut_results[to_plot1]-base_results[to_plot1]
+    AddInc  = TaxCut_results[to_plot2]-base_results[to_plot2]
+    Multiplier = AddCons/AddInc
+    print('Consumption multiplier for tax cut: ', Multiplier)
+    
+    AddCons = recession_TaxCut_results[to_plot1]-recession_results[to_plot1]
+    AddInc  = recession_TaxCut_results[to_plot2]-recession_results[to_plot2]
+    Multiplier = AddCons/AddInc
+    print('Consumption multiplier for tax cut during recession: ', Multiplier)
+    
+    #%%
     
     to_plot = 'cLvl_all_splurge'
     plt.plot(np.mean(base_results[to_plot],axis=1))
