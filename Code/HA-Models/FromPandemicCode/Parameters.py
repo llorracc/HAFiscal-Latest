@@ -25,6 +25,9 @@ DiscFacCount = 7
 DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
 DiscFacDstns = [DiscFacDstn]
 
+# Define grid of aggregate assets to labor
+MgridBase = np.array([0.1,0.3,0.6,0.8,0.9,0.98,1.0,1.02,1.1,1.2,1.6,2.0,3.0])  
+
 #$$$$$$$$$$
 def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, Rspell, UBspell_extended, PolicyUBspell, PolicyTaxCutspell):
     '''
@@ -174,7 +177,8 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'PolicyTaxCutspell_pcvd' : PolicyTaxCutspell_pcvd,
                 'TaxCutIncFactor' : TaxCutIncFactor,
                 'UpdatePrb' : 1.0,
-                'track_vars' : []
+                'track_vars' : [],
+                'MgridBase' : MgridBase
                 }
 
 if R_shared:
