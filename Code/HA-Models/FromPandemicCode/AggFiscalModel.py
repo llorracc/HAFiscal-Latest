@@ -9,7 +9,8 @@ from HARK.ConsumptionSaving.ConsIndShockModel import MargValueFunc, ConsumerSolu
 from HARK.ConsumptionSaving.ConsAggShockModel import MargValueFunc2D
 from HARK.interpolation import LinearInterp, LowerEnvelope, BilinearInterp, VariableLowerBoundFunc2D, \
                                 LinearInterpOnInterp1D, LowerEnvelope2D, UpperEnvelope, ConstantFunction
-from HARK.core import distanceMetric
+from HARK import Market
+from HARK.core import distanceMetric, HARKobject
 from Parameters import makeMrkvArray, T_sim
 from copy import deepcopy
 import matplotlib.pyplot as plt
@@ -625,3 +626,87 @@ def solveAggConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,Per
     solution_now = ConsumerSolution(cFunc=cFuncNow, vPfunc=vPfuncNow, mNrmMin=mNrmMinNow)
     return solution_now
 
+
+class AggregateDemandEconomy(Market):
+    '''
+    A class to represent an economy in which productivity responds to aggregate
+    consumption
+    '''
+    def __init__(self,
+                 agents=None,
+                 **kwds):
+        '''
+        Make a new instance of AggregateDemandEconomy by filling in attributes
+        specific to this kind of market.
+        '''
+        agents = agents if agents is not None else list()
+
+        Market.__init__(self, agents=agents,
+                        sow_vars=['CaggNow', 'AggDemandFac','MrkvNow'],
+                        reap_vars=['cLvlNow', 'pLvlNow'],
+                        track_vars=['CaggNow', 'AggDemandFac','MrkvNow'],
+                        dyn_vars=['CFunc'],
+                        **kwds)
+        self.update()
+
+
+    def millRule(self, cLvlNow, pLvlNow):
+        self.CaggNow = np.mean(np.array(cLvlNow))/np.mean(pLvlNow)  
+        self.AggDemandFac = self.ADFunc(self.CaggNow)
+        mill_return = HARKobject()
+        mill_return.CaggNow = self.CaggNow
+        mill_return.AggDemandFac = self.AggDemandFac
+        MrkvNow = self.MrkvNow_hist[self.Shk_idx]
+        mill_return.MrkvNow = MrkvNow
+        return mill_return
+
+    def calcDynamics(self):
+        return self.calcCFunc()
+
+    def update(self):
+        '''
+        '''
+        self.CaggNow_init = 1.0
+        self.AggDemandFac_init = 1.0
+        self.ADFunc = lambda C : C**self.ADelasticity
+        StateCount = self.MrkvArray.shape[0]
+        CFunc_all = []
+        for i in range(StateCount):
+            CFunc_all.append(CRule(self.intercept_prev[i], self.slope_prev[i]))
+        self.CFunc = CFunc_all
+
+    def reset(self):
+        '''
+        Reset the economy to prepare for a new simulation.  Sets the time index
+        of aggregate shocks to zero and runs Market.reset().
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        '''
+        self.Shk_idx = 0
+        Market.reset(self)
+
+    def calcCFunc(self):
+        StateCount = self.MrkvArray.shape[0]
+        CFunc_all = []
+        for i in range(StateCount):
+            CFunc_all.append(CRule(self.intercept_prev[i], self.slope_prev[i]))
+        self.CFunc = CFunc_all
+    
+class CRule(HARKobject):
+    '''
+    A class to represent agent beliefs about aggregate consumption dynamics.
+    '''
+    def __init__(self, intercept, slope):
+        self.intercept = intercept
+        self.slope = slope
+        self.distance_criteria = ['slope', 'intercept']
+
+    def __call__(self, Cnow):
+        Cnext = np.exp(self.intercept + self.slope*np.log(Cnow))
+        return Cnext

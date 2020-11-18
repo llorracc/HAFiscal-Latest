@@ -235,3 +235,16 @@ if quick_test:
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
     init_infhorizon['T_sim'] = 20
+    
+# Parameters for AggregateDemandEconomy economy
+intercept_prev = 0.0          # Intercept of aggregate savings function
+slope_prev = 1.0              # Slope of aggregate savings function
+ADelasticity = 0.0            # Elasticity of productivity to consumption
+
+
+# Make a dictionary to specify a Cobb-Douglas economy
+init_ADEconomy = {'intercept_prev': intercept_prev,
+                     'slope_prev': slope_prev,
+                     'ADelasticity' : ADelasticity
+                     }
+    
