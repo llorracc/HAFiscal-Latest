@@ -6,9 +6,12 @@ import numpy as np
 from HARK.distribution import DiscreteDistribution, Bernoulli, Uniform
 from HARK.ConsumptionSaving.ConsMarkovModel import MarkovConsumerType
 from HARK.ConsumptionSaving.ConsIndShockModel import MargValueFunc, ConsumerSolution
-from HARK.interpolation import LinearInterp, LowerEnvelope
+from HARK.ConsumptionSaving.ConsAggShockModel import MargValueFunc2D
+from HARK.interpolation import LinearInterp, LowerEnvelope, BilinearInterp, VariableLowerBoundFunc2D, \
+                                LinearInterpOnInterp1D, LowerEnvelope2D, UpperEnvelope, ConstantFunction
 from HARK.core import distanceMetric
 from Parameters import makeMrkvArray, T_sim
+from copy import deepcopy
 import matplotlib.pyplot as plt
 
 # Define a modified MarkovConsumerType
@@ -56,12 +59,11 @@ class AggFiscalType(MarkovConsumerType):
         None
         '''
         self.T_sim = Economy.act_T                   # Need to be able to track as many periods as economy runs
-        self.Mgrid = Economy.MSS*self.MgridBase      # Aggregate market resources grid adjusted around SS capital ratio
-        self.AFunc = Economy.AFunc                   # Next period's aggregate savings function
-        self.Rfunc = Economy.Rfunc                   # Interest factor as function of capital ratio
-        self.wFunc = Economy.wFunc                   # Wage rate function (in SOE a constant)
+        self.Cgrid = self.CgridBase                  # Ratio of consumption to steady state consumption
+        self.CFunc = Economy.CFunc                   # Next period's consumption ratio function
+        self.ADFunc = Economy.ADFunc                 # Function that takes aggregate consumption to agg. demand function
         self.PermGroFacAgg = Economy.PermGroFacAgg   # Aggregate permanent productivity growth
-        self.addToTimeInv('Mgrid', 'AFunc', 'Rfunc', 'wFunc', 'PermGroFacAgg')
+        self.addToTimeInv('Cgrid', 'CFunc', 'PermGroFacAgg','ADFunc')
 
         
     def getMortality(self):
@@ -84,9 +86,48 @@ class AggFiscalType(MarkovConsumerType):
             return np.zeros(self.AgentCount, dtype=bool)
         else:
             return MarkovConsumerType.simDeath(self)
+        # Note - resources of agents who die just disappear
+        
+    def getRfree(self):
+        '''
+        Returns an array of size self.AgentCount with self.RfreeNow in every entry.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        RfreeNow : np.array
+             Array of size self.AgentCount with risk free interest rate for each agent.
+        '''
+        RfreeNow = self.RfreeNow*np.ones(self.AgentCount)
+        return RfreeNow
+    
+    def marketAction(self):
+        '''
+        In the aggregate shocks model, the "market action" is to simulate one
+        period of receiving income and choosing how much to consume.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        '''
+        self.simulate(1)
+        
+    def getCaggNow(self):  # This function exists to be overwritten in StickyE model
+        return self.CaggNow*np.ones(self.AgentCount)
+    
+    def getAggDemandFacNow(self):  # This function exists to be overwritten in StickyE model
+        return self.AggDemandFac*np.ones(self.AgentCount)
 
     def getShocks(self):
         MarkovConsumerType.getShocks(self)
+        self.TranShkNow = self.TranShkNow*self.getAggDemandFacNow() # For simulation, just multiply transitive shock by the aggregate demand factor
         if (hasattr(self,'Mrkv_univ') and self.Mrkv_univ is not None):
             self.MrkvNow = self.MrkvNow_temp # Make sure real sequence is recorded
         self.update_draw = self.RNG.permutation(np.array(range(self.AgentCount))) # A list permuted integers, low draws will update their aggregate Markov state
@@ -102,6 +143,7 @@ class AggFiscalType(MarkovConsumerType):
             self.MrkvNowPcvd[self.update] = self.MrkvNow[self.update]
         else: # This only triggers in the first simulated period
             self.MrkvNowPcvd = np.ones(self.AgentCount,dtype=int)*self.MrkvNow
+        #$$$$$$$$$$ 
         # update the idiosyncratic state (employed, unemployed with benefits, unemployed without benefits)
         # but leave the macro state as it is (idiosyncratic state is 'modulo 3')
         self.MrkvNowPcvd = np.remainder(self.MrkvNow,3) + 3*np.floor_divide(self.MrkvNowPcvd,3)
@@ -377,6 +419,7 @@ class AggFiscalType(MarkovConsumerType):
         '''
         cNrmNow = np.zeros(self.AgentCount) + np.nan
         MPCnow = np.zeros(self.AgentCount) + np.nan
+        CaggNow = self.getCaggNow()
         J = self.MrkvArray[0].shape[0]
         
         MrkvBoolArray = np.zeros((J,self.AgentCount), dtype=bool)
@@ -387,13 +430,15 @@ class AggFiscalType(MarkovConsumerType):
             right_t = t == self.t_cycle
             for j in range(J):
                 these = np.logical_and(right_t, MrkvBoolArray[j,:])
-                cNrmNow[these], MPCnow[these] = self.solution[t].cFunc[j].eval_with_derivative(self.mNrmNow[these])
+                cNrmNow[these] = self.solution[t].cFunc[j](self.mNrmNow[these], CaggNow[these])
+                # Marginal propensity to consume
+                MPCnow[these]  = self.solution[t].cFunc[j].derivativeX(self.mNrmNow[these], CaggNow[these])
         self.cNrmNow = cNrmNow
         self.MPCnow  = MPCnow
                     
                 
-def solveConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGroFac,
-                                 MrkvArray,BoroCnstArt,aXtraGrid,vFuncBool,CubicBool):
+def solveAggConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGroFac,
+                                 MrkvArray,BoroCnstArt,aXtraGrid, Cgrid, CFunc, ADFunc):
     '''
     Solves a single period consumption-saving problem with risky income and
     stochastic transitions between discrete states, in a Markov fashion.  Has
@@ -435,12 +480,6 @@ def solveConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGr
     aXtraGrid: np.array
         Array of "extra" end-of-period asset values-- assets above the
         absolute minimum acceptable level.
-    vFuncBool: boolean
-        An indicator for whether the value function should be computed and
-        included in the reported solution.  Not used.
-    CubicBool: boolean
-        An indicator for whether the solver should use cubic or linear inter-
-        polation.  Not used.
 
     Returns
     -------
@@ -455,12 +494,13 @@ def solveConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGr
     '''
     # Get sizes of grids
     aCount = aXtraGrid.size
+    Ccount = Cgrid.size
     StateCount = MrkvArray.shape[0]
 
     # Loop through next period's states, assuming we reach each one at a time.
     # Construct EndOfPrdvP_cond functions for each state.
-    BoroCnstNat_cond = []
     EndOfPrdvPfunc_cond = []
+    BoroCnstNat_cond = []
     for j in range(StateCount):
         # Unpack next period's solution
         vPfuncNext = solution_next.vPfunc[j]
@@ -471,33 +511,52 @@ def solveConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGr
         PermShkValsNext = IncomeDstn[j].X[0]
         TranShkValsNext = IncomeDstn[j].X[1]
         ShkCount = ShkPrbsNext.size
-        aXtra_tiled = np.tile(np.reshape(aXtraGrid, (aCount, 1)), (1, ShkCount))
+        aXtra_tiled = np.tile(np.reshape(aXtraGrid, (1, aCount, 1)), (Ccount, 1, ShkCount))
 
         # Make tiled versions of the income shocks
         # Dimension order: aNow, Shk
-        ShkPrbsNext_tiled = np.tile(np.reshape(ShkPrbsNext, (1, ShkCount)), (aCount, 1))
-        PermShkValsNext_tiled = np.tile(np.reshape(PermShkValsNext, (1, ShkCount)), (aCount, 1))
-        TranShkValsNext_tiled = np.tile(np.reshape(TranShkValsNext, (1, ShkCount)), (aCount, 1))
+        ShkPrbsNext_tiled = np.tile(np.reshape(ShkPrbsNext, (1, 1, ShkCount)), (Ccount, aCount, 1))
+        PermShkValsNext_tiled = np.tile(np.reshape(PermShkValsNext, (1, 1, ShkCount)), (Ccount, aCount, 1))
+        TranShkValsNext_tiled_noAD = np.tile(np.reshape(TranShkValsNext, (1, 1, ShkCount)), (Ccount, aCount, 1))
+        
+        # Calculate aggregate consumption next period
+        CaggGrid = CFunc[j](Cgrid)
+        Cnext_array = np.tile(np.reshape(CaggGrid, (Ccount, 1, 1)), (1, aCount, ShkCount)) ##$$$$$$$$ NOTE THIS WILL DEPEND ON THE STATE YOU MOVE TO! NEED CFunc to vary by state from AND state to
 
-        # Find the natural borrowing constraint
-        aNrmMin_candidates = PermGroFac[j]*PermShkValsNext_tiled/Rfree[j]*(mNrmMinNext - TranShkValsNext_tiled[0, :])
-        aNrmMin = np.max(aNrmMin_candidates)
-        BoroCnstNat_cond.append(aNrmMin)
+        # Calculate AggDemandFac
+        AggDemandFacnext_array = ADFunc(Cnext_array)  
+        TranShkValsNext_tiled = AggDemandFacnext_array*TranShkValsNext_tiled_noAD
+        
+        # Find the natural borrowing constraint for each value of C in the Cgrid.
+        aNrmMin_candidates = PermGroFac[j]*PermShkValsNext_tiled/Rfree[j]* \
+            (mNrmMinNext(Cnext_array[:, 0, :]) - TranShkValsNext_tiled[:, 0, :])
+        aNrmMin_vec = np.max(aNrmMin_candidates, axis=1)
+        BoroCnstNat_vec = aNrmMin_vec
+        aNrmMin_tiled = np.tile(np.reshape(aNrmMin_vec, (Ccount, 1, 1)), (1, aCount, ShkCount))
+        aNrmNow_tiled = aNrmMin_tiled + aXtra_tiled
+
 
         # Calculate market resources next period (and a constant array of capital-to-labor ratio)
-        aNrmNow_tiled = aNrmMin + aXtra_tiled
         mNrmNext_array = Rfree[j]*aNrmNow_tiled/PermShkValsNext_tiled + TranShkValsNext_tiled
 
         # Find marginal value next period at every income shock realization and every aggregate market resource gridpoint
-        vPnext_array = Rfree[j]*PermShkValsNext_tiled**(-CRRA)*vPfuncNext(mNrmNext_array)
+        vPnext_array = Rfree[j]*PermShkValsNext_tiled**(-CRRA)*vPfuncNext(mNrmNext_array, Cnext_array)
 
         # Calculate expectated marginal value at the end of the period at every asset gridpoint
-        EndOfPrdvP = DiscFac*np.sum(vPnext_array*ShkPrbsNext_tiled, axis=1)
-
+        EndOfPrdvP = DiscFac*np.sum(vPnext_array*ShkPrbsNext_tiled, axis=2)
+        
         # Make the conditional end-of-period marginal value function
-        EndOfPrdvPnvrs = EndOfPrdvP**(-1./CRRA)
-        EndOfPrdvPnvrsFunc = LinearInterp(np.insert(aNrmMin + aXtraGrid, 0, aNrmMin), np.insert(EndOfPrdvPnvrs, 0, 0.0))
-        EndOfPrdvPfunc_cond.append(MargValueFunc(EndOfPrdvPnvrsFunc, CRRA))
+        BoroCnstNat = LinearInterp(np.insert(CaggGrid, 0, 0.0), np.insert(BoroCnstNat_vec, 0, 0.0))
+        EndOfPrdvPnvrs = np.concatenate((np.zeros((Ccount, 1)), EndOfPrdvP**(-1./CRRA)), axis=1)
+        EndOfPrdvPnvrsFunc_base = BilinearInterp(np.transpose(EndOfPrdvPnvrs), np.insert(aXtraGrid, 0, 0.0), CaggGrid)
+        EndOfPrdvPnvrsFunc = VariableLowerBoundFunc2D(EndOfPrdvPnvrsFunc_base, BoroCnstNat)
+        EndOfPrdvPfunc_cond.append(MargValueFunc2D(EndOfPrdvPnvrsFunc, CRRA))
+        BoroCnstNat_cond.append(BoroCnstNat)
+        
+    # Prepare some objects that are the same across all current states
+    aXtra_tiled = np.tile(np.reshape(aXtraGrid, (1, aCount)), (Ccount, 1))
+    cFuncCnst = BilinearInterp(np.array([[0.0, 0.0], [1.0, 1.0]]),
+                               np.array([BoroCnstArt, BoroCnstArt+1.0]), np.array([0.0, 1.0]))
 
     # Now loop through *this* period's discrete states, calculating end-of-period
     # marginal value (weighting across state transitions), then construct consumption
@@ -506,50 +565,63 @@ def solveConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGr
     vPfuncNow = []
     mNrmMinNow = []
     for i in range(StateCount):
-        # Find natural borrowing constraint for this state
-        aNrmMin_candidates = np.zeros(StateCount) + np.nan
+        # Find natural borrowing constraint for this state by Cagg
+        Cnext = CFunc[i](Cgrid)
+        aNrmMin_candidates = np.zeros((StateCount, Ccount)) + np.nan
         for j in range(StateCount):
             if MrkvArray[i, j] > 0.:  # Irrelevant if transition is impossible
-                aNrmMin_candidates[j] = BoroCnstNat_cond[j]
-        aNrmMin = np.nanmax(aNrmMin_candidates)
-        
-        # Find the minimum allowable market resources
-        if BoroCnstArt is not None:
-            mNrmMin = np.maximum(BoroCnstArt, aNrmMin)
-        else:
-            mNrmMin = aNrmMin
-        mNrmMinNow.append(mNrmMin)
+                aNrmMin_candidates[j, :] = BoroCnstNat_cond[j](Cnext)
+        aNrmMin_vec = np.nanmax(aNrmMin_candidates, axis=0)
+        BoroCnstNat_vec = aNrmMin_vec
 
-        # Make tiled grid of aNrm
-        aNrmNow = aNrmMin + aXtraGrid
+        # Make tiled grids of aNrm and Cagg
+        aNrmMin_tiled = np.tile(np.reshape(aNrmMin_vec, (Ccount, 1)), (1, aCount))
+        aNrmNow_tiled = aNrmMin_tiled + aXtra_tiled
+        Cnext_tiled = np.tile(np.reshape(Cnext, (Ccount, 1)), (1, aCount))
+
+        
+        # # Find the minimum allowable market resources
+        # if BoroCnstArt is not None:
+        #     mNrmMin = np.maximum(BoroCnstArt, aNrmMin)
+        # else:
+        #     mNrmMin = aNrmMin
+        # mNrmMinNow.append(mNrmMin)
         
         # Loop through feasible transitions and calculate end-of-period marginal value
-        EndOfPrdvP = np.zeros(aCount)
+        EndOfPrdvP = np.zeros((Ccount, aCount))
         for j in range(StateCount):
             if MrkvArray[i, j] > 0.:
-                temp = MrkvArray[i, j]*EndOfPrdvPfunc_cond[j](aNrmNow)
-                EndOfPrdvP += temp
+                temp = EndOfPrdvPfunc_cond[j](aNrmNow_tiled, Cnext_tiled)
+                EndOfPrdvP += MrkvArray[i, j]*temp
         EndOfPrdvP *= LivPrb[i] # Account for survival out of the current state
-
+        
         # Calculate consumption and the endogenous mNrm gridpoints for this state
         cNrmNow = EndOfPrdvP**(-1./CRRA)
-        mNrmNow = aNrmNow + cNrmNow
+        mNrmNow = aNrmNow_tiled + cNrmNow
 
-        # Make a piecewise linear consumption function
-        c_temp = np.insert(cNrmNow, 0, 0.0)  # Add point at bottom
-        m_temp = np.insert(mNrmNow, 0, aNrmMin)
-        cFuncUnc = LinearInterp(m_temp, c_temp)
-        cFuncCnst = LinearInterp(np.array([mNrmMin, mNrmMin+1.0]), np.array([0.0, 1.0]))
-        cFuncNow.append(LowerEnvelope(cFuncUnc,cFuncCnst))
+        # Loop through the values in Cgrid and make a piecewise linear consumption function for each
+        cFuncBaseByC_list = []
+        for n in range(Ccount):
+            c_temp = np.insert(cNrmNow[n, :], 0, 0.0)  # Add point at bottom
+            m_temp = np.insert(mNrmNow[n, :] - BoroCnstNat_vec[n], 0, 0.0)
+            cFuncBaseByC_list.append(LinearInterp(m_temp, c_temp))
+            # Add the C-specific consumption function to the list
+            
+        # Construct the unconstrained consumption function by combining the M-specific functions
+        BoroCnstNat = LinearInterp(np.insert(Cgrid, 0, 0.0), np.insert(BoroCnstNat_vec, 0, 0.0))
+        cFuncBase = LinearInterpOnInterp1D(cFuncBaseByC_list, Cgrid)
+        cFuncUnc = VariableLowerBoundFunc2D(cFuncBase, BoroCnstNat)
+
+        # Combine the constrained consumption function with unconstrained component
+        cFuncNow.append(LowerEnvelope2D(cFuncUnc, cFuncCnst))
+
+        # Make the minimum m function as the greater of the natural and artificial constraints
+        mNrmMinNow.append(UpperEnvelope(BoroCnstNat, ConstantFunction(BoroCnstArt)))
 
         # Construct the marginal value function using the envelope condition
-        m_temp = aXtraGrid + mNrmMin
-        c_temp = cFuncNow[i](m_temp)
-        uP = c_temp**(-CRRA)
-        vPnvrs = uP**(-1./CRRA)
-        vPnvrsFunc = LinearInterp(np.insert(m_temp, 0, mNrmMin), np.insert(vPnvrs, 0, 0.0))
-        vPfuncNow.append(MargValueFunc(vPnvrsFunc, CRRA))
-        
+        vPfuncNow.append(MargValueFunc2D(cFuncNow[-1], CRRA))
+
     # Pack up and return the solution
     solution_now = ConsumerSolution(cFunc=cFuncNow, vPfunc=vPfuncNow, mNrmMin=mNrmMinNow)
     return solution_now
+

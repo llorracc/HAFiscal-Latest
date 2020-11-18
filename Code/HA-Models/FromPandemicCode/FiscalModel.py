@@ -79,6 +79,7 @@ class FiscalType(MarkovConsumerType):
             self.MrkvNowPcvd[self.update] = self.MrkvNow[self.update]
         else: # This only triggers in the first simulated period
             self.MrkvNowPcvd = np.ones(self.AgentCount,dtype=int)*self.MrkvNow
+        #$$$$$$$$$$ 
         # update the idiosyncratic state (employed, unemployed with benefits, unemployed without benefits)
         # but leave the macro state as it is (idiosyncratic state is 'modulo 3')
         self.MrkvNowPcvd = np.remainder(self.MrkvNow,3) + 3*np.floor_divide(self.MrkvNowPcvd,3)
