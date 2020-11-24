@@ -14,7 +14,7 @@ from parameter_config import *
 ###############################################################################
 
 # Size of simulations
-AgentCountTotal = 1000000 # Total simulated population
+AgentCountTotal = 100000 # Total simulated population
 T_sim = 13              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
@@ -26,7 +26,7 @@ DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).appr
 DiscFacDstns = [DiscFacDstn]
 
 # Define grid of aggregate assets to labor
-MgridBase = np.array([0.1,0.3,0.6,0.8,0.9,0.98,1.0,1.02,1.1,1.2,1.6,2.0,3.0])  
+CgridBase = np.array([0.8,0.9,0.98,1.0,1.02,1.1,1.2])  
 
 #$$$$$$$$$$
 def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, Rspell, UBspell_extended, PolicyUBspell, PolicyTaxCutspell):
@@ -178,7 +178,7 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'TaxCutIncFactor' : TaxCutIncFactor,
                 'UpdatePrb' : 1.0,
                 'track_vars' : [],
-                'MgridBase' : MgridBase
+                'CgridBase' : CgridBase
                 }
 
 if R_shared:
