@@ -177,8 +177,7 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'PolicyTaxCutspell_pcvd' : PolicyTaxCutspell_pcvd,
                 'TaxCutIncFactor' : TaxCutIncFactor,
                 'UpdatePrb' : 1.0,
-                'track_vars' : [],
-                'CgridBase' : CgridBase
+                'track_vars' : []
                 }
 
 if R_shared:
@@ -237,14 +236,22 @@ if quick_test:
     init_infhorizon['T_sim'] = 20
     
 # Parameters for AggregateDemandEconomy economy
-intercept_prev = 0.0          # Intercept of aggregate savings function
-slope_prev = 1.0              # Slope of aggregate savings function
+intercept_prev = [0.0]*num_normal_MrkvStates          # Intercept of aggregate savings function
+slope_prev = [1.0]*num_normal_MrkvStates              # Slope of aggregate savings function
+intercept_prev_big = [0.0]*num_MrkvStates          # Intercept of aggregate savings function
+slope_prev_big = [1.0]*num_MrkvStates              # Slope of aggregate savings function
 ADelasticity = 0.0            # Elasticity of productivity to consumption
 
 
 # Make a dictionary to specify a Cobb-Douglas economy
 init_ADEconomy = {'intercept_prev': intercept_prev,
                      'slope_prev': slope_prev,
-                     'ADelasticity' : ADelasticity
+                     'ADelasticity' : ADelasticity,
+                     'MrkvArray' : MrkvArray_small,
+                     'MrkvArray_big' : MrkvArray_pcvd,
+                     'intercept_prev_big' : intercept_prev_big,
+                     'slope_prev_big' : slope_prev_big,
+                     'CgridBase' : CgridBase,
+                     'act_T' : 400
                      }
     
