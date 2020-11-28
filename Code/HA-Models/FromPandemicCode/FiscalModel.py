@@ -190,17 +190,23 @@ class FiscalType(MarkovConsumerType):
         MrkvHistAll = np.zeros((J,self.T_sim,self.AgentCount), dtype=int)
         TranShkHistCond = np.zeros((J,self.T_sim,self.AgentCount))
         PermShkHistCond = np.zeros((J,self.T_sim,self.AgentCount))
+        ##HACK to make shocks in different Markov states align
+        self.Mrkv_univ = 0
+        self.read_shocks = False
+        self.makeShockHistory()
+        self.read_mortality = True # Make sure that every death history is the same
+        self.who_dies_backup = self.history['who_dies'].copy()
         for j in range(J):
-            self.Mrkv_univ = j
+            self.Mrkv_univ = j 
             self.read_shocks = False
             self.makeShockHistory()
             DeathHistAll[j,:,:] = self.history['who_dies']
             UpdateDrawHistAll[j,:,:] = self.history['update_draw']
             MrkvHistAll[j,:,:] = self.history['MrkvNow']
             PermShkHistCond[j,:,:] = self.history['PermShkNow']
-            TranShkHistCond[j,:,:] = self.history['TranShkNow']
-            self.read_mortality = True # Make sure that every death history is the same
-            self.who_dies_backup = self.history['who_dies'].copy()
+            TranShkHistCond[j,:,:] = self.history['TranShkNow'] #multiply with 1.02 if we reduce j
+            #self.read_mortality = True # Make sure that every death history is the same
+            #self.who_dies_backup = self.history['who_dies'].copy()
         
         # Transfer income shocks conditional on each Markov state into the histories
         # that start in each Markov state
