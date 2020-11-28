@@ -203,6 +203,10 @@ class FiscalType(MarkovConsumerType):
             DeathHistAll[j,:,:] = self.history['who_dies']
             UpdateDrawHistAll[j,:,:] = self.history['update_draw']
             MrkvHistAll[j,:,:] = self.history['MrkvNow']
+            if j >= 6 and j <9:
+                MrkvHistAll[j,:,:] = MrkvHistAll[j,:,:] - ((MrkvHistAll[j,:,:]%3)-(MrkvHistAll[0,:,:]%3))
+            if j >= 10 and j <12:
+                MrkvHistAll[j,:,:] = MrkvHistAll[j,:,:] - ((MrkvHistAll[j,:,:]%3)-(MrkvHistAll[3,:,:]%3))
             PermShkHistCond[j,:,:] = self.history['PermShkNow']
             TranShkHistCond[j,:,:] = self.history['TranShkNow'] #multiply with 1.02 if we reduce j
             #self.read_mortality = True # Make sure that every death history is the same
