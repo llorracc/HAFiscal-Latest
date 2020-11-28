@@ -30,6 +30,8 @@ PolicyUBspell_pcvd = 2       # Perceived Average duration that policy of extende
 PolicyTaxCutspell_real = 2   # Actual    Average duration that policy of payroll tax cuts
 PolicyTaxCutspell_pcvd = 2   # Perceived Average duration that policy of payroll tax cuts
 TaxCutIncFactor = 1.02       # Amount by which the payroll tax cut increases after-tax income
+TaxCutPeriods = 8            # Deterministic duration of tax cut 
+
 
 UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
 Splurge = 0.32      # amount of income that is splurged

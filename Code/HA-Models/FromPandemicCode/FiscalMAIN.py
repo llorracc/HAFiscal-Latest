@@ -15,7 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
-
+#%%
 if __name__ == '__main__':
     
     mystr = lambda x : '{:.2f}'.format(x)
@@ -47,8 +47,16 @@ if __name__ == '__main__':
                                IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
                                IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
                                IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
                                IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp])  # recession, payroll tax cut
-        #here 16 lines would be for each recession
+        #NEED TO DO THIS in loop rather than hardcoded using TaxCutPeriods*2
         ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp]
         ThisType.IncomeDstn_big = IncomeDstn_big #Comment income distributions for each state
             
@@ -147,6 +155,8 @@ if __name__ == '__main__':
     to_plot3 = 'AggCons'
     to_plot4 = 'AggIncome'
     
+    add_plot_text = ''
+    
     
     NPV_AddCons = UI_results[to_plot1]-base_results[to_plot1]
     NPV_AddInc  = UI_results[to_plot2]-base_results[to_plot2]  
@@ -155,6 +165,7 @@ if __name__ == '__main__':
     plt.plot(AddInc)
     plt.plot(AddCons)
     plt.legend(['Fiscal policy expenditure, UI extension','Additional consumption, UI extension'])
+    plt.savefig(figs_dir +'UI_cut' + add_plot_text +'.pdf')
     plt.show()
     Stimulus_UI    = AddCons/NPV_AddInc[-1]  #divide by total cumulative NPV of the policy
 
@@ -166,6 +177,7 @@ if __name__ == '__main__':
     plt.plot(AddInc)
     plt.plot(AddCons)
     plt.legend(['Fiscal policy expenditure, UI extension during recession','Additional consumption, UI extension during recession'])
+    plt.savefig(figs_dir +'UI_cut_rec' + add_plot_text +'.pdf')
     plt.show()
     Stimulus_UI_rec    = AddCons/NPV_AddInc[-1]  #divide by total cumulative NPV of the policy
 
@@ -177,6 +189,7 @@ if __name__ == '__main__':
     plt.plot(AddInc)
     plt.plot(AddCons)
     plt.legend(['Fiscal policy expenditure, tax cut','Additional consumption, tax cut'])
+    plt.savefig(figs_dir +'tax_cut' + add_plot_text +'.pdf')
     plt.show()
     Stimulus_taxcut    = AddCons/NPV_AddInc[-1]  #divide by total cumulative NPV of the policy
 
@@ -188,6 +201,7 @@ if __name__ == '__main__':
     plt.plot(AddInc)
     plt.plot(AddCons)
     plt.legend(['Fiscal policy expenditure, tax cut during recession','Additional consumption, tax cut during recession'])
+    plt.savefig(figs_dir +'tax_cut_rec' + add_plot_text +'.pdf')
     plt.show()
     Stimulus_taxcut_rec    = AddCons/NPV_AddInc[-1]  #divide by total cumulative NPV of the policy
   
@@ -199,6 +213,7 @@ if __name__ == '__main__':
     plt.plot(Stimulus_taxcut_rec)
     plt.title('Stimulated consumption per period relative to NPV of policy intervention')
     plt.legend(['UI','recession_UI','TaxCut','recession_TaxCut'])
+    plt.savefig(figs_dir +'stimulated-consumption' + add_plot_text +'.pdf')
     plt.show()
  
     

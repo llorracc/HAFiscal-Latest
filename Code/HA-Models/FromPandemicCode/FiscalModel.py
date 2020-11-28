@@ -105,8 +105,8 @@ class FiscalType(MarkovConsumerType):
         Constructs an updated MrkvArray_pcvd attribute to be used in solution (perceived),
         as well as MrkvArray_sim attribute to be used in simulation (actual).
         '''
-        self.MrkvArray_pcvd = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_real, self.Uspell_recession_real, self.Rspell_real, self.UBspell_extended_real, self.PolicyUBspell_real, self.PolicyTaxCutspell_real)
-        self.MrkvArray_sim  = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_pcvd, self.Uspell_recession_pcvd, self.Rspell_pcvd, self.UBspell_extended_pcvd, self.PolicyUBspell_pcvd, self.PolicyTaxCutspell_pcvd)
+        self.MrkvArray_pcvd = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_real, self.Uspell_recession_real, self.Rspell_real, self.UBspell_extended_real, self.PolicyUBspell_real, self.PolicyTaxCutspell_real, self.TaxCutPeriods)
+        self.MrkvArray_sim  = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_pcvd, self.Uspell_recession_pcvd, self.Rspell_pcvd, self.UBspell_extended_pcvd, self.PolicyUBspell_pcvd, self.PolicyTaxCutspell_pcvd, self.TaxCutPeriods)
     
     def calcAgeDistribution(self):
         '''
