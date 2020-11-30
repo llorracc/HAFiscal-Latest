@@ -48,7 +48,7 @@ class FiscalType(MarkovConsumerType):
         history of death events is identical across simulations.
         '''
         if (self.read_shocks or hasattr(self,'read_mortality')):
-            who_dies = self.who_dies_backup[self.t_sim,:]
+            who_dies = self.who_dies_fixed_hist[self.t_sim,:]
         else:
             who_dies = self.simDeath()
         self.simBirth(who_dies)
@@ -185,50 +185,26 @@ class FiscalType(MarkovConsumerType):
         print('makeAlternateShockHistories called')
         
         self.MrkvArray = self.MrkvArray_sim
-        J = self.MrkvArray[0].shape[0]
-        DeathHistAll = np.zeros((J,self.T_sim,self.AgentCount), dtype=bool)
-        UpdateDrawHistAll = np.zeros((J,self.T_sim,self.AgentCount), dtype=int)
+        #J = self.MrkvArray[0].shape[0]
+        J = 18 # hitwithrecessionshock only shocks agents into the first 18 markov states
         MrkvHistAll = np.zeros((J,self.T_sim,self.AgentCount), dtype=int)
-        TranShkHistCond = np.zeros((J,self.T_sim,self.AgentCount))
-        PermShkHistCond = np.zeros((J,self.T_sim,self.AgentCount))
-        ##HACK to make shocks in different Markov states align
         self.Mrkv_univ = 0
         self.read_shocks = False
         self.makeShockHistory()
         self.read_mortality = True # Make sure that every death history is the same
-        self.who_dies_backup = self.history['who_dies'].copy()
+        self.who_dies_fixed_hist = self.history['who_dies'].copy()
+        self.update_draw_fixed_hist = self.history['update_draw'].copy()
+        self.perm_shock_fixed_hist = self.history['PermShkNow'].copy()
+        self.tran_shock_fixed_hist = self.history['TranShkNow'].copy()
+        
         for j in range(J):
             self.Mrkv_univ = j 
             self.read_shocks = False
             self.makeShockHistory()
-            DeathHistAll[j,:,:] = self.history['who_dies']
-            UpdateDrawHistAll[j,:,:] = self.history['update_draw']
             MrkvHistAll[j,:,:] = self.history['MrkvNow']
-            if j >= 6 and j <9:
-                MrkvHistAll[j,:,:] = MrkvHistAll[j,:,:] - ((MrkvHistAll[j,:,:]%3)-(MrkvHistAll[0,:,:]%3))
-            if j >= 10 and j <12:
-                MrkvHistAll[j,:,:] = MrkvHistAll[j,:,:] - ((MrkvHistAll[j,:,:]%3)-(MrkvHistAll[3,:,:]%3))
-            PermShkHistCond[j,:,:] = self.history['PermShkNow']
-            TranShkHistCond[j,:,:] = self.history['TranShkNow']
-        
-        # Transfer income shocks conditional on each Markov state into the histories
-        # that start in each Markov state
-        TranShkHistAll = np.zeros((J,self.T_sim,self.AgentCount))
-        PermShkHistAll = np.zeros((J,self.T_sim,self.AgentCount))
-        for j in range(J):
-            for k in range(J):
-                these = MrkvHistAll[k,:,:] == j
-                PermShkHistAll[k,][these] = PermShkHistCond[j,][these]
-                TranShkHistAll[k,][these] = TranShkHistCond[j,][these]
         
         # Store as attributes of self
-        self.DeathHistAll = DeathHistAll
-        self.UpdateDrawHistAll = UpdateDrawHistAll
         self.MrkvHistAll = MrkvHistAll
-        self.PermShkHistAll = PermShkHistAll
-        self.TranShkHistAll = TranShkHistAll
-        self.PermShkHistCond = PermShkHistCond
-        self.TranShkHistCond = TranShkHistCond
         self.Mrkv_univ = None
         self.MrkvArray_sim_prev = self.MrkvArray_sim
         self.R_shared_prev = self.R_shared
@@ -336,16 +312,25 @@ class FiscalType(MarkovConsumerType):
         self.MrkvNow = MrkvNew
         # print(self.MrkvNow)
 
-        
         # Take the appropriate shock history for each agent, depending on their state
-        J = self.MrkvArray[0].shape[0]
+        #J = self.MrkvArray[0].shape[0]
+        J = 18
         for j in range(J):
             these = self.MrkvNow == j
-            self.history['who_dies'][:,these] = self.DeathHistAll[j,:,:][:,these]
-            self.history['update_draw'][:,these] = self.UpdateDrawHistAll[j,:,:][:,these]
             self.history['MrkvNow'][:,these] = self.MrkvHistAll[j,:,:][:,these]
-            self.history['PermShkNow'][:,these] = self.PermShkHistAll[j,:,:][:,these]
-            self.history['TranShkNow'][:,these] = self.TranShkHistAll[j,:,:][:,these]
+        tax_cut_multiplier = np.ones_like(self.history['MrkvNow'])
+        tax_cut_multiplier[np.greater(self.history['MrkvNow'], 11)] *= self.TaxCutIncFactor #$$$$$$$$$$ assumes all markov states above 11 are tax cut states
+        employed = np.equal(self.history['MrkvNow']%3, 0)
+        self.history['PermShkNow'][employed] = self.perm_shock_fixed_hist[employed]
+        self.history['TranShkNow'][employed] = self.tran_shock_fixed_hist[employed]*tax_cut_multiplier[employed]
+        unemp_without_benefits = np.equal(self.history['MrkvNow']%3, 1)
+        self.history['PermShkNow'][unemp_without_benefits] = 1.0
+        self.history['TranShkNow'][unemp_without_benefits] = self.IncUnempNoBenefits
+        unemp_with_benefits = np.equal(self.history['MrkvNow']%3, 2)
+        self.history['PermShkNow'][unemp_with_benefits] = 1.0
+        self.history['TranShkNow'][unemp_with_benefits] = self.IncUnemp
+        self.history['who_dies'] = self.who_dies_fixed_hist
+        self.history['update_draw'] = self.update_draw_fixed_hist
       
 #        NEED TO FIX BELOW IF WE WANT SHARED RECESSION - NECESSARY TO CHANGE IF WE WANT SHOCKS TO BE CONTINGENT ON RECESSION STATE
 #        POSSIBLE FIX - TAKE HISTORY FROM PermShkHistCond up to the point where the recession ends, then take history starting 
