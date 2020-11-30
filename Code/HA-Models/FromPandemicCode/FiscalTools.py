@@ -53,6 +53,9 @@ def runExperiment(Agents,RecessionShock = False,TaxCutShock = False, \
                            'simulate()']
     multiThreadCommandsFake(Agents, experiment_commands)
     
+    #print(Agents[0].history['pLvlNow'][35:40,0])
+    #print(Agents[0].history['TranShkNow'][35:40,0])
+    
     # Extract simulated consumption, labor income, and weight data
     cNrm_all = np.concatenate([ThisType.history['cNrmNow'] for ThisType in Agents], axis=1)
     Mrkv_hist = np.concatenate([ThisType.history['MrkvNow'] for ThisType in Agents], axis=1)
@@ -63,6 +66,30 @@ def runExperiment(Agents,RecessionShock = False,TaxCutShock = False, \
     cLvl_all = cNrm_all*pLvl_all
     # Calculate Splurge results (agents splurge on some of their income, and follow model for the rest)
     cLvl_all_splurge = (1.0-Splurge)*cLvl_all + Splurge*pLvl_all*TranShk_all
+    
+    IndIncome = pLvl_all*TranShk_all
+    AggIncome = np.sum(IndIncome,1)
+    AggCons   = np.sum(cLvl_all_splurge,1)
+    
+    #print(AggIncome[35:40])
+   
+    
+    # Function calculates the net present value of X, which can be income or consumption
+    # Periods defintes the horizon of the NPV measure, R the interest rate at which future income is discounted
+    def calculate_NPV(X,Periods,R):
+        NPV_discount = np.zeros(Periods)
+        for t in range(Periods):
+            NPV_discount[t] = 1/(R**t)
+        NPV = np.zeros(Periods)
+        for t in range(Periods):
+            NPV[t] = np.sum(X[0:t+1]*NPV_discount[0:t+1])    
+        return NPV
+    
+    # calculate NPV
+    NPV_AggIncome = calculate_NPV(AggIncome,T,ThisType.Rfree[0])
+    NPV_AggCons   = calculate_NPV(AggCons,T,ThisType.Rfree[0])
+    
+    
     # Get initial Markov states
     Mrkv_init = np.concatenate([ThisType.history['MrkvNow'][0,:] for ThisType in Agents])
     return_dict = {'cNrm_all' : cNrm_all,
@@ -73,6 +100,10 @@ def runExperiment(Agents,RecessionShock = False,TaxCutShock = False, \
                    'Mrkv_init' : Mrkv_init,
                    'mNrm_all' : mNrm_all,
                    'aNrm_all' : aNrm_all,
-                   'cLvl_all_splurge' : cLvl_all_splurge}
+                   'cLvl_all_splurge' : cLvl_all_splurge,
+                   'NPV_AggIncome': NPV_AggIncome,
+                   'NPV_AggCons': NPV_AggCons,
+                   'AggIncome': AggIncome,
+                   'AggCons': AggCons}
     return return_dict
 

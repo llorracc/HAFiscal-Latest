@@ -106,8 +106,8 @@ class FiscalType(MarkovConsumerType):
         Constructs an updated MrkvArray_pcvd attribute to be used in solution (perceived),
         as well as MrkvArray_sim attribute to be used in simulation (actual).
         '''
-        self.MrkvArray_pcvd = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_real, self.Uspell_recession_real, self.Rspell_real, self.UBspell_extended_real, self.PolicyUBspell_real, self.PolicyTaxCutspell_real)
-        self.MrkvArray_sim  = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_pcvd, self.Uspell_recession_pcvd, self.Rspell_pcvd, self.UBspell_extended_pcvd, self.PolicyUBspell_pcvd, self.PolicyTaxCutspell_pcvd)
+        self.MrkvArray_pcvd = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_real, self.Uspell_recession_real, self.Rspell_real, self.UBspell_extended_real, self.PolicyUBspell_real, self.PolicyTaxCutspell_real, self.TaxCutPeriods)
+        self.MrkvArray_sim  = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_pcvd, self.Uspell_recession_pcvd, self.Rspell_pcvd, self.UBspell_extended_pcvd, self.PolicyUBspell_pcvd, self.PolicyTaxCutspell_pcvd, self.TaxCutPeriods)
     
     def calcAgeDistribution(self):
         '''
@@ -181,6 +181,9 @@ class FiscalType(MarkovConsumerType):
         '''
         Make a history of Markov states and income shocks starting from each Markov state.
         '''
+        
+        print('makeAlternateShockHistories called')
+        
         self.MrkvArray = self.MrkvArray_sim
         J = self.MrkvArray[0].shape[0]
         DeathHistAll = np.zeros((J,self.T_sim,self.AgentCount), dtype=bool)
@@ -195,12 +198,16 @@ class FiscalType(MarkovConsumerType):
         self.read_mortality = True # Make sure that every death history is the same
         self.who_dies_backup = self.history['who_dies'].copy()
         for j in range(J):
-            self.Mrkv_univ = j
+            self.Mrkv_univ = j 
             self.read_shocks = False
             self.makeShockHistory()
             DeathHistAll[j,:,:] = self.history['who_dies']
             UpdateDrawHistAll[j,:,:] = self.history['update_draw']
             MrkvHistAll[j,:,:] = self.history['MrkvNow']
+            if j >= 6 and j <9:
+                MrkvHistAll[j,:,:] = MrkvHistAll[j,:,:] - ((MrkvHistAll[j,:,:]%3)-(MrkvHistAll[0,:,:]%3))
+            if j >= 10 and j <12:
+                MrkvHistAll[j,:,:] = MrkvHistAll[j,:,:] - ((MrkvHistAll[j,:,:]%3)-(MrkvHistAll[3,:,:]%3))
             PermShkHistCond[j,:,:] = self.history['PermShkNow']
             TranShkHistCond[j,:,:] = self.history['TranShkNow']
         
@@ -234,7 +241,7 @@ class FiscalType(MarkovConsumerType):
         do not match those in MrkvArray_pcvd_prev .
         '''
         # Check whether MrkvArray_pcvd has changed (and whether they exist at all!)
-        try:
+        try: 
             same_MrkvArray = distanceMetric(self.MrkvArray_pcvd, self.MrkvArray_pcvd_prev) == 0.
             if (same_MrkvArray):
                 return
@@ -251,8 +258,9 @@ class FiscalType(MarkovConsumerType):
         Re-draw the histories of Markov states and income shocks only if the attributes
         MrkvArray_sim and R_shared do not match those in MrkvArray_sim_prev and R_shared_prev.
         '''
+        
         # Check whether MrkvArray_sim and R_shared have changed (and whether they exist at all!)
-        try:
+        try: 
             same_MrkvArray = distanceMetric(self.MrkvArray_sim, self.MrkvArray_sim_prev) == 0.
             same_shared = self.R_shared == self.R_shared_prev
             if (same_MrkvArray and same_shared):
@@ -261,8 +269,9 @@ class FiscalType(MarkovConsumerType):
             pass
         
         # Re-draw the shock histories, then note the values in MrkvArray_sim and R_shared
+        #print('MrkArray Updated')
         self.makeAlternateShockHistories()
-   
+        
     
     def saveState(self):
         '''
@@ -308,6 +317,7 @@ class FiscalType(MarkovConsumerType):
         old_Urate = self.Urate_normal
         draws_empy2umemp = draws > 1.0-(this_Urate-old_Urate)/(1.0-old_Urate)
         MrkvNew[np.logical_and(np.equal(self.MrkvNow,0), draws_empy2umemp) ] = 2 # Move people from employment to unemployment such that total unemployment rate is as required. Don't touch already unemployed people.
+        
         #$$$$$$$$$$
         if (self.RecessionShock and not self.R_shared): # If the recssion actually occurs,
             MrkvNew += 3 # then put everyone into the recession 
@@ -317,12 +327,15 @@ class FiscalType(MarkovConsumerType):
             MrkvNew += 6 # put everyone in the extended UI states
         if self.TaxCutShock:
             MrkvNew +=12 # put everyone in the tax cut states
+            #might not change if we keep the order, if +12 relates to 1q of the reform
         if (self.ExtendedUIShock and self.TaxCutShock):
             print("Cannot handle UI and TaxCut experiments at the same time (yet)")
             return
         
         # Move agents to those Markov states 
         self.MrkvNow = MrkvNew
+        # print(self.MrkvNow)
+
         
         # Take the appropriate shock history for each agent, depending on their state
         J = self.MrkvArray[0].shape[0]

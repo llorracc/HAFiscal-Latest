@@ -15,7 +15,7 @@ from parameter_config import *
 
 # Size of simulations
 AgentCountTotal = 100000 # Total simulated population
-T_sim = 13              # Number of quarters to simulate in counterfactuals
+T_sim = 40              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
 T_cycle = 1
@@ -29,7 +29,7 @@ DiscFacDstns = [DiscFacDstn]
 CgridBase = np.array([0.8,0.9,0.98,1.0,1.02,1.1,1.2])  
 
 #$$$$$$$$$$
-def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, Rspell, UBspell_extended, PolicyUBspell, PolicyTaxCutspell):
+def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, Rspell, UBspell_extended, PolicyUBspell, PolicyTaxCutspell, TaxCutPeriods):
     '''
     Make a Markov transition matrix
     
@@ -64,20 +64,25 @@ def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, 
     PolicyUBpersist = 1.-1./PolicyUBspell # persistence of the extended unemployment POLICY (not the benefits themselves)
     PolicyTaxCutpersist = 1.-1./PolicyTaxCutspell # persistence of the payroll tax cut policy
     
+
+    
     def small_MrkvArray(e,u,ub):
         small_MrkvArray = np.array([[e,           0.0,       1-e     ],    # Start state: employed
                                      [1-u,        u,         0.0     ],    # Start state: unemployed, no benefits
                                      [1-u,        u*(1-ub),  u*ub   ]])  # Start state: unemployed, benefits
         return small_MrkvArray
     
-    MrkvArray_normal    = small_MrkvArray(E_persist_normal, U_persist_normal, UB_persist_normal)
-    MrkvArray_recession = small_MrkvArray(E_persist_recession, U_persist_recession, UB_persist_normal)
+    # 3x3 lists (rows x colums)
+    MrkvArray_normal         = small_MrkvArray(E_persist_normal, U_persist_normal, UB_persist_normal)
+    MrkvArray_recession      = small_MrkvArray(E_persist_recession, U_persist_recession, UB_persist_normal)
     MrkvArray_normal_exUB    = small_MrkvArray(E_persist_normal, U_persist_normal, UBpersist_extended)
     MrkvArray_recession_exUB = small_MrkvArray(E_persist_recession, U_persist_recession, UBpersist_extended)
 
+    # 3x6 lists
     MrkvArray_1 = np.concatenate((MrkvArray_normal, np.zeros((3,3))),axis=1)      
     MrkvArray_2 = np.concatenate((MrkvArray_recession*(1-R_persist), MrkvArray_recession*R_persist),axis=1) 
     
+    # 6x6 lists
     MrkvArray_normal_and_recession = [np.concatenate((MrkvArray_1, MrkvArray_2),axis = 0)]
     
     MrkvArray_1_exUB = np.concatenate((MrkvArray_normal_exUB*(1-PolicyUBpersist),np.zeros((3,3)),MrkvArray_normal_exUB*PolicyUBpersist,np.zeros((3,3))),axis=1)      
@@ -85,19 +90,40 @@ def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, 
                 
     MrkvArray_normal_and_recession_UBextension = [np.concatenate((np.concatenate((MrkvArray_normal_and_recession[0], np.zeros((6,6))),axis=1), MrkvArray_1_exUB, MrkvArray_2_exUB),axis = 0)]
           
-    MrkvArray_1_taxcut = np.concatenate((MrkvArray_normal*(1-PolicyTaxCutpersist),np.zeros((3,9)),MrkvArray_normal*PolicyTaxCutpersist,np.zeros((3,3))),axis=1)      
-    MrkvArray_2_taxcut = np.concatenate((MrkvArray_recession*(1-PolicyTaxCutpersist)*(1-R_persist),MrkvArray_recession*(1-PolicyTaxCutpersist)*R_persist, np.zeros((3,6)),MrkvArray_recession*PolicyTaxCutpersist*(1-R_persist),MrkvArray_recession*PolicyTaxCutpersist*R_persist),axis=1) 
-                
-    MrkvArray_normal_and_recession_UBextension_taxcut = [np.concatenate((np.concatenate((MrkvArray_normal_and_recession_UBextension[0], np.zeros((12,6))),axis=1), MrkvArray_1_taxcut, MrkvArray_2_taxcut),axis = 0)]
+
+    TotalMrkStates_TaxCut = TaxCutPeriods * 2 * 3 #each employment state, recession and normal
+    TotalMrkStates = TotalMrkStates_TaxCut + 12
+    
+    MrkvArray_taxcut = np.zeros((TotalMrkStates_TaxCut,TotalMrkStates))
+    for i in range(TaxCutPeriods):
+        if i<TaxCutPeriods-1:
+            MrkvArray_taxcut[i*6:(i+1)*6-3,:]     = np.concatenate((np.zeros((3,12+(i+1)*6)),MrkvArray_normal,np.zeros((3,TotalMrkStates-21-i*6))),axis=1) 
+            MrkvArray_taxcut[(i+1)*6-3:(i+1)*6,:] = np.concatenate((np.zeros((3,12+(i+1)*6)),MrkvArray_recession*(1-R_persist),MrkvArray_recession*R_persist,np.zeros((3,TotalMrkStates-24-i*6))),axis=1)
+        else: # last tax cut period
+            MrkvArray_taxcut[i*6:(i+1)*6-3,:]     = np.concatenate((MrkvArray_normal,np.zeros((3,TotalMrkStates-3))),axis=1)
+            MrkvArray_taxcut[(i+1)*6-3:(i+1)*6,:] = np.concatenate((MrkvArray_recession*(1-R_persist),MrkvArray_recession*R_persist,np.zeros((3,TotalMrkStates-6))),axis=1)
+
+    # old code
+    #MrkvArray_1_taxcut = np.concatenate((MrkvArray_normal*(1-PolicyTaxCutpersist),np.zeros((3,9)),MrkvArray_normal*PolicyTaxCutpersist,np.zeros((3,3))),axis=1)      
+    #MrkvArray_2_taxcut = np.concatenate((MrkvArray_recession*(1-PolicyTaxCutpersist)*(1-R_persist),MrkvArray_recession*(1-PolicyTaxCutpersist)*R_persist, np.zeros((3,6)),MrkvArray_recession*PolicyTaxCutpersist*(1-R_persist),MrkvArray_recession*PolicyTaxCutpersist*R_persist),axis=1) 
+            
+            
+    MrkvArray_normal_and_recession_UBextension_taxcut = [np.concatenate((np.concatenate((MrkvArray_normal_and_recession_UBextension[0], np.zeros((12,TotalMrkStates-12))),axis=1), \
+                                                         MrkvArray_taxcut),axis = 0)]
         
     MrkvArray = MrkvArray_normal_and_recession_UBextension_taxcut
     return MrkvArray
 
+# This creates a matrix mxm with m the number of markov states. for each macro state there are three individual states governing
+# markov transition probabilities from employment to unemployment with / without benefits
+# I will leave the first 12 rows unchanged as those relate to normal, recession and UB extension (in and out of recession)
+# I will need to manipulate only the last 6 rows, and add 8x3 rows, maybe start with 2!
+
 
 # Make Markov transition arrays among discrete states in each period of the lifecycle (ACTUAL / SIMULATION)
-MrkvArray_real = makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession_real, Uspell_recession_real, Rspell_real, UBspell_extended_real, PolicyUBspell_real, PolicyTaxCutspell_real)
+MrkvArray_real = makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession_real, Uspell_recession_real, Rspell_real, UBspell_extended_real, PolicyUBspell_real, PolicyTaxCutspell_real,TaxCutPeriods)
 # Make Markov transition arrays among discrete states in each period of the lifecycle (PERCEIVED / SIMULATION)
-MrkvArray_pcvd = makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession_pcvd, Uspell_recession_pcvd, Rspell_pcvd, UBspell_extended_pcvd, PolicyUBspell_pcvd, PolicyTaxCutspell_pcvd)
+MrkvArray_pcvd = makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession_pcvd, Uspell_recession_pcvd, Rspell_pcvd, UBspell_extended_pcvd, PolicyUBspell_pcvd, PolicyTaxCutspell_pcvd,TaxCutPeriods)
 num_MrkvStates = MrkvArray_real[0].shape[0]
 num_normal_MrkvStates =3
 
@@ -176,6 +202,7 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'PolicyTaxCutspell_real' : PolicyTaxCutspell_real,
                 'PolicyTaxCutspell_pcvd' : PolicyTaxCutspell_pcvd,
                 'TaxCutIncFactor' : TaxCutIncFactor,
+                'TaxCutPeriods' : TaxCutPeriods,
                 'UpdatePrb' : 1.0,
                 'track_vars' : []
                 }
@@ -227,13 +254,13 @@ frictionless_changes = {
              }
 
 
-quick_test = False
+quick_test = True
 if quick_test:
-    AgentCountTotal = 10000
+    AgentCountTotal = 50000
     DiscFacCount = 2
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
-    init_infhorizon['T_sim'] = 20
+    init_infhorizon['T_sim'] = 40
     
 # Parameters for AggregateDemandEconomy economy
 intercept_prev = [0.0]*num_normal_MrkvStates          # Intercept of aggregate savings function
@@ -254,4 +281,4 @@ init_ADEconomy = {'intercept_prev': intercept_prev,
                      'CgridBase' : CgridBase,
                      'act_T' : 400
                      }
-    
+
