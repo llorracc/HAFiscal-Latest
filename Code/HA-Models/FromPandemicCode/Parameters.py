@@ -25,6 +25,9 @@ DiscFacCount = 7
 DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
 DiscFacDstns = [DiscFacDstn]
 
+# Define grid of aggregate assets to labor
+CgridBase = np.array([0.8,0.9,0.98,1.0,1.02,1.1,1.2])  
+
 #$$$$$$$$$$
 def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, Rspell, UBspell_extended, PolicyUBspell, PolicyTaxCutspell, TaxCutPeriods):
     '''
@@ -258,3 +261,24 @@ if quick_test:
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
     init_infhorizon['T_sim'] = 40
+    
+# Parameters for AggregateDemandEconomy economy
+intercept_prev = [0.0]*num_normal_MrkvStates          # Intercept of aggregate savings function
+slope_prev = [1.0]*num_normal_MrkvStates              # Slope of aggregate savings function
+intercept_prev_big = [0.0]*num_MrkvStates          # Intercept of aggregate savings function
+slope_prev_big = [1.0]*num_MrkvStates              # Slope of aggregate savings function
+ADelasticity = 0.0            # Elasticity of productivity to consumption
+
+
+# Make a dictionary to specify a Cobb-Douglas economy
+init_ADEconomy = {'intercept_prev': intercept_prev,
+                     'slope_prev': slope_prev,
+                     'ADelasticity' : ADelasticity,
+                     'MrkvArray' : MrkvArray_small,
+                     'MrkvArray_big' : MrkvArray_pcvd,
+                     'intercept_prev_big' : intercept_prev_big,
+                     'slope_prev_big' : slope_prev_big,
+                     'CgridBase' : CgridBase,
+                     'act_T' : 400
+                     }
+
