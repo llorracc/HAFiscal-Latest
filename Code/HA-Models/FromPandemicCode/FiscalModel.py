@@ -94,7 +94,28 @@ class FiscalType(MarkovConsumerType):
         simulated, this ensures that agent i in period t and Markov state k will
         get the same income shocks *no matter which specification we use*.
         '''
-        MarkovConsumerType.getMarkovStates(self) # Basic Markov state draw
+        base_draws = Uniform(seed=self.RNG.randint(0,2**31-1)).draw(self.AgentCount)
+        dont_change = self.t_age == 0 # Don't change Markov state for those who were just born 
+        if self.t_sim == 0: # Respect initial distribution of Markov states
+            dont_change[:] = True
+        
+        # Determine which agents are in which states right now
+        J = self.MrkvArray[0].shape[0]
+        MrkvPrev = self.MrkvNow
+        MrkvNow = np.zeros(self.AgentCount,dtype=int)
+        MrkvBoolArray = np.zeros((J,self.AgentCount))
+        for j in range(J):
+            MrkvBoolArray[j,:] = MrkvPrev == j
+        
+        # Draw new Markov states for each agent
+        for t in range(self.T_cycle):
+            Cutoffs = np.cumsum(self.MrkvArray[t],axis=1)
+            right_age = self.t_cycle == t
+            for j in range(J):
+                these = np.logical_and(right_age, MrkvBoolArray[j,:])
+                MrkvNow[these] = np.searchsorted(Cutoffs[j,:],base_draws[these]).astype(int)
+        MrkvNow[dont_change] = MrkvPrev[dont_change]
+        self.MrkvNow = MrkvNow.astype(int)
         if (hasattr(self,'Mrkv_univ') and self.Mrkv_univ is not None):
             self.MrkvNow_temp = self.MrkvNow
             self.MrkvNow = self.Mrkv_univ*np.ones(self.AgentCount, dtype=int)

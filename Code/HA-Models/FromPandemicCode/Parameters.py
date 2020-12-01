@@ -73,20 +73,20 @@ def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, 
         return small_MrkvArray
     
     # 3x3 lists (rows x colums)
-    MrkvArray_normal         = small_MrkvArray(E_persist_normal, U_persist_normal, UB_persist_normal)
+    MrkvArray_normal         = small_MrkvArray(E_persist_normal,    U_persist_normal,    UB_persist_normal)
     MrkvArray_recession      = small_MrkvArray(E_persist_recession, U_persist_recession, UB_persist_normal)
-    MrkvArray_normal_exUB    = small_MrkvArray(E_persist_normal, U_persist_normal, UBpersist_extended)
+    MrkvArray_normal_exUB    = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBpersist_extended)
     MrkvArray_recession_exUB = small_MrkvArray(E_persist_recession, U_persist_recession, UBpersist_extended)
 
     # 3x6 lists
-    MrkvArray_1 = np.concatenate((MrkvArray_normal, np.zeros((3,3))),axis=1)      
-    MrkvArray_2 = np.concatenate((MrkvArray_recession*(1-R_persist), MrkvArray_recession*R_persist),axis=1) 
+    MrkvArray_1 = np.concatenate((MrkvArray_normal,               np.zeros((3,3))),axis=1)      
+    MrkvArray_2 = np.concatenate((MrkvArray_normal*(1-R_persist), MrkvArray_recession*R_persist),axis=1) 
     
     # 6x6 lists
     MrkvArray_normal_and_recession = [np.concatenate((MrkvArray_1, MrkvArray_2),axis = 0)]
     
-    MrkvArray_1_exUB = np.concatenate((MrkvArray_normal_exUB*(1-PolicyUBpersist),np.zeros((3,3)),MrkvArray_normal_exUB*PolicyUBpersist,np.zeros((3,3))),axis=1)      
-    MrkvArray_2_exUB = np.concatenate((MrkvArray_recession_exUB*(1-PolicyUBpersist)*(1-R_persist),MrkvArray_recession_exUB*(1-PolicyUBpersist)*R_persist,MrkvArray_recession_exUB*PolicyUBpersist*(1-R_persist),MrkvArray_recession_exUB*PolicyUBpersist*R_persist),axis=1) 
+    MrkvArray_1_exUB = np.concatenate((MrkvArray_normal*(1-PolicyUBpersist),              np.zeros((3,3)),                                  MrkvArray_normal_exUB*PolicyUBpersist,              np.zeros((3,3))),axis=1)      
+    MrkvArray_2_exUB = np.concatenate((MrkvArray_normal*(1-PolicyUBpersist)*(1-R_persist),MrkvArray_recession*(1-PolicyUBpersist)*R_persist,MrkvArray_normal_exUB*PolicyUBpersist*(1-R_persist),MrkvArray_recession_exUB*PolicyUBpersist*R_persist),axis=1) 
                 
     MrkvArray_normal_and_recession_UBextension = [np.concatenate((np.concatenate((MrkvArray_normal_and_recession[0], np.zeros((6,6))),axis=1), MrkvArray_1_exUB, MrkvArray_2_exUB),axis = 0)]
           
@@ -97,11 +97,11 @@ def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, 
     MrkvArray_taxcut = np.zeros((TotalMrkStates_TaxCut,TotalMrkStates))
     for i in range(TaxCutPeriods):
         if i<TaxCutPeriods-1:
-            MrkvArray_taxcut[i*6:(i+1)*6-3,:]     = np.concatenate((np.zeros((3,12+(i+1)*6)),MrkvArray_normal,np.zeros((3,TotalMrkStates-21-i*6))),axis=1) 
-            MrkvArray_taxcut[(i+1)*6-3:(i+1)*6,:] = np.concatenate((np.zeros((3,12+(i+1)*6)),MrkvArray_recession*(1-R_persist),MrkvArray_recession*R_persist,np.zeros((3,TotalMrkStates-24-i*6))),axis=1)
+            MrkvArray_taxcut[i*6:(i+1)*6-3,:]     = np.concatenate((np.zeros((3,12+(i+1)*6)),MrkvArray_normal              ,np.zeros((3,TotalMrkStates-21-i*6))),axis=1) 
+            MrkvArray_taxcut[(i+1)*6-3:(i+1)*6,:] = np.concatenate((np.zeros((3,12+(i+1)*6)),MrkvArray_normal*(1-R_persist),MrkvArray_recession*R_persist,np.zeros((3,TotalMrkStates-24-i*6))),axis=1)
         else: # last tax cut period
-            MrkvArray_taxcut[i*6:(i+1)*6-3,:]     = np.concatenate((MrkvArray_normal,np.zeros((3,TotalMrkStates-3))),axis=1)
-            MrkvArray_taxcut[(i+1)*6-3:(i+1)*6,:] = np.concatenate((MrkvArray_recession*(1-R_persist),MrkvArray_recession*R_persist,np.zeros((3,TotalMrkStates-6))),axis=1)
+            MrkvArray_taxcut[i*6:(i+1)*6-3,:]     = np.concatenate((MrkvArray_normal              ,np.zeros((3,TotalMrkStates-3))),axis=1)
+            MrkvArray_taxcut[(i+1)*6-3:(i+1)*6,:] = np.concatenate((MrkvArray_normal*(1-R_persist),MrkvArray_recession*R_persist,np.zeros((3,TotalMrkStates-6))),axis=1)
 
     # old code
     #MrkvArray_1_taxcut = np.concatenate((MrkvArray_normal*(1-PolicyTaxCutpersist),np.zeros((3,9)),MrkvArray_normal*PolicyTaxCutpersist,np.zeros((3,3))),axis=1)      
@@ -257,7 +257,7 @@ frictionless_changes = {
 quick_test = True
 if quick_test:
     AgentCountTotal = 50000
-    DiscFacCount = 2
+    DiscFacCount = 1
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
     init_infhorizon['T_sim'] = 40
