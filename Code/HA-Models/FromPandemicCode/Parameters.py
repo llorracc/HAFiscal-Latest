@@ -78,41 +78,32 @@ def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, 
     MrkvArray_normal_exUB    = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBpersist_extended)
     MrkvArray_recession_exUB = small_MrkvArray(E_persist_recession, U_persist_recession, UBpersist_extended)
 
-    # 3x6 lists
-    MrkvArray_1 = np.concatenate((MrkvArray_normal,               np.zeros((3,3))),axis=1)      
-    MrkvArray_2 = np.concatenate((MrkvArray_normal*(1-R_persist), MrkvArray_recession*R_persist),axis=1) 
-    
-    # 6x6 lists
-    MrkvArray_normal_and_recession = [np.concatenate((MrkvArray_1, MrkvArray_2),axis = 0)]
-    
-    MrkvArray_1_exUB = np.concatenate((MrkvArray_normal*(1-PolicyUBpersist),              np.zeros((3,3)),                                  MrkvArray_normal_exUB*PolicyUBpersist,              np.zeros((3,3))),axis=1)      
-    MrkvArray_2_exUB = np.concatenate((MrkvArray_normal*(1-PolicyUBpersist)*(1-R_persist),MrkvArray_recession*(1-PolicyUBpersist)*R_persist,MrkvArray_normal_exUB*PolicyUBpersist*(1-R_persist),MrkvArray_recession_exUB*PolicyUBpersist*R_persist),axis=1) 
-                
-    MrkvArray_normal_and_recession_UBextension = [np.concatenate((np.concatenate((MrkvArray_normal_and_recession[0], np.zeros((6,6))),axis=1), MrkvArray_1_exUB, MrkvArray_2_exUB),axis = 0)]
-          
-
-    TotalMrkStates_TaxCut = TaxCutPeriods * 2 * 3 #each employment state, recession and normal
-    TotalMrkStates = TotalMrkStates_TaxCut + 12
-    
-    MrkvArray_taxcut = np.zeros((TotalMrkStates_TaxCut,TotalMrkStates))
-    for i in range(TaxCutPeriods):
-        if i<TaxCutPeriods-1:
-            MrkvArray_taxcut[i*6:(i+1)*6-3,:]     = np.concatenate((np.zeros((3,12+(i+1)*6)),MrkvArray_normal              ,np.zeros((3,TotalMrkStates-21-i*6))),axis=1) 
-            MrkvArray_taxcut[(i+1)*6-3:(i+1)*6,:] = np.concatenate((np.zeros((3,12+(i+1)*6)),MrkvArray_normal*(1-R_persist),MrkvArray_recession*R_persist,np.zeros((3,TotalMrkStates-24-i*6))),axis=1)
-        else: # last tax cut period
-            MrkvArray_taxcut[i*6:(i+1)*6-3,:]     = np.concatenate((MrkvArray_normal              ,np.zeros((3,TotalMrkStates-3))),axis=1)
-            MrkvArray_taxcut[(i+1)*6-3:(i+1)*6,:] = np.concatenate((MrkvArray_normal*(1-R_persist),MrkvArray_recession*R_persist,np.zeros((3,TotalMrkStates-6))),axis=1)
-
-    # old code
-    #MrkvArray_1_taxcut = np.concatenate((MrkvArray_normal*(1-PolicyTaxCutpersist),np.zeros((3,9)),MrkvArray_normal*PolicyTaxCutpersist,np.zeros((3,3))),axis=1)      
-    #MrkvArray_2_taxcut = np.concatenate((MrkvArray_recession*(1-PolicyTaxCutpersist)*(1-R_persist),MrkvArray_recession*(1-PolicyTaxCutpersist)*R_persist, np.zeros((3,6)),MrkvArray_recession*PolicyTaxCutpersist*(1-R_persist),MrkvArray_recession*PolicyTaxCutpersist*R_persist),axis=1) 
-            
-            
-    MrkvArray_normal_and_recession_UBextension_taxcut = [np.concatenate((np.concatenate((MrkvArray_normal_and_recession_UBextension[0], np.zeros((12,TotalMrkStates-12))),axis=1), \
-                                                         MrkvArray_taxcut),axis = 0)]
-        
-    MrkvArray = MrkvArray_normal_and_recession_UBextension_taxcut
-    return MrkvArray
+    # Macro MrkvArray
+    MacroMrkvArray = np.array([[1.0,                               0.0,                           0.0,                           0.0],
+                               [1-R_persist,                       R_persist,                     0.0,                           0.0],
+                               [1-PolicyUBpersist,                 0.0,                           PolicyUBpersist,               0.0],
+                               [(1-PolicyUBpersist)*(1-R_persist), (1-PolicyUBpersist)*R_persist, PolicyUBpersist*(1-R_persist), PolicyUBpersist*R_persist]])
+    MacroMrkStates_TaxCut = TaxCutPeriods * 2  # recession and normal
+    MacroTaxCutArray = np.zeros((MacroMrkStates_TaxCut,MacroMrkStates_TaxCut))
+    for i in range(TaxCutPeriods-1):
+        MacroTaxCutArray[2*i:2*i+2,2*i+2:2*i+4] = np.array([[1.0,         0.0],
+                                                            [1-R_persist, R_persist]])
+    MacroMrkvArray = np.concatenate((np.concatenate((MacroMrkvArray,np.zeros((MacroMrkvArray.shape[0],MacroMrkStates_TaxCut))),axis=1),np.concatenate((np.zeros((MacroMrkStates_TaxCut,MacroMrkvArray.shape[0])),MacroTaxCutArray),axis=1)),axis=0)
+    MacroMrkvArray[-2:,0:2] = np.array([[1.0,         0.0],
+                                          [1-R_persist, R_persist]])
+    # Micro conditional array
+    MicroCondMrkv = [MrkvArray_normal, MrkvArray_recession, MrkvArray_normal_exUB, MrkvArray_recession_exUB]
+    MicroCondMrkv += [MrkvArray_normal, MrkvArray_recession]*TaxCutPeriods
+    # Full MrkvArray
+    for i in range(MacroMrkvArray.shape[0]):
+        this_row = MacroMrkvArray[i,0]*MicroCondMrkv[0]
+        for j in range(MacroMrkvArray.shape[0]-1):
+            this_row = np.concatenate((this_row, MacroMrkvArray[i,j+1]*MicroCondMrkv[j+1]),axis=1)
+        if i==0:
+            FullMrkv = this_row
+        else:
+            FullMrkv = np.concatenate((FullMrkv, this_row), axis=0)
+    return [FullMrkv]
 
 # This creates a matrix mxm with m the number of markov states. for each macro state there are three individual states governing
 # markov transition probabilities from employment to unemployment with / without benefits
