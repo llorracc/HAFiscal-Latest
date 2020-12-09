@@ -8,7 +8,7 @@ from HARK.ConsumptionSaving.ConsMarkovModel import MarkovConsumerType
 from HARK.ConsumptionSaving.ConsIndShockModel import MargValueFunc, ConsumerSolution
 from HARK.interpolation import LinearInterp, LowerEnvelope
 from HARK.core import distanceMetric
-from Parameters import makeMrkvArray, T_sim
+from Parameters import makeMacroMrkvArray, makeCondMrkvArrays, makeFullMrkvArray, T_sim
 import matplotlib.pyplot as plt
 
 # Define a modified MarkovConsumerType
@@ -21,7 +21,6 @@ class FiscalType(MarkovConsumerType):
         self.solveOnePeriod = solveConsMarkovALT
         
     def preSolve(self):
-        self.MrkvArray = self.MrkvArray_pcvd
         MarkovConsumerType.preSolve(self)
         self.updateSolutionTerminal()
         
@@ -29,7 +28,6 @@ class FiscalType(MarkovConsumerType):
         MarkovConsumerType.initializeSim(self)
         if hasattr(self,'use_prestate'):
             self.restoreState()
-            self.MrkvArray = self.MrkvArray_sim
         else:   # set to ergodic unemployment rate during normal times
             init_unemp_dist = DiscreteDistribution(1.0-self.Urate_normal, np.array([0,1]), seed=self.RNG.randint(0,2**31-1))
             self.MrkvNow[:] = init_unemp_dist.drawDiscrete(self.AgentCount)
@@ -38,6 +36,8 @@ class FiscalType(MarkovConsumerType):
                 self.initializeAges()
         if (hasattr(self,'Mrkv_univ') and self.Mrkv_univ is not None):
             self.MrkvNow[:] = self.Mrkv_univ
+        self.MacroMrkvNow = (np.floor(self.MrkvNow/3)).astype(int)
+        self.MicroMrkvNow = self.MrkvNow%3
 
         
         
@@ -83,38 +83,59 @@ class FiscalType(MarkovConsumerType):
         # update the idiosyncratic state (employed, unemployed with benefits, unemployed without benefits)
         # but leave the macro state as it is (idiosyncratic state is 'modulo 3')
         self.MrkvNowPcvd = np.remainder(self.MrkvNow,3) + 3*np.floor_divide(self.MrkvNowPcvd,3)
+  
+    def getMacroMarkovStates(self):
+        J = self.MacroMrkvArray.shape[0]
+        # divide markov matrix into (independent) recession probabilities and other
+        recession_transitions = self.MacroMrkvArray[0:2,0:2]
+        other_transitions = self.MacroMrkvArray[np.array(range(int(J/2)))*2,:][:,np.array(range(int(J/2)))*2]
+        recession_draws = Uniform(seed=self.RNG.randint(0,2**31-1)).draw(self.AgentCount)
+        other_draws = Uniform(seed=self.RNG.randint(0,2**31-1)).draw(self.AgentCount)
         
-
-    def getMarkovStates(self):
-        '''
-        A modified method that forces all agents to be in a particular Markov
-        state when the attribute Mrkv_univ is not None.  This allows us to draw
-        income shocks for every Markov state for each agent in each simulated
-        period when pre-specifying the shocks.  When the model is *actually*
-        simulated, this ensures that agent i in period t and Markov state k will
-        get the same income shocks *no matter which specification we use*.
-        '''
+        # Determine which agents are in which states right now
+        MacroMrkvPrev = self.MacroMrkvNow
+        MacroMrkvNow = np.zeros(self.AgentCount,dtype=int)
+        MacroMrkvBoolArray = (np.zeros((J,self.AgentCount))).astype(bool)
+        for j in range(J):
+            MacroMrkvBoolArray[j,:] = MacroMrkvPrev == j
+        
+        # Draw new Markov states for each agent
+        RecessionCutoffs = np.cumsum(recession_transitions,axis=1)
+        OtherCutoffs = np.cumsum(other_transitions,axis=1)
+        for j in range(J):
+            Recession = np.searchsorted(RecessionCutoffs[j%2,:],recession_draws[MacroMrkvBoolArray[j,:]]).astype(int)
+            Other = np.searchsorted(OtherCutoffs[np.floor(j/2).astype(int),:],other_draws[MacroMrkvBoolArray[j,:]]).astype(int)
+            MacroMrkvNow[MacroMrkvBoolArray[j,:]] = 2*Other+Recession
+        self.MacroMrkvNow = MacroMrkvNow.astype(int)
+        
+    def getMicroMarkovStates(self):
         base_draws = Uniform(seed=self.RNG.randint(0,2**31-1)).draw(self.AgentCount)
         dont_change = self.t_age == 0 # Don't change Markov state for those who were just born 
         if self.t_sim == 0: # Respect initial distribution of Markov states
             dont_change[:] = True
         
         # Determine which agents are in which states right now
-        J = self.MrkvArray[0].shape[0]
-        MrkvPrev = self.MrkvNow
-        MrkvNow = np.zeros(self.AgentCount,dtype=int)
-        MrkvBoolArray = np.zeros((J,self.AgentCount))
+        J = self.CondMrkvArrays[0].shape[0]
+        MicroMrkvPrev = self.MicroMrkvNow
+        MicroMrkvNow = np.zeros(self.AgentCount,dtype=int)
+        MicroMrkvBoolArray = np.zeros((J,self.AgentCount))
         for j in range(J):
-            MrkvBoolArray[j,:] = MrkvPrev == j
+            MicroMrkvBoolArray[j,:] = MicroMrkvPrev == j
         
         # Draw new Markov states for each agent
-        for t in range(self.T_cycle):
-            Cutoffs = np.cumsum(self.MrkvArray[t],axis=1)
-            right_age = self.t_cycle == t
+        for i in range(self.MacroMrkvArray.shape[0]):
+            Cutoffs = np.cumsum(self.CondMrkvArrays[i],axis=1)
+            macro_match = self.MacroMrkvNow == i
             for j in range(J):
-                these = np.logical_and(right_age, MrkvBoolArray[j,:])
-                MrkvNow[these] = np.searchsorted(Cutoffs[j,:],base_draws[these]).astype(int)
-        MrkvNow[dont_change] = MrkvPrev[dont_change]
+                these = np.logical_and(macro_match, MicroMrkvBoolArray[j,:])
+                MicroMrkvNow[these] = np.searchsorted(Cutoffs[j,:],base_draws[these]).astype(int)
+        MicroMrkvNow[dont_change] = MicroMrkvNow[dont_change]
+        self.MicroMrkvNow = MicroMrkvNow.astype(int)
+           
+    def getMarkovStates(self):
+        self.getMacroMarkovStates()
+        self.getMicroMarkovStates()
+        MrkvNow = 3*self.MacroMrkvNow + self.MicroMrkvNow
         self.MrkvNow = MrkvNow.astype(int)
         if (hasattr(self,'Mrkv_univ') and self.Mrkv_univ is not None):
             self.MrkvNow_temp = self.MrkvNow
@@ -123,12 +144,10 @@ class FiscalType(MarkovConsumerType):
             
     #$$$$$$$$$$    
     def updateMrkvArray(self):
-        '''
-        Constructs an updated MrkvArray_pcvd attribute to be used in solution (perceived),
-        as well as MrkvArray_sim attribute to be used in simulation (actual).
-        '''
-        self.MrkvArray_pcvd = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_real, self.Uspell_recession_real, self.Rspell_real, self.UBspell_extended_real, self.PolicyUBspell_real, self.PolicyTaxCutspell_real, self.TaxCutPeriods)
-        self.MrkvArray_sim  = makeMrkvArray(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession_pcvd, self.Uspell_recession_pcvd, self.Rspell_pcvd, self.UBspell_extended_pcvd, self.PolicyUBspell_pcvd, self.PolicyTaxCutspell_pcvd, self.TaxCutPeriods)
+        MacroMrkvArray = makeMacroMrkvArray(self.Rspell, self.PolicyUBspell, self.TaxCutPeriods)
+        CondMrkvArrays = makeCondMrkvArrays(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.UBspell_extended, self.TaxCutPeriods)
+        MrkvArray = makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays)
+        self.MrkvArray  = MrkvArray
     
     def calcAgeDistribution(self):
         '''
@@ -192,12 +211,25 @@ class FiscalType(MarkovConsumerType):
         
         # Adjust simulation parameters for the counterfactual experiments
         self.T_sim = T_sim
-        self.track_vars = ['cNrmNow','pLvlNow','aNrmNow','mNrmNow','MrkvNowPcvd']
+        self.track_vars = ['cNrmNow','pLvlNow','aNrmNow','mNrmNow','MrkvNowPcvd','MacroMrkvNow','MicroMrkvNow']
         self.use_prestate = None
-        self.MrkvArray_pcvd = self.MrkvArray
         #print('Finished type ' + str(self.seed) + '!')
         
-        
+    def makeMrkvShockHistory(self):
+        self.initializeSim()
+        self.history['MrkvNow'] = np.zeros((self.T_sim, self.AgentCount)) + np.nan
+
+        # Make and store the history of shocks for each period
+        for t in range(self.T_sim):
+            self.getMarkovStates()
+            if (hasattr(self,'Mrkv_univ') and self.Mrkv_univ is not None):
+                self.MrkvNow = self.MrkvNow_temp # Make sure real sequence is recorded
+            self.history['MrkvNow'][self.t_sim,:] = getattr(self, 'MrkvNow')
+            self.t_sim += 1
+            self.t_age = self.t_age + 1  # Age all consumers by one period
+            self.t_cycle = self.t_cycle + 1  # Age all consumers within their cycle
+            self.t_cycle[self.t_cycle == self.T_cycle] = 0  # Resetting to zero for those who have reached the end
+
     def makeAlternateShockHistories(self):
         '''
         Make a history of Markov states and income shocks starting from each Markov state.
@@ -205,7 +237,6 @@ class FiscalType(MarkovConsumerType):
         
         print('makeAlternateShockHistories called')
         
-        self.MrkvArray = self.MrkvArray_sim
         #J = self.MrkvArray[0].shape[0]
         J = 18 # hitwithrecessionshock only shocks agents into the first 18 markov states
         MrkvHistAll = np.zeros((J,self.T_sim,self.AgentCount), dtype=int)
@@ -221,51 +252,51 @@ class FiscalType(MarkovConsumerType):
         for j in range(J):
             self.Mrkv_univ = j 
             self.read_shocks = False
-            self.makeShockHistory()
+            self.makeMrkvShockHistory()
             MrkvHistAll[j,:,:] = self.history['MrkvNow']
         
         # Store as attributes of self
         self.MrkvHistAll = MrkvHistAll
         self.Mrkv_univ = None
-        self.MrkvArray_sim_prev = self.MrkvArray_sim
+        # self.MrkvArray_prev = self.MrkvArray
         self.R_shared_prev = self.R_shared
         del(self.read_mortality)
         
         
     def solveIfChanged(self):
         '''
-        Re-solve the lifecycle model only if the attributes MrkvArray_pcvd 
-        do not match those in MrkvArray_pcvd_prev .
+        Re-solve the lifecycle model only if the attributes MrkvArray
+        do not match those in MrkvArray_prev .
         '''
-        # Check whether MrkvArray_pcvd has changed (and whether they exist at all!)
+        # Check whether MrkvArray has changed (and whether they exist at all!)
         try: 
-            same_MrkvArray = distanceMetric(self.MrkvArray_pcvd, self.MrkvArray_pcvd_prev) == 0.
+            same_MrkvArray = distanceMetric(self.MrkvArray, self.MrkvArray_prev) == 0.
             if (same_MrkvArray):
                 return
         except:
             pass
         
-        # Re-solve the model, then note the values in MrkvArray_pcvd
+        # Re-solve the model, then note the values in MrkvArray
         self.solve()
-        self.MrkvArray_pcvd_prev = self.MrkvArray_pcvd
+        self.MrkvArray_prev = self.MrkvArray
         
         
     def makeShocksIfChanged(self):
         '''
         Re-draw the histories of Markov states and income shocks only if the attributes
-        MrkvArray_sim and R_shared do not match those in MrkvArray_sim_prev and R_shared_prev.
+        MrkvArray and R_shared do not match those in MrkvArray_prev and R_shared_prev.
         '''
         
-        # Check whether MrkvArray_sim and R_shared have changed (and whether they exist at all!)
+        # Check whether MrkvArray and R_shared have changed (and whether they exist at all!)
         try: 
-            same_MrkvArray = distanceMetric(self.MrkvArray_sim, self.MrkvArray_sim_prev) == 0.
+            same_MrkvArray = distanceMetric(self.MrkvArray, self.MrkvArray_prev) == 0.
             same_shared = self.R_shared == self.R_shared_prev
             if (same_MrkvArray and same_shared):
                 return
         except:
             pass
         
-        # Re-draw the shock histories, then note the values in MrkvArray_sim and R_shared
+        # Re-draw the shock histories, then note the values in MrkvArray and R_shared
         #print('MrkArray Updated')
         self.makeAlternateShockHistories()
         
@@ -303,7 +334,7 @@ class FiscalType(MarkovConsumerType):
         '''
         # Shock unemployment up to ergodic unemployment level in normal or recession state
         if self.RecessionShock:
-            this_Urate = self.Urate_recession_real
+            this_Urate = self.Urate_recession
         else:
             this_Urate = self.Urate_normal
         

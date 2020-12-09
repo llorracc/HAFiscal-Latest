@@ -29,9 +29,40 @@ DiscFacDstns = [DiscFacDstn]
 CgridBase = np.array([0.8,0.9,0.98,1.0,1.02,1.1,1.2])  
 
 #$$$$$$$$$$
-def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, Rspell, UBspell_extended, PolicyUBspell, PolicyTaxCutspell, TaxCutPeriods):
+def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods):
     '''
-    Make a Markov transition matrix
+    Make a Markov transition matrix for the macro states
+    
+    Parameters
+    ----------
+    Rspell: float
+        Expected length of a recession
+    PolicyUBspell: float
+        Expected length of time the POLICY of entending unemployment benefits remains in place
+    TaxCutPeriods : int
+        Number of periods for which the tax cut is in place
+    '''
+    R_persist = 1.-1./Rspell
+    PolicyUBpersist = 1.-1./PolicyUBspell # persistence of the extended unemployment POLICY (not the benefits themselves)
+    
+    MacroMrkvArray = np.array([[1.0,                               0.0,                           0.0,                           0.0],
+                               [1-R_persist,                       R_persist,                     0.0,                           0.0],
+                               [1-PolicyUBpersist,                 0.0,                           PolicyUBpersist,               0.0],
+                               [(1-PolicyUBpersist)*(1-R_persist), (1-PolicyUBpersist)*R_persist, PolicyUBpersist*(1-R_persist), PolicyUBpersist*R_persist]])
+    MacroMrkStates_TaxCut = TaxCutPeriods * 2  # recession and normal
+    MacroTaxCutArray = np.zeros((MacroMrkStates_TaxCut,MacroMrkStates_TaxCut))
+    for i in range(TaxCutPeriods-1):
+        MacroTaxCutArray[2*i:2*i+2,2*i+2:2*i+4] = np.array([[1.0,         0.0],
+                                                            [1-R_persist, R_persist]])
+    MacroMrkvArray = np.concatenate((np.concatenate((MacroMrkvArray,np.zeros((MacroMrkvArray.shape[0],MacroMrkStates_TaxCut))),axis=1),np.concatenate((np.zeros((MacroMrkStates_TaxCut,MacroMrkvArray.shape[0])),MacroTaxCutArray),axis=1)),axis=0)
+    MacroMrkvArray[-2:,0:2] = np.array([[1.0,         0.0],
+                                          [1-R_persist, R_persist]])
+    return MacroMrkvArray
+    
+def makeCondMrkvArrays(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, UBspell_extended, TaxCutPeriods):
+    '''
+    Make a Markov transition matrix for the micro state conditional on 
+    the macro state
     
     Parameters
     ----------
@@ -45,27 +76,18 @@ def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, 
         Erogodic unemployment rate in a recession
     Uspell_recession: float
         Expected length of unemployment spell in a recession
-    Rspell: float
-        Expected length of a recession
     UBspell_extended: float
         Expected length of unemployment benefits WITH extension (if policy remains in place)
-    PolicyUBspell: float
-        Expected length of time the POLICY of entending unemployment benefits remains in place
-    PolicyTaxCutspell: float
-        Expected length of time the policy of payroll tax cuts remains in place
+    TaxCutPeriods : int
+        Number of periods for which the tax cut is in place
     '''
     U_persist_normal = 1.-1./Uspell_normal
     E_persist_normal = 1.-Urate_normal*(1.-U_persist_normal)/(1.-Urate_normal)
     UB_persist_normal = 1.-1./UBspell_normal
     U_persist_recession = 1.-1./Uspell_recession
     E_persist_recession = 1.-Urate_recession*(1.-U_persist_recession)/(1.-Urate_recession)
-    R_persist = 1.-1./Rspell
     UBpersist_extended = 1.-1./UBspell_extended # persistence of unemployment benefits when they have been extended
-    PolicyUBpersist = 1.-1./PolicyUBspell # persistence of the extended unemployment POLICY (not the benefits themselves)
-    PolicyTaxCutpersist = 1.-1./PolicyTaxCutspell # persistence of the payroll tax cut policy
-    
 
-    
     def small_MrkvArray(e,u,ub):
         small_MrkvArray = np.array([[e,           0.0,       1-e     ],    # Start state: employed
                                      [1-u,        u,         0.0     ],    # Start state: unemployed, no benefits
@@ -77,45 +99,27 @@ def makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, 
     MrkvArray_recession      = small_MrkvArray(E_persist_recession, U_persist_recession, UB_persist_normal)
     MrkvArray_normal_exUB    = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBpersist_extended)
     MrkvArray_recession_exUB = small_MrkvArray(E_persist_recession, U_persist_recession, UBpersist_extended)
+    
+    CondMrkvArrays = [MrkvArray_normal, MrkvArray_recession, MrkvArray_normal_exUB, MrkvArray_recession_exUB]
+    CondMrkvArrays += [MrkvArray_normal, MrkvArray_recession]*TaxCutPeriods
+    return CondMrkvArrays
 
-    # Macro MrkvArray
-    MacroMrkvArray = np.array([[1.0,                               0.0,                           0.0,                           0.0],
-                               [1-R_persist,                       R_persist,                     0.0,                           0.0],
-                               [1-PolicyUBpersist,                 0.0,                           PolicyUBpersist,               0.0],
-                               [(1-PolicyUBpersist)*(1-R_persist), (1-PolicyUBpersist)*R_persist, PolicyUBpersist*(1-R_persist), PolicyUBpersist*R_persist]])
-    MacroMrkStates_TaxCut = TaxCutPeriods * 2  # recession and normal
-    MacroTaxCutArray = np.zeros((MacroMrkStates_TaxCut,MacroMrkStates_TaxCut))
-    for i in range(TaxCutPeriods-1):
-        MacroTaxCutArray[2*i:2*i+2,2*i+2:2*i+4] = np.array([[1.0,         0.0],
-                                                            [1-R_persist, R_persist]])
-    MacroMrkvArray = np.concatenate((np.concatenate((MacroMrkvArray,np.zeros((MacroMrkvArray.shape[0],MacroMrkStates_TaxCut))),axis=1),np.concatenate((np.zeros((MacroMrkStates_TaxCut,MacroMrkvArray.shape[0])),MacroTaxCutArray),axis=1)),axis=0)
-    MacroMrkvArray[-2:,0:2] = np.array([[1.0,         0.0],
-                                          [1-R_persist, R_persist]])
-    # Micro conditional array
-    MicroCondMrkv = [MrkvArray_normal, MrkvArray_recession, MrkvArray_normal_exUB, MrkvArray_recession_exUB]
-    MicroCondMrkv += [MrkvArray_normal, MrkvArray_recession]*TaxCutPeriods
-    # Full MrkvArray
+def makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays):
     for i in range(MacroMrkvArray.shape[0]):
-        this_row = MacroMrkvArray[i,0]*MicroCondMrkv[0]
+        this_row = MacroMrkvArray[i,0]*CondMrkvArrays[0]
         for j in range(MacroMrkvArray.shape[0]-1):
-            this_row = np.concatenate((this_row, MacroMrkvArray[i,j+1]*MicroCondMrkv[j+1]),axis=1)
+            this_row = np.concatenate((this_row, MacroMrkvArray[i,j+1]*CondMrkvArrays[j+1]),axis=1)
         if i==0:
             FullMrkv = this_row
         else:
             FullMrkv = np.concatenate((FullMrkv, this_row), axis=0)
     return [FullMrkv]
 
-# This creates a matrix mxm with m the number of markov states. for each macro state there are three individual states governing
-# markov transition probabilities from employment to unemployment with / without benefits
-# I will leave the first 12 rows unchanged as those relate to normal, recession and UB extension (in and out of recession)
-# I will need to manipulate only the last 6 rows, and add 8x3 rows, maybe start with 2!
+MacroMrkvArray = makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods)
+CondMrkvArrays = makeCondMrkvArrays(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, UBspell_extended, TaxCutPeriods)
+MrkvArray = makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays)
 
-
-# Make Markov transition arrays among discrete states in each period of the lifecycle (ACTUAL / SIMULATION)
-MrkvArray_real = makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession_real, Uspell_recession_real, Rspell_real, UBspell_extended_real, PolicyUBspell_real, PolicyTaxCutspell_real,TaxCutPeriods)
-# Make Markov transition arrays among discrete states in each period of the lifecycle (PERCEIVED / SIMULATION)
-MrkvArray_pcvd = makeMrkvArray(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession_pcvd, Uspell_recession_pcvd, Rspell_pcvd, UBspell_extended_pcvd, PolicyUBspell_pcvd, PolicyTaxCutspell_pcvd,TaxCutPeriods)
-num_MrkvStates = MrkvArray_real[0].shape[0]
+num_MrkvStates = MrkvArray[0].shape[0]
 num_normal_MrkvStates =3
 
 # Define permanent income growth rates
@@ -129,7 +133,7 @@ PermShkStd = [0.05]
 LivPrb       = [1.0-np.array([1.0/240.0]*num_MrkvStates)]
 LivPrb_small = [1.0-np.array([1.0/240.0]*num_normal_MrkvStates)]
 # Make a small state Markov array that is only used when generating the initial distribution of states
-MrkvArray_small = list(MrkvArray_real_i[0:num_normal_MrkvStates,0:num_normal_MrkvStates] for MrkvArray_real_i in MrkvArray_real)
+MrkvArray_small = list(MrkvArray_i[0:num_normal_MrkvStates,0:num_normal_MrkvStates] for MrkvArray_i in MrkvArray)
 # find intial distribution of states
 vals, vecs = np.linalg.eig(np.transpose(MrkvArray_small[0]))
 dist = np.abs(np.abs(vals) - 1.)
@@ -149,13 +153,13 @@ init_infhorizon = {"T_cycle": T_cycle,
                 "Rfree_big" : np.array(num_MrkvStates*[1.01]),
                 "PermGroFac_big": PermGroFac,
                 "LivPrb_big": LivPrb,
-                "MrkvArray_big" : MrkvArray_pcvd,
+                "MrkvArray_big" : MrkvArray,
+                "MacroMrkvArray" : MacroMrkvArray,
+                "CondMrkvArrays" : CondMrkvArrays,
                 "Rfree" : np.array(num_normal_MrkvStates*[1.01]),
                 "PermGroFac": PermGroFac_small,
                 "LivPrb": LivPrb_small,
                 "MrkvArray" : MrkvArray_small, # Yes, this is intentional
-                "MrkvArray_pcvd" : MrkvArray_small, # Yes, this is intentional
-                "MrkvArray_sim" : MrkvArray_real,
                 "BoroCnstArt": 0.0,
                 "PermShkStd": PermShkStd,
                 "PermShkCount": PermShkCount,
@@ -179,19 +183,13 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'Urate_normal' : Urate_normal,
                 'Uspell_normal' : Uspell_normal,
                 'UBspell_normal' : UBspell_normal,
-                'Urate_recession_real' : Urate_recession_real,
-                'Uspell_recession_real' : Uspell_recession_real,
-                'Rspell_real' : Rspell_real,
-                'Urate_recession_pcvd' : Urate_recession_pcvd,
-                'Uspell_recession_pcvd' : Uspell_recession_pcvd,
-                'Rspell_pcvd' : Rspell_pcvd,
+                'Urate_recession' : Urate_recession,
+                'Uspell_recession' : Uspell_recession,
+                'Rspell' : Rspell,
                 'R_shared' : R_shared,
-                'UBspell_extended_real' : UBspell_extended_real,
-                'UBspell_extended_pcvd' : UBspell_extended_pcvd,
-                'PolicyUBspell_real' : PolicyUBspell_real,
-                'PolicyUBspell_pcvd' : PolicyUBspell_pcvd,
-                'PolicyTaxCutspell_real' : PolicyTaxCutspell_real,
-                'PolicyTaxCutspell_pcvd' : PolicyTaxCutspell_pcvd,
+                'UBspell_extended' : UBspell_extended,
+                'PolicyUBspell' : PolicyUBspell,
+                'PolicyTaxCutspell' : PolicyTaxCutspell,
                 'TaxCutIncFactor' : TaxCutIncFactor,
                 'TaxCutPeriods' : TaxCutPeriods,
                 'UpdatePrb' : 1.0,
@@ -199,7 +197,7 @@ init_infhorizon = {"T_cycle": T_cycle,
                 }
 
 if R_shared:
-    init_infhorizon['T_recession'] = int(Rspell_real)
+    init_infhorizon['T_recession'] = int(Rspell)
     
 # Population share of each type (at present only one type)    
 TypeShares = [1.0]
@@ -266,7 +264,7 @@ init_ADEconomy = {'intercept_prev': intercept_prev,
                      'slope_prev': slope_prev,
                      'ADelasticity' : ADelasticity,
                      'MrkvArray' : MrkvArray_small,
-                     'MrkvArray_big' : MrkvArray_pcvd,
+                     'MrkvArray_big' : MrkvArray,
                      'intercept_prev_big' : intercept_prev_big,
                      'slope_prev_big' : slope_prev_big,
                      'CgridBase' : CgridBase,

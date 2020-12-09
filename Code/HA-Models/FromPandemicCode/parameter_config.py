@@ -14,21 +14,15 @@ Urate_normal = 0.05          # Unemployment rate in normal times
 Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
     # Recession
-Urate_recession_real = 0.1   # Actual unemployment rate in recession
-Uspell_recession_real = 4    # Actual average duration of unemployment spell in recession, in quarters
-Rspell_real = 6              # Actual expected length of recession, in quarters. If R_shared = True, must be an integer
-Urate_recession_pcvd = 0.1   # Perceived unemployment rate in recession
-Uspell_recession_pcvd = 4    # Perceived average duration of unemployment spell in recession, in quarters
-Rspell_pcvd = 6              # Perceived expected length of recession, in quarters
+Urate_recession = 0.1        # Unemployment rate in recession
+Uspell_recession = 4         # Average duration of unemployment spell in recession, in quarters
+Rspell = 6                   # Expected length of recession, in quarters. If R_shared = True, must be an integer
 R_shared = False             # Indicator for whether the recession shared (True) or idiosyncratic (False)
     # UI extension
-UBspell_extended_real = 4    # Actual    Average duration of unemployment benefits when extended and assuming policy remains in place, in quarters
-UBspell_extended_pcvd = 4    # Perceived Average duration of unemployment benefits when extended and assuming policy remains in place, in quarters
-PolicyUBspell_real = 2       # Actual    Average duration that policy of extended unemployment benefits is in place
-PolicyUBspell_pcvd = 2       # Perceived Average duration that policy of extended unemployment benefits is in place
+UBspell_extended = 4         # Average duration of unemployment benefits when extended and assuming policy remains in place, in quarters
+PolicyUBspell = 2            # Average duration that policy of extended unemployment benefits is in place
     # Tax Cut parameter
-PolicyTaxCutspell_real = 2   # Actual    Average duration that policy of payroll tax cuts
-PolicyTaxCutspell_pcvd = 2   # Perceived Average duration that policy of payroll tax cuts
+PolicyTaxCutspell = 2        # Average duration that policy of payroll tax cuts
 TaxCutIncFactor = 1.02       # Amount by which the payroll tax cut increases after-tax income
 TaxCutPeriods = 8            # Deterministic duration of tax cut 
 
