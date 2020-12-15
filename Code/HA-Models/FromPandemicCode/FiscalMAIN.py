@@ -73,7 +73,7 @@ if __name__ == '__main__':
             ThisType.seed = n
             TypeList.append(ThisType)
             n += 1
-    base_dict['Agents'] = TypeList
+    base_dict['agents'] = TypeList
        
     # Solve and simulate each type to get to the initial distribution of states
     # and then prepare for new counterfactual simulations

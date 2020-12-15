@@ -10,6 +10,7 @@ from HARK.interpolation import LinearInterp, LowerEnvelope
 from HARK.core import distanceMetric
 from Parameters import makeMacroMrkvArray, makeCondMrkvArrays, makeFullMrkvArray, T_sim
 import matplotlib.pyplot as plt
+from copy import copy
 
 # Define a modified MarkovConsumerType
 class FiscalType(MarkovConsumerType):
@@ -38,6 +39,8 @@ class FiscalType(MarkovConsumerType):
             self.MrkvNow[:] = self.Mrkv_univ
         self.MacroMrkvNow = (np.floor(self.MrkvNow/3)).astype(int)
         self.MicroMrkvNow = self.MrkvNow%3
+        self.EconomyMrkvNow = self.MacroMrkvNow #For aggregate model only
+        self.EconomyMrkvNow_hist = [0] * self.T_sim #For aggregate model only
 
         
         
@@ -108,15 +111,14 @@ class FiscalType(MarkovConsumerType):
             MacroMrkvNow[MacroMrkvBoolArray[j,:]] = 2*Other+Recession
         self.MacroMrkvNow = MacroMrkvNow.astype(int)
         
-    def getMicroMarkovStates(self):
-        base_draws = Uniform(seed=self.RNG.randint(0,2**31-1)).draw(self.AgentCount)
+    def getMicroMarkvStates_guts(self, unemployment_draw):
         dont_change = self.t_age == 0 # Don't change Markov state for those who were just born 
-        if self.t_sim == 0: # Respect initial distribution of Markov states
-            dont_change[:] = True
+        # if self.t_sim == 0: # Respect initial distribution of Markov states
+        #     dont_change[:] = True
         
         # Determine which agents are in which states right now
         J = self.CondMrkvArrays[0].shape[0]
-        MicroMrkvPrev = self.MicroMrkvNow
+        MicroMrkvPrev = copy(self.MicroMrkvNow)
         MicroMrkvNow = np.zeros(self.AgentCount,dtype=int)
         MicroMrkvBoolArray = np.zeros((J,self.AgentCount))
         for j in range(J):
@@ -128,9 +130,13 @@ class FiscalType(MarkovConsumerType):
             macro_match = self.MacroMrkvNow == i
             for j in range(J):
                 these = np.logical_and(macro_match, MicroMrkvBoolArray[j,:])
-                MicroMrkvNow[these] = np.searchsorted(Cutoffs[j,:],base_draws[these]).astype(int)
+                MicroMrkvNow[these] = np.searchsorted(Cutoffs[j,:],unemployment_draw[these]).astype(int)
         MicroMrkvNow[dont_change] = MicroMrkvNow[dont_change]
         self.MicroMrkvNow = MicroMrkvNow.astype(int)
+        
+    def getMicroMarkovStates(self):
+        self.unemployment_draw = Uniform(seed=self.RNG.randint(0,2**31-1)).draw(self.AgentCount)
+        self.getMicroMarkvStates_guts(self.unemployment_draw)
            
     def getMarkovStates(self):
         self.getMacroMarkovStates()
@@ -308,7 +314,6 @@ class FiscalType(MarkovConsumerType):
         self.aNrm_base = self.aNrmNow.copy()
         self.pLvl_base = self.pLvlNow.copy()
         self.Mrkv_base = self.MrkvNow.copy()
-        self.MrkvPcvd_base = self.MrkvNowPcvd.copy()
         self.cycle_base  = self.t_cycle.copy()
         self.age_base  = self.t_age.copy()
         self.t_sim_base = self.t_sim
@@ -322,7 +327,6 @@ class FiscalType(MarkovConsumerType):
         self.aNrmNow = self.aNrm_base.copy()
         self.pLvlNow = self.pLvl_base.copy()
         self.MrkvNow = self.Mrkv_base.copy()
-        self.MrkvNowPcvd = self.MrkvPcvd_base.copy()
         self.t_cycle = self.cycle_base.copy()
         self.t_age   = self.age_base.copy()
         self.PlvlAggNow = self.PlvlAgg_base
@@ -413,7 +417,7 @@ class FiscalType(MarkovConsumerType):
         
         MrkvBoolArray = np.zeros((J,self.AgentCount), dtype=bool)
         for j in range(J):
-            MrkvBoolArray[j,:] = j == self.MrkvNowPcvd # Agents choose control based on *perceived* Markov state
+            MrkvBoolArray[j,:] = j == self.MrkvNowPcvd # agents choose control based on *perceived* Markov state
         
         for t in range(self.T_cycle):
             right_t = t == self.t_cycle

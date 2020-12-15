@@ -14,7 +14,7 @@ from parameter_config import *
 ###############################################################################
 
 # Size of simulations
-AgentCountTotal = 100000 # Total simulated population
+AgentCountTotal = 10000 # Total simulated population
 T_sim = 40              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
@@ -219,6 +219,7 @@ UI_changes = {
              'RecessionShock' : False,
              'ExtendedUIShock' : True,
              'TaxCutShock' : False,
+             'EconomyMrkv_init' : [2,2]
              }
 recession_UI_changes = {
              'RecessionShock' : True,
@@ -268,6 +269,7 @@ init_ADEconomy = {'intercept_prev': intercept_prev,
                      'intercept_prev_big' : intercept_prev_big,
                      'slope_prev_big' : slope_prev_big,
                      'CgridBase' : CgridBase,
+                     'EconomyMrkvNow_init': 0,
                      'act_T' : 400
                      }
 

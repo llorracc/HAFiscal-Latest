@@ -10,14 +10,14 @@ from HARK import multiThreadCommands, multiThreadCommandsFake
 mystr = lambda x : '{:.2f}'.format(x)
 mystr2 = lambda x : '{:.3f}'.format(x)
 
-def runExperiment(Agents,RecessionShock = False,TaxCutShock = False, \
+def runExperiment(agents,RecessionShock = False,TaxCutShock = False, \
                   ExtendedUIShock =False, UpdatePrb = 1.0, Splurge = 0.0):
     '''
     Conduct an experiment in which the recession hits and/or fiscal policy is initiated.
     
     Parameters
     ----------
-    Agents : [AgentType]
+    agents : [AgentType]
         List of agent types in the economy.
     RecessionShock : bool
         Indicator for whether the recession actually hits.
@@ -26,7 +26,7 @@ def runExperiment(Agents,RecessionShock = False,TaxCutShock = False, \
     -------
     TBD
     '''
-    T = Agents[0].T_sim
+    T = agents[0].T_sim
     
     # Make dictionaries of parameters to give to the agents
     experiment_dict = {
@@ -39,7 +39,7 @@ def runExperiment(Agents,RecessionShock = False,TaxCutShock = False, \
       
     # Begin the experiment by resetting each type's state to the baseline values
     PopCount = 0
-    for ThisType in Agents:
+    for ThisType in agents:
         ThisType.read_shocks = True
         ThisType(**experiment_dict)
         PopCount += ThisType.AgentCount
@@ -51,18 +51,18 @@ def runExperiment(Agents,RecessionShock = False,TaxCutShock = False, \
                            'makeShocksIfChanged()', 'initializeSim()',
                            'hitWithRecessionShock()',
                            'simulate()']
-    multiThreadCommandsFake(Agents, experiment_commands)
+    multiThreadCommandsFake(agents, experiment_commands)
     
-    #print(Agents[0].history['pLvlNow'][35:40,0])
-    #print(Agents[0].history['TranShkNow'][35:40,0])
+    #print(agents[0].history['pLvlNow'][35:40,0])
+    #print(agents[0].history['TranShkNow'][35:40,0])
     
     # Extract simulated consumption, labor income, and weight data
-    cNrm_all = np.concatenate([ThisType.history['cNrmNow'] for ThisType in Agents], axis=1)
-    Mrkv_hist = np.concatenate([ThisType.history['MrkvNow'] for ThisType in Agents], axis=1)
-    pLvl_all = np.concatenate([ThisType.history['pLvlNow'] for ThisType in Agents], axis=1)
-    TranShk_all = np.concatenate([ThisType.history['TranShkNow'] for ThisType in Agents], axis=1)
-    mNrm_all = np.concatenate([ThisType.history['mNrmNow'] for ThisType in Agents], axis=1)
-    aNrm_all = np.concatenate([ThisType.history['aNrmNow'] for ThisType in Agents], axis=1)
+    cNrm_all = np.concatenate([ThisType.history['cNrmNow'] for ThisType in agents], axis=1)
+    Mrkv_hist = np.concatenate([ThisType.history['MrkvNow'] for ThisType in agents], axis=1)
+    pLvl_all = np.concatenate([ThisType.history['pLvlNow'] for ThisType in agents], axis=1)
+    TranShk_all = np.concatenate([ThisType.history['TranShkNow'] for ThisType in agents], axis=1)
+    mNrm_all = np.concatenate([ThisType.history['mNrmNow'] for ThisType in agents], axis=1)
+    aNrm_all = np.concatenate([ThisType.history['aNrmNow'] for ThisType in agents], axis=1)
     cLvl_all = cNrm_all*pLvl_all
     # Calculate Splurge results (agents splurge on some of their income, and follow model for the rest)
     cLvl_all_splurge = (1.0-Splurge)*cLvl_all + Splurge*pLvl_all*TranShk_all
@@ -91,7 +91,7 @@ def runExperiment(Agents,RecessionShock = False,TaxCutShock = False, \
     
     
     # Get initial Markov states
-    Mrkv_init = np.concatenate([ThisType.history['MrkvNow'][0,:] for ThisType in Agents])
+    Mrkv_init = np.concatenate([ThisType.history['MrkvNow'][0,:] for ThisType in agents])
     return_dict = {'cNrm_all' : cNrm_all,
                    'TranShk_all' : TranShk_all,
                    'cLvl_all' : cLvl_all,
