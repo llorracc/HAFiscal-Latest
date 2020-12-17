@@ -8,8 +8,6 @@ from Parameters import T_sim, init_infhorizon, init_ADEconomy, DiscFacDstns,\
      figs_dir
 from FiscalModel import FiscalType
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
-from FiscalTools import runExperiment
-from HARK import multiThreadCommands, multiThreadCommandsFake
 from HARK.distribution import DiscreteDistribution
 from time import time
 import numpy as np
@@ -71,27 +69,19 @@ if __name__ == '__main__':
     baseline_commands = ['solve()', 'initializeSim()', 'simulate()', 'saveState()',
                          'switchToCounterfactualMode()', 'makeAlternateShockHistories()']
 
-    InfHorizonType.solve()
     AggDemandEconomy.solve()
-    
-    InfHorizonType.initializeSim()
+
     AggDemandEconomy.reset()
     InfHorizonTypeAgg.initializeSim()
     InfHorizonTypeAgg.AggDemandFac = 1.0
     InfHorizonTypeAgg.RfreeNow = 1.0
     InfHorizonTypeAgg.CaggNow = 1.0
     
-    InfHorizonType.simulate()
     AggDemandEconomy.makeHistory()
     
-    InfHorizonType.saveState()
     AggDemandEconomy.saveState()
     
-    InfHorizonType.switchToCounterfactualMode()
     AggDemandEconomy.switchToCounterfactualMode()
-    #InfHorizonTypeAgg.switchToCounterfactualMode()
-    
-    # InfHorizonType.makeAlternateShockHistories()
     AggDemandEconomy.makeIdiosyncraticShockHistories()
     
     output_keys = ['cNrm_all', 'TranShk_all', 'cLvl_all', 'pLvl_all', 'mNrm_all', 'aNrm_all', 'cLvl_all_splurge', 
@@ -114,32 +104,53 @@ if __name__ == '__main__':
     # Run the baseline consumption level
     t0 = time()
     base_results = AggDemandEconomy.runExperiment(**base_dict_agg)
+    AggDemandEconomy.storeBaselineModel(base_results['AggCons'])
     t1 = time()
     print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
     
-    # Run the extended UI consumption level
-    t0 = time()
-    UI_dict = base_dict_agg.copy()
-    UI_dict.update(**UI_changes)
-    UI_all_results = []
-    UI_results = dict()
-    for t in range(max_policy_duration):
-        UI_dict['EconomyMrkv_init'] = [2]*(t+1)
-        this_UI_results = AggDemandEconomy.runExperiment(**UI_dict)
-        UI_all_results += [this_UI_results]
-    for UI_output in output_keys:
-        UI_results[UI_output] = np.sum(np.array([UI_all_results[t][UI_output]*policy_prob_array[t]  for t in range(max_policy_duration)]), axis=0)
-    t1 = time()
-    print('Calculating extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
+    # # Run the extended UI consumption level
+    # t0 = time()
+    # UI_dict = base_dict_agg.copy()
+    # UI_dict.update(**UI_changes)
+    # UI_all_results = []
+    # UI_results = dict()
+    # for t in range(max_policy_duration):
+    #     UI_dict['EconomyMrkv_init'] = [2]*(t+1)
+    #     this_UI_results = AggDemandEconomy.runExperiment(**UI_dict)
+    #     UI_all_results += [this_UI_results]
+    # for UI_output in output_keys:
+    #     UI_results[UI_output] = np.sum(np.array([UI_all_results[t][UI_output]*policy_prob_array[t]  for t in range(max_policy_duration)]), axis=0)
+    # t1 = time()
+    # print('Calculating extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
 
-     # Run the payroll tax cut consumption level
+      # Run the payroll tax cut consumption level
     t0 = time()
     TaxCut_dict = base_dict_agg.copy()
     TaxCut_dict.update(**TaxCut_changes)
+    AggDemandEconomy.ADelasticity = 0.0
     TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
     TaxCut_results = AggDemandEconomy.runExperiment(**TaxCut_dict)
     t1 = time()
     print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    AggDemandEconomy.solveAD_TaxCut(num_iterations=10)
+    
+    t0 = time()
+    AggDemandEconomy.ADelasticity = 0.4
+    TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
+    TaxCut_results_AD4 = AggDemandEconomy.runExperiment(**TaxCut_dict)
+    t1 = time()
+    print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    AddCons_AD  = TaxCut_results_AD4[to_plot3]-base_results[to_plot3]
+    AddInc_AD   = TaxCut_results_AD4[to_plot4]-base_results[to_plot4] 
+    AddCons     = TaxCut_results[to_plot3]-base_results[to_plot3]
+    AddInc      = TaxCut_results[to_plot4]-base_results[to_plot4] 
+    plt.plot(AddInc, color='blue',linestyle='-')
+    plt.plot(AddCons, color='red',linestyle='-')
+    plt.plot(AddInc_AD, color='blue',linestyle='--')
+    plt.plot(AddCons_AD, color='red',linestyle='--')
+    
     
     # Run the recession consumption level
     t0 = time()
@@ -156,29 +167,29 @@ if __name__ == '__main__':
     t1 = time()
     print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
     
-    # Run the recession and extended UI consumption level
-    # This is SUPER SLOW because of the double loop
-    t0 = time()
-    recession_UI_dict = base_dict_agg.copy()
-    recession_UI_dict.update(**recession_UI_changes)
-    recession_UI_all_results = []
-    recession_UI_results = dict()
-    for t_R in range(max_recession_duration):
-        for t_Policy in range(max_policy_duration):
-            recession_UI_dict['EconomyMrkv_init'] = np.array([0]*max(max_recession_duration,max_policy_duration))
-            recession_UI_dict['EconomyMrkv_init'][0:t_R+1] += 1
-            recession_UI_dict['EconomyMrkv_init'][0:t_Policy+1] +=2
-            this_recession_UI_results = AggDemandEconomy.runExperiment(**recession_UI_dict)
-            recession_UI_all_results += [this_recession_UI_results]
-    for recession_UI_output in output_keys:
-        recession_UI_results[recession_UI_output] = np.zeros_like(recession_UI_all_results[0][recession_UI_output])
-        count = 0
-        for t_R in range(max_recession_duration):
-            for t_Policy in range(max_policy_duration):
-                recession_UI_results[recession_UI_output] += recession_UI_all_results[count][recession_UI_output]*recession_prob_array[t_R]*policy_prob_array[t_Policy]
-                count += 1
-    t1 = time()
-    print('Calculating recession and extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
+    # # Run the recession and extended UI consumption level
+    # # This is SUPER SLOW because of the double loop
+    # t0 = time()
+    # recession_UI_dict = base_dict_agg.copy()
+    # recession_UI_dict.update(**recession_UI_changes)
+    # recession_UI_all_results = []
+    # recession_UI_results = dict()
+    # for t_R in range(max_recession_duration):
+    #     for t_Policy in range(max_policy_duration):
+    #         recession_UI_dict['EconomyMrkv_init'] = np.array([0]*max(max_recession_duration,max_policy_duration))
+    #         recession_UI_dict['EconomyMrkv_init'][0:t_R+1] += 1
+    #         recession_UI_dict['EconomyMrkv_init'][0:t_Policy+1] +=2
+    #         this_recession_UI_results = AggDemandEconomy.runExperiment(**recession_UI_dict)
+    #         recession_UI_all_results += [this_recession_UI_results]
+    # for recession_UI_output in output_keys:
+    #     recession_UI_results[recession_UI_output] = np.zeros_like(recession_UI_all_results[0][recession_UI_output])
+    #     count = 0
+    #     for t_R in range(max_recession_duration):
+    #         for t_Policy in range(max_policy_duration):
+    #             recession_UI_results[recession_UI_output] += recession_UI_all_results[count][recession_UI_output]*recession_prob_array[t_R]*policy_prob_array[t_Policy]
+    #             count += 1
+    # t1 = time()
+    # print('Calculating recession and extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
     
     # Run the recession and payroll tax cut consumption level
     t0 = time()

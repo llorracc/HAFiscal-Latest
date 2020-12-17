@@ -156,26 +156,30 @@ class AggFiscalType(FiscalType):
     def marketAction(self):
         self.simulate(1)
         
-    def getCaggNow(self):  # This function exists to be overwritten in StickyE model
-        return self.CaggNow*np.ones(self.AgentCount)
+    def getCratioNow(self):  # This function exists to be overwritten in StickyE model
+        return self.CratioNow*np.ones(self.AgentCount)
     
     def getAggDemandFacNow(self):  
         return self.AggDemandFac*np.ones(self.AgentCount)
 
     def getShocks(self):
         MarkovConsumerType.getShocks(self)
-        self.TranShkNow = self.TranShkNow*self.getAggDemandFacNow() # For simulation, just multiply transitive shock by the aggregate demand factor
         if (hasattr(self,'Mrkv_univ') and self.Mrkv_univ is not None):
             self.MrkvNow = self.MrkvNow_temp # Make sure real sequence is recorded
         self.update_draw = self.RNG.permutation(np.array(range(self.AgentCount))) # A list permuted integers, low draws will update their aggregate Markov state
-            
+                   
+    def getStates(self):
+        FiscalType.getStates(self)
+        self.mNrmNow = self.bNrmNow + self.TranShkNow*self.AggDemandFac # Market resources after income accounting for Agg Demand factor
+        
+        
     def getMacroMarkovStates(self):
         self.MacroMrkvNow = self.EconomyMrkvNow*np.ones(self.AgentCount, dtype=int)
                    
     def getControls(self):
         cNrmNow = np.zeros(self.AgentCount) + np.nan
         MPCnow = np.zeros(self.AgentCount) + np.nan
-        CaggNow = self.getCaggNow()
+        CratioNow = self.getCratioNow()
         J = self.MrkvArray[0].shape[0]
         
         MrkvBoolArray = np.zeros((J,self.AgentCount), dtype=bool)
@@ -186,12 +190,13 @@ class AggFiscalType(FiscalType):
             right_t = t == self.t_cycle
             for j in range(J):
                 these = np.logical_and(right_t, MrkvBoolArray[j,:])
-                cNrmNow[these] = self.solution[t].cFunc[j](self.mNrmNow[these], CaggNow[these])
+                cNrmNow[these] = self.solution[t].cFunc[j](self.mNrmNow[these], CratioNow[these])
                 # Marginal propensity to consume
-                MPCnow[these]  = self.solution[t].cFunc[j].derivativeX(self.mNrmNow[these], CaggNow[these])
+                MPCnow[these]  = self.solution[t].cFunc[j].derivativeX(self.mNrmNow[these], CratioNow[these])
         self.cNrmNow = cNrmNow
         self.MPCnow  = MPCnow
         self.cLvlNow = cNrmNow*self.pLvlNow
+        self.cLvl_splurgeNow = (1.0-self.Splurge)*self.cLvlNow + self.Splurge*self.pLvlNow*self.TranShkNow
         
     def reset(self):
         return # do nothing
@@ -280,8 +285,7 @@ def solveAggConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,Per
         TranShkValsNext_tiled_noAD = np.tile(np.reshape(TranShkValsNext, (1, 1, ShkCount)), (Ccount, aCount, 1))
         
         # Calculate aggregate consumption next period
-        CaggGrid = CFunc[j](Cgrid)
-        Cnext_array = np.tile(np.reshape(CaggGrid, (Ccount, 1, 1)), (1, aCount, ShkCount)) ##$$$$$$$$ NOTE THIS WILL DEPEND ON THE STATE YOU MOVE TO! NEED CFunc to vary by state from AND state to
+        Cnext_array = np.tile(np.reshape(Cgrid, (Ccount, 1, 1)), (1, aCount, ShkCount)) 
 
         # Calculate AggDemandFac
         AggDemandFacnext_array = ADFunc(Cnext_array)  
@@ -306,9 +310,9 @@ def solveAggConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,Per
         EndOfPrdvP = DiscFac*np.sum(vPnext_array*ShkPrbsNext_tiled, axis=2)
         
         # Make the conditional end-of-period marginal value function
-        BoroCnstNat = LinearInterp(CaggGrid, BoroCnstNat_vec)
+        BoroCnstNat = LinearInterp(Cgrid, BoroCnstNat_vec)
         EndOfPrdvPnvrs = np.concatenate((np.zeros((Ccount, 1)), EndOfPrdvP**(-1./CRRA)), axis=1)
-        EndOfPrdvPnvrsFunc_base = BilinearInterp(np.transpose(EndOfPrdvPnvrs), np.insert(aXtraGrid, 0, 0.0), CaggGrid)
+        EndOfPrdvPnvrsFunc_base = BilinearInterp(np.transpose(EndOfPrdvPnvrs), np.insert(aXtraGrid, 0, 0.0), Cgrid)
         EndOfPrdvPnvrsFunc = VariableLowerBoundFunc2D(EndOfPrdvPnvrsFunc_base, BoroCnstNat)
         EndOfPrdvPfunc_cond.append(MargValueFunc2D(EndOfPrdvPnvrsFunc, CRRA))
         BoroCnstNat_cond.append(BoroCnstNat)
@@ -325,19 +329,18 @@ def solveAggConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,Per
     vPfuncNow = []
     mNrmMinNow = []
     for i in range(StateCount):
-        # Find natural borrowing constraint for this state by Cagg
-        Cnext = CFunc[i](Cgrid)
+        # Find natural borrowing constraint for this state by Cratio NOTE THIS CODE IS NOT 100% CHECKED AND SHOULD BE LOOKED OVER
         aNrmMin_candidates = np.zeros((StateCount, Ccount)) + np.nan
         for j in range(StateCount):
             if MrkvArray[i, j] > 0.:  # Irrelevant if transition is impossible
+                Cnext = CFunc[i][j](Cgrid)
                 aNrmMin_candidates[j, :] = BoroCnstNat_cond[j](Cnext)
         aNrmMin_vec = np.nanmax(aNrmMin_candidates, axis=0)
         BoroCnstNat_vec = aNrmMin_vec
 
-        # Make tiled grids of aNrm and Cagg
+        # Make tiled grids of aNrm and Cratio
         aNrmMin_tiled = np.tile(np.reshape(aNrmMin_vec, (Ccount, 1)), (1, aCount))
         aNrmNow_tiled = aNrmMin_tiled + aXtra_tiled
-        Cnext_tiled = np.tile(np.reshape(Cnext, (Ccount, 1)), (1, aCount))
 
         
         # # Find the minimum allowable market resources
@@ -351,8 +354,10 @@ def solveAggConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,Per
         EndOfPrdvP = np.zeros((Ccount, aCount))
         for j in range(StateCount):
             if MrkvArray[i, j] > 0.:
+                Cnext = CFunc[i][j](Cgrid)
+                Cnext_tiled = np.tile(np.reshape(Cnext, (Ccount, 1)), (1, aCount))
                 temp = EndOfPrdvPfunc_cond[j](aNrmNow_tiled, Cnext_tiled)
-                EndOfPrdvP += MrkvArray[i, j]*temp
+                EndOfPrdvP += MrkvArray[i, j]*temp                    
         EndOfPrdvP *= LivPrb[i] # Account for survival out of the current state
         
         # Calculate consumption and the endogenous mNrm gridpoints for this state
@@ -401,22 +406,35 @@ class AggregateDemandEconomy(Market):
         agents = agents if agents is not None else list()
 
         Market.__init__(self, agents=agents,
-                        sow_vars=['CaggNow', 'AggDemandFac','EconomyMrkvNow'],
-                        reap_vars=['cLvlNow', 'pLvlNow'],
-                        track_vars=['CaggNow', 'AggDemandFac','EconomyMrkvNow'],
+                        sow_vars=['CratioNow', 'AggDemandFac','EconomyMrkvNow'],
+                        reap_vars=['cLvl_splurgeNow'],
+                        track_vars=['CratioNow','CratioPrev', 'AggDemandFac','EconomyMrkvNow'],
                         dyn_vars=['CFunc'],
                         **kwds)
         self.update()
 
 
-    def millRule(self, cLvlNow, pLvlNow):
-        self.CaggNow = np.mean(np.array(cLvlNow))/np.mean(pLvlNow)  
-        self.AggDemandFac = self.ADFunc(self.CaggNow)
+    def millRule(self, cLvl_splurgeNow):
+        if self.Shk_idx==0:
+            EconomyMrkvNow = 0
+        else:
+            EconomyMrkvNow = self.EconomyMrkvNow_hist[self.Shk_idx-1]
+        EconomyMrkvNext = self.EconomyMrkvNow_hist[self.Shk_idx]
+        if hasattr(self,'base_AggCons'):
+            cLvl_all_splurge = np.concatenate([this_cLvl for this_cLvl in cLvl_splurgeNow])      
+            AggCons   = np.sum(cLvl_all_splurge)
+            self.CratioNow = AggCons/self.base_AggCons[self.Shk_idx] 
+            CratioNext = self.CFunc[EconomyMrkvNow*3][EconomyMrkvNext*3](self.CratioNow)
+        else:
+            self.CratioNow = 1.0
+            CratioNext = 1.0
+        self.CratioPrev = self.CratioNow
+        AggDemandFacNext = self.ADFunc(CratioNext)
         mill_return = HARKobject()
-        mill_return.CaggNow = self.CaggNow
-        mill_return.AggDemandFac = self.AggDemandFac
-        EconomyMrkvNow = self.EconomyMrkvNow_hist[self.Shk_idx]
-        mill_return.EconomyMrkvNow = EconomyMrkvNow
+        mill_return.CratioNow = CratioNext
+        mill_return.AggDemandFac = AggDemandFacNext
+        mill_return.EconomyMrkvNow = EconomyMrkvNext
+        self.Shk_idx += 1
         return mill_return
 
     def calcDynamics(self):
@@ -425,14 +443,17 @@ class AggregateDemandEconomy(Market):
     def update(self):
         '''
         '''
-        self.CaggNow_init = 1.0
+        self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.ADFunc = lambda C : C**self.ADelasticity
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
         for i in range(StateCount):
-            CFunc_all.append(CRule(self.intercept_prev[i], self.slope_prev[i]))
+            CFunc_i = []
+            for j in range(StateCount):
+                CFunc_i.append(CRule(self.intercept_prev[i,j], self.slope_prev[i,j]))
+            CFunc_all.append(copy(CFunc_i))
         self.CFunc = CFunc_all
 
     def reset(self):
@@ -447,6 +468,9 @@ class AggregateDemandEconomy(Market):
         # Make the macro markov history
         self.EconomyMrkvNow_hist = [0] * self.act_T
         self.EconomyMrkvNow_hist[0:len(EconomyMrkv_init)] = EconomyMrkv_init
+        self.CratioNow_init = self.CFunc[0][EconomyMrkv_init[0]*3].intercept
+        self.AggDemandFac_init = self.ADFunc(self.CratioNow_init)
+        
         # Make dictionaries of parameters to give to the agents
         experiment_dict = {
                 'use_prestate' : True,
@@ -478,9 +502,9 @@ class AggregateDemandEconomy(Market):
         aNrm_all = np.concatenate([ThisType.history['aNrmNow'] for ThisType in self.agents], axis=1)
         cLvl_all = cNrm_all*pLvl_all
         # Calculate Splurge results (agents splurge on some of their income, and follow model for the rest)
-        cLvl_all_splurge = (1.0-Splurge)*cLvl_all + Splurge*pLvl_all*TranShk_all
+        cLvl_all_splurge = (1.0-Splurge)*cLvl_all + Splurge*pLvl_all*TranShk_all*np.array(self.history['AggDemandFac'])[:,None]
         
-        IndIncome = pLvl_all*TranShk_all
+        IndIncome = pLvl_all*TranShk_all*np.array(self.history['AggDemandFac'])[:,None]
         AggIncome = np.sum(IndIncome,1)
         AggCons   = np.sum(cLvl_all_splurge,1)
         
@@ -514,14 +538,18 @@ class AggregateDemandEconomy(Market):
                        'NPV_AggIncome': NPV_AggIncome,
                        'NPV_AggCons': NPV_AggCons,
                        'AggIncome': AggIncome,
-                       'AggCons': AggCons}
+                       'AggCons': AggCons,
+                       'Cratio_hist' : self.history['CratioPrev']}
         return return_dict
 
     def calcCFunc(self):
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
         for i in range(StateCount):
-            CFunc_all.append(CRule(self.intercept_prev[i], self.slope_prev[i]))
+            CFunc_i = []
+            for j in range(StateCount):
+                CFunc_i.append(CRule(self.intercept_prev[i,j], self.slope_prev[i,j]))
+            CFunc_all.append(copy(CFunc_i))
         self.CFunc = CFunc_all
         
     def switchToCounterfactualMode(self):
@@ -546,6 +574,32 @@ class AggregateDemandEconomy(Market):
     def saveState(self):
         for agent in self.agents:
             agent.saveState()
+            
+    def storeBaselineModel(self, AggCons):
+        self.base_AggCons = copy(AggCons)
+        self.base_CFunc = copy(self.CFunc)
+        for agent in self.agents:
+            agent.base_solution = copy(agent.solution)
+            
+    def storeDemandModel(self):
+        self.demand_CFunc = copy(self.CFunc)
+        for agent in self.agents:
+            agent.demand_solution = copy(agent.solution)
+            
+    def restoreBaselineModel(self):
+        self.CFunc = self.base_CFunc
+        self.ADelasticity = 0.0
+        for agent in self.agents:
+            agent.solution = agent.base_solution
+            agent.getEconomyData()
+            
+    def restoreDemandModel(self):
+        self.CFunc = self.demand_CFunc
+        self.ADelasticity = self.demand_ADelasticity
+        for agent in self.agents:
+            agent.solution = agent.demand_solution
+            agent.getEconomyData()
+            
         
     def makeIdiosyncraticShockHistories(self):
         for agent in self.agents:
@@ -554,7 +608,47 @@ class AggregateDemandEconomy(Market):
     def solve(self):
         for agent in self.agents:
             agent.solve()
-                  
+            
+    def Macro2MicroCFunc(self, MacroCFunc):
+        '''
+        Converts the aggregate CFunc for Macro transitions to one for micro transitions
+        '''
+        dim = len(MacroCFunc)
+        MicroCFunc = [[CRule(1.0,0.0) for i in range(dim*3)] for j in range(dim*3)]
+        for i in range(dim*3):
+            for j in range(dim*3):
+                MicroCFunc[i][j] = MacroCFunc[int(np.floor(i/3))][int(np.floor(j/3))]
+        return MicroCFunc
+            
+           
+    def solveAD_TaxCut(self, num_iterations):
+        self.ADelasticity = self.demand_ADelasticity
+        self.update()    
+        TaxCut_dict = {
+             'RecessionShock' : False,
+             'ExtendedUIShock' : False,
+             'TaxCutShock' : True,
+             'UpdatePrb': 1.0,
+             'Splurge': 0.32,
+             }
+        dim = int(len(self.CFunc)/3)
+        MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+        TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
+        for i in range(num_iterations):
+            TaxCut_results = self.runExperiment(**TaxCut_dict)
+            Cratio_hist = TaxCut_results['Cratio_hist']
+            MacroCFunc[0][4] = CRule(Cratio_hist[0],0.0)
+            for t in range(7):
+                MacroCFunc[4+2*t][6+2*t] = CRule(Cratio_hist[t+1],0.0)
+            MacroCFunc[18][0] = CRule(Cratio_hist[8],0.0)
+            MacroCFunc[0][0] = CRule(1.0, np.mean((np.array(Cratio_hist[9:13])-1)/(np.array(Cratio_hist[8:12])-1)))  # when you return to normal state, aggregate consumption will not be equal to baseline
+            self.MacroCFunc = MacroCFunc
+            self.CFunc = self.Macro2MicroCFunc(MacroCFunc)
+            for agent in self.agents:
+                agent.CFunc = self.CFunc
+            print("solving again...")
+            self.solve()
+            print("iteration...")
 
     
 class CRule(HARKobject):
@@ -567,5 +661,6 @@ class CRule(HARKobject):
         self.distance_criteria = ['slope', 'intercept']
 
     def __call__(self, Cnow):
-        Cnext = np.exp(self.intercept + self.slope*np.log(Cnow))
+        #Cnext = np.exp(self.intercept + self.slope*np.log(Cnow))
+        Cnext = self.intercept + self.slope*np.log(Cnow)        # Not logs!
         return Cnext

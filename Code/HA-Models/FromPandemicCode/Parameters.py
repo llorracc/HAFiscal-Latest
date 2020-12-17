@@ -193,6 +193,7 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'TaxCutIncFactor' : TaxCutIncFactor,
                 'TaxCutPeriods' : TaxCutPeriods,
                 'UpdatePrb' : 1.0,
+                'Splurge' : Splurge,
                 'track_vars' : []
                 }
 
@@ -253,17 +254,18 @@ if quick_test:
     init_infhorizon['T_sim'] = 40
     
 # Parameters for AggregateDemandEconomy economy
-intercept_prev = [0.0]*num_normal_MrkvStates          # Intercept of aggregate savings function
-slope_prev = [1.0]*num_normal_MrkvStates              # Slope of aggregate savings function
-intercept_prev_big = [0.0]*num_MrkvStates          # Intercept of aggregate savings function
-slope_prev_big = [1.0]*num_MrkvStates              # Slope of aggregate savings function
-ADelasticity = 0.0            # Elasticity of productivity to consumption
+intercept_prev = np.ones((num_normal_MrkvStates,num_normal_MrkvStates ))         # Intercept of aggregate savings function
+slope_prev = np.zeros((num_normal_MrkvStates,num_normal_MrkvStates ))              # Slope of aggregate savings function
+intercept_prev_big = np.ones((num_MrkvStates, num_MrkvStates))          # Intercept of aggregate savings function
+slope_prev_big = np.zeros((num_MrkvStates, num_MrkvStates))              # Slope of aggregate savings function
+ADelasticity = 0.4            # Elasticity of productivity to consumption
 
 
 # Make a dictionary to specify a Cobb-Douglas economy
 init_ADEconomy = {'intercept_prev': intercept_prev,
                      'slope_prev': slope_prev,
-                     'ADelasticity' : ADelasticity,
+                     'ADelasticity' : 0.0,
+                     'demand_ADelasticity' : ADelasticity,
                      'MrkvArray' : MrkvArray_small,
                      'MrkvArray_big' : MrkvArray,
                      'intercept_prev_big' : intercept_prev_big,
