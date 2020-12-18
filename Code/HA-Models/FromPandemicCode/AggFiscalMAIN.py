@@ -144,7 +144,7 @@ if __name__ == '__main__':
     t1 = time()
     print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
     
-    num_iterations = 10
+    num_iterations = 4
     AggDemandEconomy.solveAD_Recession(num_iterations=num_iterations, name = 'Recession')
     AggDemandEconomy.solveAD_TaxCut(num_iterations=num_iterations, name = 'TaxCut')
 
