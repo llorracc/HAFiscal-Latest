@@ -93,7 +93,7 @@ if __name__ == '__main__':
     policy_prob_array = np.array([PolicyUBpersist**t*(1-PolicyUBpersist) for t in range(max_policy_duration)])
     policy_prob_array[-1] = 1.0 - np.sum(policy_prob_array[:-1])
 
-    max_recession_duration = 15
+    max_recession_duration = 21
     Rspell = AggDemandEconomy.agents[0].Rspell
     R_persist = 1.-1./Rspell
     recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     # Run the baseline consumption level
     t0 = time()
     base_results = AggDemandEconomy.runExperiment(**base_dict_agg)
-    AggDemandEconomy.storeBaselineModel(base_results['AggCons'])
+    AggDemandEconomy.storeBaseline(base_results['AggCons'])
     t1 = time()
     print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
     
@@ -133,27 +133,31 @@ if __name__ == '__main__':
     t1 = time()
     print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
     
-    AggDemandEconomy.solveAD_TaxCut(num_iterations=10)
+    AggDemandEconomy.solveAD_Recession(num_iterations=4, name = 'Recession')
+    AggDemandEconomy.solveAD_TaxCut(num_iterations=4, name = 'TaxCut')
+
     
     t0 = time()
-    AggDemandEconomy.ADelasticity = 0.4
+    AggDemandEconomy.restoreADsolution(name = 'TaxCut')
     TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
-    TaxCut_results_AD4 = AggDemandEconomy.runExperiment(**TaxCut_dict)
+    TaxCut_results_AD = AggDemandEconomy.runExperiment(**TaxCut_dict)
     t1 = time()
     print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
     
-    AddCons_AD  = TaxCut_results_AD4[to_plot3]-base_results[to_plot3]
-    AddInc_AD   = TaxCut_results_AD4[to_plot4]-base_results[to_plot4] 
+    max_T = 20
+    AddCons_AD  = TaxCut_results_AD[to_plot3]-base_results[to_plot3]
+    AddInc_AD   = TaxCut_results_AD[to_plot4]-base_results[to_plot4] 
     AddCons     = TaxCut_results[to_plot3]-base_results[to_plot3]
     AddInc      = TaxCut_results[to_plot4]-base_results[to_plot4] 
-    plt.plot(AddInc, color='blue',linestyle='-')
-    plt.plot(AddCons, color='red',linestyle='-')
-    plt.plot(AddInc_AD, color='blue',linestyle='--')
-    plt.plot(AddCons_AD, color='red',linestyle='--')
+    plt.plot(AddInc[0:max_T], color='blue',linestyle='-')
+    plt.plot(AddCons[0:max_T], color='red',linestyle='-')
+    plt.plot(AddInc_AD[0:max_T], color='blue',linestyle='--')
+    plt.plot(AddCons_AD[0:max_T], color='red',linestyle='--')
     
     
     # Run the recession consumption level
     t0 = time()
+    AggDemandEconomy.restoreADsolution(name = 'baseline')
     recession_dict = base_dict_agg.copy()
     recession_dict.update(**recession_changes)
     recession_all_results = []
@@ -166,6 +170,29 @@ if __name__ == '__main__':
         recession_results[recession_output] = np.sum(np.array([recession_all_results[t][recession_output]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
     t1 = time()
     print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    # Run the recession consumption level
+    t0 = time()
+    AggDemandEconomy.restoreADsolution(name = 'Recession')
+    recession_all_results_AD = []
+    recession_results_AD = dict()
+    for t in range(max_recession_duration):
+        recession_dict['EconomyMrkv_init'] = [1]*(t+1)
+        this_recession_results_AD = AggDemandEconomy.runExperiment(**recession_dict)
+        recession_all_results_AD += [this_recession_results_AD]
+    for recession_output_AD in output_keys:
+        recession_results_AD[recession_output_AD] = np.sum(np.array([recession_all_results_AD[t][recession_output_AD]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+    t1 = time()
+    print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    AddCons_AD  = recession_results_AD[to_plot3]-base_results[to_plot3]
+    AddInc_AD   = recession_results_AD[to_plot4]-base_results[to_plot4] 
+    AddCons     = recession_results[to_plot3]-base_results[to_plot3]
+    AddInc      = recession_results[to_plot4]-base_results[to_plot4] 
+    plt.plot(AddInc[0:max_T], color='blue',linestyle='-')
+    plt.plot(AddCons[0:max_T], color='red',linestyle='-')
+    plt.plot(AddInc_AD[0:max_T], color='blue',linestyle='--')
+    plt.plot(AddCons_AD[0:max_T], color='red',linestyle='--')
     
     # # Run the recession and extended UI consumption level
     # # This is SUPER SLOW because of the double loop

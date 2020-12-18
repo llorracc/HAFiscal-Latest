@@ -575,31 +575,25 @@ class AggregateDemandEconomy(Market):
         for agent in self.agents:
             agent.saveState()
             
-    def storeBaselineModel(self, AggCons):
+    def storeBaseline(self, AggCons):
         self.base_AggCons = copy(AggCons)
-        self.base_CFunc = copy(self.CFunc)
-        for agent in self.agents:
-            agent.base_solution = copy(agent.solution)
+        self.stored_solutions = dict()
+        self.storeADsolution('baseline')
             
-    def storeDemandModel(self):
-        self.demand_CFunc = copy(self.CFunc)
-        for agent in self.agents:
-            agent.demand_solution = copy(agent.solution)
-            
-    def restoreBaselineModel(self):
-        self.CFunc = self.base_CFunc
-        self.ADelasticity = 0.0
-        for agent in self.agents:
-            agent.solution = agent.base_solution
-            agent.getEconomyData()
-            
-    def restoreDemandModel(self):
-        self.CFunc = self.demand_CFunc
-        self.ADelasticity = self.demand_ADelasticity
-        for agent in self.agents:
-            agent.solution = agent.demand_solution
-            agent.getEconomyData()
-            
+    def storeADsolution(self, name):
+        self.stored_solutions[name] = HARKobject()
+        self.stored_solutions[name].CFunc = copy(self.CFunc)
+        self.stored_solutions[name].ADelasticity = self.ADelasticity
+        self.stored_solutions[name].agent_solutions = []
+        for i in range(len(self.agents)):
+            self.stored_solutions[name].agent_solutions.append(copy(self.agents[i].solution))
+                       
+    def restoreADsolution(self,name):
+        self.CFunc = self.stored_solutions[name].CFunc
+        self.ADelasticity = self.stored_solutions[name].ADelasticity
+        for i in range(len(self.agents)):
+            self.agents[i].solution = self.stored_solutions[name].agent_solutions[i]
+            self.agents[i].getEconomyData(self)
         
     def makeIdiosyncraticShockHistories(self):
         for agent in self.agents:
@@ -620,8 +614,7 @@ class AggregateDemandEconomy(Market):
                 MicroCFunc[i][j] = MacroCFunc[int(np.floor(i/3))][int(np.floor(j/3))]
         return MicroCFunc
             
-           
-    def solveAD_TaxCut(self, num_iterations):
+    def solveAD_TaxCut(self, num_iterations, name = None):
         self.ADelasticity = self.demand_ADelasticity
         self.update()    
         TaxCut_dict = {
@@ -649,8 +642,50 @@ class AggregateDemandEconomy(Market):
             print("solving again...")
             self.solve()
             print("iteration...")
+        if name != None:
+            self.storeADsolution(name)
+            
+    def solveAD_Recession(self, num_iterations, name = None):
+        self.ADelasticity = self.demand_ADelasticity
+        self.update()   
+        recession_dict = {
+             'RecessionShock' : True,
+             'ExtendedUIShock' : False,
+             'TaxCutShock' : False,
+             'UpdatePrb': 1.0,
+             'Splurge': 0.32,
+             }
+        dim = int(len(self.CFunc)/3)
+        MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+        for i in range(num_iterations):
+            recession_all_results = []
+            max_recession = 19
+            for t in [0,max_recession-1]:
+                recession_dict['EconomyMrkv_init'] = [1]*(t+1)
+                this_recession_results = self.runExperiment(**recession_dict)
+                recession_all_results += [this_recession_results]
+            MacroCFunc[0][1] = CRule(recession_all_results[0]['Cratio_hist'][0],0.0) # consumption when you jump into recession from steady state
+            # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
+            slope_if_recession     = (recession_all_results[1]['Cratio_hist'][1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][0] - recession_all_results[1]['Cratio_hist'][max_recession-2])
+            intercept_if_recession =  recession_all_results[1]['Cratio_hist'][1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][0]-1)
+            MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
+            slope_on_exit          = (recession_all_results[0]['Cratio_hist'][1] - recession_all_results[1]['Cratio_hist'][max_recession  ])/(recession_all_results[0]['Cratio_hist'][0] - recession_all_results[1]['Cratio_hist'][max_recession-1])
+            slope_on_exit = min(1.0, slope_on_exit) #HACK - need to check how well the fit it
+            intercept_on_exit      =  recession_all_results[0]['Cratio_hist'][1] - slope_if_recession*(recession_all_results[0]['Cratio_hist'][0]-1)
+            MacroCFunc[1][0]       = CRule(intercept_on_exit,slope_on_exit) 
+            # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope
+            slope_normal           = (recession_all_results[0]['Cratio_hist'][2]-1)/(recession_all_results[0]['Cratio_hist'][1]-1)
+            MacroCFunc[0][0]       = CRule(1.0,slope_normal) 
+            self.MacroCFunc = MacroCFunc
+            self.CFunc = self.Macro2MicroCFunc(MacroCFunc)
+            for agent in self.agents:
+                agent.CFunc = self.CFunc
+            print("solving again...")
+            self.solve()
+            print("iteration...")
+        if name != None:
+            self.storeADsolution(name)
 
-    
 class CRule(HARKobject):
     '''
     A class to represent agent beliefs about aggregate consumption dynamics.
@@ -662,5 +697,5 @@ class CRule(HARKobject):
 
     def __call__(self, Cnow):
         #Cnext = np.exp(self.intercept + self.slope*np.log(Cnow))
-        Cnext = self.intercept + self.slope*np.log(Cnow)        # Not logs!
+        Cnext = self.intercept + self.slope*(Cnow-1.0)        # Not logs!
         return Cnext
