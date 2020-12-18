@@ -459,9 +459,9 @@ class AggregateDemandEconomy(Market):
     def reset(self):
         self.Shk_idx = 0
         Market.reset(self)
-        # self.EconomyMrkvNow_hist = [0] * self.act_T
-        # for agent in self.agents:
-        #     agent.initializeSim()
+        self.EconomyMrkvNow_hist = [0] * self.act_T
+        for agent in self.agents:
+            agent.initializeSim()
         
     def runExperiment(self, RecessionShock = False,TaxCutShock = False, \
                       ExtendedUIShock =False, UpdatePrb = 1.0, Splurge = 0.0, EconomyMrkv_init = [0]):

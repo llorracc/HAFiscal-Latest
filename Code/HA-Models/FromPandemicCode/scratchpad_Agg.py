@@ -21,11 +21,13 @@ if __name__ == '__main__':
     t_start = time()
     base_dict_agg = deepcopy(base_dict)
     
+    # Make baseline types - for now only one type, might add more
+    num_types = 1
     InfHorizonTypeAgg = AggFiscalType(**init_infhorizon)
     InfHorizonTypeAgg.cycles = 0
     AggDemandEconomy = AggregateDemandEconomy(**init_ADEconomy)
     InfHorizonTypeAgg.getEconomyData(AggDemandEconomy)
-    AggDemandEconomy.agents = [InfHorizonTypeAgg]
+    BaseTypeList = [InfHorizonTypeAgg]
   
     # Fill in the Markov income distribution for each base type
     #$$$$$$$$$$
@@ -33,7 +35,7 @@ if __name__ == '__main__':
     IncomeDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg.IncUnemp])])
     IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg.IncUnempNoBenefits])])
     IncomeDstn_big = []
-    for ThisType in [InfHorizonTypeAgg]:
+    for ThisType in BaseTypeList:
         IncomeDstn_taxcut = deepcopy(ThisType.IncomeDstn[0])
         IncomeDstn_taxcut.X[1] = IncomeDstn_taxcut.X[1]*ThisType.TaxCutIncFactor
         IncomeDstn_big.append([ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal
@@ -61,14 +63,30 @@ if __name__ == '__main__':
         ThisType.AgentCount = AgentCountTotal
         ThisType.DiscFac = 0.96
         ThisType.seed = 0
+        
+    # Make the overall list of types
+    TypeList = []
+    n = 0
+    for b in range(DiscFacDstns[0].X.size):
+        for e in range(num_types):
+            DiscFac = DiscFacDstns[e].X[b]
+            AgentCount = int(np.floor(AgentCountTotal*TypeShares[e]*DiscFacDstns[e].pmf[b]))
+            ThisType = deepcopy(BaseTypeList[e])
+            ThisType.AgentCount = AgentCount
+            ThisType.DiscFac = DiscFac
+            ThisType.seed = n
+            TypeList.append(ThisType)
+            n += 1
+    AggDemandEconomy.agents = TypeList
 
     AggDemandEconomy.solve()
 
     AggDemandEconomy.reset()
-    InfHorizonTypeAgg.initializeSim()
-    InfHorizonTypeAgg.AggDemandFac = 1.0
-    InfHorizonTypeAgg.RfreeNow = 1.0
-    InfHorizonTypeAgg.CaggNow = 1.0
+    for agent in AggDemandEconomy.agents:
+        agent.initializeSim()
+        agent.AggDemandFac = 1.0
+        agent.RfreeNow = 1.0
+        agent.CaggNow = 1.0
     
     AggDemandEconomy.makeHistory()
     
@@ -81,13 +99,13 @@ if __name__ == '__main__':
                       'NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
     
     max_policy_duration = 6
-    PolicyUBspell = AggDemandEconomy.agents[0].PolicyUBspell
+    PolicyUBspell = AggDemandEconomy.agents[0].PolicyUBspell #NOTE - this should come from the market, not the agent
     PolicyUBpersist = 1.-1./PolicyUBspell
     policy_prob_array = np.array([PolicyUBpersist**t*(1-PolicyUBpersist) for t in range(max_policy_duration)])
     policy_prob_array[-1] = 1.0 - np.sum(policy_prob_array[:-1])
 
     max_recession_duration = 21
-    Rspell = AggDemandEconomy.agents[0].Rspell
+    Rspell = AggDemandEconomy.agents[0].Rspell #NOTE - this should come from the market, not the agent
     R_persist = 1.-1./Rspell
     recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
     recession_prob_array[-1] = 1.0 - np.sum(recession_prob_array[:-1])
@@ -126,8 +144,9 @@ if __name__ == '__main__':
     t1 = time()
     print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
     
-    AggDemandEconomy.solveAD_Recession(num_iterations=4, name = 'Recession')
-    AggDemandEconomy.solveAD_TaxCut(num_iterations=4, name = 'TaxCut')
+    num_iterations = 10
+    AggDemandEconomy.solveAD_Recession(num_iterations=num_iterations, name = 'Recession')
+    AggDemandEconomy.solveAD_TaxCut(num_iterations=num_iterations, name = 'TaxCut')
 
     t0 = time()
     AggDemandEconomy.restoreADsolution(name = 'TaxCut')
@@ -176,20 +195,26 @@ if __name__ == '__main__':
     AddInc_AD   = TaxCut_results_AD[to_plot4]-base_results[to_plot4] 
     AddCons     = TaxCut_results[to_plot3]-base_results[to_plot3]
     AddInc      = TaxCut_results[to_plot4]-base_results[to_plot4] 
+    plt.figure(figsize=(15,10))
     plt.plot(AddInc[0:max_T], color='blue',linestyle='-')
-    plt.plot(AddCons[0:max_T], color='red',linestyle='-')
     plt.plot(AddInc_AD[0:max_T], color='blue',linestyle='--')
+    plt.plot(AddCons[0:max_T], color='red',linestyle='-')
     plt.plot(AddCons_AD[0:max_T], color='red',linestyle='--')
+    plt.title('Tax Cut, no recession', size=30)
+    plt.legend(['Income, no AD effects','Income, AD effects','Consumption, no AD effects','Consumption, AD effects'], fontsize=20)
     plt.show()
         
     AddCons_AD  = recession_results_AD[to_plot3]-base_results[to_plot3]
     AddInc_AD   = recession_results_AD[to_plot4]-base_results[to_plot4] 
     AddCons     = recession_results[to_plot3]-base_results[to_plot3]
     AddInc      = recession_results[to_plot4]-base_results[to_plot4] 
+    plt.figure(figsize=(15,10))
     plt.plot(AddInc[0:max_T], color='blue',linestyle='-')
-    plt.plot(AddCons[0:max_T], color='red',linestyle='-')
     plt.plot(AddInc_AD[0:max_T], color='blue',linestyle='--')
+    plt.plot(AddCons[0:max_T], color='red',linestyle='-')
     plt.plot(AddCons_AD[0:max_T], color='red',linestyle='--')
+    plt.title('Recession', size=30)
+    plt.legend(['Income, no AD effects','Income, AD effects','Consumption, no AD effects','Consumption, AD effects'], fontsize=20)
     plt.show()
     
     # # Run the recession and extended UI consumption level
