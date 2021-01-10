@@ -11,6 +11,8 @@ import parameter_config
 reload(parameter_config)
 from parameter_config import *
 
+###### IVAN: combine parameter_config and parameters
+
 ###############################################################################
 
 # Size of simulations
