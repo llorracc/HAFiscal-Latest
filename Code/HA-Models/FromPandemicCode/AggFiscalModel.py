@@ -624,15 +624,15 @@ class AggregateDemandEconomy(Market):
         AllSlopes_old       = np.array([item.slope for item in np.reshape(Old_Cfunc,-1)])
         Slopes_Diff         = np.linalg.norm(AllSlopes_old-AllSlopes_new)
         Index_Slopes_Largest_Diff           = np.argmax(abs(AllSlopes_old-AllSlopes_new))
-        FromMrkState_Slopes_Largest_Diff    = np.floor_divide(np.floor_divide(Index_Slopes_Largest_Diff,3),20)
-        ToMrkState_Slopes_Largest_Diff      = np.mod(np.floor_divide(Index_Slopes_Largest_Diff,3),20) 
+        FromMrkState_Slopes_Largest_Diff    = np.floor_divide(np.floor_divide(Index_Slopes_Largest_Diff,60),3)
+        ToMrkState_Slopes_Largest_Diff      = np.floor_divide(np.mod(Index_Slopes_Largest_Diff,60),3) 
         
         AllIntercepts_new   = np.array([item.intercept for item in np.reshape(New_Cfunc,-1)])
         AllIntercepts_old   = np.array([item.intercept for item in np.reshape(Old_Cfunc,-1)])
         Intercept_Diff      = np.linalg.norm(AllIntercepts_old-AllIntercepts_new)
         Index_Intercept_Largest_Diff           = np.argmax(abs(AllIntercepts_old-AllIntercepts_new))
-        FromMrkState_Intercept_Largest_Diff    = np.floor_divide(np.floor_divide(Index_Intercept_Largest_Diff,3),20)
-        ToMrkState_Intercept_Largest_Diff      = np.mod(np.floor_divide(Index_Intercept_Largest_Diff,3),20) 
+        FromMrkState_Intercept_Largest_Diff    = np.floor_divide(np.floor_divide(Index_Intercept_Largest_Diff,60),3)
+        ToMrkState_Intercept_Largest_Diff      = np.floor_divide(np.mod(Index_Intercept_Largest_Diff,60),3)  
         
         Total_Diff          = (Slopes_Diff**2 + Intercept_Diff**2)**0.5
         print('Diff in Slopes in CFunc: ', Slopes_Diff)
@@ -809,8 +809,9 @@ class AggregateDemandEconomy(Market):
             
             
             # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
-            slope_if_recession     = (recession_all_results[1]['Cratio_hist'][1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][0] - recession_all_results[1]['Cratio_hist'][max_recession-2])
-            intercept_if_recession =  recession_all_results[1]['Cratio_hist'][1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][0]-1)
+            startt = 10
+            slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
+            intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
             MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
             
             # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope
