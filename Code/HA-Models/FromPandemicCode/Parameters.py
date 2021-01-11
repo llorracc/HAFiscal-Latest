@@ -16,7 +16,7 @@ from parameter_config import *
 ###############################################################################
 
 # Size of simulations
-AgentCountTotal = 10000 # Total simulated population
+AgentCountTotal = 50000 # Total simulated population
 T_sim = 40              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)

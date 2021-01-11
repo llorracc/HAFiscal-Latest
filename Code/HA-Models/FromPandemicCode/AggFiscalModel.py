@@ -728,6 +728,12 @@ class AggregateDemandEconomy(Market):
             slope_if_recession     = (recession_all_results[1]['Cratio_hist'][1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][0] - recession_all_results[1]['Cratio_hist'][max_recession-2])
             intercept_if_recession =  recession_all_results[1]['Cratio_hist'][1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][0]-1)
             MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
+            
+            # #TESTING HERE
+            # slope = (recession_all_results[1]['Cratio_hist'][2]-1)/(recession_all_results[1]['Cratio_hist'][1]-1)
+            # MacroCFunc[1][1] = CRule(1.0,slope)
+            # #TESTING ENDE
+            
             # Behavior when recession is left: similar idea
             # slope_on_exit          = (recession_all_results[0]['Cratio_hist'][1] - recession_all_results[1]['Cratio_hist'][max_recession  ])/(recession_all_results[0]['Cratio_hist'][0] - recession_all_results[1]['Cratio_hist'][max_recession-1])
             # intercept_on_exit      =  recession_all_results[0]['Cratio_hist'][1] - slope_on_exit*(recession_all_results[0]['Cratio_hist'][0]-1)
@@ -735,6 +741,11 @@ class AggregateDemandEconomy(Market):
             # Behavior when recession is left: this converges slightly faster
             slope = (recession_all_results[0]['Cratio_hist'][1]-1)/(recession_all_results[0]['Cratio_hist'][0]-1)
             MacroCFunc[1][0] = CRule(1.0,slope)
+            
+            # #TESTING HERE
+            # MacroCFunc[1][0] = CRule(recession_all_results[0]['Cratio_hist'][1],0)
+            # #TESTING ENDE
+            
             # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope
             slope_normal           = (recession_all_results[0]['Cratio_hist'][2]-1)/(recession_all_results[0]['Cratio_hist'][1]-1)
             MacroCFunc[0][0]       = CRule(1.0,slope_normal) 

@@ -5,11 +5,18 @@
 \usepackage{amsfonts}
 \usepackage{natbib}
 \usepackage{graphicx}
+\usepackage{placeins}
 \bibliographystyle{unsrtnat}
 
 \begin{document}
 
 \section{Stimulus Experiments}
+
+\begin{itemize}
+	\item Splurge = 0.32
+	\item Update probabiltity = 1
+	\item Only one discount factor in population
+\end{itemize}	
 
 \subsection{Recession}
 
@@ -20,7 +27,6 @@
 	\subitem The recession depresses aggregate income due to loss of labor income, only partly compensated by unemployment benefits (lasting 2 q, replacing 30 \% of income)
 	\subitem Consumption falls as income is lower
 	\subitem The recession is deeper when productivity depends on aggregate demand. (We assume that the change in consumption to baseline to the power of 0.4 is mulitplied with TFP)
-	
 \end{itemize}
 
 
@@ -32,8 +38,16 @@
 	\end{centering}
 \end{figure}
 
-
+\FloatBarrier
 \subsection{Tax cut}
+
+\begin{itemize}
+	\item We consider a payroll tax cut by 2 pp for 8q (deterministic length)
+	\item See Figure \ref{fig:taxcut}
+	\subitem The tax increases income and consequently pushes up consumption
+	\subitem The drop in consumption in 9q is due to the fact that the splurge is applied to income in excess of the baseline income, which drops to zero after the tax cut is reversed. Consumption spending remains elevated for some time after the tax cut due to built up savings. 
+	\subitem With aggregate demand effects, the effect on consumption is larger as the increased consumption reinforces consumption through higher income due to higher TFP	
+\end{itemize}
 
 \begin{figure} 
 	\begin{centering}
@@ -43,19 +57,38 @@
 	\end{centering}
 \end{figure}
 
-
+\FloatBarrier
 \subsection{Tax cut during recession}
+
+\begin{itemize}
+	\item We consider a payroll tax cut by 2 pp for 8q (deterministic length) during a recession with an expected length of 6q
+	\item See Figure \ref{fig:taxcutrecession}
+	\subitem The end of the payroll tax cut induces a second dip in income and consumption
+	\subitem In order to measure the role of the aggregate demand effects we need to compare multipliers of the payroll tax cut (i.e. additional stimulus relative to baseline)
+\end{itemize}
 
 \begin{figure} 
 	\begin{centering}
 		\includegraphics[width=\linewidth]{../taxcut_recession.pdf}
-		\caption{Tax cut}
-		\label{fig:taxcut}
+		\caption{Tax cut during a recession}
+		\label{fig:taxcutrecession}
+	\end{centering}
+\end{figure}
+
+\FloatBarrier
+\subsection{Tax cut during recession}
+
+\begin{figure} 
+	\begin{centering}
+		\includegraphics[width=\linewidth]{../stimulated-consumption.pdf}
+		\caption{Tax cut during a recession}
+		\label{fig:taxcutrecession}
 	\end{centering}
 \end{figure}
 
 
-
+\newpage
+\newpage
 \section{Old Notes}
 \begin{itemize}
 	\item What is the research question?

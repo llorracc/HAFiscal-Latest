@@ -148,7 +148,7 @@ if __name__ == '__main__':
     AggDemandEconomy.solveAD_TaxCut(num_max_iterations=10, name = 'TaxCut')
     t1 = time()
     print('Solving payroll tax cut took ' + mystr(t1-t0) + ' seconds.')
-    #%% Solving tax cut during recession under Agg Multiplier  
+    #%%  Solving tax cut during recession under Agg Multiplier  
     t0 = time()
     AggDemandEconomy.solveAD_Recession_TaxCut(num_max_iterations=10, name = 'Recession_TaxCut')
     t1 = time()
@@ -260,10 +260,12 @@ if __name__ == '__main__':
     to_plot4 = 'AggIncome' 
     max_T = 20
     
-    AddCons_AD  = TaxCut_results_AD[to_plot3]-base_results[to_plot3]
-    AddInc_AD   = TaxCut_results_AD[to_plot4]-base_results[to_plot4] 
-    AddCons     = TaxCut_results[to_plot3]-base_results[to_plot3]
-    AddInc      = TaxCut_results[to_plot4]-base_results[to_plot4] 
+    AddCons_AD      = TaxCut_results_AD[to_plot3]-base_results[to_plot3]
+    AddInc_AD       = TaxCut_results_AD[to_plot4]-base_results[to_plot4]
+    NPV_AddInc_AD   = TaxCut_results_AD[to_plot2]-base_results[to_plot2]
+    AddCons         = TaxCut_results[to_plot3]-base_results[to_plot3]
+    AddInc          = TaxCut_results[to_plot4]-base_results[to_plot4]  
+    NPV_AddInc      = TaxCut_results[to_plot2]-base_results[to_plot2]  
     plt.figure(figsize=(15,10))
     plt.plot(AddInc[0:max_T], color='blue',linestyle='-')
     plt.plot(AddInc_AD[0:max_T], color='blue',linestyle='--')
@@ -273,6 +275,9 @@ if __name__ == '__main__':
     plt.legend(['Income, no AD effects','Income, AD effects','Consumption, no AD effects','Consumption, AD effects'], fontsize=20)
     plt.savefig(figs_dir +'tax_cut.pdf')
     plt.show()
+    
+    Stimulus_taxcut    = AddCons/NPV_AddInc[-1]        #divide by total cumulative NPV of the policy
+    Stimulus_taxcut_AD = AddCons_AD/NPV_AddInc_AD[-1]  #divide by total cumulative NPV of the policy
         
     AddCons_AD  = recession_results_AD[to_plot3]-base_results[to_plot3]
     AddInc_AD   = recession_results_AD[to_plot4]-base_results[to_plot4] 
@@ -301,9 +306,33 @@ if __name__ == '__main__':
     plt.legend(['Income, no AD effects','Income, AD effects','Consumption, no AD effects','Consumption, AD effects'], fontsize=20)
     plt.savefig(figs_dir +'taxcut_recession.pdf')
     plt.show()
-
     
-    # #%% 
+    
+    NPV_AddInc                      = recession_TaxCut_results[to_plot2]-recession_results[to_plot2]  
+    AddCons                         = recession_TaxCut_results[to_plot3]-recession_results[to_plot3]
+    NPV_AddInc_AD                   = recession_TaxCut_results_AD[to_plot2]-recession_results_AD[to_plot2]  
+    AddCons_AD                      = recession_TaxCut_results_AD[to_plot3]-recession_results_AD[to_plot3]    
+    Stimulus_taxcut_recession       = AddCons/NPV_AddInc[-1]  
+    Stimulus_taxcut_recession_AD    = AddCons_AD/NPV_AddInc_AD[-1]
+
+  
+    
+    # Compare stimulus effects across policy interventions
+    plt.figure(figsize=(15,10))
+    plt.plot(Stimulus_taxcut[0:max_T], color='blue',linestyle='-')
+    plt.plot(Stimulus_taxcut_AD[0:max_T], color='blue',linestyle='--')
+    plt.plot(Stimulus_taxcut_recession[0:max_T], color='red',linestyle='-')
+    plt.plot(Stimulus_taxcut_recession_AD[0:max_T], color='red',linestyle='--')
+    plt.title('Stimulated consumption per period relative to NPV of policy intervention', size=30)
+    plt.legend(['Tax cut, no AD effects','Tax cut, AD effects','Tax cut during recession, no AD effects','Tax cut during recession, AD effects'], fontsize=20)
+    plt.savefig(figs_dir +'stimulated-consumption.pdf')
+    plt.show()
+    
+    
+    
+    
+    
+    #%% 
     # # Run the recession and extended UI consumption level
     # # This is SUPER SLOW because of the double loop
     # t0 = time()
