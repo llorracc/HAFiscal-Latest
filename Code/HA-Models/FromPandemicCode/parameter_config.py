@@ -4,8 +4,8 @@ values at the bottom of the file, superseding the default value.
 import numpy as np
 
 # Parameters concerning the distribution of discount factors
-DiscFacMean = 0.9637   # Mean intertemporal discount factor 
-DiscFacSpread = 0.0253  # Half-width of uniform distribution of discount factors
+DiscFacMean = 0.986     # Mean intertemporal discount factor 
+DiscFacSpread = 0.0183  # Half-width of uniform distribution of discount factors
 
 # Parameters concerning Markov transition matrix
 

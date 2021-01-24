@@ -10,23 +10,34 @@
 
 \begin{document}
 
+
+
+\section{Short update}
+\begin{itemize}
+	\item Last call: impact of a payroll tax cut / extension of unemployment benefits on consumption; there were no aggregate demand effects
+	\item Edmund created code to capture AD effects: Current consumption affects TFP: $TFP_t = \left(\frac{C_t}{C_{ss}}\right)^\alpha$ where $\alpha = 0.4$.
+	\item What is working so far: AD effects for payroll tax cut experiment, for recession and for payroll tax cut during recession
+	\item What is not working yet: AD effects for unemployment benefits extension
+\end{itemize}
+
 \section{Stimulus Experiments}
 
+Parametrization
 \begin{itemize}
-	\item Splurge = 0.32
-	\item Update probabiltity = 1
-	\item Only one discount factor in population
+	\item Update probabiltity = 1 (have not tried sticky information yet)
+	\item 7 discount factor groups: Beta = 0.986 (center), Nabla = 0.0183 (spread) as estimated on Norwegian Data
+	\item Splurge = 0.32 as estimated on Norwegian Data
+	\item Simulation of these results takes about 4 h (50k Agents, T-sim = 400)
 \end{itemize}	
 
 \subsection{Recession}
 
 \begin{itemize}
-	\item We consider a recession with an expected length of 6 quarters
+	\item We consider a recession with an expected length of 6 quarters, see Figure \ref{fig:recession}
 	\item In a recession the unemployment rate increases to 10 \% and lasts on average 4 quarters (as opposed to 5\% / 1.5 q in normal times)
-	\item See Figure \ref{fig:recession}
-	\subitem The recession depresses aggregate income due to loss of labor income, only partly compensated by unemployment benefits (lasting 2 q, replacing 30 \% of income)
-	\subitem Consumption falls as income is lower
-	\subitem The recession is deeper when productivity depends on aggregate demand. (We assume that the change in consumption to baseline to the power of 0.4 is mulitplied with TFP)
+	\item The recession depresses aggregate income due to loss of labor income, only partly compensated by unemployment benefits (lasting 2 q, replacing 30 \% of income)
+	\item Consumption falls as income is lower.
+	\item The recession is deeper when productivity depends on aggregate demand.
 \end{itemize}
 
 
@@ -61,10 +72,11 @@
 \subsection{Tax cut during recession}
 
 \begin{itemize}
-	\item We consider a payroll tax cut by 2 pp for 8q (deterministic length) during a recession with an expected length of 6q
-	\item See Figure \ref{fig:taxcutrecession}
-	\subitem The end of the payroll tax cut induces a second dip in income and consumption
-	\subitem In order to measure the role of the aggregate demand effects we need to compare multipliers of the payroll tax cut (i.e. additional stimulus relative to baseline)
+	\item We consider a payroll tax cut by 2 pp for 8q (deterministic length) during a recession with an expected length of 6q 
+	\item Additional income / consumption relative to the baseline (see figure \ref{fig:taxcutrecession}) and to recession scenario (see figure \ref{fig:taxcutrecession2})
+	\item When AD effects are switched off we obtain a similar result as in the baseline. However, note, that as the recession disappears, the additional income by the tax cut increases as more people are employed
+	\item This upward trend in the effect of the tax cut is much more pronounced when considering AD effects. This is because very low consumption at the beginnning of the recession sets a much steeper recovery path.
+	\item Not clear why consumption first drops (numerical error?)
 \end{itemize}
 
 \begin{figure} 
@@ -74,44 +86,32 @@
 		\label{fig:taxcutrecession}
 	\end{centering}
 \end{figure}
+\begin{figure} 
+	\begin{centering}
+		\includegraphics[width=\linewidth]{../taxcut_recession2.pdf}
+		\caption{Tax cut during a recession}
+		\label{fig:taxcutrecession2}
+	\end{centering}
+\end{figure}
 
 \FloatBarrier
-\subsection{Tax cut during recession}
+\subsection{[Preliminary] Comparing magnitude of stimulus relative to policy expenditure}
+
+\begin{itemize}
+	\item Figure \ref{fig:stimulus} shows the additional consumption caused by the policy relative to the total net present value of the policy intervention
+	\item However, we use the net present value from the no AD scenario
+	\item This is problematic, need to calculate the amount of additional expenditure due to the fiscal policy intervention -> 2pp x recession-Ad-income
+\end{itemize}
 
 \begin{figure} 
 	\begin{centering}
 		\includegraphics[width=\linewidth]{../stimulated-consumption.pdf}
-		\caption{Tax cut during a recession}
-		\label{fig:taxcutrecession}
+		\caption{Stimulus}
+		\label{fig:stimulus}
 	\end{centering}
 \end{figure}
 
 
-\newpage
-\newpage
-\section{Old Notes}
-\begin{itemize}
-	\item What is the research question?
-	\item Stimulus checks. Is there a delay - much less so this time around.
-	\item Payroll tax cut
-	\subitem Is this passed through to workers? Obama stimulus was 2\% ONLY on the employee side
-	\subitem Not applicable to the unemployed. 
-	\subitem Not applicable to retirees (we don't have lifecycle at the moment).
-	\subitem Not applicable to incomes over \$130,000 or there about
-	\subitem Is the motivation for a payroll tax cut really consumption stimulus, or is it to encourage more employment (both from worker and employer)
-	\item Unemployment benefit extension
-	\subitem 26 weeks is standard, Obama increased by 20 weeks
-	\item Automatic stabilizer
-	\subitem Something like the Sahm rule with stimulus checks going out automatically if ``the three-month moving average of the national unemployment rate (U3) rises by 0.50 percentage points or more relative to its low during the previous 12 months.''
-\end{itemize}
-
-General comments
-\begin{itemize}
-	\item Current focus is on duration of stimulus, rather than targeting specific household characteristics. Is that what we want? There is a argument that stimulus should be ``large and fast'' to get out of a recession, which could come out of a NK type framework. Do we want to make this a focus?
-	\item Is a NK framework the correct one here? New Fed consensus statement focuses on employment shortfall, suggesting more of a one-sided model framework.
-	\item How do we judge the appropriateness of a policy? Are we going to do welfare analysis?
-	\item How do we handle general equilibrium, particularly at the effective lower bound?
-\end{itemize}
 
 
 

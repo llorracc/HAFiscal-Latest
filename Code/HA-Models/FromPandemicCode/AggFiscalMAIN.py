@@ -140,17 +140,17 @@ if __name__ == '__main__':
     
     #%% Solving recession under Agg Multiplier   
     t0 = time()
-    AggDemandEconomy.solveAD_Recession(num_max_iterations=10, name = 'Recession')
+    AggDemandEconomy.solveAD_Recession(num_max_iterations=10,convergence_cutoff=1E-3, name = 'Recession')
     t1 = time()
     print('Solving recession took ' + mystr(t1-t0) + ' seconds.')
     #%% Solving tax cut under Agg Multiplier  
     t0 = time()
-    AggDemandEconomy.solveAD_TaxCut(num_max_iterations=10, name = 'TaxCut')
+    AggDemandEconomy.solveAD_TaxCut(num_max_iterations=10,convergence_cutoff=1E-3, name = 'TaxCut')
     t1 = time()
     print('Solving payroll tax cut took ' + mystr(t1-t0) + ' seconds.')
     #%%  Solving tax cut during recession under Agg Multiplier  
     t0 = time()
-    AggDemandEconomy.solveAD_Recession_TaxCut(num_max_iterations=10, name = 'Recession_TaxCut')
+    AggDemandEconomy.solveAD_Recession_TaxCut(num_max_iterations=5,convergence_cutoff=1E-3, name = 'Recession_TaxCut')
     t1 = time()
     print('Solving payroll tax cut during recession took ' + mystr(t1-t0) + ' seconds.')
     
@@ -192,11 +192,14 @@ if __name__ == '__main__':
     for recession_output in output_keys:
         recession_results[recession_output] = np.sum(np.array([recession_all_results[t][recession_output]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
     t1 = time()
-    print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')    
-    
+    print('Calculating recession consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')    
+
+#%%    
     # Run the recession consumption level in presence of the Agg Multiplier
     t0 = time()
     AggDemandEconomy.restoreADsolution(name = 'Recession')
+    recession_dict = base_dict_agg.copy()
+    recession_dict.update(**recession_changes)
     recession_all_results_AD = []
     recession_results_AD = dict()
     for t in range(max_recession_duration):
@@ -207,6 +210,30 @@ if __name__ == '__main__':
         recession_results_AD[recession_output_AD] = np.sum(np.array([recession_all_results_AD[t][recession_output_AD]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
     t1 = time()
     print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    
+    #%% Testing where C rec / C base is reasonable
+    
+    # these should be equal
+    print(AggDemandEconomy.cLvl_splurgeNow[0][0:5])
+    print(recession_all_results_AD[-1]['cLvl_all_splurge'][-1][0:5])
+    
+    period = -1
+    
+    C_1stQ_Rec_1Q_AD = recession_all_results_AD[-1]['AggCons'][period]
+    C_1stQ_Base = base_results['AggCons'][period] # this corresponds perfectly to AggDemandEconomy.base_AggCons
+    print('Cratio from stored results: ',C_1stQ_Rec_1Q_AD/C_1stQ_Base)
+    print('Cratio AggDemandEconomy.CratioPrev: ',AggDemandEconomy.CratioPrev)
+    # Why is this equal to CRatioPrev, shouldn't it be equal to Cratio_Now?
+    AD_Multiplier = (C_1stQ_Rec_1Q_AD/C_1stQ_Base)**0.4
+    print('AD_Multiplier from stored results:',AD_Multiplier)
+    print('AD Multiplier AggDemandEconomy.ADFunc(AggDemandEconomy.CratioNow)',AggDemandEconomy.ADFunc(AggDemandEconomy.CratioPrev))
+    
+    Inc_1stQ_Rec_1Q_AD = recession_all_results_AD[-1]['AggIncome'][period]
+    Inc_1stQ_Rec_1Q    = recession_all_results[-1]['AggIncome'][period]
+    Inc_Ratio = Inc_1stQ_Rec_1Q_AD/Inc_1stQ_Rec_1Q
+    print('Inc_Ratio:',Inc_Ratio)
+    print('AggDemandEconomy.history[AggDemandFac]',AggDemandEconomy.history['AggDemandFac'][period])
     
     #%% Running the payroll tax cut during recession experiment
     
@@ -223,7 +250,7 @@ if __name__ == '__main__':
             recession_TaxCut_dict['EconomyMrkv_init'] = np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1
             recession_TaxCut_dict['EconomyMrkv_init'][t+1:8] -= 1
         if t==7:
-            recession_TaxCut_dict['EconomyMrkv_init'] = np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1
+            recession_TaxCut_dict['EconomyMrkv_init'] = np.array([ 4,  6,  8, 10, 12, 14, 16, 18, -1])+1
         if t>7:
             recession_TaxCut_dict['EconomyMrkv_init'] = np.concatenate((np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1, np.array([1]*(t-7))))
         this_recession_results = AggDemandEconomy.runExperiment(**recession_TaxCut_dict)
@@ -233,9 +260,12 @@ if __name__ == '__main__':
     t1 = time()
     print('Calculating payroll tax cut during recession consumption took (no Agg Multiplier) ' + mystr(t1-t0) + ' seconds.')    
     
+    #%%
     # Run the payroll tax cut during recession consumption level in presence of the Agg Multiplier
     t0 = time()
     AggDemandEconomy.restoreADsolution(name = 'Recession_TaxCut')
+    recession_TaxCut_dict = base_dict_agg.copy()
+    recession_TaxCut_dict.update(**recession_TaxCut_changes)
     recession_TaxCut_all_results_AD = []
     recession_TaxCut_results_AD = dict()
     for t in range(max_recession_duration):
@@ -243,16 +273,86 @@ if __name__ == '__main__':
             recession_TaxCut_dict['EconomyMrkv_init'] = np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1
             recession_TaxCut_dict['EconomyMrkv_init'][t+1:8] -= 1
         if t==7:
-            recession_TaxCut_dict['EconomyMrkv_init'] = np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1
+            recession_TaxCut_dict['EconomyMrkv_init'] = np.array([ 4,  6,  8, 10, 12, 14, 16, 18, -1])+1
         if t>7:
             recession_TaxCut_dict['EconomyMrkv_init'] = np.concatenate((np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1, np.array([1]*(t-7))))
+        #print(recession_TaxCut_dict['EconomyMrkv_init'])
         this_recession_results_AD = AggDemandEconomy.runExperiment(**recession_TaxCut_dict)
         recession_TaxCut_all_results_AD += [this_recession_results_AD]
     for recession_output_AD in output_keys:
         recession_TaxCut_results_AD[recession_output_AD] = np.sum(np.array([recession_TaxCut_all_results_AD[t][recession_output_AD]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
     t1 = time()
     print('Calculating payroll tax cut during recession consumption took ' + mystr(t1-t0) + ' seconds.')
-
+    
+    #%% testing
+    max_T = 20
+    plt.figure(figsize=(15,10))
+    plt.plot(recession_results_AD['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_all_results_AD[0]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_all_results_AD[4]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_all_results_AD[8]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_all_results_AD[12]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_all_results_AD[16]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.legend(['Weighted','0','4','8','12','16'], fontsize=20)
+    plt.show()
+    
+    #%% testing
+    max_T = 20
+    plt.figure(figsize=(15,10))
+    plt.plot(recession_results['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_all_results[0]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_all_results[4]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_all_results[8]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_all_results[12]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_all_results[16]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.legend(['Weighted','0','4','8','12','16'], fontsize=20)
+    plt.show()
+    
+    #%% testing
+    max_T = 20
+    plt.figure(figsize=(15,10))
+    plt.plot(recession_TaxCut_results_AD['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results_AD[0]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results_AD[4]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results_AD[8]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results_AD[12]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results_AD[16]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.legend(['Weighted','0','4','8','12','16'], fontsize=20)
+    plt.show()
+    
+    #%% testing
+    max_T = 20
+    plt.figure(figsize=(15,10))
+    plt.plot(recession_TaxCut_results['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results[0]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results[4]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results[8]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results[12]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results[16]['AggIncome'][0:max_T]-base_results['AggIncome'][0:max_T])
+    plt.legend(['Weighted','0','4','8','12','16'], fontsize=20)
+    plt.show()
+    #%% testing
+    max_T = 20
+    plt.figure(figsize=(15,10))
+    plt.plot(recession_TaxCut_results_AD['AggIncome'][0:max_T]-recession_results_AD['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results_AD[0]['AggIncome'][0:max_T]-recession_all_results_AD[0]['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results_AD[4]['AggIncome'][0:max_T]-recession_all_results_AD[4]['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results_AD[8]['AggIncome'][0:max_T]-recession_all_results_AD[8]['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results_AD[12]['AggIncome'][0:max_T]-recession_all_results_AD[12]['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results_AD[16]['AggIncome'][0:max_T]-recession_all_results_AD[16]['AggIncome'][0:max_T])
+    plt.legend(['Weighted','0','4','8','12','16'], fontsize=20)
+    plt.show()
+    #%% testing
+    max_T = 20
+    plt.figure(figsize=(15,10))
+    plt.plot(recession_TaxCut_results['AggIncome'][0:max_T]-recession_results['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results[0]['AggIncome'][0:max_T]-recession_all_results[0]['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results[4]['AggIncome'][0:max_T]-recession_all_results[4]['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results[8]['AggIncome'][0:max_T]-recession_all_results[8]['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results[12]['AggIncome'][0:max_T]-recession_all_results[12]['AggIncome'][0:max_T])
+    plt.plot(recession_TaxCut_all_results[16]['AggIncome'][0:max_T]-recession_all_results[16]['AggIncome'][0:max_T])
+    plt.legend(['Weighted','0','4','8','12','16'], fontsize=20)
+    plt.show()
     #%%     
     to_plot1 = 'NPV_AggCons'
     to_plot2 = 'NPV_AggIncome'
@@ -277,7 +377,7 @@ if __name__ == '__main__':
     plt.show()
     
     Stimulus_taxcut    = AddCons/NPV_AddInc[-1]        #divide by total cumulative NPV of the policy
-    Stimulus_taxcut_AD = AddCons_AD/NPV_AddInc_AD[-1]  #divide by total cumulative NPV of the policy
+    Stimulus_taxcut_AD = AddCons_AD/NPV_AddInc[-1]  #divide by total cumulative NPV of the policy
         
     AddCons_AD  = recession_results_AD[to_plot3]-base_results[to_plot3]
     AddInc_AD   = recession_results_AD[to_plot4]-base_results[to_plot4] 
@@ -302,9 +402,33 @@ if __name__ == '__main__':
     plt.plot(AddInc_AD[0:max_T], color='blue',linestyle='--')
     plt.plot(AddCons[0:max_T], color='red',linestyle='-')
     plt.plot(AddCons_AD[0:max_T], color='red',linestyle='--')
-    plt.title('Tax Cut during recession', size=30)
+    plt.title('Tax Cut during recession (rel to base)', size=30)
     plt.legend(['Income, no AD effects','Income, AD effects','Consumption, no AD effects','Consumption, AD effects'], fontsize=20)
     plt.savefig(figs_dir +'taxcut_recession.pdf')
+    plt.show()
+    
+    AddCons_AD  = recession_TaxCut_results_AD[to_plot3]-recession_results_AD[to_plot3]
+    AddInc_AD   = recession_TaxCut_results_AD[to_plot4]-recession_results_AD[to_plot4] 
+    AddCons     = recession_TaxCut_results[to_plot3]-recession_results[to_plot3]
+    AddInc      = recession_TaxCut_results[to_plot4]-recession_results[to_plot4] 
+    plt.figure(figsize=(15,10))
+    plt.plot(AddInc[0:max_T], color='blue',linestyle='-')
+    plt.plot(AddInc_AD[0:max_T], color='blue',linestyle='--')
+    plt.plot(AddCons[0:max_T], color='red',linestyle='-')
+    plt.plot(AddCons_AD[0:max_T], color='red',linestyle='--')
+    plt.title('Tax Cut during recession (rel to recession)', size=30)
+    plt.legend(['Income, no AD effects','Income, AD effects','Consumption, no AD effects','Consumption, AD effects'], fontsize=20)
+    plt.savefig(figs_dir +'taxcut_recession2.pdf')
+    plt.show()
+    
+
+    AddInc_tax_AD   = recession_TaxCut_results_AD[to_plot4]/recession_results_AD[to_plot4] 
+    AddInc_tax      = recession_TaxCut_results[to_plot4]/recession_results[to_plot4]
+    plt.figure(figsize=(15,10))
+    plt.plot(AddInc_tax[0:max_T], color='red',linestyle='-')
+    plt.plot(AddInc_tax_AD[0:max_T], color='red',linestyle='--')
+    plt.title('', size=30)
+    plt.legend(['Income, no AD effects, tax cut plus recession','Income, AD effects, tax cut plus recession'], fontsize=20)
     plt.show()
     
     
@@ -313,7 +437,7 @@ if __name__ == '__main__':
     NPV_AddInc_AD                   = recession_TaxCut_results_AD[to_plot2]-recession_results_AD[to_plot2]  
     AddCons_AD                      = recession_TaxCut_results_AD[to_plot3]-recession_results_AD[to_plot3]    
     Stimulus_taxcut_recession       = AddCons/NPV_AddInc[-1]  
-    Stimulus_taxcut_recession_AD    = AddCons_AD/NPV_AddInc_AD[-1]
+    Stimulus_taxcut_recession_AD    = AddCons_AD/NPV_AddInc[-1]
 
   
     
@@ -329,8 +453,37 @@ if __name__ == '__main__':
     plt.show()
     
     
+   
+    #%% Testing
+    
+    # these should be equal
+    print(AggDemandEconomy.cLvl_splurgeNow[0][0:5])
+    print(recession_all_results_AD[-1]['cLvl_all_splurge'][-1][0:5])
+    
+    period = 1
+   
+    C_1stQ_1Q_AD = recession_all_results_AD[-1]['AggCons'][period]
+    C_1stQ_Base = base_results['AggCons'][period] # this corresponds perfectly to AggDemandEconomy.base_AggCons
+    AD_Multiplier = (C_1stQ_1Q_AD/C_1stQ_Base)**0.4
+    print('AD_Multiplier:',AD_Multiplier)
+    
+    Inc_1stQ_1Q_AD = recession_all_results_AD[-1]['AggIncome'][period]
+    Inc_1stQ_1Q    = recession_all_results[-1]['AggIncome'][period]
+    Inc_Ratio = Inc_1stQ_1Q_AD/Inc_1stQ_1Q
+    print('Inc_Ratio:',Inc_Ratio)
+    print('AggDemandEconomy.history[AggDemandFac]',AggDemandEconomy.history['AggDemandFac'][period])
     
     
+    C_1stQ_Rec_1Q_AD = recession_TaxCut_all_results_AD[-1]['AggCons'][period]
+    C_1stQ_Base = base_results['AggCons'][period] # this corresponds perfectly to AggDemandEconomy.base_AggCons
+    AD_Multiplier = (C_1stQ_Rec_1Q_AD/C_1stQ_Base)**0.4
+    print('AD_Multiplier:',AD_Multiplier)
+    
+    Inc_1stQ_Rec_1Q_AD = recession_TaxCut_all_results_AD[-1]['AggIncome'][period]
+    Inc_1stQ_Rec_1Q    = recession_TaxCut_all_results[-1]['AggIncome'][period]
+    Inc_Ratio = Inc_1stQ_Rec_1Q_AD/Inc_1stQ_Rec_1Q
+    print('Inc_Ratio:',Inc_Ratio)
+    #print('AggDemandEconomy.history[AggDemandFac]',AggDemandEconomy.history['AggDemandFac'][period])
     
     #%% 
     # # Run the recession and extended UI consumption level

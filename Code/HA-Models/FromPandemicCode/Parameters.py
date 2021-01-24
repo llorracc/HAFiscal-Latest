@@ -247,7 +247,7 @@ frictionless_changes = {
              }
 
 
-quick_test = False
+quick_test = True
 if quick_test:
     AgentCountTotal = 50000
     DiscFacCount = 1

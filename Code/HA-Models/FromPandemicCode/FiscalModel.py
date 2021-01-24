@@ -217,7 +217,7 @@ class FiscalType(MarkovConsumerType):
         
         # Adjust simulation parameters for the counterfactual experiments
         self.T_sim = T_sim
-        self.track_vars = ['cNrmNow','pLvlNow','aNrmNow','mNrmNow','MrkvNowPcvd','MacroMrkvNow','MicroMrkvNow']
+        self.track_vars = ['cNrmNow','pLvlNow','aNrmNow','mNrmNow','MrkvNowPcvd','MacroMrkvNow','MicroMrkvNow','cLvlNow','cLvl_splurgeNow']
         self.use_prestate = None
         #print('Finished type ' + str(self.seed) + '!')
         
