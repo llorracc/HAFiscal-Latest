@@ -193,7 +193,7 @@ if __name__ == '__main__':
     Inc_1stQ_Rec_1Q    = recession_all_results[-1]['AggIncome'][0]
     Inc_Ratio = Inc_1stQ_Rec_1Q_AD/Inc_1stQ_Rec_1Q
     print('Inc_Ratio:',Inc_Ratio)
-    print('AggDemandEconomy.history[AggDemandFac][0]',AggDemandEconomy.history['AggDemandFac'][0])
+    print('AggDemandEconomy.history[AggDemandFacPrev][0]',AggDemandEconomy.history['AggDemandFacPrev'][0])
     
     #%% Test 2, Why is AggDemandFac not correctly reflected in AggDemandEconomy.history['AggDemandFac']
     

@@ -409,7 +409,7 @@ class AggregateDemandEconomy(Market):
         Market.__init__(self, agents=agents,
                         sow_vars=['CratioNow', 'AggDemandFac','EconomyMrkvNow'],
                         reap_vars=['cLvl_splurgeNow'],
-                        track_vars=['CratioNow','CratioPrev', 'AggDemandFac','EconomyMrkvNow'],
+                        track_vars=['CratioNow','CratioPrev', 'AggDemandFac', 'AggDemandFacPrev','EconomyMrkvNow'],
                         dyn_vars=['CFunc'],
                         **kwds)
         self.update()
@@ -429,6 +429,7 @@ class AggregateDemandEconomy(Market):
         else:
             self.CratioNow = 1.0
             CratioNext = 1.0
+        self.AggDemandFacPrev = self.AggDemandFac
         self.CratioPrev = self.CratioNow
         AggDemandFacNext = self.ADFunc(CratioNext)
         mill_return = HARKobject()
@@ -514,7 +515,7 @@ class AggregateDemandEconomy(Market):
         cLvl_all = np.concatenate([ThisType.history['cLvlNow'] for ThisType in self.agents], axis=1)
         cLvl_all_splurge = np.concatenate([ThisType.history['cLvl_splurgeNow'] for ThisType in self.agents], axis=1)
         
-        IndIncome = pLvl_all*TranShk_all*np.array(self.history['AggDemandFac'])[:,None]
+        IndIncome = pLvl_all*TranShk_all*np.array(self.history['AggDemandFacPrev'])[:,None]
         AggIncome = np.sum(IndIncome,1)
         AggCons   = np.sum(cLvl_all_splurge,1)
         
@@ -735,6 +736,7 @@ class AggregateDemandEconomy(Market):
                 recession_dict['EconomyMrkv_init'] = [1]*(t+1)
                 this_recession_results = self.runExperiment(**recession_dict)
                 recession_all_results += [this_recession_results]
+            print('First intercept', recession_all_results[1]['Cratio_hist'][0])
             MacroCFunc[0][1] = CRule(recession_all_results[1]['Cratio_hist'][0],0.0) # consumption when you jump into recession from steady state
             # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
             startt = 2
