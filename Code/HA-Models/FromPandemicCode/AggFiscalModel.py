@@ -197,7 +197,7 @@ class AggFiscalType(FiscalType):
         self.MPCnow  = MPCnow
         self.cLvlNow = cNrmNow*self.pLvlNow
         #self.cLvl_splurgeNow = (1.0-self.Splurge)*self.cLvlNow + self.Splurge*self.pLvlNow*self.TranShkNow
-        self.cLvl_splurgeNow = (1.0-self.Splurge)*self.cLvlNow + self.Splurge*self.pLvlNow*self.TranShkNow*self.AggDemandFac   #added last term relaive to Edmund's Version
+        self.cLvl_splurgeNow = (1.0-self.Splurge)*self.cLvlNow + self.Splurge*self.pLvlNow*self.TranShkNow*self.AggDemandFacPrev   #added last term relaive to Edmund's Version
         
     def reset(self):
         return # do nothing
@@ -407,7 +407,7 @@ class AggregateDemandEconomy(Market):
         agents = agents if agents is not None else list()
 
         Market.__init__(self, agents=agents,
-                        sow_vars=['CratioNow', 'AggDemandFac','EconomyMrkvNow'],
+                        sow_vars=['CratioNow', 'AggDemandFac', 'AggDemandFacPrev','EconomyMrkvNow'],
                         reap_vars=['cLvl_splurgeNow'],
                         track_vars=['CratioNow','CratioPrev', 'AggDemandFac', 'AggDemandFacPrev','EconomyMrkvNow'],
                         dyn_vars=['CFunc'],
@@ -435,6 +435,7 @@ class AggregateDemandEconomy(Market):
         mill_return = HARKobject()
         mill_return.CratioNow = CratioNext
         mill_return.AggDemandFac = AggDemandFacNext
+        mill_return.AggDemandFacPrev = self.AggDemandFacPrev
         mill_return.EconomyMrkvNow = EconomyMrkvNext
         self.Shk_idx += 1
         return mill_return
@@ -447,6 +448,7 @@ class AggregateDemandEconomy(Market):
         '''
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
+        self.AggDemandFacPrev_init = 1.0
         self.ADFunc = lambda C : C**self.ADelasticity
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
@@ -461,7 +463,7 @@ class AggregateDemandEconomy(Market):
     def reset(self):
         self.Shk_idx = 0
         Market.reset(self)
-        self.EconomyMrkvNow_hist = [0] * self.act_T
+        #self.EconomyMrkvNow_hist = [0] * self.act_T
         for agent in self.agents:
             agent.initializeSim()
         
@@ -470,6 +472,9 @@ class AggregateDemandEconomy(Market):
         # Make the macro markov history
         self.EconomyMrkvNow_hist = [0] * self.act_T
         self.EconomyMrkvNow_hist[0:len(EconomyMrkv_init)] = EconomyMrkv_init
+        
+        print(self.EconomyMrkvNow_hist)
+        
         self.CratioNow_init = self.CFunc[0][EconomyMrkv_init[0]*3].intercept
         self.AggDemandFac_init = self.ADFunc(self.CratioNow_init)
         
@@ -494,6 +499,8 @@ class AggregateDemandEconomy(Market):
             ThisType.hitWithRecessionShock()
             PopCount += ThisType.AgentCount
         self.makeHistory()
+        
+        
            
         # Extract simulated consumption, labor income, and weight data
         cNrm_all = np.concatenate([ThisType.history['cNrmNow'] for ThisType in self.agents], axis=1)
@@ -837,7 +844,7 @@ class AggregateDemandEconomy(Market):
             MacroCFunc[19][1] = CRule(recession_all_results[1]['Cratio_hist'][8],0.0) 
             
             # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
-            startt = 8
+            startt = 10
             slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
             intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
             MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession)

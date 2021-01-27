@@ -150,7 +150,7 @@ if __name__ == '__main__':
     print('Solving payroll tax cut took ' + mystr(t1-t0) + ' seconds.')
     #%%  Solving tax cut during recession under Agg Multiplier  
     t0 = time()
-    AggDemandEconomy.solveAD_Recession_TaxCut(num_max_iterations=5,convergence_cutoff=1E-3, name = 'Recession_TaxCut')
+    AggDemandEconomy.solveAD_Recession_TaxCut(num_max_iterations=10,convergence_cutoff=1E-3, name = 'Recession_TaxCut')
     t1 = time()
     print('Solving payroll tax cut during recession took ' + mystr(t1-t0) + ' seconds.')
     
@@ -218,7 +218,7 @@ if __name__ == '__main__':
     print(AggDemandEconomy.cLvl_splurgeNow[0][0:5])
     print(recession_all_results_AD[-1]['cLvl_all_splurge'][-1][0:5])
     
-    period = -1
+    period = 0
     
     C_1stQ_Rec_1Q_AD = recession_all_results_AD[-1]['AggCons'][period]
     C_1stQ_Base = base_results['AggCons'][period] # this corresponds perfectly to AggDemandEconomy.base_AggCons
@@ -227,8 +227,7 @@ if __name__ == '__main__':
     # Why is this equal to CRatioPrev, shouldn't it be equal to Cratio_Now?
     AD_Multiplier = (C_1stQ_Rec_1Q_AD/C_1stQ_Base)**0.4
     print('AD_Multiplier from stored results:',AD_Multiplier)
-    print('AD Multiplier AggDemandEconomy.ADFunc(AggDemandEconomy.CratioNow)',AggDemandEconomy.ADFunc(AggDemandEconomy.CratioPrev))
-    
+
     Inc_1stQ_Rec_1Q_AD = recession_all_results_AD[-1]['AggIncome'][period]
     Inc_1stQ_Rec_1Q    = recession_all_results[-1]['AggIncome'][period]
     Inc_Ratio = Inc_1stQ_Rec_1Q_AD/Inc_1stQ_Rec_1Q

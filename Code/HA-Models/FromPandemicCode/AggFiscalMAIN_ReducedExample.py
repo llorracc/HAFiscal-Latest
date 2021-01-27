@@ -169,7 +169,7 @@ if __name__ == '__main__':
     
     # these should be equal
     print(AggDemandEconomy.cLvl_splurgeNow[0][0:5])                  #current simulation
-    print(recession_all_results_AD[-1]['cLvl_all_splurge'][-1][0:5]) #last simulation stored
+    print((recession_all_results_AD[-1]['cLvl_all_splurge'][-1][0:5])) #last simulation stored
     # They are equal only after fixing l.199 in AggFiscalModel.py
     
         
@@ -213,4 +213,4 @@ if __name__ == '__main__':
     Inc_1stQ_Rec_1Q    = recession_all_results[-1]['AggIncome'][period]
     Inc_Ratio = Inc_1stQ_Rec_1Q_AD/Inc_1stQ_Rec_1Q
     print('Inc_Ratio:',Inc_Ratio)
-    print('AggDemandEconomy.history[AggDemandFac][0]',AggDemandEconomy.history['AggDemandFac'][period])
+    print('AggDemandEconomy.history[AggDemandFacPrev][0]',AggDemandEconomy.history['AggDemandFac'][period])
