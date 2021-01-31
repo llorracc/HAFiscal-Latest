@@ -5,7 +5,7 @@ This is the main script for the paper
 from Parameters import T_sim, init_infhorizon, init_ADEconomy, DiscFacDstns,\
      AgentCountTotal, TypeShares, base_dict, recession_changes, sticky_e_changes,\
      UI_changes, recession_UI_changes, TaxCut_changes, recession_TaxCut_changes,\
-     figs_dir
+     figs_dir, num_max_iterations_solvingAD, convergence_tol_solvingAD
 from FiscalModel import FiscalType
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 from HARK.distribution import DiscreteDistribution
@@ -135,22 +135,20 @@ if __name__ == '__main__':
     #     UI_results[UI_output] = np.sum(np.array([UI_all_results[t][UI_output]*policy_prob_array[t]  for t in range(max_policy_duration)]), axis=0)
     # t1 = time()
     # print('Calculating extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
-
-
     
     #%% Solving recession under Agg Multiplier   
     t0 = time()
-    AggDemandEconomy.solveAD_Recession(num_max_iterations=10,convergence_cutoff=1E-3, name = 'Recession')
+    AggDemandEconomy.solveAD_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Recession')
     t1 = time()
     print('Solving recession took ' + mystr(t1-t0) + ' seconds.')
     #%% Solving tax cut under Agg Multiplier  
     t0 = time()
-    AggDemandEconomy.solveAD_TaxCut(num_max_iterations=10,convergence_cutoff=1E-3, name = 'TaxCut')
+    AggDemandEconomy.solveAD_TaxCut(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'TaxCut')
     t1 = time()
     print('Solving payroll tax cut took ' + mystr(t1-t0) + ' seconds.')
     #%%  Solving tax cut during recession under Agg Multiplier  
     t0 = time()
-    AggDemandEconomy.solveAD_Recession_TaxCut(num_max_iterations=10,convergence_cutoff=1E-3, name = 'Recession_TaxCut')
+    AggDemandEconomy.solveAD_Recession_TaxCut(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Recession_TaxCut')
     t1 = time()
     print('Solving payroll tax cut during recession took ' + mystr(t1-t0) + ' seconds.')
     
@@ -211,28 +209,6 @@ if __name__ == '__main__':
     t1 = time()
     print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
     
-    
-    #%% Testing where C rec / C base is reasonable
-    
-    # these should be equal
-    print(AggDemandEconomy.cLvl_splurgeNow[0][0:5])
-    print(recession_all_results_AD[-1]['cLvl_all_splurge'][-1][0:5])
-    
-    period = 0
-    
-    C_1stQ_Rec_1Q_AD = recession_all_results_AD[-1]['AggCons'][period]
-    C_1stQ_Base = base_results['AggCons'][period] # this corresponds perfectly to AggDemandEconomy.base_AggCons
-    print('Cratio from stored results: ',C_1stQ_Rec_1Q_AD/C_1stQ_Base)
-    print('Cratio AggDemandEconomy.CratioPrev: ',AggDemandEconomy.CratioPrev)
-    # Why is this equal to CRatioPrev, shouldn't it be equal to Cratio_Now?
-    AD_Multiplier = (C_1stQ_Rec_1Q_AD/C_1stQ_Base)**0.4
-    print('AD_Multiplier from stored results:',AD_Multiplier)
-
-    Inc_1stQ_Rec_1Q_AD = recession_all_results_AD[-1]['AggIncome'][period]
-    Inc_1stQ_Rec_1Q    = recession_all_results[-1]['AggIncome'][period]
-    Inc_Ratio = Inc_1stQ_Rec_1Q_AD/Inc_1stQ_Rec_1Q
-    print('Inc_Ratio:',Inc_Ratio)
-    print('AggDemandEconomy.history[AggDemandFac]',AggDemandEconomy.history['AggDemandFac'][period])
     
     #%% Running the payroll tax cut during recession experiment
     
@@ -452,38 +428,16 @@ if __name__ == '__main__':
     plt.show()
     
     
-   
-    #%% Testing
+
     
-    # these should be equal
-    print(AggDemandEconomy.cLvl_splurgeNow[0][0:5])
-    print(recession_all_results_AD[-1]['cLvl_all_splurge'][-1][0:5])
-    
-    period = 1
-   
-    C_1stQ_1Q_AD = recession_all_results_AD[-1]['AggCons'][period]
-    C_1stQ_Base = base_results['AggCons'][period] # this corresponds perfectly to AggDemandEconomy.base_AggCons
-    AD_Multiplier = (C_1stQ_1Q_AD/C_1stQ_Base)**0.4
-    print('AD_Multiplier:',AD_Multiplier)
-    
-    Inc_1stQ_1Q_AD = recession_all_results_AD[-1]['AggIncome'][period]
-    Inc_1stQ_1Q    = recession_all_results[-1]['AggIncome'][period]
-    Inc_Ratio = Inc_1stQ_1Q_AD/Inc_1stQ_1Q
-    print('Inc_Ratio:',Inc_Ratio)
-    print('AggDemandEconomy.history[AggDemandFac]',AggDemandEconomy.history['AggDemandFac'][period])
-    
-    
-    C_1stQ_Rec_1Q_AD = recession_TaxCut_all_results_AD[-1]['AggCons'][period]
-    C_1stQ_Base = base_results['AggCons'][period] # this corresponds perfectly to AggDemandEconomy.base_AggCons
-    AD_Multiplier = (C_1stQ_Rec_1Q_AD/C_1stQ_Base)**0.4
-    print('AD_Multiplier:',AD_Multiplier)
-    
-    Inc_1stQ_Rec_1Q_AD = recession_TaxCut_all_results_AD[-1]['AggIncome'][period]
-    Inc_1stQ_Rec_1Q    = recession_TaxCut_all_results[-1]['AggIncome'][period]
-    Inc_Ratio = Inc_1stQ_Rec_1Q_AD/Inc_1stQ_Rec_1Q
-    print('Inc_Ratio:',Inc_Ratio)
-    #print('AggDemandEconomy.history[AggDemandFac]',AggDemandEconomy.history['AggDemandFac'][period])
-    
+    #%%
+    # This should yield a straigt line as the underlying assumption of the numerical algorithm is that future Cratio can be 
+    # predicted applying a linear function on current Cratio.
+    plt.figure(figsize=(15,10))
+    plt.plot(recession_all_results_AD[-1]['Cratio_hist'][0:19],recession_all_results_AD[-1]['Cratio_hist'][1:20])
+    plt.title('CRatio[t]/CRatio[t-1]', size=30)
+    plt.savefig(figs_dir +'CRatio.pdf')
+    plt.show()
     #%% 
     # # Run the recession and extended UI consumption level
     # # This is SUPER SLOW because of the double loop

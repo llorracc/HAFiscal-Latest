@@ -1,0 +1,321 @@
+Creation of the directory ./Figures/200kSample_BaseCal_TolE-4/ failed
+makeIdiosyncraticShockHistories called
+Calculating agg consumption took 100.69 seconds.
+Iteration  1 :
+solving again...
+Diff in Slopes in CFunc:  3.183839059904962
+Largest diff 0.9793393194155257
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.1792929169213205
+Largest diff 0.05975593482865904
+Intercept: Largest Diff from Mrk State:  0
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  2 :
+solving again...
+Diff in Slopes in CFunc:  1.6217706721374052
+Largest diff 0.5159280895428091
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.1380445107229527
+Largest diff 0.04400224294607946
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  3 :
+solving again...
+Diff in Slopes in CFunc:  0.28098190557572184
+Largest diff 0.09134348016597749
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.026766067842842696
+Largest diff 0.007982226039453089
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  4 :
+solving again...
+Diff in Slopes in CFunc:  0.1651180493686048
+Largest diff 0.054497042265683415
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.01429177205365553
+Largest diff 0.004701676056279691
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  5 :
+solving again...
+Diff in Slopes in CFunc:  0.04278431599542514
+Largest diff 0.014174154204097733
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.003727216325368218
+Largest diff 0.0012317311229919081
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  6 :
+solving again...
+Diff in Slopes in CFunc:  0.006814563144940638
+Largest diff 0.0022490292084776375
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.0006129074411869867
+Largest diff 0.00020117737605351849
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  7 :
+solving again...
+Diff in Slopes in CFunc:  0.0004316990695069069
+Largest diff 0.0001269196295892172
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  4.887922200234133e-05
+Largest diff 1.4227600310445787e-05
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  8 :
+solving again...
+Diff in Slopes in CFunc:  0.00025897745987435954
+Largest diff 8.504805859216313e-05
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  1.910029085102965e-05
+Largest diff 6.109424621869586e-06
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  9 :
+solving again...
+Diff in Slopes in CFunc:  0.00015439650045329854
+Largest diff 5.1361209005507114e-05
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  1.210315675964445e-05
+Largest diff 4.013500764843414e-06
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  10 :
+solving again...
+Diff in Slopes in CFunc:  6.228208248579959e-05
+Largest diff 2.0747683481092682e-05
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  4.973680931657915e-06
+Largest diff 1.6551495264360838e-06
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion reached.
+Solving recession took 1158.79 seconds.
+Iteration  1 :
+solving again...
+Diff in Slopes in CFunc:  2.708367756534742
+Largest diff 0.9027892521782473
+Slope: Largest Diff from Mrk State:  0
+Slope: Largest Diff to Mrk State:  0
+Diff in Intercepts in CFunc:  0.10884076870992553
+Largest diff 0.012955206097810423
+Intercept: Largest Diff from Mrk State:  6
+Intercept: Largest Diff to Mrk State:  8
+Convergence criterion not reached.
+Iteration  2 :
+solving again...
+Diff in Slopes in CFunc:  0.008432516543206758
+Largest diff 0.002810838847735586
+Slope: Largest Diff from Mrk State:  0
+Slope: Largest Diff to Mrk State:  0
+Diff in Intercepts in CFunc:  0.033564812180834847
+Largest diff 0.004179231503006919
+Intercept: Largest Diff from Mrk State:  18
+Intercept: Largest Diff to Mrk State:  0
+Convergence criterion not reached.
+Iteration  3 :
+solving again...
+Diff in Slopes in CFunc:  0.04594148988456892
+Largest diff 0.015313829961522973
+Slope: Largest Diff from Mrk State:  0
+Slope: Largest Diff to Mrk State:  0
+Diff in Intercepts in CFunc:  0.010775029898776895
+Largest diff 0.0012252724349250954
+Intercept: Largest Diff from Mrk State:  10
+Intercept: Largest Diff to Mrk State:  12
+Convergence criterion not reached.
+Iteration  4 :
+solving again...
+Diff in Slopes in CFunc:  0.01094775798696257
+Largest diff 0.0036492526623208565
+Slope: Largest Diff from Mrk State:  0
+Slope: Largest Diff to Mrk State:  0
+Diff in Intercepts in CFunc:  0.0029699280366909655
+Largest diff 0.00034237825733529625
+Intercept: Largest Diff from Mrk State:  6
+Intercept: Largest Diff to Mrk State:  8
+Convergence criterion not reached.
+Iteration  5 :
+solving again...
+Diff in Slopes in CFunc:  0.002656344333444638
+Largest diff 0.0008854481111482126
+Slope: Largest Diff from Mrk State:  0
+Slope: Largest Diff to Mrk State:  0
+Diff in Intercepts in CFunc:  0.0008278817878435892
+Largest diff 9.55960505404363e-05
+Intercept: Largest Diff from Mrk State:  6
+Intercept: Largest Diff to Mrk State:  8
+Convergence criterion not reached.
+Iteration  6 :
+solving again...
+Diff in Slopes in CFunc:  0.0007192773142927766
+Largest diff 0.00023975910476425888
+Slope: Largest Diff from Mrk State:  0
+Slope: Largest Diff to Mrk State:  0
+Diff in Intercepts in CFunc:  0.00023464135075468225
+Largest diff 2.7078658202173145e-05
+Intercept: Largest Diff from Mrk State:  6
+Intercept: Largest Diff to Mrk State:  8
+Convergence criterion not reached.
+Iteration  7 :
+solving again...
+Diff in Slopes in CFunc:  0.0002038548531942963
+Largest diff 6.79516177314321e-05
+Slope: Largest Diff from Mrk State:  0
+Slope: Largest Diff to Mrk State:  0
+Diff in Intercepts in CFunc:  6.678548056985666e-05
+Largest diff 7.69798613964312e-06
+Intercept: Largest Diff from Mrk State:  6
+Intercept: Largest Diff to Mrk State:  8
+Convergence criterion not reached.
+Iteration  8 :
+solving again...
+Diff in Slopes in CFunc:  5.8038572821383916e-05
+Largest diff 1.9346190940461305e-05
+Slope: Largest Diff from Mrk State:  0
+Slope: Largest Diff to Mrk State:  0
+Diff in Intercepts in CFunc:  1.9020508093947806e-05
+Largest diff 2.191678629692717e-06
+Intercept: Largest Diff from Mrk State:  6
+Intercept: Largest Diff to Mrk State:  8
+Convergence criterion reached.
+Solving payroll tax cut took 633.43 seconds.
+Iteration  1 :
+solving again...
+Diff in Slopes in CFunc:  4.16542979218937
+Largest diff 0.9739787804686088
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.4781519892216389
+Largest diff 0.055966323106613536
+Intercept: Largest Diff from Mrk State:  19
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  2 :
+solving again...
+Diff in Slopes in CFunc:  1.4552110995889316
+Largest diff 0.17956454264846394
+Slope: Largest Diff from Mrk State:  5
+Slope: Largest Diff to Mrk State:  6
+Diff in Intercepts in CFunc:  0.10955036116211617
+Largest diff 0.01367424227991032
+Intercept: Largest Diff from Mrk State:  19
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  3 :
+solving again...
+Diff in Slopes in CFunc:  0.27404048691526445
+Largest diff 0.07850407663082692
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.03487351719782589
+Largest diff 0.006363926376288798
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  4 :
+solving again...
+Diff in Slopes in CFunc:  0.17068471368246665
+Largest diff 0.05502630049798729
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.015364739623171789
+Largest diff 0.0044329000423611875
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  5 :
+solving again...
+Diff in Slopes in CFunc:  0.04587996781348574
+Largest diff 0.014700129914995808
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.004115725103561961
+Largest diff 0.00118717097979526
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  6 :
+solving again...
+Diff in Slopes in CFunc:  0.014781889816549567
+Largest diff 0.0047661459333188105
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.0012791330834502493
+Largest diff 0.0003852565992009671
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  7 :
+solving again...
+Diff in Slopes in CFunc:  0.003428971838102758
+Largest diff 0.0010826268022592345
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  0.00030270744410267655
+Largest diff 8.771007104002582e-05
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  8 :
+solving again...
+Diff in Slopes in CFunc:  0.0010008548650853437
+Largest diff 0.00031592841870042854
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  8.702538968537144e-05
+Largest diff 2.5600365184841323e-05
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  9 :
+solving again...
+Diff in Slopes in CFunc:  0.00024375590664371118
+Largest diff 7.503205234837829e-05
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  2.1529591982514922e-05
+Largest diff 6.09044664434677e-06
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion not reached.
+Iteration  10 :
+solving again...
+Diff in Slopes in CFunc:  7.003342008598379e-05
+Largest diff 2.1525264556343515e-05
+Slope: Largest Diff from Mrk State:  1
+Slope: Largest Diff to Mrk State:  1
+Diff in Intercepts in CFunc:  6.12773868536214e-06
+Largest diff 1.7472189359768464e-06
+Intercept: Largest Diff from Mrk State:  1
+Intercept: Largest Diff to Mrk State:  1
+Convergence criterion reached.
+
+Solving payroll tax cut during recession took 1816.87 seconds.
+Calculating payroll tax cut consumption took (no Agg Multiplier) 19.40 seconds.
+Calculating payroll tax cut consumption took 19.52 seconds.
+Calculating recession consumption took (no Agg Multiplier)414.11 seconds.
+Calculating recession consumption took 417.80 seconds.
+Calculating payroll tax cut during recession consumption took (no Agg Multiplier) 445.59 seconds.
+Calculating payroll tax cut during recession consumption took 432.97 seconds.

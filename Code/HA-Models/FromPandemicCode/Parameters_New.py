@@ -39,6 +39,7 @@ PolicyUBspell = 2            # Average duration that policy of extended unemploy
 PolicyTaxCutspell = 2        # Average duration that policy of payroll tax cuts
 TaxCutIncFactor = 1.02       # Amount by which the payroll tax cut increases after-tax income
 TaxCutPeriods = 8            # Deterministic duration of tax cut 
+TaxCutContinuationProb = 0   # Probability that tax cut is continued after tax cut periods run out (repeated for another TaxCutPeriods many periods)
 
 
 UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
@@ -83,7 +84,7 @@ DiscFacDstns = [DiscFacDstn]
 CgridBase = np.array([0.8,0.9,0.98,1.0,1.02,1.1,1.2])  
 
 #$$$$$$$$$$
-def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods):
+def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb):
     '''
     Make a Markov transition matrix for the macro states
     
@@ -109,8 +110,16 @@ def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods):
         MacroTaxCutArray[2*i:2*i+2,2*i+2:2*i+4] = np.array([[1.0,         0.0],
                                                             [1-R_persist, R_persist]])
     MacroMrkvArray = np.concatenate((np.concatenate((MacroMrkvArray,np.zeros((MacroMrkvArray.shape[0],MacroMrkStates_TaxCut))),axis=1),np.concatenate((np.zeros((MacroMrkStates_TaxCut,MacroMrkvArray.shape[0])),MacroTaxCutArray),axis=1)),axis=0)
-    MacroMrkvArray[-2:,0:2] = np.array([[1.0,         0.0],
-                                          [1-R_persist, R_persist]])
+    
+    # This sets the propability to transition from the last payroll tax state to baseline
+    # The probality of continuation weighs the transition to either the baseline or back to the 
+    # first payroll Markov state (which leads to a repitition of the full cycle of TaxCutPeriods many
+    MacroMrkvArray[-2:,0:2] = (1-TaxCutContinuationProb) * np.array([[1.0,         0.0],
+                                                                     [1-R_persist, R_persist]])
+    MacroMrkvArray[-2:,4:6] = (TaxCutContinuationProb) *   np.array([[1.0,         0.0],
+                                                                     [1-R_persist, R_persist]])
+
+        
     return MacroMrkvArray
     
 def makeCondMrkvArrays(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, UBspell_extended, TaxCutPeriods):
@@ -169,7 +178,7 @@ def makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays):
             FullMrkv = np.concatenate((FullMrkv, this_row), axis=0)
     return [FullMrkv]
 
-MacroMrkvArray = makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods)
+MacroMrkvArray = makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb)
 CondMrkvArrays = makeCondMrkvArrays(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, UBspell_extended, TaxCutPeriods)
 MrkvArray = makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays)
 

@@ -197,7 +197,7 @@ class AggFiscalType(FiscalType):
         self.MPCnow  = MPCnow
         self.cLvlNow = cNrmNow*self.pLvlNow
         #self.cLvl_splurgeNow = (1.0-self.Splurge)*self.cLvlNow + self.Splurge*self.pLvlNow*self.TranShkNow
-        self.cLvl_splurgeNow = (1.0-self.Splurge)*self.cLvlNow + self.Splurge*self.pLvlNow*self.TranShkNow*self.AggDemandFacPrev   #added last term relaive to Edmund's Version
+        self.cLvl_splurgeNow = (1.0-self.Splurge)*self.cLvlNow + self.Splurge*self.pLvlNow*self.TranShkNow*self.AggDemandFac   #added last term relaive to Edmund's Version
         
     def reset(self):
         return # do nothing
@@ -472,8 +472,7 @@ class AggregateDemandEconomy(Market):
         # Make the macro markov history
         self.EconomyMrkvNow_hist = [0] * self.act_T
         self.EconomyMrkvNow_hist[0:len(EconomyMrkv_init)] = EconomyMrkv_init
-        
-        print(self.EconomyMrkvNow_hist)
+    
         
         self.CratioNow_init = self.CFunc[0][EconomyMrkv_init[0]*3].intercept
         self.AggDemandFac_init = self.ADFunc(self.CratioNow_init)
@@ -509,16 +508,6 @@ class AggregateDemandEconomy(Market):
         TranShk_all = np.concatenate([ThisType.history['TranShkNow'] for ThisType in self.agents], axis=1)
         mNrm_all = np.concatenate([ThisType.history['mNrmNow'] for ThisType in self.agents], axis=1)
         aNrm_all = np.concatenate([ThisType.history['aNrmNow'] for ThisType in self.agents], axis=1)
-        
-        # cLvl_all = cNrm_all*pLvl_all
-        # # The AggDemandFac is multiplied in getStates (ultimately called from here) with TransShk, 
-        # # but the returned TranShk_all does not contain the factor AggDemandFac
-        # # Hence, cLvl is calculated as if AggDemandFac is applid to TransShk_all,
-        # # but we need to manually multiply the AggDemandFac to TransShk_all to get the full income
-        
-        # # Calculate Splurge results (agents splurge on some of their income, and follow model for the rest)
-        # cLvl_all_splurge = (1.0-Splurge)*cLvl_all + Splurge*pLvl_all*TranShk_all*np.array(self.history['AggDemandFac'])[:,None]
-        
         cLvl_all = np.concatenate([ThisType.history['cLvlNow'] for ThisType in self.agents], axis=1)
         cLvl_all_splurge = np.concatenate([ThisType.history['cLvl_splurgeNow'] for ThisType in self.agents], axis=1)
         
@@ -743,7 +732,7 @@ class AggregateDemandEconomy(Market):
                 recession_dict['EconomyMrkv_init'] = [1]*(t+1)
                 this_recession_results = self.runExperiment(**recession_dict)
                 recession_all_results += [this_recession_results]
-            print('First intercept', recession_all_results[1]['Cratio_hist'][0])
+            
             MacroCFunc[0][1] = CRule(recession_all_results[1]['Cratio_hist'][0],0.0) # consumption when you jump into recession from steady state
             # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
             startt = 2
@@ -751,11 +740,6 @@ class AggregateDemandEconomy(Market):
             intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
             MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
             
-            
-            # #TESTING HERE
-            # slope = (recession_all_results[1]['Cratio_hist'][2]-1)/(recession_all_results[1]['Cratio_hist'][1]-1)
-            # MacroCFunc[1][1] = CRule(1.0,slope)
-            # #TESTING ENDE
             
             # Behavior when recession is left: similar idea
             # slope_on_exit          = (recession_all_results[0]['Cratio_hist'][1] - recession_all_results[1]['Cratio_hist'][max_recession  ])/(recession_all_results[0]['Cratio_hist'][0] - recession_all_results[1]['Cratio_hist'][max_recession-1])
@@ -765,10 +749,7 @@ class AggregateDemandEconomy(Market):
             slope = (recession_all_results[0]['Cratio_hist'][1]-1)/(recession_all_results[0]['Cratio_hist'][0]-1)
             MacroCFunc[1][0] = CRule(1.0,slope)
             
-            # #TESTING HERE
-            # MacroCFunc[1][0] = CRule(recession_all_results[0]['Cratio_hist'][1],0)
-            # #TESTING ENDE
-            
+
             # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope
             slope_normal           = (recession_all_results[0]['Cratio_hist'][2]-1)/(recession_all_results[0]['Cratio_hist'][1]-1)
             MacroCFunc[0][0]       = CRule(1.0,slope_normal) 
@@ -833,40 +814,24 @@ class AggregateDemandEconomy(Market):
 
             # Once recession state is left
             for t in range(6):
-                MacroCFunc[6+2*t][8+2*t] = CRule(recession_all_results[0]['Cratio_hist'][t],0.0)
+                MacroCFunc[6+2*t][8+2*t] = CRule(recession_all_results[0]['Cratio_hist'][t+1+1],0.0)
+                # 6 to 8 occurs from q1 to q2, thus t+2
                 
             # Leaving tax cut
             MacroCFunc[18][0] = CRule(recession_all_results[0]['Cratio_hist'][8],0.0)    #When tax shocks end, there is a discrete jump
             MacroCFunc[19][0] = CRule(recession_all_results[0]['Cratio_hist'][8],0.0)    #When tax shocks end, there is a discrete jump                  
-            
-            # slope = (recession_all_results[1]['Cratio_hist'][8]-1)/(recession_all_results[1]['Cratio_hist'][7]-1)
-            # MacroCFunc[19][1] = CRule(1.0,slope)    #When tax shocks end, there is a discrete jump 
             MacroCFunc[19][1] = CRule(recession_all_results[1]['Cratio_hist'][8],0.0) 
             
             # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
-            startt = 10
+            startt = 8
             slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
             intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
             MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession)
             
-            # #TESTING HERE
-            # slope = np.mean((np.array(recession_all_results[1]['Cratio_hist'][9:19])-1)/(np.array(recession_all_results[1]['Cratio_hist'][8:18])-1))
-            # MacroCFunc[1][1] = CRule(1.0,slope)
-            # #TESTING ENDE
-            
-            # # #TESTING HERE
-            # slope = (recession_all_results[1]['Cratio_hist'][9]-1)/(recession_all_results[1]['Cratio_hist'][8]-1)
-            # MacroCFunc[1][1] = CRule(1.0,slope)
-            # #TESTING ENDE
-            
             # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope
             slope_normal           = np.mean((np.array(recession_all_results[0]['Cratio_hist'][9:19])-1)/(np.array(recession_all_results[0]['Cratio_hist'][8:18])-1))
             MacroCFunc[0][0]       = CRule(1.0,slope_normal) 
-            
-           # MacroCFunc[0][0] = CRule(1.0, np.mean((np.array(Cratio_hist[9:13])-1)/(np.array(Cratio_hist[8:12])-1)))  # when you return to normal state, aggregate consumption will not be equal to baseline
-            
-            # slope = (recession_all_results[1]['Cratio_hist'][-1]-1)/(recession_all_results[1]['Cratio_hist'][-2]-1)
-            # MacroCFunc[1][0] = CRule(1.0,slope)
+
             
             self.MacroCFunc = MacroCFunc
             Old_Cfunc  = self.CFunc
