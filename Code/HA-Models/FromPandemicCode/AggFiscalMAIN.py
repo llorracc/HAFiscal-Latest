@@ -64,7 +64,7 @@ if __name__ == '__main__':
         ThisType.AgentCount = AgentCountTotal
         ThisType.DiscFac = 0.96
         ThisType.seed = 0
-        
+ #%%        
     # The number of discount factors is set in parameters; need to test whether more disc factors work as well
     # Edmund said debugging might be necessary
         

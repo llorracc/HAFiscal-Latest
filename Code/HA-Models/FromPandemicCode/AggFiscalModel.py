@@ -511,7 +511,7 @@ class AggregateDemandEconomy(Market):
         cLvl_all = np.concatenate([ThisType.history['cLvlNow'] for ThisType in self.agents], axis=1)
         cLvl_all_splurge = np.concatenate([ThisType.history['cLvl_splurgeNow'] for ThisType in self.agents], axis=1)
         
-        IndIncome = pLvl_all*TranShk_all*np.array(self.history['AggDemandFacPrev'])[:,None]
+        IndIncome = pLvl_all*TranShk_all*np.array(self.history['AggDemandFac'])[:,None] #changed this to AggDemandFac
         AggIncome = np.sum(IndIncome,1)
         AggCons   = np.sum(cLvl_all_splurge,1)
         
@@ -673,21 +673,30 @@ class AggregateDemandEconomy(Market):
         MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]  
         # this sets the belief for agg consumption in next period when running experiment
         # The consumption rule has intercept 1 and slope 0 implying the prediction is simply 1 and thus baseline consumption ratio
-        TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
+        
         for i in range(num_max_iterations):
             print("Iteration ", i+1,":")
-            TaxCut_results = self.runExperiment(**TaxCut_dict)  #run under the belief as imposed above
-            Cratio_hist = TaxCut_results['Cratio_hist']         #get actual Cratio development
+            taxcut_all_results = []
+            for j in [0,1]:
+                TaxCut_dict['EconomyMrkv_init'] = np.array([ 4,  6,  8, 10, 12, 14, 16, 18, 20*j,  22*j,  24*j, 26*j, 28*j, 30*j, 32*j, 34*j]) # Either 1 or 2 cycles of tax cuts
+                this_taxcut_results = self.runExperiment(**TaxCut_dict)  #run under the belief as imposed above
+                taxcut_all_results += [this_taxcut_results]  
+           
             
             # In the following MacroCFunc is updated according to what actually happened
             # MacroCFunc[i][j] is the prediction function for Agg Cons today to tomorrow when one jumps from macro state i to j
             # However, we need to add here first a cascade of checks, comparing MacroCFunc as current with CRule
-            MacroCFunc[0][4] = CRule(Cratio_hist[0],0.0)    # Rule is set to be whatever consumption jumps to (when going from state 0 to state 4) with no slope because earlier consumption cannot predict what happens next at beginning
-            for t in range(7):
-                MacroCFunc[4+2*t][6+2*t] = CRule(Cratio_hist[t+1],0.0)  #When tax shock is ongoing one assumes consumption to stay constant
-            MacroCFunc[18][0] = CRule(Cratio_hist[8],0.0)    #When tax shocks end, there is a discrete jump
+            MacroCFunc[0][4] = CRule(taxcut_all_results[0]['Cratio_hist'][0],0.0)    # Rule is set to be whatever consumption jumps to (when going from state 0 to state 4) with no slope because earlier consumption cannot predict what happens next at beginning
+            for t in range(15):
+                MacroCFunc[4+2*t][6+2*t] = CRule(taxcut_all_results[1]['Cratio_hist'][t+1],0.0)  #When tax shock is ongoing one assumes consumption to stay constant
+            
+            
+            # When tax shocks end or repeats there is a discrete jump
+            MacroCFunc[18][0] = CRule(taxcut_all_results[0]['Cratio_hist'][8],0.0)
+            MacroCFunc[34][0] = CRule(taxcut_all_results[1]['Cratio_hist'][16],0.0)  
+            
             # The next tries to get at the slope by checking how Consumption falls
-            MacroCFunc[0][0] = CRule(1.0, np.mean((np.array(Cratio_hist[9:13])-1)/(np.array(Cratio_hist[8:12])-1)))  # when you return to normal state, aggregate consumption will not be equal to baseline
+            MacroCFunc[0][0] = CRule(1.0, np.mean((np.array(taxcut_all_results[0]['Cratio_hist'][9:13])-1)/(np.array(taxcut_all_results[0]['Cratio_hist'][8:12])-1)))  # when you return to normal state, aggregate consumption will not be equal to baseline
             
                              
             # The new MacroCFunc is imposed and the economy resolved

@@ -150,7 +150,7 @@ class FiscalType(MarkovConsumerType):
             
     #$$$$$$$$$$    
     def updateMrkvArray(self):
-        MacroMrkvArray = makeMacroMrkvArray(self.Rspell, self.PolicyUBspell, self.TaxCutPeriods)
+        MacroMrkvArray = makeMacroMrkvArray(self.Rspell, self.PolicyUBspell, self.TaxCutPeriods, self.TaxCutContinuationProb)
         CondMrkvArrays = makeCondMrkvArrays(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.UBspell_extended, self.TaxCutPeriods)
         MrkvArray = makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays)
         self.MrkvArray  = MrkvArray

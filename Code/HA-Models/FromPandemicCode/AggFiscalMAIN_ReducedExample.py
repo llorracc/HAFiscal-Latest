@@ -5,7 +5,7 @@ This is the main script for the paper
 from Parameters import T_sim, init_infhorizon, init_ADEconomy, DiscFacDstns,\
      AgentCountTotal, TypeShares, base_dict, recession_changes, sticky_e_changes,\
      UI_changes, recession_UI_changes, TaxCut_changes, recession_TaxCut_changes,\
-     figs_dir
+     figs_dir, num_max_iterations_solvingAD, convergence_tol_solvingAD
 from FiscalModel import FiscalType
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 from HARK.distribution import DiscreteDistribution
@@ -13,6 +13,7 @@ from time import time
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
+import pickle
 
 
 if __name__ == '__main__':
@@ -58,7 +59,26 @@ if __name__ == '__main__':
                                IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
                                IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
                                IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp])  # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut   
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp])  # recession, payroll tax cut   
+
+                             
+                               
         ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp]
         ThisType.IncomeDstn_big = IncomeDstn_big
         ThisType.AgentCount = AgentCountTotal
@@ -67,7 +87,7 @@ if __name__ == '__main__':
         
     # The number of discount factors is set in parameters; need to test whether more disc factors work as well
     # Edmund said debugging might be necessary
-        
+   #%%     
     # Make the overall list of types; #IF: Not clear yet
     TypeList = []
     n = 0
@@ -122,95 +142,164 @@ if __name__ == '__main__':
 
 
     
-    #%% Solving recession under Agg Multiplier   
+    #%% Solving tax cut under Agg Multiplier  
     t0 = time()
-    AggDemandEconomy.solveAD_Recession(num_max_iterations=10,convergence_cutoff=1E-3, name = 'Recession')
+    AggDemandEconomy.solveAD_TaxCut(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'TaxCut')
     t1 = time()
-    print('Solving recession took ' + mystr(t1-t0) + ' seconds.')
+    print('Solving payroll tax cut took ' + mystr(t1-t0) + ' seconds.')
     
-    #%% Running the recession experiment
+   #%% Running the payroll tax cut experiments
     
-    # Run the recession consumption level in absence of Agg Multiplier
+    # Run the payroll tax cut consumption level in absence of Agg Multiplier
     t0 = time()
     AggDemandEconomy.restoreADsolution(name = 'baseline')
-    recession_dict = base_dict_agg.copy()
-    recession_dict.update(**recession_changes)
-    recession_all_results = []
-    recession_results = dict()
-    #  running recession with diferent lengths up to 20q then averaging the result
-    for t in range(max_recession_duration):
-        recession_dict['EconomyMrkv_init'] = [1]*(t+1)
-        this_recession_results = AggDemandEconomy.runExperiment(**recession_dict)
-        recession_all_results += [this_recession_results]
-    for recession_output in output_keys:
-        recession_results[recession_output] = np.sum(np.array([recession_all_results[t][recession_output]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+    TaxCut_dict = base_dict_agg.copy()
+    TaxCut_dict.update(**TaxCut_changes)
+    TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
+    TaxCut_results = AggDemandEconomy.runExperiment(**TaxCut_dict)
+    SaveResult = open(figs_dir +'/TaxCut_results.csv', 'wb') 
+    pickle.dump(TaxCut_results, SaveResult)  
     t1 = time()
-    print('Calculating recession consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')    
-
-#%%    
-    # Run the recession consumption level in presence of the Agg Multiplier
+    print('Calculating payroll tax cut consumption took (no Agg Multiplier) ' + mystr(t1-t0) + ' seconds.')
+    
+    
+    # Solutions are stored by solve_AD, this loads it so it can be easily simulated again
     t0 = time()
-    AggDemandEconomy.restoreADsolution(name = 'Recession')
-    recession_dict = base_dict_agg.copy()
-    recession_dict.update(**recession_changes)
-    recession_all_results_AD = []
-    recession_results_AD = dict()
-    for t in range(max_recession_duration):
-        recession_dict['EconomyMrkv_init'] = [1]*(t+1)
-        this_recession_results_AD = AggDemandEconomy.runExperiment(**recession_dict)
-        recession_all_results_AD += [this_recession_results_AD]
-    for recession_output_AD in output_keys:
-        recession_results_AD[recession_output_AD] = np.sum(np.array([recession_all_results_AD[t][recession_output_AD]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+    AggDemandEconomy.restoreADsolution(name = 'TaxCut')
+    TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
+    TaxCut_results_AD = AggDemandEconomy.runExperiment(**TaxCut_dict)
+    SaveResult = open(figs_dir +'/TaxCut_results_AD.csv', 'wb') 
+    pickle.dump(TaxCut_results_AD, SaveResult)  
     t1 = time()
-    print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
+    print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
     
     
-    #%% Test 1, Why is AggDemandFac_Init not correctly reflected in AggDemandEconomy.history['AggDemandFac']
-    
-    # these should be equal
-    print(AggDemandEconomy.cLvl_splurgeNow[0][0:5])                  #current simulation
-    print((recession_all_results_AD[-1]['cLvl_all_splurge'][-1][0:5])) #last simulation stored
-    # They are equal only after fixing l.199 in AggFiscalModel.py
-    
+    if init_infhorizon['TaxCutContinuationProb'] > 0:
+        # Run the payroll tax cut consumption level in absence of Agg Multiplier, once extended
+        t0 = time()
+        AggDemandEconomy.restoreADsolution(name = 'baseline')
+        TaxCut_dict_OnceExtended = base_dict_agg.copy()
+        TaxCut_dict_OnceExtended.update(**TaxCut_changes)
+        TaxCut_dict_OnceExtended['EconomyMrkv_init'] = np.array(range(16))*2 + 4
+        TaxCut_OnceExtended_results = AggDemandEconomy.runExperiment(**TaxCut_dict_OnceExtended)
+        SaveResult = open(figs_dir +'/TaxCut_OnceExtended_results.csv', 'wb') 
+        pickle.dump(TaxCut_OnceExtended_results, SaveResult)  
+        t1 = time()
+        print('Calculating payroll tax cut consumption took (no Agg Multiplier) ' + mystr(t1-t0) + ' seconds.')
         
+        
+        # Solutions are stored by solve_AD, this loads it so it can be easily simulated again
+        t0 = time()
+        AggDemandEconomy.restoreADsolution(name = 'TaxCut')
+        TaxCut_dict_OnceExtended['EconomyMrkv_init'] = np.array(range(16))*2 + 4
+        TaxCut_OnceExtended_results_AD = AggDemandEconomy.runExperiment(**TaxCut_dict_OnceExtended)
+        SaveResult = open(figs_dir +'/TaxCut_OnceExtended_results_AD.csv', 'wb') 
+        pickle.dump(TaxCut_OnceExtended_results_AD, SaveResult)  
+        t1 = time()
+        print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    
+    
+    
+    
+    
+    
+    #%%     
+    max_T = 20
+    x_axis = np.arange(1,21)
+    
+    
+    # load all results
+    SavedFile = open('Figures/ContinuationProb0/TaxCut_results.csv', 'rb') 
+    TaxCut_NoContinuationProb_results = pickle.load(SavedFile)
+    SavedFile = open('Figures/ContinuationProb0/TaxCut_results_AD.csv', 'rb') 
+    TaxCut_NoContinuationProb_results_AD = pickle.load(SavedFile)
+    
+    SavedFile = open('Figures/ContinuationProb50/TaxCut_results.csv', 'rb') 
+    TaxCut_ContinuationProb_results = pickle.load(SavedFile)
+    SavedFile = open('Figures/ContinuationProb50/TaxCut_results_AD.csv', 'rb') 
+    TaxCut_ContinuationProb_results_AD = pickle.load(SavedFile)    
+    SavedFile = open('Figures/ContinuationProb50/TaxCut_OnceExtended_results.csv', 'rb') 
+    TaxCut_ContinuationProb_OnceExtended_results = pickle.load(SavedFile)
+    SavedFile = open('Figures/ContinuationProb50/TaxCut_OnceExtended_results_AD.csv', 'rb') 
+    TaxCut_ContinuationProb_OnceExtended_results_AD = pickle.load(SavedFile)  
+  
+    #%%
+    AddCons_NoContinuationProb                  = (TaxCut_NoContinuationProb_results['AggCons']-base_results['AggCons'])/base_results['AggCons']
+    AddCons_ContinuationProb                    = (TaxCut_ContinuationProb_results['AggCons']-base_results['AggCons'])/base_results['AggCons']
+    AddCons_ContinuationProb_OnceExtended       = (TaxCut_ContinuationProb_OnceExtended_results['AggCons']-base_results['AggCons'])/base_results['AggCons']
+    AddInc_NoContinuationProb                   = (TaxCut_NoContinuationProb_results['AggIncome']-base_results['AggIncome'])/base_results['AggIncome']
+    AddInc_ContinuationProb                     = (TaxCut_ContinuationProb_results['AggIncome']-base_results['AggIncome'])/base_results['AggIncome']
+    AddInc_ContinuationProb_OnceExtended        = (TaxCut_ContinuationProb_OnceExtended_results['AggIncome']-base_results['AggIncome'])/base_results['AggIncome']
+    
+    plt.figure(figsize=(15,10))
+    plt.title('Tax Cut, no recession, no AD effects', size=30)
+    plt.plot(x_axis,AddInc_NoContinuationProb[0:max_T], color='blue',linestyle='-')
+    plt.plot(x_axis,AddInc_ContinuationProb[0:max_T], color='blue',linestyle='--')
+    plt.plot(x_axis,AddInc_ContinuationProb_OnceExtended[0:max_T], color='blue',linestyle=':')
+    plt.plot(x_axis,AddCons_NoContinuationProb[0:max_T], color='red',linestyle='-')
+    plt.plot(x_axis,AddCons_ContinuationProb[0:max_T], color='red',linestyle='--')
+    plt.plot(x_axis,AddCons_ContinuationProb_OnceExtended[0:max_T], color='red',linestyle='--')
+    plt.legend(['Inc: 8q tax cut, no cont. prob.','Inc: 8q tax cut, cont. prob.','Inc: 16q tax cut', \
+                'Cons: 8q tax cut, no cont. prob.','Cons: 8q tax cut, cont. prob.','Cons: 16q tax cut'], fontsize=14)
+    plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+    plt.xlabel('quarter', fontsize=18)
+    plt.ylabel('% diff. rel. to baseline', fontsize=16)
+    plt.savefig(figs_dir +'/tax_cut_no_recession_no_AD_effects.pdf')
+    plt.show()
+    
+    
+    AddCons_NoContinuationProb_AD                  = (TaxCut_NoContinuationProb_results_AD['AggCons']-base_results['AggCons'])/base_results['AggCons']
+    AddCons_ContinuationProb_AD                    = (TaxCut_ContinuationProb_results_AD['AggCons']-base_results['AggCons'])/base_results['AggCons']
+    AddCons_ContinuationProb_OnceExtended_AD       = (TaxCut_ContinuationProb_OnceExtended_results_AD['AggCons']-base_results['AggCons'])/base_results['AggCons']
+    AddInc_NoContinuationProb_AD                   = (TaxCut_NoContinuationProb_results_AD['AggIncome']-base_results['AggIncome'])/base_results['AggIncome']
+    AddInc_ContinuationProb_AD                     = (TaxCut_ContinuationProb_results_AD['AggIncome']-base_results['AggIncome'])/base_results['AggIncome']
+    AddInc_ContinuationProb_OnceExtended_AD        = (TaxCut_ContinuationProb_OnceExtended_results_AD['AggIncome']-base_results['AggIncome'])/base_results['AggIncome']
+    
+    plt.figure(figsize=(15,10))
+    plt.title('Tax Cut, no recession, AD effects', size=30)
+    plt.plot(x_axis,AddInc_NoContinuationProb_AD[0:max_T], color='blue',linestyle='-')
+    plt.plot(x_axis,AddInc_ContinuationProb_AD[0:max_T], color='blue',linestyle='--')
+    plt.plot(x_axis,AddInc_ContinuationProb_OnceExtended_AD[0:max_T], color='blue',linestyle=':')
+    plt.plot(x_axis,AddCons_NoContinuationProb_AD[0:max_T], color='red',linestyle='-')
+    plt.plot(x_axis,AddCons_ContinuationProb_AD[0:max_T], color='red',linestyle='--')
+    plt.plot(x_axis,AddCons_ContinuationProb_OnceExtended_AD[0:max_T], color='red',linestyle='--')
+    plt.legend(['Inc: 8q tax cut, no cont. prob.','Inc: 8q tax cut, cont. prob.','Inc: 16q tax cut', \
+                'Cons: 8q tax cut, no cont. prob.','Cons: 8q tax cut, cont. prob.','Cons: 16q tax cut'], fontsize=14)
+    plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+    plt.xlabel('quarter', fontsize=18)
+    plt.ylabel('% diff. rel. to baseline', fontsize=16)
+    plt.savefig(figs_dir +'/tax_cut_no_recession_AD_effects.pdf')
+    plt.show()
+    
+    
+
+    
    
-    C_1stQ_Rec_1Q_AD = recession_all_results_AD[-1]['AggCons'][0]
-    C_1stQ_Base = base_results['AggCons'][0] # this corresponds perfectly to AggDemandEconomy.base_AggCons
-    print('Cratio from stored results: ',C_1stQ_Rec_1Q_AD/C_1stQ_Base)
     
     
-    print('The following five values should be equal, but they are not')
     
-    AggDemandFac_Init = AggDemandEconomy.ADFunc(AggDemandEconomy.CFunc[0][3](recession_all_results_AD[-1]['Cratio_hist'][0])) #l. 425-428
-    print('AggDemandFac_Init: ',AggDemandFac_Init)
-    AggDemandFac_Init = AggDemandEconomy.ADFunc(AggDemandEconomy.CFunc[0][3](C_1stQ_Rec_1Q_AD/C_1stQ_Base)) #l. 425-428
-    print('AggDemandFac_Init: ',AggDemandFac_Init)
-    AggDemandFac_Init = AggDemandEconomy.ADFunc(AggDemandEconomy.CFunc[0][3](AggDemandEconomy.CFunc[0][3].intercept)) #l. 473
-    print('AggDemandFac_Init: ',AggDemandFac_Init)
     
-
-    Inc_1stQ_Rec_1Q_AD = recession_all_results_AD[-1]['AggIncome'][0]
-    Inc_1stQ_Rec_1Q    = recession_all_results[-1]['AggIncome'][0]
-    Inc_Ratio = Inc_1stQ_Rec_1Q_AD/Inc_1stQ_Rec_1Q
-    print('Inc_Ratio:',Inc_Ratio)
-    print('AggDemandEconomy.history[AggDemandFacPrev][0]',AggDemandEconomy.history['AggDemandFacPrev'][0])
+    #%% Proof that using AggDemandEconomy.history['AggDemandFac'] in runExperiment is correct:
     
-    #%% Test 2, Why is AggDemandFac not correctly reflected in AggDemandEconomy.history['AggDemandFac']
+    # Period 8:
+    CRatio_q7 = TaxCut_OnceExtended_results_AD['AggIncome'][7]/TaxCut_OnceExtended_results['AggIncome'][7]
+    Cratio_q8_Prediction = AggDemandEconomy.CFunc[3*18][3*20](CRatio_q7)
+    AggDemandFac_q8 = Cratio_q8_Prediction**0.4
+    print('AggDemandFac replicated', AggDemandFac_q8)
+    print('AggDemandFac history', AggDemandEconomy.history['AggDemandFac'][8])
+    print('AggDemandFac Prev history', AggDemandEconomy.history['AggDemandFacPrev'][8])
     
-    period = 10
-    
-    C_1stQ_Rec_1Q_AD = recession_all_results_AD[-1]['AggCons'][period]
-    C_1stQ_Base = base_results['AggCons'][period] # this corresponds perfectly to AggDemandEconomy.base_AggCons
-    print('Cratio from stored results: ',C_1stQ_Rec_1Q_AD/C_1stQ_Base)
-    
-    print('The following four values should be equal, but they are not')
-    AggDemandFac = AggDemandEconomy.ADFunc(AggDemandEconomy.CFunc[3][3](recession_all_results_AD[-1]['Cratio_hist'][period]))  #l. 425-428
-    print('AggDemandFac: ',AggDemandFac)
-    AggDemandFac = AggDemandEconomy.ADFunc(AggDemandEconomy.CFunc[3][3](C_1stQ_Rec_1Q_AD/C_1stQ_Base)) #l. 425-428
-    print('AggDemandFac: ',AggDemandFac)
-
-    Inc_1stQ_Rec_1Q_AD = recession_all_results_AD[-1]['AggIncome'][period]
-    Inc_1stQ_Rec_1Q    = recession_all_results[-1]['AggIncome'][period]
-    Inc_Ratio = Inc_1stQ_Rec_1Q_AD/Inc_1stQ_Rec_1Q
-    print('Inc_Ratio:',Inc_Ratio)
-    print('AggDemandEconomy.history[AggDemandFacPrev][0]',AggDemandEconomy.history['AggDemandFac'][period])
+    # Period 4
+    CRatio_q3 = TaxCut_OnceExtended_results_AD['AggIncome'][3]/TaxCut_OnceExtended_results['AggIncome'][3]
+    Cratio_q4_Prediction = AggDemandEconomy.CFunc[3*10][3*12](CRatio_q3)
+    AggDemandFac_q4 = Cratio_q4_Prediction**0.4
+    print('AggDemandFac replicated', AggDemandFac_q4)
+    print('AggDemandFac history', AggDemandEconomy.history['AggDemandFac'][4])
+  
+    # Period 0
+    CRatio_qmin1 = 1
+    Cratio_q0_Prediction = AggDemandEconomy.CFunc[3*0][3*4](CRatio_qmin1)
+    AggDemandFac_q0 = Cratio_q0_Prediction**0.4
+    print('AggDemandFac replicated', AggDemandFac_q0)
+    print('AggDemandFac history', AggDemandEconomy.history['AggDemandFac'][0])

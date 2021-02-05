@@ -15,7 +15,40 @@
 
 \section{Update - February 10th 2021}	
 	
+\FloatBarrier	
+\subsection{Deterministic length of the payroll tax cut vs. probability of continuation}
+
+We compare a payroll tax cut (of 2 percentage points) when the length of the payroll tax cut policy is deterministic and set to eight quarters vs. when there is a 50\% chance (of which everyone is aware) of an continuation of the initial eight quarter of payroll tax cut by another eight quarters (and so on). We do so with and without aggregate demand (AD) effects.
+
+\begin{itemize}
+	\item Figure \ref{fig:taxcutnorecessionnoadeffects} shows the payroll tax cut without AD effects
+	\item Income increases for either 8 or 16 q depending on scenario
+	\item Consumption during the first 8q is higher when there is a chance of continuation of the policy even if it does not materialize. If it does not materialize consumption in quarter 9 falls below the level relative to the scenario where continuation was excluded out in the first place, because consumption was based on the expected income.
+	\item When the continuation actually occurs, agents increase consumption because actual income exceeds expected income.
+\end{itemize}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../ContinuationProb50/tax_cut_no_recession_no_AD_effects}
+	\caption{}
+	\label{fig:taxcutnorecessionnoadeffects}
+\end{figure}
+
+\begin{itemize}
+	\item Figure \ref{fig:taxcutnorecessionadeffects} shows the payroll tax cut with AD effects
+	\item Income increases for either 8 or 16 q depending on scenario. However, income now increase by more than 2\% percent because of AD effects, implying an additional boost to income when the continuation of the payroll tax cut is implemented.
+\end{itemize}
 	
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../ContinuationProb50/tax_cut_no_recession_AD_effects}
+	\caption{}
+	\label{fig:taxcutnorecessionadeffects}
+\end{figure}
+
+
+
+\FloatBarrier
 \subsection{Sample size and speed of simulation}
 
 In the following we test the speed of the code for solving and running the recession scenario. We assume that there is one discount factor common to all agents.
