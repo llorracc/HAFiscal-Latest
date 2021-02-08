@@ -13,6 +13,7 @@ from time import time
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
+import pickle
 
 
 if __name__ == '__main__':
@@ -58,16 +59,35 @@ if __name__ == '__main__':
                                IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
                                IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
                                IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp])  # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut   
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
+                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp])  # recession, payroll tax cut   
+
+                             
+                               
         ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp]
         ThisType.IncomeDstn_big = IncomeDstn_big
         ThisType.AgentCount = AgentCountTotal
         ThisType.DiscFac = 0.96
         ThisType.seed = 0
- #%%        
+        
     # The number of discount factors is set in parameters; need to test whether more disc factors work as well
     # Edmund said debugging might be necessary
-        
+   #%%     
     # Make the overall list of types; #IF: Not clear yet
     TypeList = []
     n = 0
@@ -113,28 +133,12 @@ if __name__ == '__main__':
     recession_prob_array[-1] = 1.0 - np.sum(recession_prob_array[:-1])
     
     
-    ##WHY DOES THIS TAKE SO LONG???? Because it has to solve the model, and this takes much longer here.
     # Run the baseline consumption level
     t0 = time()
     base_results = AggDemandEconomy.runExperiment(**base_dict_agg)
     AggDemandEconomy.storeBaseline(base_results['AggCons'])
     t1 = time()
     print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
-    
-    # # Run the extended UI consumption level
-    # t0 = time()
-    # UI_dict = base_dict_agg.copy()
-    # UI_dict.update(**UI_changes)
-    # UI_all_results = []
-    # UI_results = dict()
-    # for t in range(max_policy_duration):
-    #     UI_dict['EconomyMrkv_init'] = [2]*(t+1)
-    #     this_UI_results = AggDemandEconomy.runExperiment(**UI_dict)
-    #     UI_all_results += [this_UI_results]
-    # for UI_output in output_keys:
-    #     UI_results[UI_output] = np.sum(np.array([UI_all_results[t][UI_output]*policy_prob_array[t]  for t in range(max_policy_duration)]), axis=0)
-    # t1 = time()
-    # print('Calculating extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
     
     #%% Solving recession under Agg Multiplier   
     t0 = time()
@@ -428,16 +432,45 @@ if __name__ == '__main__':
     plt.show()
     
     
+    
+    #%% Line of best fit
+    
+   
+    x = (recession_all_results_AD[-1]['Cratio_hist'][1:19]-1) #should this be really form 0 to 19, not from 1 to 19?
+    y = recession_all_results_AD[-1]['Cratio_hist'][2:20]
+    s, i = np.polyfit(x, y, 1)
+    
+    startt = 2
+    max_recession = 19
+    slope_if_recession     = (recession_all_results_AD[-1]['Cratio_hist'][startt+1] - recession_all_results_AD[-1]['Cratio_hist'][max_recession-1])/(recession_all_results_AD[-1]['Cratio_hist'][startt] - recession_all_results_AD[-1]['Cratio_hist'][max_recession-2])
+    intercept_if_recession =  recession_all_results_AD[-1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results_AD[-1]['Cratio_hist'][startt]-1)
+           
+    
+    plt.figure(figsize=(15,10))
+    plt.plot(x, y, 'o')
+    plt.plot(x, s*x + i)
+    plt.plot(x, slope_if_recession*x + intercept_if_recession)
+    plt.legend(['points','best line fit','old'])
+    plt.show()
+    
+    
+    # #for code, recession
+    # slope_if_recession, intercept_if_recession = np.polyfit((recession_all_results[1]['Cratio_hist'][1:19] - 1), recession_all_results[1]['Cratio_hist'][2:20], 1)
+    # MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
+
+    # #for code, recession with tax cut
+    # slope_if_recession, intercept_if_recession = np.polyfit((recession_all_results[1]['Cratio_hist'][8:19] - 1), recession_all_results[1]['Cratio_hist'][9:20], 1)
+    # MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
 
     
-    #%%
-    # This should yield a straigt line as the underlying assumption of the numerical algorithm is that future Cratio can be 
-    # predicted applying a linear function on current Cratio.
-    plt.figure(figsize=(15,10))
-    plt.plot(recession_all_results_AD[-1]['Cratio_hist'][0:19],recession_all_results_AD[-1]['Cratio_hist'][1:20])
-    plt.title('CRatio[t]/CRatio[t-1]', size=30)
-    plt.savefig(figs_dir +'CRatio.pdf')
-    plt.show()
+    # #%%
+    # # This should yield a straigt line as the underlying assumption of the numerical algorithm is that future Cratio can be 
+    # # predicted applying a linear function on current Cratio.
+    # plt.figure(figsize=(15,10))
+    # plt.plot(recession_all_results_AD[-1]['Cratio_hist'][0:19],recession_all_results_AD[-1]['Cratio_hist'][1:20])
+    # plt.title('CRatio[t]/CRatio[t-1]', size=30)
+    # plt.savefig(figs_dir +'CRatio.pdf')
+    # plt.show()
     #%% 
     # # Run the recession and extended UI consumption level
     # # This is SUPER SLOW because of the double loop

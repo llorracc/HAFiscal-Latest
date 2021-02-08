@@ -744,10 +744,19 @@ class AggregateDemandEconomy(Market):
             
             MacroCFunc[0][1] = CRule(recession_all_results[1]['Cratio_hist'][0],0.0) # consumption when you jump into recession from steady state
             # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
-            startt = 2
-            slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
-            intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
-            MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
+            
+            old_code = True
+            
+            if old_code:
+                startt = 1
+                endd = max_recession
+                slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][endd-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][endd-2])
+                intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
+                MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
+            else:
+                # best fit curve:
+                slope_if_recession, intercept_if_recession = np.polyfit((recession_all_results[1]['Cratio_hist'][0:19] - 1), recession_all_results[1]['Cratio_hist'][1:20], 1)
+                MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
             
             
             # Behavior when recession is left: similar idea
@@ -832,10 +841,13 @@ class AggregateDemandEconomy(Market):
             MacroCFunc[19][1] = CRule(recession_all_results[1]['Cratio_hist'][8],0.0) 
             
             # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
-            startt = 8
-            slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
-            intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
-            MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession)
+            # startt = 8
+            # slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
+            # intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
+            # MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession)
+            
+            slope_if_recession, intercept_if_recession = np.polyfit((recession_all_results[1]['Cratio_hist'][8:11] - 1), recession_all_results[1]['Cratio_hist'][9:12], 1)
+            MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
             
             # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope
             slope_normal           = np.mean((np.array(recession_all_results[0]['Cratio_hist'][9:19])-1)/(np.array(recession_all_results[0]['Cratio_hist'][8:18])-1))
