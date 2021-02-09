@@ -841,7 +841,7 @@ class AggregateDemandEconomy(Market):
             MacroCFunc[19][1] = CRule(recession_all_results[1]['Cratio_hist'][8],0.0) 
             
             # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
-            startt = 8
+            startt = 12
             slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
             intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
             MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession)
