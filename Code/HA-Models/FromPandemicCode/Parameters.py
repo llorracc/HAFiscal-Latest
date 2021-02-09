@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/test_recession/'
+figs_dir = './Figures/test/'
 
 try:
     os.mkdir(figs_dir)
@@ -39,7 +39,7 @@ PolicyUBspell = 2            # Average duration that policy of extended unemploy
 PolicyTaxCutspell = 2        # Average duration that policy of payroll tax cuts
 TaxCutIncFactor = 1.02       # Amount by which the payroll tax cut increases after-tax income
 TaxCutPeriods = 8            # Deterministic duration of tax cut 
-TaxCutContinuationProb = 0.5 # Probability that tax cut is continued after tax cut periods run out (repeated for another TaxCutPeriods many periods)
+TaxCutContinuationProb = 0   # Probability that tax cut is continued after tax cut periods run out (repeated for another TaxCutPeriods many periods)
 
 
 UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
@@ -322,7 +322,7 @@ frictionless_changes = {
 
 quick_test = True
 if quick_test:
-    AgentCountTotal = 500000
+    AgentCountTotal = 200000
     DiscFacCount = 1
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]

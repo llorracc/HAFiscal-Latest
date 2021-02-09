@@ -14,6 +14,97 @@
 \begin{document}
 
 \section{Update - February 10th 2021}	
+
+
+\FloatBarrier	
+\subsection{Improved convergence}
+
+\FloatBarrier
+\subsection{Tax cut}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../full_run/tax_cut}
+	\caption{}
+	\label{fig:taxcut}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../full_run/stimulated-consumption_TaxCut}
+	\caption{}
+	\label{fig:stimulated-consumptiontaxcut}
+\end{figure}
+
+
+\begin{itemize}
+	\item We consider a payroll tax cut by 2 pp for 8q (deterministic length)
+	\item See Figure \ref{fig:taxcut}
+	\subitem The tax increases income and consequently pushes up consumption
+	\subitem The drop in consumption in 9q is due to the fact that the splurge is applied to income in excess of the baseline income, which drops to zero after the tax cut is reversed. Consumption spending remains elevated for some time after the tax cut due to built up savings. 
+	\subitem With aggregate demand effects, the effect on consumption is larger as the increased consumption reinforces consumption through higher income due to higher TFP	
+\end{itemize}
+
+\FloatBarrier
+\subsubsection{Recession}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../full_run/recession}
+	\caption{}
+	\label{fig:recession}
+\end{figure}
+
+
+\begin{itemize}
+	\item We consider a recession with an expected length of 6 quarters, see Figure \ref{fig:recession}
+	\item In a recession the unemployment rate increases to 10 \% and lasts on average 4 quarters (as opposed to 5\% / 1.5 q in normal times)
+	\item The recession depresses aggregate income due to loss of labor income, only partly compensated by unemployment benefits (lasting 2 q, replacing 30 \% of income)
+	\item Consumption falls as income is lower.
+	\item The recession is deeper when productivity depends on aggregate demand.
+\end{itemize}
+
+
+
+
+\FloatBarrier
+\subsection{Tax cut during recession}
+
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{../full_run/recession_taxcut_relbaseline}
+		\caption{rel. to baseline}
+		\label{fig:recessiontaxcutrelbaseline}
+	\end{subfigure}\\
+	\hfill
+	\begin{subfigure}[b]{\textwidth}
+	\centering
+	\includegraphics[width=\linewidth]{../full_run/recession_taxcut_relrecession}
+	\caption{rel. to recession}
+	\label{fig:recessiontaxcutrelrecession}
+	\end{subfigure}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../full_run/stimulated-consumption_RecTaxCut}
+	\caption{}
+	\label{fig:stimulated-consumptionrectaxcut}
+\end{figure}
+
+
+
+\begin{itemize}
+	\item We consider a payroll tax cut by 2 pp for 8q (deterministic length) during a recession with an expected length of 6q 
+	\item Additional income / consumption relative to the baseline (see figure \ref{fig:taxcutrecession}) and to recession scenario (see figure \ref{fig:taxcutrecession2})
+	\item When AD effects are switched off we obtain a similar result as in the baseline. However, note, that as the recession disappears, the additional income by the tax cut increases as more people are employed
+	\item This upward trend in the effect of the tax cut is much more pronounced when considering AD effects. This is because very low consumption at the beginnning of the recession sets a much steeper recovery path.
+	\item Not clear why consumption first drops (numerical error?)
+\end{itemize}
+
+
 	
 \FloatBarrier	
 \subsection{Deterministic length of the payroll tax cut vs. probability of continuation}
@@ -103,105 +194,7 @@ Figure \ref{fig:CRatio} plots $CR_t$ on  $CR_{t-1}$ where $CR_t$ is the ratio of
 \end{figure}
 
 
-\newpage
-\section{Update - January 13th 2021}
-\begin{itemize}
-	\item Last call: impact of a payroll tax cut / extension of unemployment benefits on consumption; there were no aggregate demand effects
-	\item Edmund created code to capture AD effects: Current consumption affects TFP: $TFP_t = \left(\frac{C_t}{C_{ss}}\right)^\alpha$ where $\alpha = 0.4$.
-	\item What is working so far: AD effects for payroll tax cut experiment, for recession and for payroll tax cut during recession
-	\item What is not working yet: AD effects for unemployment benefits extension
-\end{itemize}
 
-\section{Stimulus Experiments}
-
-Parametrization
-\begin{itemize}
-	\item Update probabiltity = 1 (have not tried sticky information yet)
-	\item 7 discount factor groups: Beta = 0.986 (center), Nabla = 0.0183 (spread) as estimated on Norwegian Data
-	\item Splurge = 0.32 as estimated on Norwegian Data
-	\item Simulation of these results takes about 4 h (50k Agents, T-sim = 400)
-\end{itemize}	
-
-\subsection{Recession}
-
-\begin{itemize}
-	\item We consider a recession with an expected length of 6 quarters, see Figure \ref{fig:recession}
-	\item In a recession the unemployment rate increases to 10 \% and lasts on average 4 quarters (as opposed to 5\% / 1.5 q in normal times)
-	\item The recession depresses aggregate income due to loss of labor income, only partly compensated by unemployment benefits (lasting 2 q, replacing 30 \% of income)
-	\item Consumption falls as income is lower.
-	\item The recession is deeper when productivity depends on aggregate demand.
-\end{itemize}
-
-
-\begin{figure} 
-	\begin{centering}
-		\includegraphics[width=\linewidth]{../50kSample_BaseCal/recession.pdf}
-		\caption{Recession}
-		\label{fig:recession}
-	\end{centering}
-\end{figure}
-
-\FloatBarrier
-\subsection{Tax cut}
-
-\begin{itemize}
-	\item We consider a payroll tax cut by 2 pp for 8q (deterministic length)
-	\item See Figure \ref{fig:taxcut}
-	\subitem The tax increases income and consequently pushes up consumption
-	\subitem The drop in consumption in 9q is due to the fact that the splurge is applied to income in excess of the baseline income, which drops to zero after the tax cut is reversed. Consumption spending remains elevated for some time after the tax cut due to built up savings. 
-	\subitem With aggregate demand effects, the effect on consumption is larger as the increased consumption reinforces consumption through higher income due to higher TFP	
-\end{itemize}
-
-\begin{figure} 
-	\begin{centering}
-		\includegraphics[width=\linewidth]{../50kSample_BaseCal/tax_cut.pdf}
-		\caption{Tax cut}
-		\label{fig:taxcut}
-	\end{centering}
-\end{figure}
-
-\FloatBarrier
-\subsection{Tax cut during recession}
-
-\begin{itemize}
-	\item We consider a payroll tax cut by 2 pp for 8q (deterministic length) during a recession with an expected length of 6q 
-	\item Additional income / consumption relative to the baseline (see figure \ref{fig:taxcutrecession}) and to recession scenario (see figure \ref{fig:taxcutrecession2})
-	\item When AD effects are switched off we obtain a similar result as in the baseline. However, note, that as the recession disappears, the additional income by the tax cut increases as more people are employed
-	\item This upward trend in the effect of the tax cut is much more pronounced when considering AD effects. This is because very low consumption at the beginnning of the recession sets a much steeper recovery path.
-	\item Not clear why consumption first drops (numerical error?)
-\end{itemize}
-
-\begin{figure} 
-	\begin{centering}
-		\includegraphics[width=\linewidth]{../50kSample_BaseCal/taxcut_recession.pdf}
-		\caption{Tax cut during a recession}
-		\label{fig:taxcutrecession}
-	\end{centering}
-\end{figure}
-\begin{figure} 
-	\begin{centering}
-		\includegraphics[width=\linewidth]{../50kSample_BaseCal/taxcut_recession2.pdf}
-		\caption{Tax cut during a recession}
-		\label{fig:taxcutrecession2}
-	\end{centering}
-\end{figure}
-
-\FloatBarrier
-\subsection{[Preliminary] Comparing magnitude of stimulus relative to policy expenditure}
-
-\begin{itemize}
-	\item Figure \ref{fig:stimulus} shows the additional consumption caused by the policy relative to the total net present value of the policy intervention
-	\item However, we use the net present value from the no AD scenario
-	\item This is problematic, need to calculate the amount of additional expenditure due to the fiscal policy intervention -> 2pp x recession-Ad-income
-\end{itemize}
-
-\begin{figure} 
-	\begin{centering}
-		\includegraphics[width=\linewidth]{../50kSample_BaseCal/stimulated-consumption.pdf}
-		\caption{Stimulus}
-		\label{fig:stimulus}
-	\end{centering}
-\end{figure}
 
 
 
