@@ -14,123 +14,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
 import pickle
+mystr = lambda x : '{:.2f}'.format(x)
+
+
+
+## Which experiments to run / plots to show
+Run_TaxCut = True
+Run_Recession = True
+Run_TaxCut_Recession = True
+Make_Plots = True
+Show_TestPlots = True
+
 
 
 if __name__ == '__main__':
     
-    mystr = lambda x : '{:.2f}'.format(x)
     t_start = time()
-    base_dict_agg = deepcopy(base_dict)
     
-    # Make baseline types - for now only one type, might add more
-    num_types = 1 
-    # This is not the number of discount factors, but the number of household types; in pandemic paper, there were different education groups
-    InfHorizonTypeAgg = AggFiscalType(**init_infhorizon)
-    InfHorizonTypeAgg.cycles = 0
-    AggDemandEconomy = AggregateDemandEconomy(**init_ADEconomy)
-    InfHorizonTypeAgg.getEconomyData(AggDemandEconomy)
-    BaseTypeList = [InfHorizonTypeAgg]
-  
-    # Fill in the Markov income distribution for each base type
-    #$$$$$$$$$$
-    # NOTE: THIS ASSUMES NO LIFECYCLE
-    IncomeDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg.IncUnemp])])
-    IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg.IncUnempNoBenefits])])
-    IncomeDstn_big = []
-    for ThisType in BaseTypeList:
-        IncomeDstn_taxcut = deepcopy(ThisType.IncomeDstn[0])
-        IncomeDstn_taxcut.X[1] = IncomeDstn_taxcut.X[1]*ThisType.TaxCutIncFactor
-        IncomeDstn_big.append([ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal
-                               ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession
-                               ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, extended UI
-                               ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, extended UI
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut   
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                               IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp])  # recession, payroll tax cut   
-
-                             
-                               
-        ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp]
-        ThisType.IncomeDstn_big = IncomeDstn_big
-        ThisType.AgentCount = AgentCountTotal
-        ThisType.DiscFac = 0.96
-        ThisType.seed = 0
-        
-    # The number of discount factors is set in parameters; need to test whether more disc factors work as well
-    # Edmund said debugging might be necessary
-   #%%     
-    # Make the overall list of types; #IF: Not clear yet
-    TypeList = []
-    n = 0
-    for b in range(DiscFacDstns[0].X.size):
-        for e in range(num_types):
-            DiscFac = DiscFacDstns[e].X[b]
-            AgentCount = int(np.floor(AgentCountTotal*TypeShares[e]*DiscFacDstns[e].pmf[b]))
-            ThisType = deepcopy(BaseTypeList[e])
-            ThisType.AgentCount = AgentCount
-            ThisType.DiscFac = DiscFac
-            ThisType.seed = n
-            TypeList.append(ThisType)
-            n += 1
-    AggDemandEconomy.agents = TypeList
-
-    AggDemandEconomy.solve()
-
-    AggDemandEconomy.reset()
-    for agent in AggDemandEconomy.agents:
-        agent.initializeSim()
-        agent.AggDemandFac = 1.0
-        agent.RfreeNow = 1.0
-        agent.CaggNow = 1.0
+    # Setting up AggDemandEconmy
+    from setupEconomy import AggDemandEconomy, base_dict_agg
     
-    AggDemandEconomy.makeHistory()   
-    AggDemandEconomy.saveState()   
-    AggDemandEconomy.switchToCounterfactualMode()
-    AggDemandEconomy.makeIdiosyncraticShockHistories()
     
-    output_keys = ['cNrm_all', 'TranShk_all', 'cLvl_all', 'pLvl_all', 'mNrm_all', 'aNrm_all', 'cLvl_all_splurge', 
-                      'NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
     
-    max_policy_duration = 6
-    PolicyUBspell = AggDemandEconomy.agents[0].PolicyUBspell #NOTE - this should come from the market, not the agent
-    PolicyUBpersist = 1.-1./PolicyUBspell
-    policy_prob_array = np.array([PolicyUBpersist**t*(1-PolicyUBpersist) for t in range(max_policy_duration)])
-    policy_prob_array[-1] = 1.0 - np.sum(policy_prob_array[:-1])
-
-    max_recession_duration = 21
-    Rspell = AggDemandEconomy.agents[0].Rspell #NOTE - this should come from the market, not the agent
-    R_persist = 1.-1./Rspell
-    recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
-    recession_prob_array[-1] = 1.0 - np.sum(recession_prob_array[:-1])
     
     
     # Run the baseline consumption level
@@ -150,6 +55,8 @@ if __name__ == '__main__':
     
    #%% Running the payroll tax cut experiments
     
+    save_dir = 'C:/Users/ifr/Documents/GitHub/EdmundsFork/SavedPickleFiles/Continuation_Prob_0/'
+    
     # Run the payroll tax cut consumption level in absence of Agg Multiplier
     t0 = time()
     AggDemandEconomy.restoreADsolution(name = 'baseline')
@@ -157,7 +64,7 @@ if __name__ == '__main__':
     TaxCut_dict.update(**TaxCut_changes)
     TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
     TaxCut_results = AggDemandEconomy.runExperiment(**TaxCut_dict)
-    SaveResult = open(figs_dir +'/TaxCut_results.csv', 'wb') 
+    SaveResult = open(save_dir +'TaxCut_results.csv', 'wb') 
     pickle.dump(TaxCut_results, SaveResult)  
     t1 = time()
     print('Calculating payroll tax cut consumption took (no Agg Multiplier) ' + mystr(t1-t0) + ' seconds.')
@@ -168,7 +75,7 @@ if __name__ == '__main__':
     AggDemandEconomy.restoreADsolution(name = 'TaxCut')
     TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
     TaxCut_results_AD = AggDemandEconomy.runExperiment(**TaxCut_dict)
-    SaveResult = open(figs_dir +'/TaxCut_results_AD.csv', 'wb') 
+    SaveResult = open(save_dir +'TaxCut_results_AD.csv', 'wb') 
     pickle.dump(TaxCut_results_AD, SaveResult)  
     t1 = time()
     print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
@@ -182,7 +89,7 @@ if __name__ == '__main__':
         TaxCut_dict_OnceExtended.update(**TaxCut_changes)
         TaxCut_dict_OnceExtended['EconomyMrkv_init'] = np.array(range(16))*2 + 4
         TaxCut_OnceExtended_results = AggDemandEconomy.runExperiment(**TaxCut_dict_OnceExtended)
-        SaveResult = open(figs_dir +'/TaxCut_OnceExtended_results.csv', 'wb') 
+        SaveResult = open(save_dir +'TaxCut_OnceExtended_results.csv', 'wb') 
         pickle.dump(TaxCut_OnceExtended_results, SaveResult)  
         t1 = time()
         print('Calculating payroll tax cut consumption took (no Agg Multiplier) ' + mystr(t1-t0) + ' seconds.')
@@ -193,7 +100,7 @@ if __name__ == '__main__':
         AggDemandEconomy.restoreADsolution(name = 'TaxCut')
         TaxCut_dict_OnceExtended['EconomyMrkv_init'] = np.array(range(16))*2 + 4
         TaxCut_OnceExtended_results_AD = AggDemandEconomy.runExperiment(**TaxCut_dict_OnceExtended)
-        SaveResult = open(figs_dir +'/TaxCut_OnceExtended_results_AD.csv', 'wb') 
+        SaveResult = open(save_dir +'TaxCut_OnceExtended_results_AD.csv', 'wb') 
         pickle.dump(TaxCut_OnceExtended_results_AD, SaveResult)  
         t1 = time()
         print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
@@ -208,20 +115,21 @@ if __name__ == '__main__':
     max_T = 20
     x_axis = np.arange(1,21)
     
+    load_dir = 'C:/Users/ifr/Documents/GitHub/EdmundsFork/SavedPickleFiles/'
     
     # load all results
-    SavedFile = open('Figures/ContinuationProb0/TaxCut_results.csv', 'rb') 
+    SavedFile = open(load_dir + 'Continuation_Prob_0\TaxCut_results.csv', 'rb') 
     TaxCut_NoContinuationProb_results = pickle.load(SavedFile)
-    SavedFile = open('Figures/ContinuationProb0/TaxCut_results_AD.csv', 'rb') 
+    SavedFile = open(load_dir + 'Continuation_Prob_0/TaxCut_results_AD.csv', 'rb') 
     TaxCut_NoContinuationProb_results_AD = pickle.load(SavedFile)
     
-    SavedFile = open('Figures/ContinuationProb50/TaxCut_results.csv', 'rb') 
+    SavedFile = open(load_dir + 'Continuation_Prob_050\TaxCut_results.csv', 'rb') 
     TaxCut_ContinuationProb_results = pickle.load(SavedFile)
-    SavedFile = open('Figures/ContinuationProb50/TaxCut_results_AD.csv', 'rb') 
+    SavedFile = open(load_dir + 'Continuation_Prob_050\TaxCut_results_AD.csv', 'rb') 
     TaxCut_ContinuationProb_results_AD = pickle.load(SavedFile)    
-    SavedFile = open('Figures/ContinuationProb50/TaxCut_OnceExtended_results.csv', 'rb') 
+    SavedFile = open(load_dir + 'Continuation_Prob_050\TaxCut_OnceExtended_results.csv', 'rb') 
     TaxCut_ContinuationProb_OnceExtended_results = pickle.load(SavedFile)
-    SavedFile = open('Figures/ContinuationProb50/TaxCut_OnceExtended_results_AD.csv', 'rb') 
+    SavedFile = open(load_dir + 'Continuation_Prob_050\TaxCut_OnceExtended_results_AD.csv', 'rb') 
     TaxCut_ContinuationProb_OnceExtended_results_AD = pickle.load(SavedFile)  
   
     #%%
@@ -239,7 +147,7 @@ if __name__ == '__main__':
     plt.plot(x_axis,AddInc_ContinuationProb_OnceExtended[0:max_T], color='blue',linestyle=':')
     plt.plot(x_axis,AddCons_NoContinuationProb[0:max_T], color='red',linestyle='-')
     plt.plot(x_axis,AddCons_ContinuationProb[0:max_T], color='red',linestyle='--')
-    plt.plot(x_axis,AddCons_ContinuationProb_OnceExtended[0:max_T], color='red',linestyle='--')
+    plt.plot(x_axis,AddCons_ContinuationProb_OnceExtended[0:max_T], color='red',linestyle=':')
     plt.legend(['Inc: 8q tax cut, no cont. prob.','Inc: 8q tax cut, cont. prob.','Inc: 16q tax cut', \
                 'Cons: 8q tax cut, no cont. prob.','Cons: 8q tax cut, cont. prob.','Cons: 16q tax cut'], fontsize=14)
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
@@ -263,7 +171,7 @@ if __name__ == '__main__':
     plt.plot(x_axis,AddInc_ContinuationProb_OnceExtended_AD[0:max_T], color='blue',linestyle=':')
     plt.plot(x_axis,AddCons_NoContinuationProb_AD[0:max_T], color='red',linestyle='-')
     plt.plot(x_axis,AddCons_ContinuationProb_AD[0:max_T], color='red',linestyle='--')
-    plt.plot(x_axis,AddCons_ContinuationProb_OnceExtended_AD[0:max_T], color='red',linestyle='--')
+    plt.plot(x_axis,AddCons_ContinuationProb_OnceExtended_AD[0:max_T], color='red',linestyle=':')
     plt.legend(['Inc: 8q tax cut, no cont. prob.','Inc: 8q tax cut, cont. prob.','Inc: 16q tax cut', \
                 'Cons: 8q tax cut, no cont. prob.','Cons: 8q tax cut, cont. prob.','Cons: 16q tax cut'], fontsize=14)
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
