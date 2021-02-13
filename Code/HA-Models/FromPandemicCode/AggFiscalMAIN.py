@@ -314,7 +314,6 @@ if __name__ == '__main__':
         plt.legend(['Weighted','0','4','8','12','16'], fontsize=20)
         plt.show()
 
-  
    
         x = (recession_all_results_AD[-1]['Cratio_hist'][1:19]-1) #should this be really form 0 to 19, not from 1 to 19?
         y = recession_all_results_AD[-1]['Cratio_hist'][2:20]
