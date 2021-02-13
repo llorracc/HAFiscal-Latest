@@ -811,21 +811,32 @@ class AggregateDemandEconomy(Market):
             print("Iteration ", i+1,":")
             recession_all_results = []
             max_recession = 19
-            for t in [0,max_recession-1]:
-                if t==0:
+            
+            if self.TaxCutContinuationProb > 0:
+                cases = [0,1,2]
+            else:
+                cases = [0,1]
+                
+            for c in cases:
+                if c == 0:
                     recession_taxcut_dict['EconomyMrkv_init'] = np.array([ 5,  6,  8, 10, 12, 14, 16, 18, 0])
-                if t==18:
+                elif c == 1:
                     recession_taxcut_dict['EconomyMrkv_init'] = np.concatenate((np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1, np.array([1]*(11))))
+                elif c == 2:
+                    recession_taxcut_dict['EconomyMrkv_init'] = np.concatenate((np.array([ 4,  6,  8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34])+1, np.array([1]*(3))))
                 this_recession_results = self.runExperiment(**recession_taxcut_dict)
                 recession_all_results += [this_recession_results]
                 
-            MacroCFunc[0][5] = CRule(recession_all_results[0]['Cratio_hist'][0],0.0) # consumption when you jump into recession/taxcut from steady state
+            # consumption when you jump into recession/taxcut from steady state    
+            MacroCFunc[0][5] = CRule(recession_all_results[0]['Cratio_hist'][0],0.0) 
             
-            # When recession remains for the entire 8q of tax cut
+            # When recession remains for the entire first 8q of tax cut
             for t in range(7):
                 MacroCFunc[5+2*t][7+2*t] = CRule(recession_all_results[1]['Cratio_hist'][t+1],0.0)  #When tax shock is ongoing one assumes consumption to stay constant    
             
-            # When recession ends during the 8q of tax cut
+                
+            
+            # When recession ends during the first 8q of tax cut
             slope = (recession_all_results[0]['Cratio_hist'][1]-1)/(recession_all_results[0]['Cratio_hist'][0]-1)
             for t in range(7):    
                 MacroCFunc[5+2*t][6+2*t] = CRule(1.0,slope) 
@@ -840,14 +851,32 @@ class AggregateDemandEconomy(Market):
             MacroCFunc[19][0] = CRule(recession_all_results[0]['Cratio_hist'][8],0.0)    #When tax shocks end, there is a discrete jump                  
             MacroCFunc[19][1] = CRule(recession_all_results[1]['Cratio_hist'][8],0.0) 
             
+            # When there is a second cycle of tax cuts
+            if self.TaxCutContinuationProb > 0:
+                MacroCFunc[19][21] = CRule(recession_all_results[2]['Cratio_hist'][8],0.0) # discrete jump
+                
+                # continuing recession
+                for t in range(7):    
+                    MacroCFunc[21+2*t][23+2*t] = CRule(recession_all_results[1]['Cratio_hist'][t+8+1],0.0)
+                
+                # end of recession
+                slope = (recession_all_results[0]['Cratio_hist'][1]-1)/(recession_all_results[0]['Cratio_hist'][0]-1)
+                for t in range(7):    
+                    MacroCFunc[21+2*t][22+2*t] = CRule(1.0,slope) 
+                    
+                # Leaving tax cut
+                MacroCFunc[34][0] = CRule(recession_all_results[0]['Cratio_hist'][8],0.0)    
+                MacroCFunc[35][0] = CRule(recession_all_results[0]['Cratio_hist'][8],0.0)                      
+                MacroCFunc[35][1] = CRule(recession_all_results[2]['Cratio_hist'][16],0.0)
+                
+                # Ignoring jump from 19 -> 20 as won't simulate end of recesion from q8 to 9
+                
+            
             # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
             startt = 12
             slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
             intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
             MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession)
-            
-            # slope_if_recession, intercept_if_recession = np.polyfit((recession_all_results[1]['Cratio_hist'][8:11] - 1), recession_all_results[1]['Cratio_hist'][9:12], 1)
-            # MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
             
             # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope
             slope_normal           = np.mean((np.array(recession_all_results[0]['Cratio_hist'][9:19])-1)/(np.array(recession_all_results[0]['Cratio_hist'][8:18])-1))

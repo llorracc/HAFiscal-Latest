@@ -19,11 +19,11 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 
 ## Which experiments to run / plots to show
-Run_TaxCut = True
-Run_Recession = True
-Run_TaxCut_Recession = True
-Make_Plots = True
-Show_TestPlots = True
+Run_TaxCut              = True
+Run_Recession           = True
+Run_TaxCut_Recession    = True
+Make_Plots              = True
+Show_TestPlots          = True
 
 
 

@@ -103,8 +103,7 @@ AggDemandEconomy.saveState()
 AggDemandEconomy.switchToCounterfactualMode()
 AggDemandEconomy.makeIdiosyncraticShockHistories()
 
-output_keys = ['cNrm_all', 'TranShk_all', 'cLvl_all', 'pLvl_all', 'mNrm_all', 'aNrm_all', 'cLvl_all_splurge', 
-                  'NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
+output_keys = ['NPV_AggIncome', 'AggIncome', 'AggCons']
 
 max_policy_duration = 6
 PolicyUBspell = AggDemandEconomy.agents[0].PolicyUBspell #NOTE - this should come from the market, not the agent
@@ -117,3 +116,6 @@ Rspell = AggDemandEconomy.agents[0].Rspell #NOTE - this should come from the mar
 R_persist = 1.-1./Rspell
 recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
 recession_prob_array[-1] = 1.0 - np.sum(recession_prob_array[:-1])
+
+recession_Cond8q_prob_array = recession_prob_array[0:13]
+recession_Cond8q_prob_array[-1] = 1.0 - np.sum(recession_Cond8q_prob_array[:-1])
