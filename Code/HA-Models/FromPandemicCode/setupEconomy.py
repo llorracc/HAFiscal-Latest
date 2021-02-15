@@ -117,5 +117,5 @@ R_persist = 1.-1./Rspell
 recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
 recession_prob_array[-1] = 1.0 - np.sum(recession_prob_array[:-1])
 
-recession_Cond8q_prob_array = recession_prob_array[0:13]
-recession_Cond8q_prob_array[-1] = 1.0 - np.sum(recession_Cond8q_prob_array[:-1])
+recession_Cond9q_prob_array = recession_prob_array[0:13]
+recession_Cond9q_prob_array[-1] = 1.0 - np.sum(recession_Cond9q_prob_array[:-1])

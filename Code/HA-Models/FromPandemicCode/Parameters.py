@@ -336,7 +336,7 @@ slope_prev_big = np.zeros((num_MrkvStates, num_MrkvStates))              # Slope
 ADelasticity = 0.4            # Elasticity of productivity to consumption
 
 num_max_iterations_solvingAD = 20
-convergence_tol_solvingAD = 1E-3
+convergence_tol_solvingAD = 1E-2
 
 # Make a dictionary to specify a Cobb-Douglas economy
 init_ADEconomy = {'intercept_prev': intercept_prev,

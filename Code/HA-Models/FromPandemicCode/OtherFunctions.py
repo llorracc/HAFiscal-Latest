@@ -1,0 +1,25 @@
+import pickle
+
+def namestr(obj,namespace):
+    return [name for name in namespace if namespace[name] is obj][0]
+
+
+def saveAsPickleUnderVarName(obj,save_dir,scope):
+    with open(save_dir + namestr(obj,scope) + '.csv', 'wb') as handle:
+            pickle.dump(obj, handle, protocol=pickle.HIGHEST_PROTOCOL) 
+            
+def loadPickle(obj,load_dir,scope):
+    SavedFile = open(load_dir + namestr(obj,scope) +'.csv', 'rb') 
+    return pickle.load(SavedFile)
+
+def getSimulationDiff(simulation_base,simulation_alternative,simulation_variable):
+    return simulation_alternative[simulation_variable]-simulation_base[simulation_variable]
+ 
+def getSimulationPercentDiff(simulation_base,simulation_alternative,simulation_variable):
+    SimDiff = getSimulationDiff(simulation_base,simulation_alternative,simulation_variable)
+    return 100*SimDiff/simulation_base[simulation_variable]
+
+def getStimulus(simulation_base,simulation_alternative,NPV):
+    AddCons = getSimulationDiff(simulation_base,simulation_alternative,'AggCons')
+    return  100*AddCons/NPV
+
