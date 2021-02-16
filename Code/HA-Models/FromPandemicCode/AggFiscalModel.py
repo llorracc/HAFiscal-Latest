@@ -812,7 +812,7 @@ class AggregateDemandEconomy(Market):
             recession_all_results = []
             max_recession = 19
             
-            if self.TaxCutContinuationProb > 0:
+            if self.TaxCutContinuationProb_Rec > 0:
                 cases = [0,1,2,3]
             else:
                 cases = [0,1]
@@ -854,7 +854,7 @@ class AggregateDemandEconomy(Market):
             MacroCFunc[19][1] = CRule(recession_all_results[1]['Cratio_hist'][8],0.0) 
             
             # When there is a second cycle of tax cuts
-            if self.TaxCutContinuationProb > 0:
+            if self.TaxCutContinuationProb_Rec > 0:
             
                 MacroCFunc[19][21] = CRule(recession_all_results[2]['Cratio_hist'][8],0.0) # discrete jump
                 #MacroCFunc[19][20] = CRule(recession_all_results[3]['Cratio_hist'][8],0.0) # discrete jump
@@ -872,10 +872,10 @@ class AggregateDemandEconomy(Market):
                 for t in range(7):
                     MacroCFunc[20+2*t][22+2*t] = CRule(recession_all_results[3]['Cratio_hist'][t+8+1],0.0)
                     
-                print("recession_all_results[3]['Cratio_hist'] 0 to 9",recession_all_results[3]['Cratio_hist'][0:9])
-                print("recession_all_results[3]['Cratio_hist'] 10 to 16",recession_all_results[3]['Cratio_hist'][9:16])
-                print("recession_all_results[1]['Cratio_hist']",recession_all_results[1]['Cratio_hist'][0:8])
-                print("recession_all_results[1]['Cratio_hist']",recession_all_results[1]['Cratio_hist'][8:19])    
+                # print("recession_all_results[3]['Cratio_hist'] 0 to 9",recession_all_results[3]['Cratio_hist'][0:9])
+                # print("recession_all_results[3]['Cratio_hist'] 10 to 16",recession_all_results[3]['Cratio_hist'][9:16])
+                # print("recession_all_results[1]['Cratio_hist']",recession_all_results[1]['Cratio_hist'][0:8])
+                # print("recession_all_results[1]['Cratio_hist']",recession_all_results[1]['Cratio_hist'][8:19])    
                 
                 # Leaving tax cut
                 MacroCFunc[34][0] = CRule(recession_all_results[3]['Cratio_hist'][16],0.0)    
@@ -890,8 +890,8 @@ class AggregateDemandEconomy(Market):
             slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
             intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
             
-            print('slope_if_recession',slope_if_recession)
-            print('intercept_if_recession',intercept_if_recession)
+            # print('slope_if_recession',slope_if_recession)
+            # print('intercept_if_recession',intercept_if_recession)
             
             # Old CFunc
             old_i = self.CFunc[3*1][3*1].intercept

@@ -8,8 +8,8 @@ def saveAsPickleUnderVarName(obj,save_dir,scope):
     with open(save_dir + namestr(obj,scope) + '.csv', 'wb') as handle:
             pickle.dump(obj, handle, protocol=pickle.HIGHEST_PROTOCOL) 
             
-def loadPickle(obj,load_dir,scope):
-    SavedFile = open(load_dir + namestr(obj,scope) +'.csv', 'rb') 
+def loadPickle(filename,load_dir,scope):
+    SavedFile = open(load_dir + filename +'.csv', 'rb') 
     return pickle.load(SavedFile)
 
 def getSimulationDiff(simulation_base,simulation_alternative,simulation_variable):

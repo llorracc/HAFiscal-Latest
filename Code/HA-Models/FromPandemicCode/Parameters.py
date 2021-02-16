@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Continuation_Prob_0/'
+figs_dir = './Figures/Continuation_Prob_Experiments/'
 
 try:
     os.mkdir(figs_dir)
@@ -39,8 +39,8 @@ PolicyUBspell = 2            # Average duration that policy of extended unemploy
 PolicyTaxCutspell = 2        # Average duration that policy of payroll tax cuts
 TaxCutIncFactor = 1.02       # Amount by which the payroll tax cut increases after-tax income
 TaxCutPeriods = 8            # Deterministic duration of tax cut 
-TaxCutContinuationProb = 0.5 # Probability that tax cut is continued after tax cut periods run out (repeated for another TaxCutPeriods many periods)
-
+TaxCutContinuationProb_Rec = 0.5   # Probability that tax cut is continued after tax cut periods run out, when recession in q8
+TaxCutContinuationProb_Bas = 0.5   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
 
 UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
 Splurge = 0.32      # amount of income that is splurged
@@ -84,7 +84,7 @@ DiscFacDstns = [DiscFacDstn]
 CgridBase = np.array([0.8,0.9,0.98,1.0,1.02,1.1,1.2])  
 
 #$$$$$$$$$$
-def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb):
+def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb_Rec, TaxCutContinuationProb_Bas):
     '''
     Make a Markov transition matrix for the macro states
     
@@ -109,19 +109,19 @@ def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationP
     MacroMrkStates_TaxCut = TaxCutPeriods * 4  # recession and normal, first and 2nd cycle
     MacroTaxCutArray = np.zeros((MacroMrkStates_TaxCut,MacroMrkStates_TaxCut))
     for i in range(2*TaxCutPeriods-1):
-        # after the initial cycle of Tax Cut, there is a TaxCutContinuationProb chance of jumping into the second cycle, but only if recession is active in q8
+        # after the initial cycle of Tax Cut, there is a TaxCutContinuationProb_Rec chance of jumping into the second cycle, but only if recession is active in q8
         if i==TaxCutPeriods-1: 
-            MacroTaxCutArray[2*i:2*i+2,2*i+2:2*i+4] = np.array([[0.0,         0.0],
-                                                                [TaxCutContinuationProb *(1-R_persist), TaxCutContinuationProb *R_persist]])
+            MacroTaxCutArray[2*i:2*i+2,2*i+2:2*i+4] = np.array([[TaxCutContinuationProb_Bas * 1,         0.0],
+                                                                [TaxCutContinuationProb_Rec *(1-R_persist), TaxCutContinuationProb_Rec *R_persist]])
         else:
             MacroTaxCutArray[2*i:2*i+2,2*i+2:2*i+4] =np.array([[1.0,         0.0],
                                                                [1-R_persist, R_persist]])
                 
     MacroMrkvArray = np.concatenate((np.concatenate((MacroMrkvArray,np.zeros((MacroMrkvArray.shape[0],MacroMrkStates_TaxCut))),axis=1),np.concatenate((np.zeros((MacroMrkStates_TaxCut,MacroMrkvArray.shape[0])),MacroTaxCutArray),axis=1)),axis=0)
     
-    # From the first Tax cut state, there is a (1-TaxCutContinuationProb) chance of jumpting back into baseline/recession
-    MacroMrkvArray[4+2*(TaxCutPeriods-1):4+2*(TaxCutPeriods-1)+2,0:2] =   np.array([[1.0,         0.0],
-                                                                                    [(1-TaxCutContinuationProb)*(1-R_persist), (1-TaxCutContinuationProb)*R_persist]])
+    # From the first Tax cut state, there is a (1-TaxCutContinuationProb_Rec) chance of jumpting back into baseline/recession
+    MacroMrkvArray[4+2*(TaxCutPeriods-1):4+2*(TaxCutPeriods-1)+2,0:2] =   np.array([[(1-TaxCutContinuationProb_Bas)*1.0,         0.0],
+                                                                                    [(1-TaxCutContinuationProb_Rec)*(1-R_persist), (1-TaxCutContinuationProb_Rec)*R_persist]])
     
     # From the last TaxCut state in the 2nd cycle, one jumps back into baseline / recession
     MacroMrkvArray[-2:,0:2] =  np.array([[1.0,         0.0],
@@ -189,7 +189,7 @@ def makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays):
             FullMrkv = np.concatenate((FullMrkv, this_row), axis=0)
     return [FullMrkv]
 
-MacroMrkvArray = makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb)
+MacroMrkvArray = makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb_Rec, TaxCutContinuationProb_Bas)
 CondMrkvArrays = makeCondMrkvArrays(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, UBspell_extended, TaxCutPeriods)
 MrkvArray = makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays)
 
@@ -266,7 +266,8 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'PolicyTaxCutspell' : PolicyTaxCutspell,
                 'TaxCutIncFactor' : TaxCutIncFactor,
                 'TaxCutPeriods' : TaxCutPeriods,
-                'TaxCutContinuationProb' : TaxCutContinuationProb,
+                'TaxCutContinuationProb_Rec' : TaxCutContinuationProb_Rec,
+                'TaxCutContinuationProb_Bas' : TaxCutContinuationProb_Bas,
                 'UpdatePrb' : 1.0,
                 'Splurge' : Splurge,
                 'track_vars' : []
@@ -350,6 +351,7 @@ init_ADEconomy = {'intercept_prev': intercept_prev,
                      'CgridBase' : CgridBase,
                      'EconomyMrkvNow_init': 0,
                      'act_T' : 400,
-                     'TaxCutContinuationProb' : TaxCutContinuationProb
+                     'TaxCutContinuationProb_Rec' : TaxCutContinuationProb_Rec,
+                     'TaxCutContinuationProb_Bas' : TaxCutContinuationProb_Bas
                      }
 
