@@ -19,7 +19,7 @@ def getSimulationPercentDiff(simulation_base,simulation_alternative,simulation_v
     SimDiff = getSimulationDiff(simulation_base,simulation_alternative,simulation_variable)
     return 100*SimDiff/simulation_base[simulation_variable]
 
-def getStimulus(simulation_base,simulation_alternative,NPV):
+def getStimulus(simulation_base,simulation_alternative,Gov_Spending):
     AddCons = getSimulationDiff(simulation_base,simulation_alternative,'AggCons')
-    return  100*AddCons/NPV
+    return  100*AddCons/Gov_Spending
 

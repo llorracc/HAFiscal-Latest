@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Continuation_Prob_Experiments/'
+figs_dir = './Figures/Full_Run_with_UI_Ext/'
 
 try:
     os.mkdir(figs_dir)
@@ -40,7 +40,7 @@ PolicyTaxCutspell = 2        # Average duration that policy of payroll tax cuts
 TaxCutIncFactor = 1.02       # Amount by which the payroll tax cut increases after-tax income
 TaxCutPeriods = 8            # Deterministic duration of tax cut 
 TaxCutContinuationProb_Rec = 0.5   # Probability that tax cut is continued after tax cut periods run out, when recession in q8
-TaxCutContinuationProb_Bas = 0.5   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
+TaxCutContinuationProb_Bas = 0.0   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
 
 UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
 Splurge = 0.32      # amount of income that is splurged
@@ -296,7 +296,7 @@ UI_changes = {
              'RecessionShock' : False,
              'ExtendedUIShock' : True,
              'TaxCutShock' : False,
-             'EconomyMrkv_init' : [2,2]
+             #EconomyMrkv_init' : [2,2]
              }
 recession_UI_changes = {
              'RecessionShock' : True,

@@ -14,17 +14,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
 import pickle
-import OtherFunctions
+from OtherFunctions import getSimulationDiff, getSimulationPercentDiff, getStimulus, saveAsPickleUnderVarName, \
+                           loadPickle, namestr     
 mystr = lambda x : '{:.2f}'.format(x)
 
 
 
 ## Which experiments to run / plots to show
+Run_Baseline            = False
 Run_TaxCut              = True
 Run_Recession           = True
 Run_TaxCut_Recession    = True
+Run_UB_Ext              = True
 Make_Plots              = True
-Show_TestPlots          = True
+Show_TestPlots          = False
 
 
 
@@ -32,19 +35,71 @@ if __name__ == '__main__':
     
     t_start = time()
     
-    # Setting up AggDemandEconmy
-    from setupEconomy import AggDemandEconomy, base_dict_agg, max_recession_duration, output_keys, recession_prob_array
+    if Run_Baseline:
+        # Setting up AggDemandEconmy
+        from setupEconomy import AggDemandEconomy, base_dict_agg, max_recession_duration, output_keys, recession_prob_array, \
+                                 max_policy_duration, policy_prob_array
+        
+        
+        
+        
+        
+        # Run the baseline consumption level
+        t0 = time()
+        base_results = AggDemandEconomy.runExperiment(**base_dict_agg, Full_Output = False)
+        saveAsPickleUnderVarName(base_results,figs_dir,locals())
+        AggDemandEconomy.storeBaseline(base_results['AggCons'])     
+        t1 = time()
+        print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
     
     
+    if Run_UB_Ext:
+        
+        print('Solving and simulating unemployment extension experiment')
+        
+        # Run the extended UI consumption level
+        t0 = time()
+        UI_dict = base_dict_agg.copy()
+        UI_dict.update(**UI_changes)
+        UI_all_results = []
+        UI_results = dict()
+        for t_Policy in range(max_policy_duration):
+            UI_dict['EconomyMrkv_init'] = [2]*(t_Policy+1)
+            print('Running Experiment with Mrkv history: ', UI_dict['EconomyMrkv_init'])
+            this_UI_results = AggDemandEconomy.runExperiment(**UI_dict, Full_Output = False)
+            UI_all_results += [this_UI_results]
+        for key in output_keys:
+            UI_results[key] = np.sum(np.array([UI_all_results[t][key]*policy_prob_array[t]  for t in range(max_policy_duration)]), axis=0)
+        saveAsPickleUnderVarName(UI_results,figs_dir,locals())
+        t1 = time()
+        print('Calculating extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
     
+  
+        # Run the recession and extended UI consumption level
+        t0 = time()
+        recession_UI_dict = base_dict_agg.copy()
+        recession_UI_dict.update(**recession_UI_changes)
+        recession_UI_all_results = []
+        recession_UI_results = dict()
+        for t_R in range(max_recession_duration):
+            for t_Policy in range(max_policy_duration):
+                recession_UI_dict['EconomyMrkv_init'] = np.array([0]*max(max_recession_duration,max_policy_duration))
+                recession_UI_dict['EconomyMrkv_init'][0:t_R+1] += 1
+                recession_UI_dict['EconomyMrkv_init'][0:t_Policy+1] +=2
+                print('Running Experiment with Mrkv history: ', recession_UI_dict['EconomyMrkv_init'])
+                this_recession_UI_results = AggDemandEconomy.runExperiment(**recession_UI_dict, Full_Output = False)
+                recession_UI_all_results += [this_recession_UI_results]
+        for key in output_keys:
+            recession_UI_results[key] = np.zeros_like(recession_UI_all_results[0][key])
+            count = 0
+            for t_R in range(max_recession_duration):
+                for t_Policy in range(max_policy_duration):
+                    recession_UI_results[key] += recession_UI_all_results[count][key]*recession_prob_array[t_R]*policy_prob_array[t_Policy]
+                    count += 1
+        saveAsPickleUnderVarName(recession_UI_results,figs_dir,locals())
+        t1 = time()
+        print('Calculating recession and extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
     
-    
-    # Run the baseline consumption level
-    t0 = time()
-    base_results = AggDemandEconomy.runExperiment(**base_dict_agg)
-    AggDemandEconomy.storeBaseline(base_results['AggCons'])
-    t1 = time()
-    print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
     
     
     #%% Solving and Simulating
@@ -62,7 +117,12 @@ if __name__ == '__main__':
         TaxCut_dict = base_dict_agg.copy()
         TaxCut_dict.update(**TaxCut_changes)
         TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
-        TaxCut_results = AggDemandEconomy.runExperiment(**TaxCut_dict)
+        TaxCut_results_intermediate = AggDemandEconomy.runExperiment(**TaxCut_dict, Full_Output = False)
+        # only save important output keys
+        TaxCut_results = dict()
+        for key in output_keys:
+            TaxCut_results[key] = TaxCut_results_intermediate[key]
+        saveAsPickleUnderVarName(TaxCut_results,figs_dir,locals())
         t1 = time()
         print('Calculating payroll tax cut consumption took (no Agg Multiplier) ' + mystr(t1-t0) + ' seconds.')
      
@@ -70,7 +130,12 @@ if __name__ == '__main__':
         t0 = time()
         AggDemandEconomy.restoreADsolution(name = 'TaxCut')
         TaxCut_dict['EconomyMrkv_init'] = np.array(range(8))*2 + 4
-        TaxCut_results_AD = AggDemandEconomy.runExperiment(**TaxCut_dict)
+        TaxCut_results_AD_intermediate = AggDemandEconomy.runExperiment(**TaxCut_dict, Full_Output = False)
+        # only save important output keys
+        TaxCut_results_AD = dict()
+        for key in output_keys:
+            TaxCut_results_AD[key] = TaxCut_results_AD_intermediate[key]
+        saveAsPickleUnderVarName(TaxCut_results_AD,figs_dir,locals())
         t1 = time()
         print('Calculating payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
     
@@ -92,10 +157,11 @@ if __name__ == '__main__':
         #  running recession with diferent lengths up to 20q then averaging the result
         for t in range(max_recession_duration):
             recession_dict['EconomyMrkv_init'] = [1]*(t+1)
-            this_recession_results = AggDemandEconomy.runExperiment(**recession_dict)
+            this_recession_results = AggDemandEconomy.runExperiment(**recession_dict, Full_Output = False)
             recession_all_results += [this_recession_results]
-        for recession_output in output_keys:
-            recession_results[recession_output] = np.sum(np.array([recession_all_results[t][recession_output]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        for key in output_keys:
+            recession_results[key] = np.sum(np.array([recession_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        saveAsPickleUnderVarName(recession_results,figs_dir,locals())
         t1 = time()
         print('Calculating recession consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')    
         
@@ -109,10 +175,11 @@ if __name__ == '__main__':
         recession_results_AD = dict()
         for t in range(max_recession_duration):
             recession_dict['EconomyMrkv_init'] = [1]*(t+1)
-            this_recession_results_AD = AggDemandEconomy.runExperiment(**recession_dict)
+            this_recession_results_AD = AggDemandEconomy.runExperiment(**recession_dict, Full_Output = False)
             recession_all_results_AD += [this_recession_results_AD]
-        for recession_output_AD in output_keys:
-            recession_results_AD[recession_output_AD] = np.sum(np.array([recession_all_results_AD[t][recession_output_AD]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        for key in output_keys:
+            recession_results_AD[key] = np.sum(np.array([recession_all_results_AD[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        saveAsPickleUnderVarName(recession_results_AD,figs_dir,locals())
         t1 = time()
         print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
         
@@ -139,10 +206,11 @@ if __name__ == '__main__':
                 recession_TaxCut_dict['EconomyMrkv_init'] = np.array([ 4,  6,  8, 10, 12, 14, 16, 18, -1])+1
             if t>7:
                 recession_TaxCut_dict['EconomyMrkv_init'] = np.concatenate((np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1, np.array([1]*(t-7))))
-            this_recession_results = AggDemandEconomy.runExperiment(**recession_TaxCut_dict)
+            this_recession_results = AggDemandEconomy.runExperiment(**recession_TaxCut_dict, Full_Output = False)
             recession_TaxCut_all_results += [this_recession_results]
-        for recession_output in output_keys:
-            recession_TaxCut_results[recession_output] = np.sum(np.array([recession_TaxCut_all_results[t][recession_output]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        for key in output_keys:
+            recession_TaxCut_results[key] = np.sum(np.array([recession_TaxCut_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        saveAsPickleUnderVarName(recession_TaxCut_results,figs_dir,locals())
         t1 = time()
         print('Calculating payroll tax cut during recession consumption took (no Agg Multiplier) ' + mystr(t1-t0) + ' seconds.')    
         
@@ -163,10 +231,11 @@ if __name__ == '__main__':
             if t>7:
                 recession_TaxCut_dict['EconomyMrkv_init'] = np.concatenate((np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1, np.array([1]*(t-7))))
             #print(recession_TaxCut_dict['EconomyMrkv_init'])
-            this_recession_results_AD = AggDemandEconomy.runExperiment(**recession_TaxCut_dict)
+            this_recession_results_AD = AggDemandEconomy.runExperiment(**recession_TaxCut_dict, Full_Output = False)
             recession_TaxCut_all_results_AD += [this_recession_results_AD]
-        for recession_output_AD in output_keys:
-            recession_TaxCut_results_AD[recession_output_AD] = np.sum(np.array([recession_TaxCut_all_results_AD[t][recession_output_AD]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        for key in output_keys:
+            recession_TaxCut_results_AD[key] = np.sum(np.array([recession_TaxCut_all_results_AD[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        saveAsPickleUnderVarName(recession_TaxCut_results_AD,figs_dir,locals())
         t1 = time()
         print('Calculating payroll tax cut during recession consumption took ' + mystr(t1-t0) + ' seconds.')
         
@@ -175,23 +244,79 @@ if __name__ == '__main__':
     if Make_Plots:
         max_T = 20
         x_axis = np.arange(1,21)
-         
-        def getSimulationDiff(simulation_base,simulation_alternative,simulation_variable):
-            return simulation_alternative[simulation_variable]-simulation_base[simulation_variable]
-         
-        def getSimulationPercentDiff(simulation_base,simulation_alternative,simulation_variable):
-            SimDiff = getSimulationDiff(simulation_base,simulation_alternative,simulation_variable)
-            return 100*SimDiff/simulation_base[simulation_variable]
         
-        def getStimulus(simulation_base,simulation_alternative,NPV):
-            AddCons = getSimulationDiff(simulation_base,simulation_alternative,'AggCons')
-            return  100*AddCons/NPV
+        base_results                = loadPickle('base_results',figs_dir,locals())
+        UI_results                  = loadPickle('UI_results',figs_dir,locals())
+        recession_UI_results        = loadPickle('recession_UI_results',figs_dir,locals())
+        recession_results           = loadPickle('recession_results',figs_dir,locals())
+        TaxCut_results              = loadPickle('TaxCut_results',figs_dir,locals())
+        TaxCut_results_AD           = loadPickle('TaxCut_results_AD',figs_dir,locals())
+        recession_results_AD        = loadPickle('recession_results_AD',figs_dir,locals())
+        recession_TaxCut_results    = loadPickle('recession_TaxCut_results',figs_dir,locals())
+        recession_TaxCut_results_AD = loadPickle('recession_TaxCut_results_AD',figs_dir,locals())
+     
         
+        if Run_UB_Ext:
+            AddCons_UI_Ext              = getSimulationPercentDiff(base_results,    UI_results,'AggCons')
+            AddInc_UI_Ext               = getSimulationPercentDiff(base_results,    UI_results,'AggIncome')
+            NPV_AddInc_UI               = getSimulationDiff(base_results,           UI_results,'NPV_AggIncome') 
+            AddInc_UI_Abs               = getSimulationDiff(base_results,           UI_results,'AggIncome') 
+            Stimulus_UI                 = getStimulus(base_results,                 UI_results,NPV_AddInc_UI[-1]) 
+            Stimulus_UI_perPeriod       = getStimulus(base_results,                 UI_results,AddInc_UI_Abs) 
+            Stimulus_UI_perPeriod[6:]   = 0
+
+            plt.figure(figsize=(15,10))
+            plt.title('UI extension, no recession', size=30)
+            plt.plot(x_axis,AddInc_UI_Ext[0:max_T],     color='blue',linestyle='-')
+            #plt.plot(x_axis,AddInc_TaxCut_AD[0:max_T],  color='blue',linestyle='--')
+            plt.plot(x_axis,AddCons_UI_Ext[0:max_T],    color='red',linestyle='-')
+            #plt.plot(x_axis,AddCons_TaxCut_AD[0:max_T], color='red',linestyle='--')
+            #plt.legend(['Income, no AD effects','Income, AD effects','Consumption, no AD effects','Consumption, AD effects'], fontsize=14)
+            plt.legend(['Income, no AD effects','Consumption, no AD effects'], fontsize=14)
+            plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+            plt.xlabel('quarter', fontsize=18)
+            plt.ylabel('% diff. rel. to baseline', fontsize=16)
+            plt.savefig(figs_dir +'UI_ext.pdf')
+            plt.show()
+            
+            
+            AddCons_UI_Ext_Rec_RelRec       = getSimulationPercentDiff(recession_results,    recession_UI_results,'AggCons')
+            AddInc_UI_Ext_Rec_RelRec        = getSimulationPercentDiff(recession_results,    recession_UI_results,'AggIncome')      
+            NPV_AddInc_UI_Rec               = getSimulationDiff(recession_results,           recession_UI_results,'NPV_AggIncome')
+            AddInc_UI_Rec_Abs               = getSimulationDiff(recession_results,           recession_UI_results,'AggIncome')
+            Stimulus_UI_Rec                 = getStimulus(recession_results,                 recession_UI_results,NPV_AddInc_UI_Rec[-1]) 
+            Stimulus_UI_Rec_perPeriod       = getStimulus(recession_results,                 recession_UI_results,AddInc_UI_Rec_Abs) 
+            Stimulus_UI_Rec_perPeriod[6:]   = 0
+            
+            plt.figure(figsize=(15,10))
+            plt.title('Recession + UI extension', size=30)
+            plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec[0:max_T],     color='blue',linestyle='-')
+            #plt.plot(x_axis,AddInc_Rec_TaxCut_AD_RelRec[0:max_T],  color='blue',linestyle='--')
+            plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec[0:max_T],    color='red',linestyle='-')
+            #plt.plot(x_axis,AddCons_Rec_TaxCut_AD_RelRec[0:max_T], color='red',linestyle='--')
+            #plt.legend(['Income, no AD effects','Income, AD effects','Consumption, no AD effects','Consumption, AD effects'], fontsize=14)
+            plt.legend(['Income, no AD effects','Consumption, no AD effects'], fontsize=14)
+            plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+            plt.xlabel('quarter', fontsize=18)
+            plt.ylabel('% diff. rel. to recession', fontsize=16)
+            plt.savefig(figs_dir +'recession_UI_relrecession.pdf')
+            plt.show()  
+            
         if Run_TaxCut:   
             AddCons_TaxCut              = getSimulationPercentDiff(base_results,    TaxCut_results,'AggCons')
             AddCons_TaxCut_AD           = getSimulationPercentDiff(base_results,    TaxCut_results_AD,'AggCons')
             AddInc_TaxCut               = getSimulationPercentDiff(base_results,    TaxCut_results,'AggIncome')
             AddInc_TaxCut_AD            = getSimulationPercentDiff(base_results,    TaxCut_results_AD,'AggIncome')
+            
+            # Value of policy expenditure (need to consider non-AD solution)
+            NPV_AddInc_TaxCut           = getSimulationDiff(base_results,TaxCut_results,'NPV_AggIncome')
+            AddInc_TaxCut_Abs           = getSimulationDiff(base_results,TaxCut_results,'AggIncome') 
+            Stimulus_TaxCut             = getStimulus(base_results,TaxCut_results,NPV_AddInc_TaxCut[-1]) 
+            Stimulus_TaxCut_AD          = getStimulus(base_results,TaxCut_results_AD,NPV_AddInc_TaxCut[-1])
+            Stimulus_TaxCut_perPeriod   = getStimulus(base_results,TaxCut_results,AddInc_TaxCut_Abs) 
+            Stimulus_TaxCut_perPeriod[8:] = 0
+            Stimulus_TaxCut_AD_perPeriod= getStimulus(base_results,TaxCut_results_AD,AddInc_TaxCut_Abs)
+            Stimulus_TaxCut_perPeriod[8:] = 0
             
             plt.figure(figsize=(15,10))
             plt.title('Tax Cut, no recession', size=30)
@@ -205,24 +330,7 @@ if __name__ == '__main__':
             plt.ylabel('% diff. rel. to baseline', fontsize=16)
             plt.savefig(figs_dir +'tax_cut.pdf')
             plt.show()
-            
-            # Value of policy expenditure (need to consider non-AD solution)
-            NPV_AddInc_TaxCut           = getSimulationDiff(base_results,TaxCut_results,'NPV_AggIncome')    
-            Stimulus_TaxCut             = getStimulus(base_results,TaxCut_results,NPV_AddInc_TaxCut[-1]) 
-            Stimulus_TaxCut_AD          = getStimulus(base_results,TaxCut_results_AD,NPV_AddInc_TaxCut[-1])
-            
-            # stimulus effects 
-            plt.figure(figsize=(15,10))
-            plt.title('Stimulated consumption per period relative to NPV of policy intervention', size=30)
-            plt.plot(x_axis,Stimulus_TaxCut[0:max_T], color='blue',linestyle='-')
-            plt.plot(x_axis,Stimulus_TaxCut_AD[0:max_T], color='blue',linestyle='--')
-            plt.legend(['Tax cut, no AD effects','Tax cut, AD effects'], fontsize=14)
-            plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
-            plt.xlabel('quarter', fontsize=18)
-            plt.ylabel('% of policy NPV expended', fontsize=16)
-            plt.savefig(figs_dir +'stimulated-consumption_TaxCut.pdf')
-            plt.show()
-     
+                   
         
         if Run_Recession:
             AddCons_Rec                 = getSimulationPercentDiff(base_results,    recession_results,'AggCons')
@@ -271,6 +379,16 @@ if __name__ == '__main__':
             AddInc_Rec_TaxCut_RelRec          = getSimulationPercentDiff(recession_results,    recession_TaxCut_results,'AggIncome')
             AddInc_Rec_TaxCut_AD_RelRec       = getSimulationPercentDiff(recession_results_AD, recession_TaxCut_results_AD,'AggIncome')
         
+            # Value of policy expenditure (need to consider non-AD solution)
+            NPV_AddInc_Rec_TaxCut       = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome') 
+            AddInc_Rec_TaxCu_Abs        = getSimulationDiff(recession_results,recession_TaxCut_results,'AggIncome') 
+            Stimulus_Rec_TaxCut         = getStimulus(recession_results,recession_TaxCut_results,NPV_AddInc_Rec_TaxCut[-1]) 
+            Stimulus_Rec_TaxCut_AD      = getStimulus(recession_results_AD,recession_TaxCut_results_AD,NPV_AddInc_Rec_TaxCut[-1])
+            Stimulus_Rec_TaxCut_perPeriod         = getStimulus(recession_results,recession_TaxCut_results,AddInc_Rec_TaxCu_Abs) 
+            Stimulus_Rec_TaxCut_perPeriod[8:]     = 0
+            Stimulus_Rec_TaxCut_AD_perPeriod      = getStimulus(recession_results_AD,recession_TaxCut_results_AD,AddInc_Rec_TaxCu_Abs)
+            Stimulus_Rec_TaxCut_AD_perPeriod[8:]     = 0
+        
             plt.figure(figsize=(15,10))
             plt.title('Recession + tax cut', size=30)
             plt.plot(x_axis,AddInc_Rec_TaxCut_RelRec[0:max_T],     color='blue',linestyle='-')
@@ -284,21 +402,49 @@ if __name__ == '__main__':
             plt.savefig(figs_dir +'recession_taxcut_relrecession.pdf')
             plt.show()   
             
-            # Value of policy expenditure (need to consider non-AD solution)
-            NPV_AddInc_Rec_TaxCut       = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome')    
-            Stimulus_Rec_TaxCut         = getStimulus(recession_results,recession_TaxCut_results,NPV_AddInc_Rec_TaxCut[-1]) 
-            Stimulus_Rec_TaxCut_AD      = getStimulus(recession_results_AD,recession_TaxCut_results_AD,NPV_AddInc_Rec_TaxCut[-1])
+
+        Plot_Stimulus = True
+        if Plot_Stimulus:
             
-            # stimulus effects 
+
+            # stimulus effects without AD, NPV as base
             plt.figure(figsize=(15,10))
-            plt.title('Stimulated consumption per period relative to NPV of policy intervention', size=30)
-            plt.plot(x_axis,Stimulus_Rec_TaxCut[0:max_T], color='blue',linestyle='-')
-            plt.plot(x_axis,Stimulus_Rec_TaxCut_AD[0:max_T], color='blue',linestyle='--')
-            plt.legend(['Tax cut, recession, no AD effects','Tax cut, recession, AD effects'], fontsize=14)
+            plt.title('Stimu. cons. per period relative to NPV of policy, no AD effects', size=30)
+            plt.plot(x_axis,Stimulus_UI[0:max_T],           color='blue',linestyle='-')
+            plt.plot(x_axis,Stimulus_UI_Rec[0:max_T],       color='blue',linestyle='--')
+            plt.plot(x_axis,Stimulus_TaxCut[0:max_T],       color='red',linestyle='-')
+            plt.plot(x_axis,Stimulus_Rec_TaxCut[0:max_T],   color='red',linestyle='--')
+            plt.legend(['UI extension','UI extension in rec','Tax cut','Tax cut in rec'], fontsize=14)
             plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
             plt.xlabel('quarter', fontsize=18)
             plt.ylabel('% of policy NPV expended', fontsize=16)
-            plt.savefig(figs_dir +'stimulated-consumption_RecTaxCut.pdf')
+            plt.savefig(figs_dir +'NPV_Multiplier_no_AD.pdf')
+            plt.show()
+
+            # stimulus effects without AD, period income as base
+            plt.figure(figsize=(15,10))
+            plt.title('Stimu. cons. per period relative to NPV of policy, no AD effects', size=30)
+            plt.plot(x_axis,Stimulus_UI_perPeriod[0:max_T],           color='blue',linestyle='-')
+            plt.plot(x_axis,Stimulus_UI_Rec_perPeriod[0:max_T],       color='blue',linestyle='--')
+            plt.plot(x_axis,Stimulus_TaxCut_perPeriod[0:max_T],       color='red',linestyle='-')
+            plt.plot(x_axis,Stimulus_Rec_TaxCut_perPeriod[0:max_T],   color='red',linestyle='--')
+            plt.legend(['UI extension','UI extension in rec','Tax cut','Tax cut in rec'], fontsize=14)
+            plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+            plt.xlabel('quarter', fontsize=18)
+            plt.ylabel('% of periods policy expenditure expended', fontsize=16)
+            plt.savefig(figs_dir +'Period_Multiplier_no_AD.pdf')
+            plt.show()
+            
+            # stimulus effects with AD
+            plt.figure(figsize=(15,10))
+            plt.title('Stimu. cons. per period relative to NPV of policy, AD effects', size=30)
+            plt.plot(x_axis,Stimulus_TaxCut_AD[0:max_T], color='blue',linestyle='-')
+            plt.plot(x_axis,Stimulus_Rec_TaxCut_AD[0:max_T], color='blue',linestyle='--')
+            plt.legend(['Tax cut, no recession, AD effects','Tax cut, recession, AD effects'], fontsize=14)
+            plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+            plt.xlabel('quarter', fontsize=18)
+            plt.ylabel('% of policy NPV expended', fontsize=16)
+            plt.savefig(figs_dir +'NPV_Multiplier_TaxCut_AD.pdf')
             plt.show()
         
    
@@ -344,50 +490,6 @@ if __name__ == '__main__':
     
     
 
-    #%% FOR LATER
-    # # Run the recession and extended UI consumption level
-    # # This is SUPER SLOW because of the double loop
-    # t0 = time()
-    # recession_UI_dict = base_dict_agg.copy()
-    # recession_UI_dict.update(**recession_UI_changes)
-    # recession_UI_all_results = []
-    # recession_UI_results = dict()
-    # for t_R in range(max_recession_duration):
-    #     for t_Policy in range(max_policy_duration):
-    #         recession_UI_dict['EconomyMrkv_init'] = np.array([0]*max(max_recession_duration,max_policy_duration))
-    #         recession_UI_dict['EconomyMrkv_init'][0:t_R+1] += 1
-    #         recession_UI_dict['EconomyMrkv_init'][0:t_Policy+1] +=2
-    #         this_recession_UI_results = AggDemandEconomy.runExperiment(**recession_UI_dict)
-    #         recession_UI_all_results += [this_recession_UI_results]
-    # for recession_UI_output in output_keys:
-    #     recession_UI_results[recession_UI_output] = np.zeros_like(recession_UI_all_results[0][recession_UI_output])
-    #     count = 0
-    #     for t_R in range(max_recession_duration):
-    #         for t_Policy in range(max_policy_duration):
-    #             recession_UI_results[recession_UI_output] += recession_UI_all_results[count][recession_UI_output]*recession_prob_array[t_R]*policy_prob_array[t_Policy]
-    #             count += 1
-    # t1 = time()
-    # print('Calculating recession and extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
-    
-    # # Run the recession and payroll tax cut consumption level
-    # t0 = time()
-    # recession_TaxCut_dict = base_dict_agg.copy()
-    # recession_TaxCut_dict.update(**recession_TaxCut_changes)
-    # recession_TaxCut_all_results = []
-    # recession_TaxCut_results = dict()
-    # for t in range(max_recession_duration):
-    #     recession_TaxCut_dict['EconomyMrkv_init'] = np.array([0]*max(max_recession_duration,8))
-    #     recession_TaxCut_dict['EconomyMrkv_init'][0:8] = np.array(range(8))*2 + 4
-    #     recession_TaxCut_dict['EconomyMrkv_init'][0:t+1] += 1
-    #     this_recession_TaxCut_results = AggDemandEconomy.runExperiment(**recession_TaxCut_dict)
-    #     recession_TaxCut_all_results += [this_recession_TaxCut_results]
-    # for recession_TaxCut_output in output_keys:
-    #     recession_TaxCut_results[recession_TaxCut_output] = np.sum(np.array([recession_TaxCut_all_results[t][recession_TaxCut_output]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
-    # t1 = time()
-    # print('Calculating recession and payroll tax cut consumption took ' + mystr(t1-t0) + ' seconds.')
-
-    
- 
 
 
 

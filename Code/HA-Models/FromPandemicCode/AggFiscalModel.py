@@ -468,7 +468,7 @@ class AggregateDemandEconomy(Market):
             agent.initializeSim()
         
     def runExperiment(self, RecessionShock = False,TaxCutShock = False, \
-                      ExtendedUIShock =False, UpdatePrb = 1.0, Splurge = 0.0, EconomyMrkv_init = [0]):
+                      ExtendedUIShock =False, UpdatePrb = 1.0, Splurge = 0.0, EconomyMrkv_init = [0], Full_Output = True):
         # Make the macro markov history
         self.EconomyMrkvNow_hist = [0] * self.act_T
         self.EconomyMrkvNow_hist[0:len(EconomyMrkv_init)] = EconomyMrkv_init
@@ -539,20 +539,28 @@ class AggregateDemandEconomy(Market):
                 
         # Get initial Markov states
         Mrkv_init = np.concatenate([ThisType.history['MrkvNow'][0,:] for ThisType in self.agents])
-        return_dict = {'cNrm_all' : cNrm_all,
-                       'TranShk_all' : TranShk_all,
-                       'cLvl_all' : cLvl_all,
-                       'pLvl_all' : pLvl_all,
-                       'Mrkv_hist' : Mrkv_hist,
-                       'Mrkv_init' : Mrkv_init,
-                       'mNrm_all' : mNrm_all,
-                       'aNrm_all' : aNrm_all,
-                       'cLvl_all_splurge' : cLvl_all_splurge,
-                       'NPV_AggIncome': NPV_AggIncome,
-                       'NPV_AggCons': NPV_AggCons,
-                       'AggIncome': AggIncome,
-                       'AggCons': AggCons,
-                       'Cratio_hist' : Cratio_hist}
+        
+        if Full_Output:
+            return_dict = {'cNrm_all' : cNrm_all,
+                           'TranShk_all' : TranShk_all,
+                           'cLvl_all' : cLvl_all,
+                           'pLvl_all' : pLvl_all,
+                           'Mrkv_hist' : Mrkv_hist,
+                           'Mrkv_init' : Mrkv_init,
+                           'mNrm_all' : mNrm_all,
+                           'aNrm_all' : aNrm_all,
+                           'cLvl_all_splurge' : cLvl_all_splurge,
+                           'NPV_AggIncome': NPV_AggIncome,
+                           'NPV_AggCons': NPV_AggCons,
+                           'AggIncome': AggIncome,
+                           'AggCons': AggCons,
+                           'Cratio_hist' : Cratio_hist}
+        else:
+            return_dict = {'NPV_AggIncome': NPV_AggIncome,
+                           'AggIncome': AggIncome,
+                           'AggCons': AggCons,
+                           'Cratio_hist' : Cratio_hist}    
+                
         return return_dict
 
     def calcCFunc(self):
