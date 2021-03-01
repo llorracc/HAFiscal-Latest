@@ -423,7 +423,7 @@ if __name__ == '__main__':
 
             # stimulus effects without AD, period income as base
             plt.figure(figsize=(15,10))
-            plt.title('Stimu. cons. per period relative to NPV of policy, no AD effects', size=30)
+            plt.title('Stimu. cons. per period relative to periods policy exp., no AD effects', size=30)
             plt.plot(x_axis,Stimulus_UI_perPeriod[0:max_T],           color='blue',linestyle='-')
             plt.plot(x_axis,Stimulus_UI_Rec_perPeriod[0:max_T],       color='blue',linestyle='--')
             plt.plot(x_axis,Stimulus_TaxCut_perPeriod[0:max_T],       color='red',linestyle='-')
