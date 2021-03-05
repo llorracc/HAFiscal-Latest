@@ -21,13 +21,14 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 
 ## Which experiments to run / plots to show
-Run_Baseline            = False
+Run_Baseline            = True
 Run_TaxCut              = True
 Run_Recession           = True
 Run_TaxCut_Recession    = True
 Run_UB_Ext              = True
 Make_Plots              = True
-Show_TestPlots          = False
+Plot_Stimulus           = True
+Show_TestPlots          = True
 
 
 
@@ -39,8 +40,6 @@ if __name__ == '__main__':
         # Setting up AggDemandEconmy
         from setupEconomy import AggDemandEconomy, base_dict_agg, max_recession_duration, output_keys, recession_prob_array, \
                                  max_policy_duration, policy_prob_array
-        
-        
         
         
         
@@ -59,6 +58,7 @@ if __name__ == '__main__':
         
         # Run the extended UI consumption level
         t0 = time()
+        AggDemandEconomy.restoreADsolution(name = 'baseline')
         UI_dict = base_dict_agg.copy()
         UI_dict.update(**UI_changes)
         UI_all_results = []
@@ -77,6 +77,7 @@ if __name__ == '__main__':
   
         # Run the recession and extended UI consumption level
         t0 = time()
+        AggDemandEconomy.restoreADsolution(name = 'baseline')
         recession_UI_dict = base_dict_agg.copy()
         recession_UI_dict.update(**recession_UI_changes)
         recession_UI_all_results = []
@@ -403,7 +404,7 @@ if __name__ == '__main__':
             plt.show()   
             
 
-        Plot_Stimulus = True
+        
         if Plot_Stimulus:
             
 
@@ -451,14 +452,47 @@ if __name__ == '__main__':
     #%% testing
     if Show_TestPlots:
         max_T = 20
+        
+        # Key = 'AggIncome'
+        # plt.figure(figsize=(15,10))
+        # plt.plot((recession_results_AD[Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        # plt.plot((recession_all_results_AD[0][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        # plt.plot((recession_all_results_AD[1][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        # plt.plot((recession_all_results_AD[8][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        # plt.plot((recession_all_results_AD[12][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        # plt.plot((recession_all_results_AD[16][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        # plt.legend(['Weighted','0','1','8','12','16'], fontsize=20)
+        # plt.show()
+        
+        Key = 'AggIncome'
         plt.figure(figsize=(15,10))
-        plt.plot(recession_TaxCut_results_AD['AggIncome'][0:max_T]-recession_results_AD['AggIncome'][0:max_T])
-        plt.plot(recession_TaxCut_all_results_AD[0]['AggIncome'][0:max_T]-recession_all_results_AD[0]['AggIncome'][0:max_T])
-        plt.plot(recession_TaxCut_all_results_AD[4]['AggIncome'][0:max_T]-recession_all_results_AD[4]['AggIncome'][0:max_T])
-        plt.plot(recession_TaxCut_all_results_AD[8]['AggIncome'][0:max_T]-recession_all_results_AD[8]['AggIncome'][0:max_T])
-        plt.plot(recession_TaxCut_all_results_AD[12]['AggIncome'][0:max_T]-recession_all_results_AD[12]['AggIncome'][0:max_T])
-        plt.plot(recession_TaxCut_all_results_AD[16]['AggIncome'][0:max_T]-recession_all_results_AD[16]['AggIncome'][0:max_T])
-        plt.legend(['Weighted','0','4','8','12','16'], fontsize=20)
+        plt.plot(x_axis,(recession_TaxCut_results_AD[Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        plt.plot(x_axis,(recession_TaxCut_all_results_AD[0][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        plt.plot(x_axis,(recession_TaxCut_all_results_AD[2][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        plt.plot(x_axis,(recession_TaxCut_all_results_AD[4][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        plt.plot(x_axis,(recession_TaxCut_all_results_AD[8][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        plt.plot(x_axis,(recession_TaxCut_all_results_AD[12][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        plt.plot(x_axis,(recession_TaxCut_all_results_AD[16][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        plt.plot(x_axis,(recession_all_results_AD[16][Key][0:max_T]-base_results[Key][0:max_T])/base_results[Key][0:max_T])
+        plt.legend(['Weighted','1q Rec','3q','6q','9q','13q','17q', 'No Tax Cut Recession'], fontsize=20)
+        plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+        plt.xlabel('quarter', fontsize=18)
+        plt.savefig(figs_dir +'Tax_Cut_Rec_Decomp_Rel_Baseline.pdf')
+        plt.show()
+        
+        Key = 'AggIncome'
+        plt.figure(figsize=(15,10))
+        plt.plot((recession_TaxCut_results_AD[Key][0:max_T]-recession_results_AD[Key][0:max_T])/recession_results_AD[Key][0:max_T])
+        plt.plot((recession_TaxCut_all_results_AD[0][Key][0:max_T]-recession_all_results_AD[0][Key][0:max_T])/recession_all_results_AD[0][Key][0:max_T])
+        plt.plot((recession_TaxCut_all_results_AD[2][Key][0:max_T]-recession_all_results_AD[2][Key][0:max_T])/recession_all_results_AD[2][Key][0:max_T])
+        plt.plot((recession_TaxCut_all_results_AD[4][Key][0:max_T]-recession_all_results_AD[4][Key][0:max_T])/recession_all_results_AD[4][Key][0:max_T])
+        plt.plot((recession_TaxCut_all_results_AD[8][Key][0:max_T]-recession_all_results_AD[8][Key][0:max_T])/recession_all_results_AD[8][Key][0:max_T])
+        plt.plot((recession_TaxCut_all_results_AD[12][Key][0:max_T]-recession_all_results_AD[12][Key][0:max_T])/recession_all_results_AD[12][Key][0:max_T])
+        plt.plot((recession_TaxCut_all_results_AD[16][Key][0:max_T]-recession_all_results_AD[16][Key][0:max_T])/recession_all_results_AD[16][Key][0:max_T])
+        plt.legend(['Weighted','1q Rec','3q','6q','9q','13q','17q'], fontsize=20)
+        plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+        plt.xlabel('quarter', fontsize=18)
+        plt.savefig(figs_dir +'Tax_Cut_Rec_Decomp_Rel_Recession.pdf')
         plt.show()
 
    

@@ -12,7 +12,42 @@
 
 
 \begin{document}
-	
+
+\section{Update - March 10th 2021}	
+
+\FloatBarrier
+\subsection{State-dependent AD elasticity}
+
+\begin{itemize}
+	\item Figure \ref{fig:recessiontaxcutrelrecession_statedep} shows additional income and consumption for tax cut during recession relative to recession with no tax cut, both when AD effects are present and when they are not
+	\item AD effects, however, are state-dependent. Only in a recession we have an AD elasticity of 0.5
+	\item Figure \ref{fig:taxcutrecdecomprelrecession} shows a decomposition. Full results are the weighted (by recession length probality) sum of different simulations with increasing length of recession. If recession stops after few quarters, then AD elasticity jumps back to zero, such that the tax cut becomes less effective. As we progress in time, the likelihood that recession has ended becomes larger, such that that gets a larger weight in the weighted sum. Over time the weighted average AD effect drops.
+	\item Problably some numerical issue with q1. Income drops more going from q1 to 2 in No Tax Cut recession.
+\end{itemize}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_Mar5/recession_taxcut_relrecession}
+	\caption{}
+	\label{fig:recessiontaxcutrelrecession_statedep}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_Mar5/Tax_Cut_Rec_Decomp_Rel_Recession}
+	\caption{}
+	\label{fig:taxcutrecdecomprelrecession}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_Mar5/Tax_Cut_Rec_Decomp_Rel_Baseline}
+	\caption{}
+	\label{fig:taxcutrecdecomprelbaseline}
+\end{figure}
+
+
+\FloatBarrier	
 \section{Update - February 24th 2021}	
 \FloatBarrier
 \subsection{Multipliers}

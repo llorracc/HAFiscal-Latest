@@ -262,7 +262,7 @@ def solveAggConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,Per
     aCount = aXtraGrid.size
     Ccount = Cgrid.size
     StateCount = MrkvArray.shape[0]
-
+    
     # Loop through next period's states, assuming we reach each one at a time.
     # Construct EndOfPrdvP_cond functions for each state.
     EndOfPrdvPfunc_cond = []
@@ -289,7 +289,9 @@ def solveAggConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,Per
         Cnext_array = np.tile(np.reshape(Cgrid, (Ccount, 1, 1)), (1, aCount, ShkCount)) 
 
         # Calculate AggDemandFac
-        AggDemandFacnext_array = ADFunc(Cnext_array)  
+        AggState = np.floor(j/3)
+        RecState = AggState % 2 == 1
+        AggDemandFacnext_array = ADFunc(Cnext_array,RecState)
         TranShkValsNext_tiled = AggDemandFacnext_array*TranShkValsNext_tiled_noAD
         
         # Find the natural borrowing constraint for each value of C in the Cgrid.
@@ -419,7 +421,7 @@ class AggregateDemandEconomy(Market):
         if self.Shk_idx==0:
             EconomyMrkvNow = 0
         else:
-            EconomyMrkvNow = self.EconomyMrkvNow_hist[self.Shk_idx-1]
+            EconomyMrkvNow = self.EconomyMrkvNow_hist[self.Shk_idx-1]   
         EconomyMrkvNext = self.EconomyMrkvNow_hist[self.Shk_idx]
         if hasattr(self,'base_AggCons'):
             cLvl_all_splurge = np.concatenate([this_cLvl for this_cLvl in cLvl_splurgeNow])      
@@ -431,7 +433,8 @@ class AggregateDemandEconomy(Market):
             CratioNext = 1.0
         self.AggDemandFacPrev = self.AggDemandFac
         self.CratioPrev = self.CratioNow
-        AggDemandFacNext = self.ADFunc(CratioNext)
+        RecState = EconomyMrkvNext % 2 == 1
+        AggDemandFacNext = self.ADFunc(CratioNext,RecState)
         mill_return = HARKobject()
         mill_return.CratioNow = CratioNext
         mill_return.AggDemandFac = AggDemandFacNext
@@ -449,7 +452,7 @@ class AggregateDemandEconomy(Market):
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        self.ADFunc = lambda C : C**self.ADelasticity
+        self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -475,7 +478,8 @@ class AggregateDemandEconomy(Market):
     
         
         self.CratioNow_init = self.CFunc[0][EconomyMrkv_init[0]*3].intercept
-        self.AggDemandFac_init = self.ADFunc(self.CratioNow_init)
+        RecState = EconomyMrkv_init[0] % 2 == 1
+        self.AggDemandFac_init = self.ADFunc(self.CratioNow_init,RecState)
         
         # Make dictionaries of parameters to give to the agents
         experiment_dict = {
@@ -557,9 +561,10 @@ class AggregateDemandEconomy(Market):
                            'Cratio_hist' : Cratio_hist}
         else:
             return_dict = {'NPV_AggIncome': NPV_AggIncome,
-                           'AggIncome': AggIncome,
-                           'AggCons': AggCons,
-                           'Cratio_hist' : Cratio_hist}    
+                           'NPV_AggCons':   NPV_AggCons,
+                           'AggIncome':     AggIncome,
+                           'AggCons':       AggCons,
+                           'Cratio_hist':   Cratio_hist}    
                 
         return return_dict
 

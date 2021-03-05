@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Full_Run_with_UI_Ext/'
+figs_dir = './Figures/Full_Run_Mar5/'
 
 try:
     os.mkdir(figs_dir)
@@ -323,7 +323,7 @@ frictionless_changes = {
 
 quick_test = True
 if quick_test:
-    AgentCountTotal = 200000
+    AgentCountTotal = int(20*1e4)
     DiscFacCount = 1
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
@@ -334,10 +334,10 @@ intercept_prev = np.ones((num_normal_MrkvStates,num_normal_MrkvStates ))        
 slope_prev = np.zeros((num_normal_MrkvStates,num_normal_MrkvStates ))              # Slope of aggregate savings function
 intercept_prev_big = np.ones((num_MrkvStates, num_MrkvStates))          # Intercept of aggregate savings function
 slope_prev_big = np.zeros((num_MrkvStates, num_MrkvStates))              # Slope of aggregate savings function
-ADelasticity = 0.4            # Elasticity of productivity to consumption
+ADelasticity = 0.5            # Elasticity of productivity to consumption
 
 num_max_iterations_solvingAD = 20
-convergence_tol_solvingAD = 1E-2
+convergence_tol_solvingAD = 1E-3
 
 # Make a dictionary to specify a Cobb-Douglas economy
 init_ADEconomy = {'intercept_prev': intercept_prev,
