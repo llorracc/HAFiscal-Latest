@@ -150,7 +150,7 @@ class AggFiscalType(FiscalType):
         self.track_vars += ['unemployment_draw']
         
     def getRfree(self):
-        RfreeNow = self.RfreeNow*np.ones(self.AgentCount)
+        RfreeNow = self.Rfree[self.MrkvNow]*np.ones(self.AgentCount)
         return RfreeNow
     
     def marketAction(self):
@@ -506,13 +506,13 @@ class AggregateDemandEconomy(Market):
         
            
         # Extract simulated consumption, labor income, and weight data
-        cNrm_all = np.concatenate([ThisType.history['cNrmNow'] for ThisType in self.agents], axis=1)
-        Mrkv_hist = np.concatenate([ThisType.history['MrkvNow'] for ThisType in self.agents], axis=1)
-        pLvl_all = np.concatenate([ThisType.history['pLvlNow'] for ThisType in self.agents], axis=1)
+        cNrm_all    = np.concatenate([ThisType.history['cNrmNow'] for ThisType in self.agents], axis=1)
+        Mrkv_hist   = np.concatenate([ThisType.history['MrkvNow'] for ThisType in self.agents], axis=1)
+        pLvl_all    = np.concatenate([ThisType.history['pLvlNow'] for ThisType in self.agents], axis=1)
         TranShk_all = np.concatenate([ThisType.history['TranShkNow'] for ThisType in self.agents], axis=1)
-        mNrm_all = np.concatenate([ThisType.history['mNrmNow'] for ThisType in self.agents], axis=1)
-        aNrm_all = np.concatenate([ThisType.history['aNrmNow'] for ThisType in self.agents], axis=1)
-        cLvl_all = np.concatenate([ThisType.history['cLvlNow'] for ThisType in self.agents], axis=1)
+        mNrm_all    = np.concatenate([ThisType.history['mNrmNow'] for ThisType in self.agents], axis=1)
+        aNrm_all    = np.concatenate([ThisType.history['aNrmNow'] for ThisType in self.agents], axis=1)
+        cLvl_all    = np.concatenate([ThisType.history['cLvlNow'] for ThisType in self.agents], axis=1)
         cLvl_all_splurge = np.concatenate([ThisType.history['cLvl_splurgeNow'] for ThisType in self.agents], axis=1)
         
         IndIncome = pLvl_all*TranShk_all*np.array(self.history['AggDemandFac'])[:,None] #changed this to AggDemandFac
@@ -529,6 +529,8 @@ class AggregateDemandEconomy(Market):
             for t in range(Periods):
                 NPV[t] = np.sum(X[0:t+1]*NPV_discount[0:t+1])    
             return NPV
+        
+    
         
         # calculate NPV
         NPV_AggIncome = calculate_NPV(AggIncome,self.act_T,ThisType.Rfree[0])
@@ -784,13 +786,26 @@ class AggregateDemandEconomy(Market):
             # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope
             slope_normal           = (recession_all_results[0]['Cratio_hist'][2]-1)/(recession_all_results[0]['Cratio_hist'][1]-1)
             MacroCFunc[0][0]       = CRule(1.0,slope_normal) 
+            
+            
             self.MacroCFunc = MacroCFunc
             Old_Cfunc  = self.CFunc
-            self.CFunc = self.Macro2MicroCFunc(MacroCFunc)
+            New_Cfunc  = self.Macro2MicroCFunc(MacroCFunc)
+            
+            step = self.Cfunc_iter_stepsize 
+            dim = int(len(self.CFunc))
+            Step_Cfunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+            for ii in range(dim):
+                for jj in range(dim):
+                    Step_Cfunc[ii][jj].slope      = Old_Cfunc[ii][jj].slope     + step*(New_Cfunc[ii][jj].slope-Old_Cfunc[ii][jj].slope)
+                    Step_Cfunc[ii][jj].intercept  = Old_Cfunc[ii][jj].intercept + step*(New_Cfunc[ii][jj].intercept-Old_Cfunc[ii][jj].intercept)
+                    
+            self.CFunc = Step_Cfunc
             for agent in self.agents:
                 agent.CFunc = self.CFunc
             print("solving again...")
             self.solve()
+            
             
             Total_Diff = self.CompareCFuncConvergence(Old_Cfunc,self.CFunc)
 
@@ -902,18 +917,14 @@ class AggregateDemandEconomy(Market):
             startt = 8
             slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
             intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
-            
-            # print('slope_if_recession',slope_if_recession)
-            # print('intercept_if_recession',intercept_if_recession)
-            
-            # Old CFunc
-            old_i = self.CFunc[3*1][3*1].intercept
-            old_s = self.CFunc[3*1][3*1].slope
-            step = 0.75
-            
-            new_i = old_i + step * (intercept_if_recession-old_i)
-            new_s = old_s + step * (slope_if_recession-old_s)
-            MacroCFunc[1][1]       = CRule(new_i,new_s)          
+
+            # # Slow move to new expectations
+            # old_i = self.CFunc[3*1][3*1].intercept
+            # old_s = self.CFunc[3*1][3*1].slope
+            # step = self.Cfunc_iter_stepsize   
+            # new_i = old_i + step * (intercept_if_recession-old_i)
+            # new_s = old_s + step * (slope_if_recession-old_s)
+            MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession)           
             
             # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope
             slope_normal           = np.mean((np.array(recession_all_results[0]['Cratio_hist'][9:19])-1)/(np.array(recession_all_results[0]['Cratio_hist'][8:18])-1))
@@ -922,7 +933,17 @@ class AggregateDemandEconomy(Market):
             
             self.MacroCFunc = MacroCFunc
             Old_Cfunc  = self.CFunc
-            self.CFunc = self.Macro2MicroCFunc(MacroCFunc)
+            New_Cfunc  = self.Macro2MicroCFunc(MacroCFunc)
+            
+            step = self.Cfunc_iter_stepsize 
+            dim = int(len(self.CFunc))
+            Step_Cfunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+            for ii in range(dim):
+                for jj in range(dim):
+                    Step_Cfunc[ii][jj].slope      = Old_Cfunc[ii][jj].slope     + step*(New_Cfunc[ii][jj].slope-Old_Cfunc[ii][jj].slope)
+                    Step_Cfunc[ii][jj].intercept  = Old_Cfunc[ii][jj].intercept + step*(New_Cfunc[ii][jj].intercept-Old_Cfunc[ii][jj].intercept)
+                    
+            self.CFunc = Step_Cfunc
             for agent in self.agents:
                 agent.CFunc = self.CFunc
             print("solving again...")

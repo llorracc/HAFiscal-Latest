@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Full_Run_Mar5/'
+figs_dir = './Figures/Full_Run_Mar9_AD_Elas1/'
 
 try:
     os.mkdir(figs_dir)
@@ -70,7 +70,7 @@ TranShkCount = 7        # Number of points in equiprobable discrete approximatio
 
 # Size of simulations
 AgentCountTotal = 50000 # Total simulated population
-T_sim = 40              # Number of quarters to simulate in counterfactuals
+T_sim = 100              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
 T_cycle = 1
@@ -204,8 +204,8 @@ PermGroFac_small = [np.array([1.0]*num_normal_MrkvStates)]
 TranShkStd = [0.1]
 PermShkStd = [0.05]
 
-LivPrb       = [1.0-np.array([1.0/240.0]*num_MrkvStates)]
-LivPrb_small = [1.0-np.array([1.0/240.0]*num_normal_MrkvStates)]
+LivPrb       = [1.0-np.array([1/240.0]*num_MrkvStates)]
+LivPrb_small = [1.0-np.array([1/240.0]*num_normal_MrkvStates)]
 # Make a small state Markov array that is only used when generating the initial distribution of states
 MrkvArray_small = list(MrkvArray_i[0:num_normal_MrkvStates,0:num_normal_MrkvStates] for MrkvArray_i in MrkvArray)
 # find intial distribution of states
@@ -323,11 +323,11 @@ frictionless_changes = {
 
 quick_test = True
 if quick_test:
-    AgentCountTotal = int(20*1e4)
+    AgentCountTotal = int(2*1e4)
     DiscFacCount = 1
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
-    init_infhorizon['T_sim'] = 40
+    init_infhorizon['T_sim'] = 100
     
 # Parameters for AggregateDemandEconomy economy
 intercept_prev = np.ones((num_normal_MrkvStates,num_normal_MrkvStates ))         # Intercept of aggregate savings function
@@ -336,14 +336,16 @@ intercept_prev_big = np.ones((num_MrkvStates, num_MrkvStates))          # Interc
 slope_prev_big = np.zeros((num_MrkvStates, num_MrkvStates))              # Slope of aggregate savings function
 ADelasticity = 0.5            # Elasticity of productivity to consumption
 
-num_max_iterations_solvingAD = 20
-convergence_tol_solvingAD = 1E-3
+num_max_iterations_solvingAD = 10
+convergence_tol_solvingAD = 1E-1
+Cfunc_iter_stepsize       = 0.50
 
 # Make a dictionary to specify a Cobb-Douglas economy
 init_ADEconomy = {'intercept_prev': intercept_prev,
                      'slope_prev': slope_prev,
                      'ADelasticity' : 0.0,
                      'demand_ADelasticity' : ADelasticity,
+                     'Cfunc_iter_stepsize' : Cfunc_iter_stepsize,
                      'MrkvArray' : MrkvArray_small,
                      'MrkvArray_big' : MrkvArray,
                      'intercept_prev_big' : intercept_prev_big,

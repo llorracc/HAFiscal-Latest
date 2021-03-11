@@ -103,7 +103,7 @@ AggDemandEconomy.saveState()
 AggDemandEconomy.switchToCounterfactualMode()
 AggDemandEconomy.makeIdiosyncraticShockHistories()
 
-output_keys = ['NPV_AggIncome', 'AggIncome', 'AggCons']
+output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
 
 max_policy_duration = 6
 PolicyUBspell = AggDemandEconomy.agents[0].PolicyUBspell #NOTE - this should come from the market, not the agent

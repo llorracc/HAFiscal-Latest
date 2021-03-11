@@ -23,3 +23,6 @@ def getStimulus(simulation_base,simulation_alternative,Gov_Spending):
     AddCons = getSimulationDiff(simulation_base,simulation_alternative,'AggCons')
     return  100*AddCons/Gov_Spending
 
+def getNPVMultiplier(simulation_base,simulation_alternative,Gov_Spending):
+    AddCons = getSimulationDiff(simulation_base,simulation_alternative,'NPV_AggCons')
+    return  AddCons/Gov_Spending
