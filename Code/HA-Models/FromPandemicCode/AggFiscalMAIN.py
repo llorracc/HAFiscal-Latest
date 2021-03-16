@@ -23,13 +23,21 @@ mystr = lambda x : '{:.2f}'.format(x)
 ## Which experiments to run / plots to show
 Run_Baseline            = True
 Run_TaxCut              = False
-Run_Recession           = False
+Run_Recession           = True
 Run_TaxCut_Recession    = True
 Run_UB_Ext              = False
 Make_Plots              = False
 Plot_Stimulus           = False
 Show_TestPlots          = False
 
+# Run_Baseline            = True
+# Run_TaxCut              = True
+# Run_Recession           = True
+# Run_TaxCut_Recession    = True
+# Run_UB_Ext              = True
+# Make_Plots              = True
+# Plot_Stimulus           = True
+# Show_TestPlots          = True
 
 
 if __name__ == '__main__':
@@ -55,6 +63,12 @@ if __name__ == '__main__':
     if Run_UB_Ext:
         
         print('Solving and simulating unemployment extension experiment')
+        
+        # Solving tax cut under Agg Multiplier  
+        t0 = time()
+        AggDemandEconomy.solveAD_UIExtension_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'UI_Rec')
+        t1 = time()
+        print('Solving UI during recession took ' + mystr(t1-t0) + ' seconds.')
         
         # Run the extended UI consumption level
         t0 = time()
@@ -246,15 +260,18 @@ if __name__ == '__main__':
         max_T = 20
         x_axis = np.arange(1,21)
         
-        base_results                = loadPickle('base_results',figs_dir,locals())
-        UI_results                  = loadPickle('UI_results',figs_dir,locals())
-        recession_UI_results        = loadPickle('recession_UI_results',figs_dir,locals())
-        recession_results           = loadPickle('recession_results',figs_dir,locals())
-        TaxCut_results              = loadPickle('TaxCut_results',figs_dir,locals())
-        TaxCut_results_AD           = loadPickle('TaxCut_results_AD',figs_dir,locals())
-        recession_results_AD        = loadPickle('recession_results_AD',figs_dir,locals())
-        recession_TaxCut_results    = loadPickle('recession_TaxCut_results',figs_dir,locals())
-        recession_TaxCut_results_AD = loadPickle('recession_TaxCut_results_AD',figs_dir,locals())
+        dir_baserun = './Figures/Full_Run_Mar11_AD_Elas05/'
+        dir_AD      = figs_dir
+        
+        base_results                = loadPickle('base_results',dir_AD,locals())
+        UI_results                  = loadPickle('UI_results',dir_baserun,locals())
+        recession_UI_results        = loadPickle('recession_UI_results',dir_baserun,locals())
+        recession_results           = loadPickle('recession_results',dir_AD,locals())
+        TaxCut_results              = loadPickle('TaxCut_results',dir_baserun,locals())
+        TaxCut_results_AD           = loadPickle('TaxCut_results_AD',dir_baserun,locals())
+        recession_results_AD        = loadPickle('recession_results_AD',dir_AD,locals())
+        recession_TaxCut_results    = loadPickle('recession_TaxCut_results',dir_AD,locals())
+        recession_TaxCut_results_AD = loadPickle('recession_TaxCut_results_AD',dir_AD,locals())
      
         
         if Run_UB_Ext:
@@ -400,7 +417,7 @@ if __name__ == '__main__':
 
         
         if Plot_Stimulus:
-            
+
 
             # stimulus effects without AD, NPV as base
             plt.figure(figsize=(15,10))
@@ -427,6 +444,12 @@ if __name__ == '__main__':
             plt.ylabel('% of policy NPV expended', fontsize=16)
             plt.savefig(figs_dir +'Stimulus_TaxCut_AD.pdf')
             plt.show()
+            
+            
+            
+            # for NPV multipliers show full 80 periods
+            max_T = 80
+            x_axis = np.arange(1,81)
 
 
             # stimulus effects without AD, NPV as base
@@ -467,7 +490,15 @@ if __name__ == '__main__':
             print('Long-run NPV multipliers, AD effects')
             print('Tax Cut: ',NPV_Multiplier_TaxCut_AD[-1])
             print('Tax Cut in recession: ',NPV_Multiplier_Rec_TaxCut_AD[-1])
-   
+            
+            
+            plt.figure(figsize=(15,10))
+            plt.title('NPV multiplier of tax cut during recession with different AD elas', size=30)
+            plt.plot([0.5, 0.6, 0.7, 0.75],[1.35, 1.46, 1.65, 1.78])
+            plt.xlabel('AD elasticity', fontsize=18)
+            plt.ylabel('Multiplier', fontsize=16)
+            plt.savefig(figs_dir +'Longrun_Multiplier_TaxCut_SensElas.pdf')
+            plt.show()
     #%% testing
     if Show_TestPlots:
         max_T = 20

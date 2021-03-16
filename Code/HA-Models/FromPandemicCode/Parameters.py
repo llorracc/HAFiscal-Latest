@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Full_Run_Mar9_AD_Elas1/'
+figs_dir = './Figures/UI_AD075/'
 
 try:
     os.mkdir(figs_dir)
@@ -70,7 +70,7 @@ TranShkCount = 7        # Number of points in equiprobable discrete approximatio
 
 # Size of simulations
 AgentCountTotal = 50000 # Total simulated population
-T_sim = 100              # Number of quarters to simulate in counterfactuals
+T_sim = 80              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
 T_cycle = 1
@@ -323,21 +323,20 @@ frictionless_changes = {
 
 quick_test = True
 if quick_test:
-    AgentCountTotal = int(2*1e4)
+    AgentCountTotal = int(20*1e4)
     DiscFacCount = 1
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
-    init_infhorizon['T_sim'] = 100
     
 # Parameters for AggregateDemandEconomy economy
 intercept_prev = np.ones((num_normal_MrkvStates,num_normal_MrkvStates ))         # Intercept of aggregate savings function
 slope_prev = np.zeros((num_normal_MrkvStates,num_normal_MrkvStates ))              # Slope of aggregate savings function
 intercept_prev_big = np.ones((num_MrkvStates, num_MrkvStates))          # Intercept of aggregate savings function
 slope_prev_big = np.zeros((num_MrkvStates, num_MrkvStates))              # Slope of aggregate savings function
-ADelasticity = 0.5            # Elasticity of productivity to consumption
+ADelasticity = 0.75            # Elasticity of productivity to consumption
 
-num_max_iterations_solvingAD = 10
-convergence_tol_solvingAD = 1E-1
+num_max_iterations_solvingAD = 20
+convergence_tol_solvingAD = 1E-2
 Cfunc_iter_stepsize       = 0.50
 
 # Make a dictionary to specify a Cobb-Douglas economy
