@@ -23,7 +23,7 @@ mystr = lambda x : '{:.2f}'.format(x)
 ## Which experiments to run / plots to show
 Run_Baseline            = True
 Run_UB_Ext              = True
-Run_Recession           = False
+Run_Recession           = True
 
 
 if __name__ == '__main__':
@@ -111,34 +111,33 @@ if __name__ == '__main__':
     max_T = 20
     x_axis = np.arange(1,21)
     
-    dir_baserun = './Figures/Full_Run_Mar11_AD_Elas075/'
-    dir_AD      = figs_dir
+    dir_baserun   = './Figures/Full_Run_Mar11_AD_Elas05/'
+    dir_recession = figs_dir
+    dir_AD        = figs_dir
     
     base_results                = loadPickle('base_results',            dir_baserun,locals())
     recession_results           = loadPickle('recession_results',       dir_baserun,locals())
-    recession_results_AD        = loadPickle('recession_results_AD',    dir_baserun,locals())
+    recession_results_AD        = loadPickle('recession_results_AD',    dir_recession,locals())
     recession_UI_results        = loadPickle('recession_UI_results',    dir_baserun,locals())
     recession_UI_results_AD     = loadPickle('recession_UI_results_AD', dir_AD,locals())
-
-
-
+    
     
     
     AddCons_UI_Ext_Rec_RelRec       = getSimulationPercentDiff(recession_results,    recession_UI_results,'AggCons')
-    AddInc_UI_Ext_Rec_RelRec        = getSimulationPercentDiff(recession_results,    recession_UI_results,'AggIncome')      
+    AddInc_UI_Ext_Rec_RelRec        = getSimulationPercentDiff(recession_results,    recession_UI_results,'AggIncome') 
+     
     NPV_AddInc_UI_Rec               = getSimulationDiff(recession_results,           recession_UI_results,'NPV_AggIncome')
-    AddInc_UI_Rec_Abs               = getSimulationDiff(recession_results,           recession_UI_results,'AggIncome')
     Stimulus_UI_Rec                 = getStimulus(recession_results,                 recession_UI_results,NPV_AddInc_UI_Rec[-1]) 
     NPV_Multiplier_UI_Rec           = getNPVMultiplier(recession_results,recession_UI_results,NPV_AddInc_UI_Rec)
 
+
     AddCons_UI_Ext_Rec_RelRec_AD    = getSimulationPercentDiff(recession_results_AD,    recession_UI_results_AD,'AggCons')
-    AddInc_UI_Ext_Rec_RelRec_AD     = getSimulationPercentDiff(recession_results_AD,    recession_UI_results_AD,'AggIncome')      
-    NPV_AddInc_UI_Rec_AD            = getSimulationDiff(recession_results_AD,           recession_UI_results_AD,'NPV_AggIncome')
-    AddInc_UI_Rec_Abs_AD            = getSimulationDiff(recession_results_AD,           recession_UI_results_AD,'AggIncome')
-    Stimulus_UI_Rec_AD              = getStimulus(recession_results_AD,                 recession_UI_results_AD,NPV_AddInc_UI_Rec_AD[-1]) 
-    NPV_Multiplier_UI_Rec_AD        = getNPVMultiplier(recession_results_AD,            recession_UI_results_AD,NPV_AddInc_UI_Rec_AD)        
+    AddInc_UI_Ext_Rec_RelRec_AD     = getSimulationPercentDiff(recession_results_AD,    recession_UI_results_AD,'AggIncome')  
+
+    Stimulus_UI_Rec_AD              = getStimulus(recession_results_AD,                 recession_UI_results_AD,NPV_AddInc_UI_Rec[-1]) 
+    NPV_Multiplier_UI_Rec_AD        = getNPVMultiplier(recession_results_AD,            recession_UI_results_AD,NPV_AddInc_UI_Rec)        
     
-    
+   
     
     plt.figure(figsize=(15,10))
     plt.title('Recession + UI extension', size=30)

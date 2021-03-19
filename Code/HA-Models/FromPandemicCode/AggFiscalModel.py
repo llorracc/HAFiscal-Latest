@@ -694,21 +694,18 @@ class AggregateDemandEconomy(Market):
         for i in range(num_max_iterations):
             print("Iteration ", i+1,":")
             UI_all_results = []
-            for j in [0,1,2]:
+            for j in [0,1]:
                 if j == 0:
-                    UI_dict['EconomyMrkv_init'] = np.array([3, 0]) 
+                    UI_dict['EconomyMrkv_init'] = np.array([3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) 
                 elif j == 1:
-                    UI_dict['EconomyMrkv_init'] = np.array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) 
-                elif j==2:
-                    UI_dict['EconomyMrkv_init'] = np.array([3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0]) 
+                    UI_dict['EconomyMrkv_init'] = np.array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1]) 
                 this_UI_results = self.runExperiment(**UI_dict)
                 UI_all_results += [this_UI_results]
                 
                 
             plt.plot(UI_all_results[0]['Cratio_hist'][0:20])
             plt.plot(UI_all_results[1]['Cratio_hist'][0:20])
-            plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
-            plt.legend(['0','1','2'], fontsize=14)
+            plt.legend(['0','1'], fontsize=14)
             plt.pause(1)
             plt.show()
             
@@ -718,27 +715,15 @@ class AggregateDemandEconomy(Market):
             intercept           =  UI_all_results[1]['Cratio_hist'][startt+1] - slope*(UI_all_results[1]['Cratio_hist'][startt]-1)
             MacroCFunc[3][3]    = CRule(intercept,slope)
             
-            MacroCFunc[3][2] = CRule(UI_all_results[2]['Cratio_hist'][1],0.0)
-            MacroCFunc[2][0] = CRule(UI_all_results[2]['Cratio_hist'][3],0.0)
+            MacroCFunc[3][1] = CRule(UI_all_results[0]['Cratio_hist'][1],0.0)
+            #MacroCFunc[3][1] = CRule(1,(UI_all_results[0]['Cratio_hist'][1]-1)/(UI_all_results[0]['Cratio_hist'][0]-1))
             
-            
-            MacroCFunc[3][1] = CRule(UI_all_results[1]['Cratio_hist'][10],0.0)
-            
-
             MacroCFunc[0][3] = CRule(UI_all_results[0]['Cratio_hist'][0],0.0)
-            MacroCFunc[3][0] = CRule(UI_all_results[0]['Cratio_hist'][1],0.0)
             
-
-            startt = 1
-            endd = 9
-            slope               = (UI_all_results[2]['Cratio_hist'][startt+1] - UI_all_results[2]['Cratio_hist'][endd-1])/(UI_all_results[2]['Cratio_hist'][startt] - UI_all_results[2]['Cratio_hist'][endd-2])
-            intercept           =  UI_all_results[2]['Cratio_hist'][startt+1] - slope*(UI_all_results[2]['Cratio_hist'][startt]-1)
-            MacroCFunc[2][2]    = CRule(intercept,slope) 
-            
-            startt = 11 #was 10, changed for test
+            startt = 2
             endd = 19
-            slope_if_recession     = (UI_all_results[1]['Cratio_hist'][startt+1] - UI_all_results[1]['Cratio_hist'][endd-1])/(UI_all_results[1]['Cratio_hist'][startt] - UI_all_results[1]['Cratio_hist'][endd-2])
-            intercept_if_recession =  UI_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(UI_all_results[1]['Cratio_hist'][startt]-1)
+            slope_if_recession     = (UI_all_results[0]['Cratio_hist'][startt+1] - UI_all_results[0]['Cratio_hist'][endd-1])/(UI_all_results[0]['Cratio_hist'][startt] - UI_all_results[0]['Cratio_hist'][endd-2])
+            intercept_if_recession =  UI_all_results[0]['Cratio_hist'][startt+1] - slope_if_recession*(UI_all_results[0]['Cratio_hist'][startt]-1)
             MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
 
                      

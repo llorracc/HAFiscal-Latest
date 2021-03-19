@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/UI_AD075/'
+figs_dir = './Figures/UI_AD02/'
 
 try:
     os.mkdir(figs_dir)
@@ -333,11 +333,11 @@ intercept_prev = np.ones((num_normal_MrkvStates,num_normal_MrkvStates ))        
 slope_prev = np.zeros((num_normal_MrkvStates,num_normal_MrkvStates ))              # Slope of aggregate savings function
 intercept_prev_big = np.ones((num_MrkvStates, num_MrkvStates))          # Intercept of aggregate savings function
 slope_prev_big = np.zeros((num_MrkvStates, num_MrkvStates))              # Slope of aggregate savings function
-ADelasticity = 0.75            # Elasticity of productivity to consumption
+ADelasticity = 0.20            # Elasticity of productivity to consumption
 
 num_max_iterations_solvingAD = 20
-convergence_tol_solvingAD = 1E-2
-Cfunc_iter_stepsize       = 0.50
+convergence_tol_solvingAD = 1E-3
+Cfunc_iter_stepsize       = 0.75
 
 # Make a dictionary to specify a Cobb-Douglas economy
 init_ADEconomy = {'intercept_prev': intercept_prev,
