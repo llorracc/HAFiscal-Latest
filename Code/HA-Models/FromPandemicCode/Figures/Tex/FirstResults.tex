@@ -8,6 +8,7 @@
 \usepackage{placeins}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{booktabs}
 \bibliographystyle{unsrtnat}
 
 
@@ -16,16 +17,86 @@
 \section{Update - March 24th 2021}
 
 \FloatBarrier
-\subsection{Long-run (NPV) multipliers for payroll tax cut}
+\subsection{UI extension - AD effects}
 
-Figure \ref{fig:longrunmultipliertaxcutsenselas} shows the long-run multiplier for the payroll tax cut depending on the assumed elasticity of aggregate producitvity to demand (holding only in recession state). The relationship is non-linear.
+
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{../Full_Run_Mar11_AD_Elas08/Longrun_Multiplier_TaxCut_SensElas}
+	\includegraphics[width=0.7\linewidth]{../UI_AD05_new/recession_UI_relrecession}
+	\caption{UI extension during recession, AD elasticity set to 0 (solid) or 0.5 (dashed)}
+	\label{fig:recessionuirelrecession}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../Full_Run_Mar5/recession_taxcut_relrecession}
+	\caption{Payroll tax cut during recession, AD elasticity set to 0 (solid) or 0.5 (dashed)}
+	\label{fig:recessiontaxcutrelrecession_statedep}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{../UI_AD02/Stimulus_TaxCut_AD}
+	\caption{Policy experiments during recession; AD elasticity set to 0 (solid) or 0.5 (dashed)}
+	\label{fig:npvmultipliernoad}
+\end{figure}
+
+
+\FloatBarrier
+\subsection{Long-run (NPV) multipliers}
+
+Figure \ref{fig:longrunmultipliertaxcutsenselas} shows the long-run multiplier for the payroll tax cut during a recession depending on the assumed elasticity of aggregate producitvity to demand (holding only in recession state). The multiplier for the payroll tax cut during a baseline is per construction 1 as the AD elasticity is zero in that case.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_Mar11_AD_Elas075/Longrun_Multiplier_TaxCut_SensElas}
 	\caption{}
 	\label{fig:longrunmultipliertaxcutsenselas}
 \end{figure}
+
+\begin{enumerate}
+	\item Payroll tax cut gives 2 \% more income, leading to 1.3 \% more consumption (for MPC of 0.65)
+	\item This leads to $(1.013)^{0.5}$ more income, hence a total increase in income by 2.65 \%, implying a 1.7 \% increase in consumption
+	\item This leads to$(1.017)^{0.5}$ more income, hence a total increase in income by 2.9 \%, implying a .... \% increase in consumption
+	\item and so on...
+\end{enumerate}
+
+Alternative
+
+\begin{enumerate}
+	\item Let us for arguments sake consider a 1q payroll tax cut increasing income by 1 \% and the MPC is 1
+	\item Then for an AD elasticity of 1, the 1 \% higher income leads to 1 \% more consumption which leads to 1 more \% income and again 1 \% more consumption and so on forever
+	\item Let now assume the MPC is only 50 \%, and the remaining 50 \% are expended in q2
+	\item The likelihood that the recession is still there in q2 is 100 \%
+	\item In q1: 1 \% more income -> 0.5 \% more consumption -> additional 0.5 \% income -> 0.25 \% more consumption ->
+	\item In q2: 0.5 \% more consumption -> 0.5\% more income -> additional 0.25\% consumption and so on...
+	\item Going through all qs gives high sum (not infinity though)
+	\item However, if recession ends, sum is reduced!
+	\item Also, the higher the initial MPC is the stronger will this cascade be and less important the length of recession
+\end{enumerate}
+
+
+Table \ref{tab:NPVADelas} shows the same information in form of a table including also the results for the Unemployment insurance extension.
+
+\begin{table}[htb]
+	\centering
+	\begin{tabular}{@{}lllll@{}}
+		\toprule
+		Experiment \textbackslash AD-Elas & 0 & 0.2 & 0.5  & 0.75 \\ \midrule
+		Payroll tax cut                   & 1 & -   & 1.35 & 1.8  \\
+		UI extension                      & 1 & 2.4 & 5.6  & -    \\ \bottomrule
+	\end{tabular}	
+	\caption{Long-run multipliers for each policy intervention for different AD elasticities}
+	\label{tab:NPVADelas}
+\end{table}
+
+\begin{enumerate}
+	\item UI extension gives 0.5 \% more income (10 \% unepmloyed x 0.25 (additional replacement rate) x 20 \% in need of extension), leading to 0.5 \% more consumption (for MPC of 1 by unemployed)
+	\item This leads to $(1.005)^{0.5}$ more income, i.e. 0.25 \% more income in the aggregate and continuing cascade
+	\item However larger share of spending expended during recession!
+\end{enumerate}
+
 
 \FloatBarrier
 \section{Update - March 10th 2021}	

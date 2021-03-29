@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/UI_AD02/'
+figs_dir = './Figures/FullRun_Mar27_AD05_AllStates/'
 
 try:
     os.mkdir(figs_dir)
@@ -329,14 +329,14 @@ if quick_test:
     DiscFacDstns = [DiscFacDstn]
     
 # Parameters for AggregateDemandEconomy economy
-intercept_prev = np.ones((num_normal_MrkvStates,num_normal_MrkvStates ))         # Intercept of aggregate savings function
-slope_prev = np.zeros((num_normal_MrkvStates,num_normal_MrkvStates ))              # Slope of aggregate savings function
-intercept_prev_big = np.ones((num_MrkvStates, num_MrkvStates))          # Intercept of aggregate savings function
-slope_prev_big = np.zeros((num_MrkvStates, num_MrkvStates))              # Slope of aggregate savings function
-ADelasticity = 0.20            # Elasticity of productivity to consumption
+intercept_prev = np.ones((num_normal_MrkvStates,num_normal_MrkvStates ))    # Intercept of aggregate savings function
+slope_prev = np.zeros((num_normal_MrkvStates,num_normal_MrkvStates ))       # Slope of aggregate savings function
+intercept_prev_big = np.ones((num_MrkvStates, num_MrkvStates))              # Intercept of aggregate savings function
+slope_prev_big = np.zeros((num_MrkvStates, num_MrkvStates))                 # Slope of aggregate savings function
+ADelasticity = 0.50                                                         # Elasticity of productivity to consumption
 
-num_max_iterations_solvingAD = 20
-convergence_tol_solvingAD = 1E-3
+num_max_iterations_solvingAD = 25
+convergence_tol_solvingAD = 1E-4
 Cfunc_iter_stepsize       = 0.75
 
 # Make a dictionary to specify a Cobb-Douglas economy

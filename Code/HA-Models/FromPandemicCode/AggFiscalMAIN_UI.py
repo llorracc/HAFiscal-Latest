@@ -106,14 +106,14 @@ if __name__ == '__main__':
         t1 = time()
         print('Calculating recession and extended UI consumption took ' + mystr(t1-t0) + ' seconds.')
     
-
+#%%
     
     max_T = 20
     x_axis = np.arange(1,21)
     
     dir_baserun   = './Figures/Full_Run_Mar11_AD_Elas05/'
-    dir_recession = figs_dir
-    dir_AD        = figs_dir
+    dir_recession = './Figures/Full_Run_Mar11_AD_Elas05/'
+    dir_AD        = './Figures/UI_AD05_new/'
     
     base_results                = loadPickle('base_results',            dir_baserun,locals())
     recession_results           = loadPickle('recession_results',       dir_baserun,locals())
