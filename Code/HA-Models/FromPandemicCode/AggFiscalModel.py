@@ -110,6 +110,8 @@ class AggFiscalType(FiscalType):
         if (self.ExtendedUIShock and self.TaxCutShock):
             print("Cannot handle UI and TaxCut experiments at the same time (yet)")
             return
+        # if self.CheckShock:
+        #     MrkvNew += 36*3
         # Move agents to those Markov states 
         self.MrkvNow = MrkvNew
        
@@ -132,7 +134,7 @@ class AggFiscalType(FiscalType):
         self.MrkvNow = 3*self.MacroMrkvNow + self.MicroMrkvNow
             
         tax_cut_multiplier = np.ones_like(self.history['MrkvNow'])
-        tax_cut_multiplier[np.greater(self.history['MrkvNow'], 11)] *= self.TaxCutIncFactor #$$$$$$$$$$ assumes all markov states above 11 are tax cut states
+        tax_cut_multiplier[np.less(np.greater(self.history['MrkvNow'], 11),3*36)] *= self.TaxCutIncFactor 
         employed = np.equal(self.history['MrkvNow']%3, 0)
         self.history['PermShkNow'][employed] = self.perm_shock_fixed_hist[employed]
         self.history['TranShkNow'][employed] = self.tran_shock_fixed_hist[employed]*tax_cut_multiplier[employed]
@@ -145,6 +147,8 @@ class AggFiscalType(FiscalType):
         self.history['who_dies'] = self.who_dies_fixed_hist
         self.history['update_draw'] = self.update_draw_fixed_hist
         self.history['unemployment_draw'] = self.unemployment_draw_fixed_hist
+        
+        ## ADD HERE STUFF fOR check experiment
         
     def switchToCounterfactualMode(self):
         FiscalType.switchToCounterfactualMode(self)
@@ -447,14 +451,20 @@ class AggregateDemandEconomy(Market):
     def calcDynamics(self):
         return self.calcCFunc()
 
+
+    def ADFunction(self,C,RecState):
+        return C**(self.ADelasticity)
+        #return C**(RecState*self.ADelasticity)
+
     def update(self):
         '''
         '''
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        #self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
-        self.ADFunc = lambda C, RecState : C**(self.ADelasticity)
+        #self.ADFunc = lambda C, RecState :
+        #self.ADFunc = lambda C, RecState : C**(self.ADelasticity)
+        self.ADFunc = self.ADFunction
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -680,6 +690,9 @@ class AggregateDemandEconomy(Market):
         #reset Cfunc
         dim = len(self.CFunc)
         self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+        for agent in self.agents:
+            agent.CFunc = self.CFunc
+                
         
         self.ADelasticity = self.demand_ADelasticity
         self.update()   
@@ -757,12 +770,19 @@ class AggregateDemandEconomy(Market):
             self.storeADsolution(name)
     
     def solveAD_UIExtension_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
+        
         #reset Cfunc
-        dim = len(self.CFunc)
-        self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+        resetCFunc = True
+        if resetCFunc:
+            dim = len(self.CFunc)
+            self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+            for agent in self.agents:
+                agent.CFunc = self.CFunc
+            print("presolving...")
+            self.solve()
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = False
+        SimOnlyRecStates = True
         if SimOnlyRecStates:
             SimMrkHist = [0,1]
         else:
@@ -771,7 +791,7 @@ class AggregateDemandEconomy(Market):
         self.ADelasticity = self.demand_ADelasticity
         self.update()    
         UI_dict = {
-             'RecessionShock' : False,
+             'RecessionShock' : True,
              'ExtendedUIShock' : True,
              'TaxCutShock' : False,
              'UpdatePrb': 1.0,
@@ -786,7 +806,7 @@ class AggregateDemandEconomy(Market):
                 if j == 0:
                     UI_dict['EconomyMrkv_init'] = np.array([3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) 
                 elif j == 1:
-                    UI_dict['EconomyMrkv_init'] = np.array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+                    UI_dict['EconomyMrkv_init'] = np.array([3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
                 elif j == 2:
                     UI_dict['EconomyMrkv_init'] = np.array([3, 2, 2, 2, 2, 2, 0]) 
                 elif j == 3:
@@ -795,30 +815,45 @@ class AggregateDemandEconomy(Market):
                 UI_all_results += [this_UI_results]
                 
             #Debugging
-            # plt.plot(UI_all_results[0]['Cratio_hist'][0:20]) 
-            # plt.plot(UI_all_results[1]['Cratio_hist'][0:20])    
+            plt.plot(UI_all_results[0]['Cratio_hist'][0:20])
+            plt.plot(UI_all_results[1]['Cratio_hist'][0:20])
             # plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
             # plt.plot(UI_all_results[3]['Cratio_hist'][0:20])
             # plt.legend(['0','1','2','3'], fontsize=14)
+            plt.pause(1)
+            plt.show()
+            # plt.plot(UI_all_results[0]['AggIncome'][0:20])
+            # plt.plot(UI_all_results[1]['AggIncome'][0:20])
             # plt.pause(1)
             # plt.show()
             
-            startt = 0
-            endd = 9
-            slope               = (UI_all_results[1]['Cratio_hist'][startt+1] - UI_all_results[1]['Cratio_hist'][endd-1])/(UI_all_results[1]['Cratio_hist'][startt] - UI_all_results[1]['Cratio_hist'][endd-2])
-            intercept           =  UI_all_results[1]['Cratio_hist'][startt+1] - slope*(UI_all_results[1]['Cratio_hist'][startt]-1)
-            MacroCFunc[3][3]    = CRule(intercept,slope)
+            # startt = 0
+            # endd = 5
+            # slope               = (UI_all_results[1]['Cratio_hist'][startt+1] - UI_all_results[1]['Cratio_hist'][endd-1])/(UI_all_results[1]['Cratio_hist'][startt] - UI_all_results[1]['Cratio_hist'][endd-2])
+            # intercept           =  UI_all_results[1]['Cratio_hist'][startt+1] - slope*(UI_all_results[1]['Cratio_hist'][startt]-1)
+            # MacroCFunc[3][3]    = CRule(intercept,slope)
+            # print('intercept 3->3: ',intercept)
+            # print('slope 3->3: ',slope)
             
-            MacroCFunc[3][1] = CRule(UI_all_results[0]['Cratio_hist'][1],0.0)
+            # # MacroCFunc[3][3] = CRule(UI_all_results[1]['Cratio_hist'][2],0.0)
+            # slope = (UI_all_results[1]['Cratio_hist'][1]-1)/(UI_all_results[1]['Cratio_hist'][0]-1)
+            # print(slope)
+            # MacroCFunc[3][3] = CRule(1.0,slope)
+            
+
+            slope = (UI_all_results[0]['Cratio_hist'][1]-1)/(UI_all_results[0]['Cratio_hist'][0]-1)
+            print('slope 3->1: ',slope)
+            MacroCFunc[3][1] = CRule(1.0,slope)
             
             MacroCFunc[0][3] = CRule(UI_all_results[0]['Cratio_hist'][0],0.0)
             
-            startt = 2
+            startt = 1
             endd = 19
             slope_if_recession     = (UI_all_results[0]['Cratio_hist'][startt+1] - UI_all_results[0]['Cratio_hist'][endd-1])/(UI_all_results[0]['Cratio_hist'][startt] - UI_all_results[0]['Cratio_hist'][endd-2])
             intercept_if_recession =  UI_all_results[0]['Cratio_hist'][startt+1] - slope_if_recession*(UI_all_results[0]['Cratio_hist'][startt]-1)
             MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
-            
+            # print('intercept 1->1: ',intercept_if_recession)
+            # print('slope 1->1: ',slope_if_recession)
             
             if SimOnlyRecStates == False:
                 MacroCFunc[3][2] = CRule(1.0,(UI_all_results[2]['Cratio_hist'][1]-1)/(UI_all_results[2]['Cratio_hist'][0]-1))
@@ -831,7 +866,7 @@ class AggregateDemandEconomy(Market):
                 intercept           =  UI_all_results[2]['Cratio_hist'][startt+1] - slope*(UI_all_results[2]['Cratio_hist'][startt]-1)
                 MacroCFunc[2][2]    = CRule(intercept,slope) 
                 
-                slope = (UI_all_results[0]['Cratio_hist'][19]-1)/(UI_all_results[0]['Cratio_hist'][18]-1)
+                slope = (UI_all_results[1]['Cratio_hist'][19]-1)/(UI_all_results[1]['Cratio_hist'][18]-1)
                 MacroCFunc[1][0] = CRule(1.0,slope)
 
                 MacroCFunc[0][0] = CRule(1.0, np.mean((np.array(UI_all_results[3]['Cratio_hist'][3:10])-1)/(np.array(UI_all_results[3]['Cratio_hist'][2:9])-1)))  # when you return to normal state, aggregate consumption will not be equal to baseline
@@ -871,6 +906,9 @@ class AggregateDemandEconomy(Market):
         #reset Cfunc
         dim = len(self.CFunc)
         self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+        for agent in self.agents:
+            agent.CFunc = self.CFunc
+        
         
         self.ADelasticity = self.demand_ADelasticity
         self.update()    
@@ -941,6 +979,9 @@ class AggregateDemandEconomy(Market):
         #reset Cfunc
         dim = len(self.CFunc)
         self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+        for agent in self.agents:
+            agent.CFunc = self.CFunc
+        
         
         self.ADelasticity = self.demand_ADelasticity
         self.update()   

@@ -26,8 +26,11 @@ IncomeDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.ar
 IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg.IncUnempNoBenefits])])
 IncomeDstn_big = []
 for ThisType in BaseTypeList:
-    IncomeDstn_taxcut = deepcopy(ThisType.IncomeDstn[0])
-    IncomeDstn_taxcut.X[1] = IncomeDstn_taxcut.X[1]*ThisType.TaxCutIncFactor
+    IncomeDstn_taxcut       = deepcopy(ThisType.IncomeDstn[0])
+    IncomeDstn_taxcut.X[1]  = IncomeDstn_taxcut.X[1]*ThisType.TaxCutIncFactor
+    IncomeDstn_check        = deepcopy(ThisType.IncomeDstn[0])
+    IncomeDstn_check.X[1]   = IncomeDstn_check.X[1]*ThisType.CheckIncFactor
+    
     IncomeDstn_big.append([ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal
                            ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession
                            ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, extended UI
@@ -63,7 +66,9 @@ for ThisType in BaseTypeList:
                            IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
                            IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut
                            IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, payroll tax cut
-                           IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp])  # recession, payroll tax cut   
+                           IncomeDstn_taxcut,      IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # recession, payroll tax cut 
+                           IncomeDstn_check,       IncomeDstn_unemp_nobenefits, IncomeDstn_unemp,   # normal, check
+                           IncomeDstn_check,       IncomeDstn_unemp_nobenefits, IncomeDstn_unemp])  # recession, check  
 
                          
                            
