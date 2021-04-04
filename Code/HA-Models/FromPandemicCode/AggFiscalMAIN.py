@@ -22,8 +22,13 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 ## Which experiments to run / plots to show
 Run_Baseline            = True
+<<<<<<< HEAD
 Run_UB_Ext_Recession    = True
 Run_Recession           = False
+=======
+Run_Recession           = True
+Run_UB_Ext_Recession    = False
+>>>>>>> parent of 8d6d590... Fixed solve AD functions
 Run_TaxCut_Recession    = False
 Make_Plots              = True
 

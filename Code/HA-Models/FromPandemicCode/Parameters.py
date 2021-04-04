@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/FullRun_Mar27_AD05_AllStates/'
+figs_dir = './Figures/FullRun_Apr05_AD05_AllStates/'
 
 try:
     os.mkdir(figs_dir)
