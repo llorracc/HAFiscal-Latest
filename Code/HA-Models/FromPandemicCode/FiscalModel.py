@@ -150,7 +150,7 @@ class FiscalType(MarkovConsumerType):
             
     #$$$$$$$$$$    
     def updateMrkvArray(self):
-        MacroMrkvArray = makeMacroMrkvArray(self.Rspell, self.PolicyUBspell, self.TaxCutPeriods, self.TaxCutContinuationProb_Rec, self.TaxCutContinuationProb_Bas, self.CheckIncFactor)
+        MacroMrkvArray = makeMacroMrkvArray(self.Rspell, self.PolicyUBspell, self.TaxCutPeriods, self.TaxCutContinuationProb_Rec, self.TaxCutContinuationProb_Bas)
         CondMrkvArrays = makeCondMrkvArrays(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.UBspell_extended, self.TaxCutPeriods)
         MrkvArray = makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays)
         self.MrkvArray  = MrkvArray
@@ -402,11 +402,9 @@ class FiscalType(MarkovConsumerType):
     def getControls(self):
         '''
         Calculates consumption for each consumer of this type using the consumption functions.
-
         Parameters
         ----------
         None
-
         Returns
         -------
         None
@@ -438,7 +436,6 @@ def solveConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGr
     factor, permanent growth factor, and income distribution, so the inputs Rfree,
     PermGroFac, and IncomeDstn are arrays or lists specifying those values in each
     (succeeding) Markov state.
-
     Parameters
     ----------
     solution_next : ConsumerSolution
@@ -477,7 +474,6 @@ def solveConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGr
     CubicBool: boolean
         An indicator for whether the solver should use cubic or linear inter-
         polation.  Not used.
-
     Returns
     -------
     solution : ConsumerSolution

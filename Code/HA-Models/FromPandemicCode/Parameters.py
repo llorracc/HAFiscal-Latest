@@ -6,60 +6,57 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/FullRun_Apr05_AD05_AllStates/'
+figs_dir = './Figures/FullRun_Mar27_AD05_AllStates/'
 
 try:
     os.mkdir(figs_dir)
 except OSError:
-    print ("Creation of the directory %s failed or existed already." % figs_dir)
+    print ("Creation of the directory %s failed" % figs_dir)
 else:
     print ("Successfully created the directory %s " % figs_dir)
 
 
 
 # Parameters concerning the distribution of discount factors
-DiscFacMean     = 0.986     # Mean intertemporal discount factor 
-DiscFacSpread   = 0.0183    # Half-width of uniform distribution of discount factors
+DiscFacMean = 0.986     # Mean intertemporal discount factor 
+DiscFacSpread = 0.0183  # Half-width of uniform distribution of discount factors
 
 # Parameters concerning Markov transition matrix
 
-# Normal
+    # Normal
 Urate_normal = 0.05          # Unemployment rate in normal times
 Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
-# Recession
+    # Recession
 Urate_recession = 0.1        # Unemployment rate in recession
 Uspell_recession = 4         # Average duration of unemployment spell in recession, in quarters
 Rspell = 6                   # Expected length of recession, in quarters. If R_shared = True, must be an integer
 R_shared = False             # Indicator for whether the recession shared (True) or idiosyncratic (False)
-# UI extension
+    # UI extension
 UBspell_extended = 4         # Average duration of unemployment benefits when extended and assuming policy remains in place, in quarters
 PolicyUBspell = 2            # Average duration that policy of extended unemployment benefits is in place
-# Tax Cut parameter
-PolicyTaxCutspell = 2               # Average duration that policy of payroll tax cuts
-TaxCutIncFactor = 1.02              # Amount by which the payroll tax cut increases after-tax income
-TaxCutPeriods = 8                   # Deterministic duration of tax cut 
-TaxCutContinuationProb_Rec = 0.5    # Probability that tax cut is continued after tax cut periods run out, when recession in q8
-TaxCutContinuationProb_Bas = 0.0    # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
-# Check parameter
-CheckIncFactor = 1.20       # Amount by which the check increases income
+    # Tax Cut parameter
+PolicyTaxCutspell = 2        # Average duration that policy of payroll tax cuts
+TaxCutIncFactor = 1.02       # Amount by which the payroll tax cut increases after-tax income
+TaxCutPeriods = 8            # Deterministic duration of tax cut 
+TaxCutContinuationProb_Rec = 0.5   # Probability that tax cut is continued after tax cut periods run out, when recession in q8
+TaxCutContinuationProb_Bas = 0.0   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
 
-# Parameters concerning consumption response
 UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
 Splurge = 0.32      # amount of income that is splurged
 
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
-CRRA            = 1.0             # Coefficient of relative risk aversion
-PopGroFac       = 1.0 #1.01**0.25 # Population growth factor
-PermGroFacAgg   = 1.0 #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
+CRRA = 1.0              # Coefficient of relative risk aversion
+PopGroFac = 1.0 #1.01**0.25  # Population growth factor
+PermGroFacAgg = 1.0 #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
 
-IncUnemp            = 0.3          # Unemployment benefits replacement rate (proportion of permanent income)
-IncUnempNoBenefits  = 0.05         # Unemployment income when benefits run out (proportion of permanent income)
+IncUnemp = 0.3          # Unemployment benefits replacement rate (proportion of permanent income)
+IncUnempNoBenefits = 0.05          # Unemployment income when benefits run out (proportion of permanent income)
 
 # Parameters concerning the initial distribution of permanent income 
-pLvlInitMean    = 0 
-pLvlInitStd     = 0.4           # Standard deviation of initial log permanent income 
+pLvlInitMean = 0 
+pLvlInitStd = 0.4           # Standard deviation of initial log permanent income 
 
 # Parameters concerning grid sizes: assets, permanent income shocks, transitory income shocks
 aXtraMin = 0.001        # Lowest non-zero end-of-period assets above minimum gridpoint
@@ -87,7 +84,7 @@ DiscFacDstns = [DiscFacDstn]
 CgridBase = np.array([0.8,0.9,0.98,1.0,1.02,1.1,1.2])  
 
 #$$$$$$$$$$
-def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb_Rec, TaxCutContinuationProb_Bas, CheckIncFactor):
+def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb_Rec, TaxCutContinuationProb_Bas):
     '''
     Make a Markov transition matrix for the macro states
     
@@ -131,12 +128,8 @@ def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationP
                                         [1-R_persist, R_persist]])
     
     
-    MacroCheckArray             = np.zeros((2,MacroMrkvArray.shape[0]+2))
-    MacroCheckArray[0:2,0:2]    = np.array([[1.0,         0.0],
-                                            [1-R_persist, R_persist]])
-    
-    MacroMrkvArray = np.concatenate(( MacroMrkvArray, np.zeros((MacroMrkvArray.shape[0],2)) ),axis=1)
-    MacroMrkvArray = np.concatenate(( MacroMrkvArray , MacroCheckArray ),axis=0)
+
+
         
     return MacroMrkvArray
     
@@ -183,7 +176,6 @@ def makeCondMrkvArrays(Urate_normal, Uspell_normal, UBspell_normal, Urate_recess
     
     CondMrkvArrays = [MrkvArray_normal, MrkvArray_recession, MrkvArray_normal_exUB, MrkvArray_recession_exUB]
     CondMrkvArrays += [MrkvArray_normal, MrkvArray_recession]*TaxCutPeriods*2
-    CondMrkvArrays += [MrkvArray_normal, MrkvArray_recession]*2 #Check
     return CondMrkvArrays
 
 def makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays):
@@ -197,7 +189,7 @@ def makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays):
             FullMrkv = np.concatenate((FullMrkv, this_row), axis=0)
     return [FullMrkv]
 
-MacroMrkvArray = makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb_Rec, TaxCutContinuationProb_Bas, CheckIncFactor)
+MacroMrkvArray = makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb_Rec, TaxCutContinuationProb_Bas)
 CondMrkvArrays = makeCondMrkvArrays(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, UBspell_extended, TaxCutPeriods)
 MrkvArray = makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays)
 
@@ -276,7 +268,6 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'TaxCutPeriods' : TaxCutPeriods,
                 'TaxCutContinuationProb_Rec' : TaxCutContinuationProb_Rec,
                 'TaxCutContinuationProb_Bas' : TaxCutContinuationProb_Bas,
-                'CheckIncFactor': CheckIncFactor,
                 'UpdatePrb' : 1.0,
                 'Splurge' : Splurge,
                 'track_vars' : []
@@ -322,18 +313,6 @@ recession_TaxCut_changes = {
              'ExtendedUIShock' : False,
              'TaxCutShock' : True,
              }
-Check_changes = {
-             'RecessionShock' : False,
-             'ExtendedUIShock' : False,
-             'TaxCutShock' : False,
-             'CheckShock' : True,
-             }
-recession_Check_changes = {
-             'RecessionShock' : True,
-             'ExtendedUIShock' : False,
-             'TaxCutShock' : True,
-             'CheckShock' : True,
-             }
 sticky_e_changes = {
              'UpdatePrb' : UpdatePrb
              }
@@ -358,7 +337,7 @@ ADelasticity = 0.50                                                         # El
 
 num_max_iterations_solvingAD = 25
 convergence_tol_solvingAD = 1E-4
-Cfunc_iter_stepsize       = 0.50
+Cfunc_iter_stepsize       = 0.75
 
 # Make a dictionary to specify a Cobb-Douglas economy
 init_ADEconomy = {'intercept_prev': intercept_prev,
@@ -376,4 +355,3 @@ init_ADEconomy = {'intercept_prev': intercept_prev,
                      'TaxCutContinuationProb_Rec' : TaxCutContinuationProb_Rec,
                      'TaxCutContinuationProb_Bas' : TaxCutContinuationProb_Bas
                      }
-
