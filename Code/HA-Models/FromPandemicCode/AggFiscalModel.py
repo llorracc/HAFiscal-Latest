@@ -450,8 +450,8 @@ class AggregateDemandEconomy(Market):
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        #self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
-        self.ADFunc = lambda C, RecState : C**(self.ADelasticity)
+        self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
+        #self.ADFunc = lambda C, RecState : C**(self.ADelasticity)
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -759,7 +759,7 @@ class AggregateDemandEconomy(Market):
         self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = False
+        SimOnlyRecStates = True
         if SimOnlyRecStates:
             SimMrkHist = [0,1]
         else:
@@ -768,7 +768,7 @@ class AggregateDemandEconomy(Market):
         self.ADelasticity = self.demand_ADelasticity
         self.update()    
         UI_dict = {
-             'RecessionShock' : False,
+             'RecessionShock' : True,
              'ExtendedUIShock' : True,
              'TaxCutShock' : False,
              'UpdatePrb': 1.0,
@@ -792,19 +792,20 @@ class AggregateDemandEconomy(Market):
                 UI_all_results += [this_UI_results]
                 
             #Debugging
-            # plt.plot(UI_all_results[0]['Cratio_hist'][0:20]) 
-            # plt.plot(UI_all_results[1]['Cratio_hist'][0:20])    
+            plt.plot(UI_all_results[0]['Cratio_hist'][0:20]) 
+            plt.plot(UI_all_results[1]['Cratio_hist'][0:20])    
             # plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
             # plt.plot(UI_all_results[3]['Cratio_hist'][0:20])
             # plt.legend(['0','1','2','3'], fontsize=14)
-            # plt.pause(1)
-            # plt.show()
+            plt.pause(1)
+            plt.show()
             
-            startt = 0
-            endd = 9
-            slope               = (UI_all_results[1]['Cratio_hist'][startt+1] - UI_all_results[1]['Cratio_hist'][endd-1])/(UI_all_results[1]['Cratio_hist'][startt] - UI_all_results[1]['Cratio_hist'][endd-2])
-            intercept           =  UI_all_results[1]['Cratio_hist'][startt+1] - slope*(UI_all_results[1]['Cratio_hist'][startt]-1)
-            MacroCFunc[3][3]    = CRule(intercept,slope)
+            # startt = 0
+            # endd = 9
+            # slope               = (UI_all_results[1]['Cratio_hist'][startt+1] - UI_all_results[1]['Cratio_hist'][endd-1])/(UI_all_results[1]['Cratio_hist'][startt] - UI_all_results[1]['Cratio_hist'][endd-2])
+            # intercept           =  UI_all_results[1]['Cratio_hist'][startt+1] - slope*(UI_all_results[1]['Cratio_hist'][startt]-1)
+            # MacroCFunc[3][3]    = CRule(intercept,slope)
+            MacroCFunc[3][3] = CRule(UI_all_results[1]['Cratio_hist'][1],0.0)
             
             MacroCFunc[3][1] = CRule(UI_all_results[0]['Cratio_hist'][1],0.0)
             
