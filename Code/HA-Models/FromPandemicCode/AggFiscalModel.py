@@ -757,6 +757,10 @@ class AggregateDemandEconomy(Market):
         #reset Cfunc
         dim = len(self.CFunc)
         self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+        for agent in self.agents:
+            agent.CFunc = self.CFunc
+        print("Presolving")
+        self.solve()
         
         # if AD effects only apply to Rec states set to True
         SimOnlyRecStates = True
@@ -800,12 +804,15 @@ class AggregateDemandEconomy(Market):
             plt.pause(1)
             plt.show()
             
-            # startt = 0
-            # endd = 9
-            # slope               = (UI_all_results[1]['Cratio_hist'][startt+1] - UI_all_results[1]['Cratio_hist'][endd-1])/(UI_all_results[1]['Cratio_hist'][startt] - UI_all_results[1]['Cratio_hist'][endd-2])
-            # intercept           =  UI_all_results[1]['Cratio_hist'][startt+1] - slope*(UI_all_results[1]['Cratio_hist'][startt]-1)
-            # MacroCFunc[3][3]    = CRule(intercept,slope)
-            MacroCFunc[3][3] = CRule(UI_all_results[1]['Cratio_hist'][1],0.0)
+            startt = 0
+            endd = 9
+            slope               = (UI_all_results[1]['Cratio_hist'][startt+1] - UI_all_results[1]['Cratio_hist'][endd-1])/(UI_all_results[1]['Cratio_hist'][startt] - UI_all_results[1]['Cratio_hist'][endd-2])
+            intercept           =  UI_all_results[1]['Cratio_hist'][startt+1] - slope*(UI_all_results[1]['Cratio_hist'][startt]-1)
+            MacroCFunc[3][3]    = CRule(intercept,slope)
+            #MacroCFunc[3][3] = CRule(UI_all_results[1]['Cratio_hist'][1],0.0)
+            
+            # slope = (UI_all_results[1]['Cratio_hist'][1]-1)/(UI_all_results[1]['Cratio_hist'][0]-1)
+            # MacroCFunc[3][3] = CRule(1.0,slope)
             
             MacroCFunc[3][1] = CRule(UI_all_results[0]['Cratio_hist'][1],0.0)
             
@@ -820,7 +827,7 @@ class AggregateDemandEconomy(Market):
             
             if SimOnlyRecStates == False:
                 MacroCFunc[3][2] = CRule(1.0,(UI_all_results[2]['Cratio_hist'][1]-1)/(UI_all_results[2]['Cratio_hist'][0]-1))
-                MacroCFunc[2][0] = CRule(1.0,(UI_all_results[2]['Cratio_hist'][6]-1)/(UI_all_results[2]['Cratio_hist'][5]-1))  
+                MacroCFunc[2][0] = CRule(UI_all_results[2]['Cratio_hist'][6],0.0)
                 MacroCFunc[3][0] = CRule(1.0,(UI_all_results[3]['Cratio_hist'][1]-1)/(UI_all_results[3]['Cratio_hist'][0]-1))  
                
                 startt = 1

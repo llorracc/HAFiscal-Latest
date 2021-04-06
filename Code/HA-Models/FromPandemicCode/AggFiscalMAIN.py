@@ -23,8 +23,8 @@ mystr = lambda x : '{:.2f}'.format(x)
 ## Which experiments to run / plots to show
 Run_Baseline            = True
 Run_UB_Ext_Recession    = True
-Run_Recession           = True
-Run_TaxCut_Recession    = True
+Run_Recession           = False
+Run_TaxCut_Recession    = False
 Make_Plots              = True
 
 Run_NonAD               = False
@@ -242,7 +242,7 @@ if __name__ == '__main__':
         x_axis = np.arange(1,21)
         
         folder1 = './Figures/FullRun_Apr04_AD05/'
-        folder2 = './Figures/FullRun_Mar27_AD05_AllStates/'
+        folder2 = './Figures/FullRun_Apr04_AD05_AllStates/'
         
         base_results                = loadPickle('base_results',folder1,locals())
 
@@ -358,7 +358,7 @@ if __name__ == '__main__':
             return Multipliers
         
         
-        max_recession_duration = 5
+        max_recession_duration = 21
         max_policy_duration = 6
         Multipliers = np.zeros((max_recession_duration+1,max_policy_duration+1,3))
         for RecLength in range(1,max_recession_duration+1,1):
