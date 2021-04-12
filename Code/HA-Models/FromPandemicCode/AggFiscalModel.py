@@ -450,8 +450,8 @@ class AggregateDemandEconomy(Market):
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        #self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
-        self.ADFunc = lambda C, RecState : C**(self.ADelasticity)
+        self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
+        #self.ADFunc = lambda C, RecState : C**(self.ADelasticity)
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -763,7 +763,7 @@ class AggregateDemandEconomy(Market):
         self.solve()
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = False
+        SimOnlyRecStates = True
         if SimOnlyRecStates:
             SimMrkHist = [0,1]
         else:
@@ -796,10 +796,10 @@ class AggregateDemandEconomy(Market):
                 UI_all_results += [this_UI_results]
                 
             #Debugging
-            # plt.plot(UI_all_results[0]['Cratio_hist'][0:20]) 
-            # plt.plot(UI_all_results[1]['Cratio_hist'][0:20])    
-            plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
-            plt.plot(UI_all_results[3]['Cratio_hist'][0:20])
+            plt.plot(UI_all_results[0]['Cratio_hist'][0:20]) 
+            plt.plot(UI_all_results[1]['Cratio_hist'][0:20])    
+            # plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
+            # plt.plot(UI_all_results[3]['Cratio_hist'][0:20])
             # plt.legend(['0','1','2','3'], fontsize=14)
             plt.pause(1)
             plt.show()
