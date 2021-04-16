@@ -145,6 +145,13 @@ class AggFiscalType(FiscalType):
         self.history['update_draw'] = self.update_draw_fixed_hist
         self.history['unemployment_draw'] = self.unemployment_draw_fixed_hist
         
+        
+        # # Check experiment
+        # Check_multiplier = np.ones_like(self.history['MrkvNow'])
+        # Check_multiplier[np.greater(self.history['MrkvNow'], 35)] *= (1 + self.StimLvl/self.pLvlNow)
+        # # not just employed, everyone?
+        # self.history['TranShkNow'][employed] = self.tran_shock_fixed_hist[employed]*Check_multiplier[employed]
+        
     def switchToCounterfactualMode(self):
         FiscalType.switchToCounterfactualMode(self)
         self.track_vars += ['unemployment_draw']

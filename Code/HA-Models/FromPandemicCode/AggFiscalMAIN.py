@@ -24,8 +24,8 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 # @Hakon: if you set all of these to False and only Make_Plots to True,
 # you will only create plots and run no simulations
-Run_Baseline            = True
-Run_UB_Ext_Recession    = True
+Run_Baseline            = False
+Run_UB_Ext_Recession    = False
 Run_Recession           = False
 Run_TaxCut_Recession    = False
 Make_Plots              = True
@@ -324,11 +324,6 @@ if __name__ == '__main__':
             NPV_Multiplier_UI_Rec_AD_allStates      = getNPVMultiplier(recession_all_results_AD_allStates[RecLength-1],  recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],  NPV_AddInc_UI_Rec)
             
             
-            
-            # print('Multiplier when recession ' + str(RecLength) + 'q, UI extension ' + str(PolicyLength) + 'q')
-            # print('No AD effects: ',NPV_Multiplier_UI_Rec[-1])
-            # print('AD effects in recession states: ',NPV_Multiplier_UI_Rec_AD[-1])
-            # print('AD effects in all states: ',NPV_Multiplier_UI_Rec_AD_allStates[-1])
             Multipliers = [NPV_Multiplier_UI_Rec[-1],NPV_Multiplier_UI_Rec_AD[-1],NPV_Multiplier_UI_Rec_AD_allStates[-1]]
             
             AddCons_UI_Ext_Rec_RelRec               = getSimulationPercentDiff(recession_all_results[RecLength-1],    recession_all_UI_results[(RecLength-1)*6+(PolicyLength-1)],'AggCons')
@@ -340,25 +335,45 @@ if __name__ == '__main__':
             AddCons_UI_Ext_Rec_RelRec_AD_allStates  = getSimulationPercentDiff(recession_all_results_AD_allStates[RecLength-1],    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggCons')
             AddInc_UI_Ext_Rec_RelRec_AD_allStates   = getSimulationPercentDiff(recession_all_results_AD_allStates[RecLength-1],    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggIncome')
             
-            # plt.figure(figsize=(15,10))
-            # plt.title('Recession lasts ' + str(RecLength) + 'q, UI extension lasts ' + str(PolicyLength) + 'q', size=30)
-            # plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec[0:max_T],              color='blue',linestyle='-')
-            # plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec_AD[0:max_T],           color='blue',linestyle='--')
-            # plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec_AD_allStates[0:max_T], color='blue',linestyle=':')
-            # plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec[0:max_T],             color='red',linestyle='-')
-            # plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec_AD[0:max_T],          color='red',linestyle='--')
-            # plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec_AD_allStates[0:max_T],color='red',linestyle=':')  
-            # plt.legend(['Inc, no AD effects','Inc, AD effects','Inc, AD effects all States',\
-            #             'Cons, no AD effects','Cons, AD effects','Cons, AD effects all States'], fontsize=14)
-            # plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
-            # plt.xlabel('quarter', fontsize=18)
-            # plt.ylabel('% diff. rel. to no UI extension', fontsize=16)
-            # plt.savefig(figs_dir +'Rec' + str(RecLength) +'q_UiExt' + str(PolicyLength) + 'q_relrecession.pdf')
-            # plt.show() 
+            plt.figure(figsize=(15,10))
+            plt.title('Recession lasts ' + str(RecLength) + 'q, UI extension lasts ' + str(PolicyLength) + 'q', size=30)
+            plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec[0:max_T],              color='blue',linestyle='-')
+            plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec_AD[0:max_T],           color='blue',linestyle='--')
+            plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec_AD_allStates[0:max_T], color='blue',linestyle=':')
+            plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec[0:max_T],             color='red',linestyle='-')
+            plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec_AD[0:max_T],          color='red',linestyle='--')
+            plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec_AD_allStates[0:max_T],color='red',linestyle=':')  
+            plt.legend(['Inc, no AD effects','Inc, AD effects','Inc, AD effects all States',\
+                        'Cons, no AD effects','Cons, AD effects','Cons, AD effects all States'], fontsize=14)
+            plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+            plt.xlabel('quarter', fontsize=18)
+            plt.ylabel('% diff. rel. to no UI extension', fontsize=16)
+            plt.savefig(figs_dir +'Rec' + str(RecLength) +'q_UiExt' + str(PolicyLength) + 'q_relrecession.pdf')
+            plt.show() 
+            
+            
+            AddCons_UI_Ext_Rec_RelBase_AD_allStates = getSimulationPercentDiff(base_results,    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggCons')         
+            AddCons_Rec_RelBase_AD_allStates        = getSimulationPercentDiff(base_results,    recession_all_results_AD_allStates[RecLength-1],'AggCons')
+            AddInc_UI_Ext_Rec_RelBase_AD_allStates  = getSimulationPercentDiff(base_results,    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggIncome')
+            AddInc_Rec_RelBase_AD_allStates         = getSimulationPercentDiff(base_results,    recession_all_results_AD_allStates[RecLength-1],'AggIncome')
+            
+            
+            plt.figure(figsize=(15,10))
+            plt.title('Recession lasts ' + str(RecLength) + 'q, UI extension lasts ' + str(PolicyLength) + 'q', size=30)
+            plt.plot(x_axis,AddInc_Rec_RelBase_AD_allStates[0:max_T]        , color='blue',linestyle='-')
+            plt.plot(x_axis,AddCons_Rec_RelBase_AD_allStates[0:max_T]       , color='red' ,linestyle='-')  
+            plt.plot(x_axis,AddInc_UI_Ext_Rec_RelBase_AD_allStates[0:max_T] , color='blue',linestyle=':')             
+            plt.plot(x_axis,AddCons_UI_Ext_Rec_RelBase_AD_allStates[0:max_T], color='red' ,linestyle=':') 
+            plt.legend(['Inc, Rec','Cons, Rec',\
+                        'Inc, Rec + UI', 'Cons, Rec + UI'], fontsize=14)
+            plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+            plt.xlabel('quarter', fontsize=18)
+            plt.ylabel('% diff. rel. to baseline', fontsize=16)
+            plt.show() 
             
             return Multipliers
         
-        
+        #%%
         max_recession_duration = 21
         max_policy_duration = 6
         Multipliers = np.zeros((max_recession_duration+1,max_policy_duration+1,3))
