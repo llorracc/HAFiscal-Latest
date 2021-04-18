@@ -375,7 +375,7 @@ if __name__ == '__main__':
             NPV_AddInc_UI_Rec                       = getSimulationDiff(recession_all_results[RecLength-1],recession_all_UI_results[(RecLength-1)*6+(PolicyLength-1)],'NPV_AggIncome') # Policy expenditure
             NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_all_results[RecLength-1],               recession_all_UI_results[(RecLength-1)*6+(PolicyLength-1)],               NPV_AddInc_UI_Rec)
             NPV_Multiplier_UI_Rec_AD                = getNPVMultiplier(recession_all_results_AD[RecLength-1],            recession_all_UI_results_AD[(RecLength-1)*6+(PolicyLength-1)],            NPV_AddInc_UI_Rec)
-            NPV_Multiplier_UI_Rec_AD_allStates      = getNPVMultiplier(recession_all_results_AD_allStates[RecLength-1],  recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],  2*NPV_AddInc_UI_Rec)
+            NPV_Multiplier_UI_Rec_AD_allStates      = getNPVMultiplier(recession_all_results_AD_allStates[RecLength-1],  recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],  NPV_AddInc_UI_Rec)
             
             
             Multipliers = [NPV_Multiplier_UI_Rec[-1],NPV_Multiplier_UI_Rec_AD[-1],NPV_Multiplier_UI_Rec_AD_allStates[-1]]
