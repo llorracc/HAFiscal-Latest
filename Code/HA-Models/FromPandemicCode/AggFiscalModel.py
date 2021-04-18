@@ -149,8 +149,7 @@ class AggFiscalType(FiscalType):
         # # Check experiment
         # Check_multiplier = np.ones_like(self.history['MrkvNow'])
         # Check_multiplier[np.greater(self.history['MrkvNow'], 35)] *= (1 + self.StimLvl/self.pLvlNow)
-        # # not just employed, everyone?
-        # self.history['TranShkNow'][employed] = self.tran_shock_fixed_hist[employed]*Check_multiplier[employed]
+        # self.history['TranShkNow'] = self.tran_shock_fixed_hist*Check_multiplier
         
     def switchToCounterfactualMode(self):
         FiscalType.switchToCounterfactualMode(self)
@@ -457,8 +456,8 @@ class AggregateDemandEconomy(Market):
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
-        #self.ADFunc = lambda C, RecState : C**(self.ADelasticity)
+        #self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
+        self.ADFunc = lambda C, RecState : C**(self.ADelasticity)
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -726,6 +725,7 @@ class AggregateDemandEconomy(Market):
             slope = (recession_all_results[0]['Cratio_hist'][1]-1)/(recession_all_results[0]['Cratio_hist'][0]-1)
             MacroCFunc[1][0] = CRule(1.0,slope)
             
+            
             # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope           
             MacroCFunc[0][0] = CRule(1.0, np.mean((np.array(recession_all_results[0]['Cratio_hist'][3:10])-1)/(np.array(recession_all_results[0]['Cratio_hist'][2:9])-1)))  # when you return to normal state, aggregate consumption will not be equal to baseline
                  
@@ -770,7 +770,7 @@ class AggregateDemandEconomy(Market):
         self.solve()
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = True
+        SimOnlyRecStates = False
         if SimOnlyRecStates:
             SimMrkHist = [0,1]
         else:
@@ -796,7 +796,7 @@ class AggregateDemandEconomy(Market):
                 elif j == 1:
                     UI_dict['EconomyMrkv_init'] = np.array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1])
                 elif j == 2:
-                    UI_dict['EconomyMrkv_init'] = np.array([3, 2, 2, 2, 2, 2, 0]) 
+                    UI_dict['EconomyMrkv_init'] = np.array([3, 2, 2, 0]) 
                 elif j == 3:
                     UI_dict['EconomyMrkv_init'] = np.array([3, 0])        
                 this_UI_results = self.runExperiment(**UI_dict)
@@ -805,28 +805,31 @@ class AggregateDemandEconomy(Market):
             #Debugging
             plt.plot(UI_all_results[0]['Cratio_hist'][0:20]) 
             plt.plot(UI_all_results[1]['Cratio_hist'][0:20])    
-            # plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
-            # plt.plot(UI_all_results[3]['Cratio_hist'][0:20])
+            plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
+            plt.plot(UI_all_results[3]['Cratio_hist'][0:20])
             # plt.legend(['0','1','2','3'], fontsize=14)
             plt.pause(1)
             plt.show()
             
             startt = 0
-            endd = 9
+            endd = 6
             slope               = (UI_all_results[1]['Cratio_hist'][startt+1] - UI_all_results[1]['Cratio_hist'][endd-1])/(UI_all_results[1]['Cratio_hist'][startt] - UI_all_results[1]['Cratio_hist'][endd-2])
             intercept           =  UI_all_results[1]['Cratio_hist'][startt+1] - slope*(UI_all_results[1]['Cratio_hist'][startt]-1)
             MacroCFunc[3][3]    = CRule(intercept,slope)
-            #MacroCFunc[3][3] = CRule(UI_all_results[1]['Cratio_hist'][1],0.0)
+            MacroCFunc[3][3] = CRule(UI_all_results[1]['Cratio_hist'][1],0.0)
             
             # slope = (UI_all_results[1]['Cratio_hist'][1]-1)/(UI_all_results[1]['Cratio_hist'][0]-1)
             # MacroCFunc[3][3] = CRule(1.0,slope)
+            
+            # slope = (UI_all_results[0]['Cratio_hist'][1]-1)/(UI_all_results[0]['Cratio_hist'][0]-1)
+            # MacroCFunc[3][1] = CRule(1.0,slope)
             
             MacroCFunc[3][1] = CRule(UI_all_results[0]['Cratio_hist'][1],0.0)
             
             MacroCFunc[0][3] = CRule(UI_all_results[0]['Cratio_hist'][0],0.0)
             
-            startt = 2
-            endd = 19
+            startt = 1
+            endd = 10
             slope_if_recession     = (UI_all_results[0]['Cratio_hist'][startt+1] - UI_all_results[0]['Cratio_hist'][endd-1])/(UI_all_results[0]['Cratio_hist'][startt] - UI_all_results[0]['Cratio_hist'][endd-2])
             intercept_if_recession =  UI_all_results[0]['Cratio_hist'][startt+1] - slope_if_recession*(UI_all_results[0]['Cratio_hist'][startt]-1)
             MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
@@ -834,14 +837,18 @@ class AggregateDemandEconomy(Market):
             
             if SimOnlyRecStates == False:
                 MacroCFunc[3][2] = CRule(1.0,(UI_all_results[2]['Cratio_hist'][1]-1)/(UI_all_results[2]['Cratio_hist'][0]-1))
-                MacroCFunc[2][0] = CRule(UI_all_results[2]['Cratio_hist'][6],0.0)
                 MacroCFunc[3][0] = CRule(1.0,(UI_all_results[3]['Cratio_hist'][1]-1)/(UI_all_results[3]['Cratio_hist'][0]-1))  
                
-                startt = 1
-                endd = 5
-                slope               = (UI_all_results[2]['Cratio_hist'][startt+1] - UI_all_results[2]['Cratio_hist'][endd-1])/(UI_all_results[2]['Cratio_hist'][startt] - UI_all_results[2]['Cratio_hist'][endd-2])
-                intercept           =  UI_all_results[2]['Cratio_hist'][startt+1] - slope*(UI_all_results[2]['Cratio_hist'][startt]-1)
-                MacroCFunc[2][2]    = CRule(intercept,slope) 
+                MacroCFunc[2][0] = CRule(1.0,(UI_all_results[2]['Cratio_hist'][3]-1)/(UI_all_results[2]['Cratio_hist'][2]-1))
+                #MacroCFunc[2][0] = CRule(UI_all_results[2]['Cratio_hist'][6],0.0)    
+               
+                MacroCFunc[2][2] = CRule(1.0,(UI_all_results[2]['Cratio_hist'][2]-1)/(UI_all_results[2]['Cratio_hist'][1]-1))
+                
+                # startt = 1
+                # endd = 5
+                # slope               = (UI_all_results[2]['Cratio_hist'][startt+1] - UI_all_results[2]['Cratio_hist'][endd-1])/(UI_all_results[2]['Cratio_hist'][startt] - UI_all_results[2]['Cratio_hist'][endd-2])
+                # intercept           =  UI_all_results[2]['Cratio_hist'][startt+1] - slope*(UI_all_results[2]['Cratio_hist'][startt]-1)
+                # MacroCFunc[2][2]    = CRule(intercept,slope) 
                 
                 slope = (UI_all_results[0]['Cratio_hist'][19]-1)/(UI_all_results[0]['Cratio_hist'][18]-1)
                 MacroCFunc[1][0] = CRule(1.0,slope)
