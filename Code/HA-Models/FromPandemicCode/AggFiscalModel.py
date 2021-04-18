@@ -456,8 +456,8 @@ class AggregateDemandEconomy(Market):
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        #self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
-        self.ADFunc = lambda C, RecState : C**(self.ADelasticity)
+        self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
+        #self.ADFunc = lambda C, RecState : C**(self.ADelasticity)
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -705,10 +705,10 @@ class AggregateDemandEconomy(Market):
             for t in [0,max_recession-1]:
                 recession_dict['EconomyMrkv_init'] = [1]*(t+1)
                 this_recession_results = self.runExperiment(**recession_dict)
-                if t == max_recession-1:
-                    plt.plot(this_recession_results['Cratio_hist'])
-                    plt.pause(1)
-                    plt.show()
+                # if t == max_recession-1:
+                #     plt.plot(this_recession_results['Cratio_hist'])
+                #     plt.pause(1)
+                #     plt.show()
                 recession_all_results += [this_recession_results]
             
             MacroCFunc[0][1] = CRule(recession_all_results[0]['Cratio_hist'][0],0.0) # consumption when you jump into recession from steady state
@@ -770,7 +770,7 @@ class AggregateDemandEconomy(Market):
         self.solve()
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = False
+        SimOnlyRecStates = True
         if SimOnlyRecStates:
             SimMrkHist = [0,1]
         else:
@@ -803,13 +803,13 @@ class AggregateDemandEconomy(Market):
                 UI_all_results += [this_UI_results]
                 
             #Debugging
-            plt.plot(UI_all_results[0]['Cratio_hist'][0:20]) 
-            plt.plot(UI_all_results[1]['Cratio_hist'][0:20])    
-            plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
-            plt.plot(UI_all_results[3]['Cratio_hist'][0:20])
+            # plt.plot(UI_all_results[0]['Cratio_hist'][0:20]) 
+            # plt.plot(UI_all_results[1]['Cratio_hist'][0:20])    
+            # plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
+            # plt.plot(UI_all_results[3]['Cratio_hist'][0:20])
             # plt.legend(['0','1','2','3'], fontsize=14)
-            plt.pause(1)
-            plt.show()
+            # plt.pause(1)
+            # plt.show()
             
             startt = 0
             endd = 6

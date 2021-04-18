@@ -27,10 +27,10 @@ mystr = lambda x : '{:.2f}'.format(x)
 Run_Baseline            = True
 Run_UB_Ext_Recession    = True
 Run_Recession           = True
-Run_TaxCut_Recession    = False
+Run_TaxCut_Recession    = True
 Make_Plots              = True
 
-Run_NonAD               = False
+Run_NonAD               = True
 
 
 
@@ -242,7 +242,7 @@ if __name__ == '__main__':
         max_T = 20
         x_axis = np.arange(1,21)
         
-        folder1 = './Figures/FullRun_Apr04_AD05/'
+        folder1 = './Figures/FullRun_Apr07_AD05/'
         folder2 = './Figures/FullRun_Apr07_AD05_AllStates/'
         
         base_results                = loadPickle('base_results',folder1,locals())
@@ -375,12 +375,12 @@ if __name__ == '__main__':
             NPV_AddInc_UI_Rec                       = getSimulationDiff(recession_all_results[RecLength-1],recession_all_UI_results[(RecLength-1)*6+(PolicyLength-1)],'NPV_AggIncome') # Policy expenditure
             NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_all_results[RecLength-1],               recession_all_UI_results[(RecLength-1)*6+(PolicyLength-1)],               NPV_AddInc_UI_Rec)
             NPV_Multiplier_UI_Rec_AD                = getNPVMultiplier(recession_all_results_AD[RecLength-1],            recession_all_UI_results_AD[(RecLength-1)*6+(PolicyLength-1)],            NPV_AddInc_UI_Rec)
-            NPV_Multiplier_UI_Rec_AD_allStates      = getNPVMultiplier(recession_all_results_AD_allStates[RecLength-1],  recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],  NPV_AddInc_UI_Rec)
+            NPV_Multiplier_UI_Rec_AD_allStates      = getNPVMultiplier(recession_all_results_AD_allStates[RecLength-1],  recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],  2*NPV_AddInc_UI_Rec)
             
             
             Multipliers = [NPV_Multiplier_UI_Rec[-1],NPV_Multiplier_UI_Rec_AD[-1],NPV_Multiplier_UI_Rec_AD_allStates[-1]]
             
-            PlotEach = True
+            PlotEach = False
             
             if PlotEach:
             
@@ -406,7 +406,7 @@ if __name__ == '__main__':
                 plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
                 plt.xlabel('quarter', fontsize=18)
                 plt.ylabel('% diff. rel. to no UI extension', fontsize=16)
-                plt.savefig(figs_dir +'Rec' + str(RecLength) +'q_UiExt' + str(PolicyLength) + 'q_relrecession.pdf')
+                # plt.savefig(figs_dir +'Rec' + str(RecLength) +'q_UiExt' + str(PolicyLength) + 'q_relrecession.pdf')
                 plt.show() 
                 
                 
