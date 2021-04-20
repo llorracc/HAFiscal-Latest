@@ -30,7 +30,7 @@ Run_Recession           = True
 Run_TaxCut_Recession    = True
 Make_Plots              = True
 
-Run_NonAD               = True
+Run_NonAD               = False
 
 
 
@@ -242,8 +242,8 @@ if __name__ == '__main__':
         max_T = 20
         x_axis = np.arange(1,21)
         
-        folder1 = './Figures/FullRun_Apr07_AD05/'
-        folder2 = './Figures/FullRun_Apr07_AD05_AllStates/'
+        folder1 = './Figures/FullRun_Apr18_AD05_800k/'
+        folder2 = './Figures/FullRun_Apr18_AD05_AllStates_800k/'
         
         base_results                = loadPickle('base_results',folder1,locals())
 

@@ -803,13 +803,13 @@ class AggregateDemandEconomy(Market):
                 UI_all_results += [this_UI_results]
                 
             #Debugging
-            # plt.plot(UI_all_results[0]['Cratio_hist'][0:20]) 
-            # plt.plot(UI_all_results[1]['Cratio_hist'][0:20])    
-            # plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
-            # plt.plot(UI_all_results[3]['Cratio_hist'][0:20])
-            # plt.legend(['0','1','2','3'], fontsize=14)
-            # plt.pause(1)
-            # plt.show()
+            plt.plot(UI_all_results[0]['Cratio_hist'][0:20]) 
+            plt.plot(UI_all_results[1]['Cratio_hist'][0:20])    
+            plt.plot(UI_all_results[2]['Cratio_hist'][0:20])
+            plt.plot(UI_all_results[3]['Cratio_hist'][0:20])
+            plt.legend(['0','1','2','3'], fontsize=14)
+            plt.pause(1)
+            plt.show()
             
             startt = 0
             endd = 6
@@ -853,7 +853,12 @@ class AggregateDemandEconomy(Market):
                 slope = (UI_all_results[0]['Cratio_hist'][19]-1)/(UI_all_results[0]['Cratio_hist'][18]-1)
                 MacroCFunc[1][0] = CRule(1.0,slope)
 
-                MacroCFunc[0][0] = CRule(1.0, np.mean((np.array(UI_all_results[3]['Cratio_hist'][3:10])-1)/(np.array(UI_all_results[3]['Cratio_hist'][2:9])-1)))  # when you return to normal state, aggregate consumption will not be equal to baseline
+                startt = 1
+                endd = 10
+                slope = np.mean((np.array(UI_all_results[3]['Cratio_hist'][startt+1:endd])-1)/(np.array(UI_all_results[3]['Cratio_hist'][startt:endd-1])-1))
+                print(slope)
+                slope = min(1,slope)
+                MacroCFunc[0][0] = CRule(1.0, slope)  # when you return to normal state, aggregate consumption will not be equal to baseline
                      
             self.MacroCFunc = MacroCFunc
             Old_Cfunc  = self.CFunc
