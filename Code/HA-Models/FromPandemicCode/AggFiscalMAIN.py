@@ -276,6 +276,13 @@ if __name__ == '__main__':
         NPV_Multiplier_Rec_TaxCut_AD            = getNPVMultiplier(recession_results_AD,            recession_TaxCut_results_AD,            NPV_AddInc_Rec_TaxCut)
         NPV_Multiplier_Rec_TaxCut_AD_allStates  = getNPVMultiplier(recession_results_AD_allStates,  recession_TaxCut_results_AD_allStates,  NPV_AddInc_Rec_TaxCut)
         
+        print('NPV_Multiplier_UI_Rec: ',mystr(NPV_Multiplier_UI_Rec[-1]))
+        print('NPV_Multiplier_UI_Rec_AD: ',mystr(NPV_Multiplier_UI_Rec_AD[-1]))
+        print('NPV_Multiplier_UI_Rec_AD_allStates: ',mystr(NPV_Multiplier_UI_Rec_AD_allStates[-1]))
+        
+        print('NPV_Multiplier_Rec_TaxCut: ',mystr(NPV_Multiplier_Rec_TaxCut[-1]))
+        print('NPV_Multiplier_Rec_TaxCut_AD: ',mystr(NPV_Multiplier_Rec_TaxCut_AD[-1]))
+        print('NPV_Multiplier_Rec_TaxCut_AD_allStates: ',mystr(NPV_Multiplier_Rec_TaxCut_AD_allStates[-1]))
         
         #%% Income and Consumption paths UI extension
     
@@ -327,48 +334,67 @@ if __name__ == '__main__':
             if IncOnly:
                 return AddInc_UI_Ext_Rec_RelRec[Period-1]
             else:
-                return AddCons_UI_Ext_Rec_RelRec_AD[Period-1]/AddInc_UI_Ext_Rec_RelRec[Period-1]
+                return AddCons_UI_Ext_Rec_RelRec_AD[Period-1]
             
-        #these should be identical
-        print('Add Inc für RecLength 1 and Policy Length 1 in period 1 = ', PeriodMultiplier(1,1,1,True))
-        print('Add Inc für RecLength 1 and Policy Length 2 in period 1 = ', PeriodMultiplier(1,2,1,True))
         
-        print('Add Inc für RecLength 1 and Policy Length 1 in period 2 = ', PeriodMultiplier(1,1,2,True))
-        print('Add Inc für RecLength 1 and Policy Length 2 in period 2 = ', PeriodMultiplier(1,2,2,True))
+        RecLen = 10
+            
+        print('Add Inc für RecLength 1 and Policy Length 1 in period 1 = ', PeriodMultiplier(RecLen,1,1,True))
+        print('Add Inc für RecLength 1 and Policy Length 2 in period 1 = ', PeriodMultiplier(RecLen,2,1,True))
+        #print('Add Inc für RecLength 1 and Policy Length 3 in period 1 = ', PeriodMultiplier(RecLen,3,1,True))
+        
+        print('Add Inc für RecLength 1 and Policy Length 1 in period 2 = ', PeriodMultiplier(RecLen,1,2,True))
+        print('Add Inc für RecLength 1 and Policy Length 2 in period 2 = ', PeriodMultiplier(RecLen,2,2,True))
+        #print('Add Inc für RecLength 1 and Policy Length 3 in period 2 = ', PeriodMultiplier(RecLen,3,2,True))
 
-        print('Add Inc für RecLength 1 and Policy Length 1 in period 3 = ', PeriodMultiplier(1,1,3,True))
-        print('Add Inc für RecLength 1 and Policy Length 2 in period 3 = ', PeriodMultiplier(1,2,3,True))
+        print('Add Inc für RecLength 1 and Policy Length 1 in period 3 = ', PeriodMultiplier(RecLen,1,3,True))
+        print('Add Inc für RecLength 1 and Policy Length 2 in period 3 = ', PeriodMultiplier(RecLen,2,3,True))
+        #print('Add Inc für RecLength 1 and Policy Length 3 in period 3 = ', PeriodMultiplier(1,3,3,True))
         
-        print('Add Inc für RecLength 1 and Policy Length 1 in period 4 = ', PeriodMultiplier(1,1,4,True))
-        print('Add Inc für RecLength 1 and Policy Length 2 in period 4 = ', PeriodMultiplier(1,2,4,True))
+        print('Add Cons für RecLength 1 and Policy Length 1 in period 1 = ', PeriodMultiplier(RecLen,1,1,False))
+        print('Add Cons für RecLength 1 and Policy Length 2 in period 1 = ', PeriodMultiplier(RecLen,2,1,False))
+        #print('Add Cons für RecLength 1 and Policy Length 3 in period 1 = ', PeriodMultiplier(1,3,1,False))
         
-        print('Add Inc für RecLength 1 and Policy Length 1 in period 5 = ', PeriodMultiplier(1,1,5,True))
-        print('Add Inc für RecLength 1 and Policy Length 2 in period 5 = ', PeriodMultiplier(1,2,5,True))
-        
-        print('Add Inc für RecLength 1 and Policy Length 1 in period 6 = ', PeriodMultiplier(1,1,6,True))
-        print('Add Inc für RecLength 1 and Policy Length 2 in period 6 = ', PeriodMultiplier(1,2,6,True))
-        
-        
-        print('Add Cons für RecLength 1 and Policy Length 1 in period 1 = ', PeriodMultiplier(1,1,1,False))
-        print('Add Cons für RecLength 1 and Policy Length 2 in period 1 = ', PeriodMultiplier(1,2,1,False))
-        
-        print('Add Cons für RecLength 1 and Policy Length 1 in period 2 = ', PeriodMultiplier(1,1,2,False))
-        print('Add Cons für RecLength 1 and Policy Length 2 in period 2 = ', PeriodMultiplier(1,2,2,False))
+        print('Add Cons für RecLength 1 and Policy Length 1 in period 2 = ', PeriodMultiplier(RecLen,1,2,False))
+        print('Add Cons für RecLength 1 and Policy Length 2 in period 2 = ', PeriodMultiplier(RecLen,2,2,False))
+        #print('Add Cons für RecLength 1 and Policy Length 3 in period 2 = ', PeriodMultiplier(1,3,2,False))
 
-        print('Add Cons für RecLength 1 and Policy Length 1 in period 3 = ', PeriodMultiplier(1,1,3,False))
-        print('Add Cons für RecLength 1 and Policy Length 2 in period 3 = ', PeriodMultiplier(1,2,3,False))
+        print('Add Cons für RecLength 1 and Policy Length 1 in period 3 = ', PeriodMultiplier(RecLen,1,3,False))
+        print('Add Cons für RecLength 1 and Policy Length 2 in period 3 = ', PeriodMultiplier(RecLen,2,3,False))
+        #print('Add Cons für RecLength 1 and Policy Length 3 in period 3 = ', PeriodMultiplier(1,3,3,False))
         
-        print('Add Cons für RecLength 1 and Policy Length 1 in period 4 = ', PeriodMultiplier(1,1,4,False))
-        print('Add Cons für RecLength 1 and Policy Length 2 in period 4 = ', PeriodMultiplier(1,2,4,False))
         
-        print('Add Cons für RecLength 1 and Policy Length 1 in period 5 = ', PeriodMultiplier(1,1,5,False))
-        print('Add Cons für RecLength 1 and Policy Length 2 in period 5 = ', PeriodMultiplier(1,2,5,False))
+        PeriodMultiplierArray = np.zeros((4,6))
+        for i in range(6):
+            for j in range(4):
+                PeriodMultiplierArray[j,i] = PeriodMultiplier(1,j+1,i+1,True)
+
+        plt.figure(figsize=(15,10))
+        plt.title('Recession lasts 1 q, Period Multiplier', size=30)
+        plt.plot(PeriodMultiplierArray[0,:])
+        plt.plot(PeriodMultiplierArray[1,:])
+        plt.plot(PeriodMultiplierArray[2,:])
+        plt.plot(PeriodMultiplierArray[3,:])
+        plt.legend(['P1','P2','P3','P4'], fontsize=14)
+        plt.xlabel('quarter', fontsize=18)
+        plt.show() 
         
-        print('Add Cons für RecLength 1 and Policy Length 1 in period 6 = ', PeriodMultiplier(1,1,6,False))
-        print('Add Cons für RecLength 1 and Policy Length 2 in period 6 = ', PeriodMultiplier(1,2,6,False))
+        PeriodMultiplierArray = np.zeros((4,6))
+        for i in range(6):
+            for j in range(4):
+                PeriodMultiplierArray[j,i] = PeriodMultiplier(10,j+1,i+1,True)
+
+        plt.figure(figsize=(15,10))
+        plt.title('Recession lasts 1 q, Period Multiplier', size=30)
+        plt.plot(PeriodMultiplierArray[0,:])
+        plt.plot(PeriodMultiplierArray[1,:])
+        plt.plot(PeriodMultiplierArray[2,:])
+        plt.plot(PeriodMultiplierArray[3,:])
+        plt.legend(['P1','P2','P3','P4'], fontsize=14)
+        plt.xlabel('quarter', fontsize=18)
+        plt.show() 
+
         
-        # We see that once extension ends income is still increased
-        # That additional income is much lower, getting to less people, and thus affecting only those still unemployed
     
         #%%
         def PlotsforSpecificRecandPolicyLength(RecLength,PolicyLength): 
@@ -406,28 +432,28 @@ if __name__ == '__main__':
                 plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
                 plt.xlabel('quarter', fontsize=18)
                 plt.ylabel('% diff. rel. to no UI extension', fontsize=16)
-                # plt.savefig(figs_dir +'Rec' + str(RecLength) +'q_UiExt' + str(PolicyLength) + 'q_relrecession.pdf')
+                plt.savefig(figs_dir +'Rec' + str(RecLength) +'q_UiExt' + str(PolicyLength) + 'q_relrecession.pdf')
                 plt.show() 
                 
                 
-                AddCons_UI_Ext_Rec_RelBase_AD_allStates = getSimulationPercentDiff(base_results,    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggCons')         
-                AddCons_Rec_RelBase_AD_allStates        = getSimulationPercentDiff(base_results,    recession_all_results_AD_allStates[RecLength-1],'AggCons')
-                AddInc_UI_Ext_Rec_RelBase_AD_allStates  = getSimulationPercentDiff(base_results,    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggIncome')
-                AddInc_Rec_RelBase_AD_allStates         = getSimulationPercentDiff(base_results,    recession_all_results_AD_allStates[RecLength-1],'AggIncome')
+                # AddCons_UI_Ext_Rec_RelBase_AD_allStates = getSimulationPercentDiff(base_results,    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggCons')         
+                # AddCons_Rec_RelBase_AD_allStates        = getSimulationPercentDiff(base_results,    recession_all_results_AD_allStates[RecLength-1],'AggCons')
+                # AddInc_UI_Ext_Rec_RelBase_AD_allStates  = getSimulationPercentDiff(base_results,    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggIncome')
+                # AddInc_Rec_RelBase_AD_allStates         = getSimulationPercentDiff(base_results,    recession_all_results_AD_allStates[RecLength-1],'AggIncome')
                 
                 
-                plt.figure(figsize=(15,10))
-                plt.title('Recession lasts ' + str(RecLength) + 'q, UI extension lasts ' + str(PolicyLength) + 'q', size=30)
-                plt.plot(x_axis,AddInc_Rec_RelBase_AD_allStates[0:max_T]        , color='blue',linestyle='-')
-                plt.plot(x_axis,AddCons_Rec_RelBase_AD_allStates[0:max_T]       , color='red' ,linestyle='-')  
-                plt.plot(x_axis,AddInc_UI_Ext_Rec_RelBase_AD_allStates[0:max_T] , color='blue',linestyle=':')             
-                plt.plot(x_axis,AddCons_UI_Ext_Rec_RelBase_AD_allStates[0:max_T], color='red' ,linestyle=':') 
-                plt.legend(['Inc, Rec','Cons, Rec',\
-                            'Inc, Rec + UI', 'Cons, Rec + UI'], fontsize=14)
-                plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
-                plt.xlabel('quarter', fontsize=18)
-                plt.ylabel('% diff. rel. to baseline', fontsize=16)
-                plt.show() 
+                # plt.figure(figsize=(15,10))
+                # plt.title('Recession lasts ' + str(RecLength) + 'q, UI extension lasts ' + str(PolicyLength) + 'q', size=30)
+                # plt.plot(x_axis,AddInc_Rec_RelBase_AD_allStates[0:max_T]        , color='blue',linestyle='-')
+                # plt.plot(x_axis,AddCons_Rec_RelBase_AD_allStates[0:max_T]       , color='red' ,linestyle='-')  
+                # plt.plot(x_axis,AddInc_UI_Ext_Rec_RelBase_AD_allStates[0:max_T] , color='blue',linestyle=':')             
+                # plt.plot(x_axis,AddCons_UI_Ext_Rec_RelBase_AD_allStates[0:max_T], color='red' ,linestyle=':') 
+                # plt.legend(['Inc, Rec','Cons, Rec',\
+                #             'Inc, Rec + UI', 'Cons, Rec + UI'], fontsize=14)
+                # plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+                # plt.xlabel('quarter', fontsize=18)
+                # plt.ylabel('% diff. rel. to baseline', fontsize=16)
+                # plt.show() 
             
             return Multipliers
         
