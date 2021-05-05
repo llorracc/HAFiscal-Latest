@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/FullRun_Apr18_AD05_AllStates_800k/'
+figs_dir = './Figures/Test/'
 
 try:
     os.mkdir(figs_dir)
@@ -323,7 +323,7 @@ frictionless_changes = {
 
 quick_test = True
 if quick_test:
-    AgentCountTotal = int(80*1e4)
+    AgentCountTotal = int(20*1e4)
     DiscFacCount = 1
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
