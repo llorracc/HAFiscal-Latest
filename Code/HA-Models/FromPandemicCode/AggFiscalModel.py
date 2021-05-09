@@ -68,14 +68,13 @@ class AggFiscalType(FiscalType):
         return "Not applicable for Aggregate model"
     
     def makeIdiosyncraticShockHistories(self):     
-        print('makeIdiosyncraticShockHistories called')
         self.Mrkv_univ = 0
         self.read_shocks = False
         self.makeShockHistory()
-        self.who_dies_fixed_hist = self.history['who_dies'].copy()
+        self.who_dies_fixed_hist    = self.history['who_dies'].copy()
         self.update_draw_fixed_hist = self.history['update_draw'].copy()
-        self.perm_shock_fixed_hist = self.history['PermShkNow'].copy()
-        self.tran_shock_fixed_hist = self.history['TranShkNow'].copy()
+        self.perm_shock_fixed_hist  = self.history['PermShkNow'].copy()
+        self.tran_shock_fixed_hist  = self.history['TranShkNow'].copy()
         self.unemployment_draw_fixed_hist = self.history['unemployment_draw'].copy()
         self.Mrkv_univ = None
         
@@ -106,6 +105,8 @@ class AggFiscalType(FiscalType):
         if self.TaxCutShock:
             MrkvNew +=12 # put everyone in the tax cut states
             #might not change if we keep the order, if +12 relates to 1q of the reform
+        if self.CheckShock:
+            MrkvNew +=36*3 # put everyone in the check state
         if (self.ExtendedUIShock and self.TaxCutShock):
             print("Cannot handle UI and TaxCut experiments at the same time (yet)")
             return
@@ -129,27 +130,47 @@ class AggFiscalType(FiscalType):
         self.MicroMrkvNow = MicroMrkvNow_start
         self.MacroMrkvNow = MacroMrkvNow_start
         self.MrkvNow = 3*self.MacroMrkvNow + self.MicroMrkvNow
-            
+         
+        
         tax_cut_multiplier = np.ones_like(self.history['MrkvNow'])
-        tax_cut_multiplier[np.greater(self.history['MrkvNow'], 11)] *= self.TaxCutIncFactor #$$$$$$$$$$ assumes all markov states above 11 are tax cut states
+        tax_cut_states = np.logical_and(np.greater(self.history['MrkvNow'], 11), np.less(self.history['MrkvNow'],36*3)) #$$$$$$$$$$ assumes all markov states above 11 and below 36 are tax cut states
+        tax_cut_multiplier[tax_cut_states] *= self.TaxCutIncFactor 
+        
+                
+        CheckAmount = np.greater_equal(self.history['MrkvNow'],36*3) * self.CheckStimLvl 
+        #This only works because check occurs in first period
+        CheckAmount[0] = CheckAmount[0] / self.pLvlNow        
+        for agent in range(len(CheckAmount[0])):
+            # Stimulus is a function of permanent income
+            if self.pLvlNow[agent] < self.CheckStimLvl_PLvl_Cutoff_start:
+                AgentSpecificScalar = 1
+            elif self.pLvlNow[agent] > self.CheckStimLvl_PLvl_Cutoff_end:
+                AgentSpecificScalar = 0
+            else:
+                AgentSpecificScalar = 1-(self.pLvlNow[agent]-self.CheckStimLvl_PLvl_Cutoff_start)/(self.CheckStimLvl_PLvl_Cutoff_end-self.CheckStimLvl_PLvl_Cutoff_start)
+            CheckAmount[0][agent] *= AgentSpecificScalar
+        
+        # pLvlNow seems to change later on if agent dies
+        # but this only occurs after simulation
+        # leave this error to later
+        
+    
+        
         employed = np.equal(self.history['MrkvNow']%3, 0)
         self.history['PermShkNow'][employed] = self.perm_shock_fixed_hist[employed]
-        self.history['TranShkNow'][employed] = self.tran_shock_fixed_hist[employed]*tax_cut_multiplier[employed]
+        self.history['TranShkNow'][employed] = self.tran_shock_fixed_hist[employed]*tax_cut_multiplier[employed] + CheckAmount[employed] / self.perm_shock_fixed_hist[employed]
         unemp_without_benefits = np.equal(self.history['MrkvNow']%3, 1)
         self.history['PermShkNow'][unemp_without_benefits] = 1.0
-        self.history['TranShkNow'][unemp_without_benefits] = self.IncUnempNoBenefits
+        self.history['TranShkNow'][unemp_without_benefits] = self.IncUnempNoBenefits + CheckAmount[unemp_without_benefits] 
         unemp_with_benefits = np.equal(self.history['MrkvNow']%3, 2)
         self.history['PermShkNow'][unemp_with_benefits] = 1.0
-        self.history['TranShkNow'][unemp_with_benefits] = self.IncUnemp
+        self.history['TranShkNow'][unemp_with_benefits] = self.IncUnemp + CheckAmount[unemp_with_benefits] 
+        
         self.history['who_dies'] = self.who_dies_fixed_hist
         self.history['update_draw'] = self.update_draw_fixed_hist
         self.history['unemployment_draw'] = self.unemployment_draw_fixed_hist
         
         
-        # # Check experiment
-        # Check_multiplier = np.ones_like(self.history['MrkvNow'])
-        # Check_multiplier[np.greater(self.history['MrkvNow'], 35)] *= (1 + self.StimLvl/self.pLvlNow)
-        # self.history['TranShkNow'] = self.tran_shock_fixed_hist*Check_multiplier
         
     def switchToCounterfactualMode(self):
         FiscalType.switchToCounterfactualMode(self)
@@ -456,8 +477,8 @@ class AggregateDemandEconomy(Market):
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        #self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
-        self.ADFunc = lambda C, RecState : C**(self.ADelasticity) #in case AD effects are independent of recession state
+        self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
+        #self.ADFunc = lambda C, RecState : C**(self.ADelasticity) #in case AD effects are independent of recession state
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -476,7 +497,7 @@ class AggregateDemandEconomy(Market):
             agent.initializeSim()
         
     def runExperiment(self, RecessionShock = False,TaxCutShock = False, \
-                      ExtendedUIShock =False, UpdatePrb = 1.0, Splurge = 0.0, EconomyMrkv_init = [0], Full_Output = True):
+                      ExtendedUIShock =False, CheckShock = False, UpdatePrb = 1.0, Splurge = 0.0, EconomyMrkv_init = [0], Full_Output = True):
         # Make the macro markov history
         self.EconomyMrkvNow_hist = [0] * self.act_T
         self.EconomyMrkvNow_hist[0:len(EconomyMrkv_init)] = EconomyMrkv_init
@@ -492,6 +513,7 @@ class AggregateDemandEconomy(Market):
                 'RecessionShock' : RecessionShock,
                 'TaxCutShock' : TaxCutShock,
                 'ExtendedUIShock' : ExtendedUIShock,
+                'CheckShock': CheckShock,
                 'UpdatePrb' : UpdatePrb
                 }
           
@@ -759,6 +781,99 @@ class AggregateDemandEconomy(Market):
                 
         if name != None:
             self.storeADsolution(name)
+            
+            
+    def solveAD_Check_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):      
+        #reset Cfunc
+        dim = len(self.CFunc)
+        self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+        for agent in self.agents:
+            agent.CFunc = self.CFunc
+        print("Presolving")
+        self.solve()
+        
+        self.ADelasticity = self.demand_ADelasticity
+        self.update()   
+        recession_Check_dict = {
+             'RecessionShock' : True,
+             'ExtendedUIShock' : False,
+             'TaxCutShock' : False,
+             'CheckShock' : True,
+             'UpdatePrb': 1.0,
+             'Splurge': 0.32,
+             }
+        
+        dim = int(len(self.CFunc)/3)
+        MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+        
+        # Iterate until CRules coincide with actual consumption dynmics
+        for i in range(num_max_iterations):
+            print("Iteration ", i+1,":")
+            recession_Check_all_results = []
+            max_recession = 19
+            # Simulate different recession lengths
+            for t in [0,max_recession-1]:
+                recession_Check_dict['EconomyMrkv_init']    = [1]*(t+1)
+                recession_Check_dict['EconomyMrkv_init'][0] = 37
+                print("recession_Check_dict['EconomyMrkv_init']: ", recession_Check_dict['EconomyMrkv_init'] )
+                this_sim_results = self.runExperiment(**recession_Check_dict)
+                recession_Check_all_results += [this_sim_results]
+                
+            #Debugging
+            plt.plot(recession_Check_all_results[0]['Cratio_hist'][0:20]) 
+            plt.plot(recession_Check_all_results[1]['Cratio_hist'][0:20])    
+            plt.legend(['0','1'], fontsize=14)
+            plt.pause(1)
+            plt.show()
+            
+            MacroCFunc[0][37] = CRule(recession_Check_all_results[0]['Cratio_hist'][0],0.0) 
+            
+            MacroCFunc[37][0] = CRule(recession_Check_all_results[0]['Cratio_hist'][1],0.0)
+
+            MacroCFunc[37][1] = CRule(recession_Check_all_results[1]['Cratio_hist'][1],0.0)            
+
+            startt = 2 
+            endd = max_recession
+            slope_if_recession     = (recession_Check_all_results[1]['Cratio_hist'][startt+1] - recession_Check_all_results[1]['Cratio_hist'][endd-1])/(recession_Check_all_results[1]['Cratio_hist'][startt] - recession_Check_all_results[1]['Cratio_hist'][endd-2])
+            intercept_if_recession =  recession_Check_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_Check_all_results[1]['Cratio_hist'][startt]-1)
+            MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
+
+            slope = (recession_Check_all_results[1]['Cratio_hist'][19]-1)/(recession_Check_all_results[1]['Cratio_hist'][18]-1)
+            MacroCFunc[1][0] = CRule(1.0,slope)
+            
+                      
+            MacroCFunc[0][0] = CRule(1.0, np.mean((np.array(recession_Check_all_results[0]['Cratio_hist'][3:10])-1)/(np.array(recession_Check_all_results[0]['Cratio_hist'][2:9])-1)))  # when you return to normal state, aggregate consumption will not be equal to baseline
+                 
+       
+            self.MacroCFunc = MacroCFunc
+            Old_Cfunc  = self.CFunc
+            New_Cfunc  = self.Macro2MicroCFunc(MacroCFunc)
+            
+            step = self.Cfunc_iter_stepsize 
+            dim = int(len(self.CFunc))
+            Step_Cfunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
+            for ii in range(dim):
+                for jj in range(dim):
+                    Step_Cfunc[ii][jj].slope      = Old_Cfunc[ii][jj].slope     + step*(New_Cfunc[ii][jj].slope-Old_Cfunc[ii][jj].slope)
+                    Step_Cfunc[ii][jj].intercept  = Old_Cfunc[ii][jj].intercept + step*(New_Cfunc[ii][jj].intercept-Old_Cfunc[ii][jj].intercept)
+                    
+            self.CFunc = Step_Cfunc
+            for agent in self.agents:
+                agent.CFunc = self.CFunc
+            print("solving again...")
+            self.solve()
+            
+            
+            Total_Diff = self.CompareCFuncConvergence(Old_Cfunc,self.CFunc)
+
+            if Total_Diff < convergence_cutoff:
+                print("Convergence criterion reached.")
+                break
+            else:                    
+                print("Convergence criterion not reached.")
+                
+        if name != None:
+            self.storeADsolution(name)            
     
     def solveAD_UIExtension_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
         #reset Cfunc

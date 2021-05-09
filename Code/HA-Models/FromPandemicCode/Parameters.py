@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Test/'
+figs_dir = './Figures/Check_Experiment/'
 
 try:
     os.mkdir(figs_dir)
@@ -41,6 +41,11 @@ TaxCutIncFactor = 1.02       # Amount by which the payroll tax cut increases aft
 TaxCutPeriods = 8            # Deterministic duration of tax cut 
 TaxCutContinuationProb_Rec = 0.5   # Probability that tax cut is continued after tax cut periods run out, when recession in q8
 TaxCutContinuationProb_Bas = 0.0   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
+    #Check experiment parameter
+CheckStimLvl = 0.5
+CheckStimLvl_PLvl_Cutoff_start = 2 #At this Level of permanent inc, Stimulus beings to fall linearly
+CheckStimLvl_PLvl_Cutoff_end = 3 #At this Level of permanent inc, Stimulus is zero
+
 
 UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
 Splurge = 0.32      # amount of income that is splurged
@@ -127,10 +132,16 @@ def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationP
     MacroMrkvArray[-2:,0:2] =  np.array([[1.0,         0.0],
                                         [1-R_persist, R_persist]])
     
+    # Add Check Experiment states
+    NewDim = len(MacroMrkvArray)+2
+    MacroCheckArray = np.zeros((2,NewDim))
+    MacroCheckArray[0,0] = 1            #Transisition from check in normal to normal is 100% because check only lasts 1 q
+    MacroCheckArray[1,0] = 1-R_persist  #Transisition from check in rec to normal
+    MacroCheckArray[1,1] = R_persist    #Transisition from check in rec to rec
+    MacroMrkvArray = np.concatenate((MacroMrkvArray,np.zeros((MacroMrkvArray.shape[0],2))),axis=1) #extend to dim 38 in width
+    MacroMrkvArray = np.concatenate((MacroMrkvArray,MacroCheckArray),axis = 0) #append check transitions
     
-
-
-        
+ 
     return MacroMrkvArray
     
 def makeCondMrkvArrays(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, UBspell_extended, TaxCutPeriods):
@@ -176,6 +187,7 @@ def makeCondMrkvArrays(Urate_normal, Uspell_normal, UBspell_normal, Urate_recess
     
     CondMrkvArrays = [MrkvArray_normal, MrkvArray_recession, MrkvArray_normal_exUB, MrkvArray_recession_exUB]
     CondMrkvArrays += [MrkvArray_normal, MrkvArray_recession]*TaxCutPeriods*2
+    CondMrkvArrays += [MrkvArray_normal, MrkvArray_recession]*2 #CheckStates
     return CondMrkvArrays
 
 def makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays):
@@ -268,6 +280,9 @@ init_infhorizon = {"T_cycle": T_cycle,
                 'TaxCutPeriods' : TaxCutPeriods,
                 'TaxCutContinuationProb_Rec' : TaxCutContinuationProb_Rec,
                 'TaxCutContinuationProb_Bas' : TaxCutContinuationProb_Bas,
+                'CheckStimLvl' : CheckStimLvl,
+                'CheckStimLvl_PLvl_Cutoff_start' : CheckStimLvl_PLvl_Cutoff_start,
+                'CheckStimLvl_PLvl_Cutoff_end' : CheckStimLvl_PLvl_Cutoff_end,
                 'UpdatePrb' : 1.0,
                 'Splurge' : Splurge,
                 'track_vars' : []
@@ -313,6 +328,14 @@ recession_TaxCut_changes = {
              'ExtendedUIShock' : False,
              'TaxCutShock' : True,
              }
+Check_changes = {
+             'RecessionShock' : False,
+             'CheckShock' : True,
+             }
+recession_Check_changes = {
+             'RecessionShock' : True,
+             'CheckShock' : True,
+             }
 sticky_e_changes = {
              'UpdatePrb' : UpdatePrb
              }
@@ -323,7 +346,7 @@ frictionless_changes = {
 
 quick_test = True
 if quick_test:
-    AgentCountTotal = int(20*1e4)
+    AgentCountTotal = 20000 #int(1*1e4)
     DiscFacCount = 1
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
@@ -335,8 +358,8 @@ intercept_prev_big = np.ones((num_MrkvStates, num_MrkvStates))              # In
 slope_prev_big = np.zeros((num_MrkvStates, num_MrkvStates))                 # Slope of aggregate savings function
 ADelasticity = 0.50                                                         # Elasticity of productivity to consumption
 
-num_max_iterations_solvingAD = 25
-convergence_tol_solvingAD = 1E-4
+num_max_iterations_solvingAD = 10
+convergence_tol_solvingAD = 1E-2
 Cfunc_iter_stepsize       = 0.75
 
 # Make a dictionary to specify a Cobb-Douglas economy
