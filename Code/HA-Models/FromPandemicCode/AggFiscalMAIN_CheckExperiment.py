@@ -20,10 +20,14 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 
 
-Run_Recession           = True
-Run_Check               = True
-Run_Baseline_Check      = False
-Run_NonAD_Simulations   = False
+Run_Recession           = False
+Run_Check               = False
+Run_NonAD_Simulations   = True
+Make_Plots              = True
+
+Run_Baseline_Check      = True
+
+
 
 
 
@@ -41,6 +45,8 @@ base_results = AggDemandEconomy.runExperiment(**base_dict_agg, Full_Output = Fal
 t1 = time()
 print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
 AggDemandEconomy.storeBaseline(base_results['AggCons']) 
+saveAsPickleUnderVarName(base_results,figs_dir,locals())
+
 
 
 #%% 
@@ -70,10 +76,27 @@ if Run_Recession:
     saveAsPickleUnderVarName(recession_results_AD,figs_dir,locals())
     t1 = time()
     print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    if Run_NonAD_Simulations:
+        t0 = time()
+        AggDemandEconomy.restoreADsolution(name = 'baseline')
+        recession_dict = base_dict_agg.copy()
+        recession_dict.update(**recession_changes)
+        recession_all_results = []
+        recession_results = dict()
+        #  running recession with diferent lengths up to 20q then averaging the result
+        for t in range(max_recession_duration):
+            recession_dict['EconomyMrkv_init'] = [1]*(t+1)
+            print(recession_dict['EconomyMrkv_init'])
+            this_sim_results = AggDemandEconomy.runExperiment(**recession_dict, Full_Output = False)
+            recession_all_results += [this_sim_results]
+        for key in output_keys:
+            recession_results[key] = np.sum(np.array([recession_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        saveAsPickleUnderVarName(recession_all_results,figs_dir,locals())
+        saveAsPickleUnderVarName(recession_results,figs_dir,locals())
+        t1 = time()
+        print('Calculating recession consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
 
-
-
-#%%
 
 if Run_Check:
     # get AD Solution  
@@ -102,9 +125,85 @@ if Run_Check:
     saveAsPickleUnderVarName(recession_Check_results_AD,figs_dir,locals())
     t1 = time()
     print('Calculating recession + check consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
-        
     
+    if Run_NonAD_Simulations:
+        # Recession with Check, no AD
+        t0 = time()
+        AggDemandEconomy.restoreADsolution(name = 'baseline')
+        recession_Check_dict = base_dict_agg.copy()
+        recession_Check_dict.update(**recession_Check_changes)
+        recession_Check_all_results = []
+        recession_Check_results = dict()
+        #  running recession with diferent lengths up to 20q then averaging the result
+        for t in range(max_recession_duration):
+            recession_Check_dict['EconomyMrkv_init'] = [1]*(t+1)
+            recession_Check_dict['EconomyMrkv_init'][0] = 37
+            print(recession_Check_dict['EconomyMrkv_init'])
+            this_sim_results = AggDemandEconomy.runExperiment(**recession_Check_dict, Full_Output = False)
+            recession_Check_all_results += [this_sim_results]
+        for key in output_keys:
+            recession_Check_results[key] = np.sum(np.array([recession_Check_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        saveAsPickleUnderVarName(recession_Check_all_results,figs_dir,locals())
+        saveAsPickleUnderVarName(recession_Check_results,figs_dir,locals())
+        t1 = time()
+        print('Calculating recession + check consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
+        
 
+
+#%% Compare Recession and Recession + Check with AD 
+    
+if Make_Plots:
+
+    max_T = 20
+    x_axis = np.arange(1,21)
+    
+    folder = './Figures/Check_Experiment/'
+    
+    base_results                    = loadPickle('base_results',folder,locals())
+    recession_results               = loadPickle('recession_results',folder,locals())
+    recession_results_AD            = loadPickle('recession_results_AD',folder,locals())
+    recession_Check_results_AD      = loadPickle('recession_Check_results_AD',folder,locals())
+    
+    
+    NPV_AddInc_Check_Rec                    = getSimulationDiff(recession_results,      recession_Check_results,    'NPV_AggIncome') # Policy expenditure
+    NPV_Multiplier_Check_Rec                = getNPVMultiplier( recession_results,      recession_Check_results,    NPV_AddInc_Check_Rec)
+    NPV_Multiplier_Check_Rec_AD             = getNPVMultiplier( recession_results_AD,   recession_Check_results_AD, NPV_AddInc_Check_Rec)
+    
+ 
+    print('Long-run multiplier for check stimulus during recession, no AD effects: '    ,mystr(NPV_Multiplier_Check_Rec[-1]))
+    print('Long-run multiplier for check stimulus during recession, with AD effects: '  ,mystr(NPV_Multiplier_Check_Rec_AD[-1]))
+    
+    plt.figure(figsize=(15,10))
+    plt.title('NPV multiplier for Recession + Check experiment', size=30)
+    plt.plot(x_axis,NPV_Multiplier_Check_Rec[0:max_T], color='blue',linestyle='-')
+    plt.plot(x_axis,NPV_Multiplier_Check_Rec_AD[0:max_T], color='red',linestyle='-')
+    plt.legend(['no AD',' with AD'], fontsize=14)
+    plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+    plt.xlabel('quarter', fontsize=18)
+    plt.savefig(figs_dir +'NPVmulti_recession_Check_relrecession.pdf')
+    plt.show() 
+    
+    
+    AddCons_Rec           = getSimulationPercentDiff(recession_results,    recession_Check_results,'AggCons')
+    AddInc_Rec            = getSimulationPercentDiff(recession_results,    recession_Check_results,'AggIncome')
+    AddCons_Rec_AD        = getSimulationPercentDiff(recession_results_AD, recession_Check_results_AD,'AggCons')
+    AddInc_Rec_AD         = getSimulationPercentDiff(recession_results_AD, recession_Check_results_AD,'AggIncome')
+    
+    max_T = 20
+    x_axis = np.arange(1,21)
+    
+    plt.figure(figsize=(15,10))
+    plt.title('Recession + Check experiment', size=30)
+    plt.plot(x_axis,AddCons_Rec[0:max_T], color='blue',linestyle='-')
+    plt.plot(x_axis,AddInc_Rec[0:max_T],  color='blue',linestyle='--')
+    plt.plot(x_axis,AddCons_Rec_AD[0:max_T], color='red',linestyle='-')
+    plt.plot(x_axis,AddInc_Rec_AD[0:max_T],  color='red',linestyle='--')
+    plt.legend(['Cons, no AD','Inc, no AD','Cons, with AD','Inc, with AD'], fontsize=14)
+    plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+    plt.xlabel('quarter', fontsize=18)
+    plt.ylabel('% diff. rel. to recession', fontsize=16)
+    plt.savefig(figs_dir +'recession_Check_relrecession.pdf')
+    plt.show() 
 
  
 #%% Check during baseline 
