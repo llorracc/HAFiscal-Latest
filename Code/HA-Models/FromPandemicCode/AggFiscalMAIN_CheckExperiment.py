@@ -37,7 +37,7 @@ print('Setting up everything took ' + mystr(t1-t0) + ' seconds.')
 
 # Run the baseline consumption level
 t0 = time()
-base_results = AggDemandEconomy.runExperiment(**base_dict_agg, Full_Output = True)
+base_results = AggDemandEconomy.runExperiment(**base_dict_agg, Full_Output = False)
 t1 = time()
 print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
 AggDemandEconomy.storeBaseline(base_results['AggCons']) 
@@ -94,7 +94,7 @@ if Run_Check:
         recession_Check_dict['EconomyMrkv_init'] = [1]*(t+1)
         recession_Check_dict['EconomyMrkv_init'][0] = 37
         print(recession_Check_dict['EconomyMrkv_init'])
-        this_sim_results = AggDemandEconomy.runExperiment(**recession_Check_dict, Full_Output = True)
+        this_sim_results = AggDemandEconomy.runExperiment(**recession_Check_dict, Full_Output = False)
         recession_Check_all_results_AD += [this_sim_results]
     for key in output_keys:
         recession_Check_results_AD[key] = np.sum(np.array([recession_Check_all_results_AD[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)

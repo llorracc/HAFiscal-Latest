@@ -358,7 +358,7 @@ intercept_prev_big = np.ones((num_MrkvStates, num_MrkvStates))              # In
 slope_prev_big = np.zeros((num_MrkvStates, num_MrkvStates))                 # Slope of aggregate savings function
 ADelasticity = 0.50                                                         # Elasticity of productivity to consumption
 
-num_max_iterations_solvingAD = 10
+num_max_iterations_solvingAD = 15
 convergence_tol_solvingAD = 1E-2
 Cfunc_iter_stepsize       = 0.75
 
