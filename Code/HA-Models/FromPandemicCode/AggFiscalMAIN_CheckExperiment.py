@@ -20,12 +20,12 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 
 
-Run_Recession           = False
-Run_Check               = False
-Run_NonAD_Simulations   = True
-Make_Plots              = True
+Run_Recession           = True
+Run_Check               = True
+Run_NonAD_Simulations   = False
+Make_Plots              = False
 
-Run_Baseline_Check      = True
+Run_Baseline_Check      = False
 
 
 
@@ -158,26 +158,32 @@ if Make_Plots:
     x_axis = np.arange(1,21)
     
     folder = './Figures/Check_Experiment/'
+    folder_allSt = './Figures/Check_Experiment_allStates/'
     
     base_results                    = loadPickle('base_results',folder,locals())
     recession_results               = loadPickle('recession_results',folder,locals())
     recession_results_AD            = loadPickle('recession_results_AD',folder,locals())
+    recession_results_AD_allSt      = loadPickle('recession_results_AD',folder_allSt,locals())
+    recession_Check_results         = loadPickle('recession_Check_results',folder,locals())
     recession_Check_results_AD      = loadPickle('recession_Check_results_AD',folder,locals())
-    
+    recession_Check_results_AD_allSt= loadPickle('recession_Check_results_AD',folder_allSt,locals())
     
     NPV_AddInc_Check_Rec                    = getSimulationDiff(recession_results,      recession_Check_results,    'NPV_AggIncome') # Policy expenditure
     NPV_Multiplier_Check_Rec                = getNPVMultiplier( recession_results,      recession_Check_results,    NPV_AddInc_Check_Rec)
     NPV_Multiplier_Check_Rec_AD             = getNPVMultiplier( recession_results_AD,   recession_Check_results_AD, NPV_AddInc_Check_Rec)
+    NPV_Multiplier_Check_Rec_AD_allSt       = getNPVMultiplier( recession_results_AD_allSt, recession_Check_results_AD_allSt, NPV_AddInc_Check_Rec)
     
  
     print('Long-run multiplier for check stimulus during recession, no AD effects: '    ,mystr(NPV_Multiplier_Check_Rec[-1]))
     print('Long-run multiplier for check stimulus during recession, with AD effects: '  ,mystr(NPV_Multiplier_Check_Rec_AD[-1]))
+    print('Long-run multiplier for check stimulus during recession, with AD effects in all states: '  ,mystr(NPV_Multiplier_Check_Rec_AD_allSt[-1]))
     
     plt.figure(figsize=(15,10))
     plt.title('NPV multiplier for Recession + Check experiment', size=30)
     plt.plot(x_axis,NPV_Multiplier_Check_Rec[0:max_T], color='blue',linestyle='-')
     plt.plot(x_axis,NPV_Multiplier_Check_Rec_AD[0:max_T], color='red',linestyle='-')
-    plt.legend(['no AD',' with AD'], fontsize=14)
+    plt.plot(x_axis,NPV_Multiplier_Check_Rec_AD_allSt[0:max_T], color='green',linestyle='-')
+    plt.legend(['no AD',' with AD', 'with AD, all states'], fontsize=14)
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
     plt.xlabel('quarter', fontsize=18)
     plt.savefig(figs_dir +'NPVmulti_recession_Check_relrecession.pdf')
@@ -188,6 +194,8 @@ if Make_Plots:
     AddInc_Rec            = getSimulationPercentDiff(recession_results,    recession_Check_results,'AggIncome')
     AddCons_Rec_AD        = getSimulationPercentDiff(recession_results_AD, recession_Check_results_AD,'AggCons')
     AddInc_Rec_AD         = getSimulationPercentDiff(recession_results_AD, recession_Check_results_AD,'AggIncome')
+    AddCons_Rec_AD_allSt  = getSimulationPercentDiff(recession_results_AD_allSt, recession_Check_results_AD_allSt,'AggCons')
+    AddInc_Rec_AD_allSt   = getSimulationPercentDiff(recession_results_AD_allSt, recession_Check_results_AD_allSt,'AggIncome')
     
     max_T = 20
     x_axis = np.arange(1,21)
@@ -198,7 +206,9 @@ if Make_Plots:
     plt.plot(x_axis,AddInc_Rec[0:max_T],  color='blue',linestyle='--')
     plt.plot(x_axis,AddCons_Rec_AD[0:max_T], color='red',linestyle='-')
     plt.plot(x_axis,AddInc_Rec_AD[0:max_T],  color='red',linestyle='--')
-    plt.legend(['Cons, no AD','Inc, no AD','Cons, with AD','Inc, with AD'], fontsize=14)
+    plt.plot(x_axis,AddCons_Rec_AD_allSt[0:max_T], color='green',linestyle='-')
+    plt.plot(x_axis,AddInc_Rec_AD_allSt[0:max_T],  color='green',linestyle='--')
+    plt.legend(['Cons, no AD','Inc, no AD','Cons, with AD','Inc, with AD','Cons, with AD all states','Inc, with AD all states'], fontsize=14)
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
     plt.xlabel('quarter', fontsize=18)
     plt.ylabel('% diff. rel. to recession', fontsize=16)
