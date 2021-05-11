@@ -25,7 +25,7 @@ Run_Baseline            = True
 Run_UB_Ext_Recession    = True
 Run_Recession           = True
 Run_TaxCut_Recession    = False
-Run_NonAD               = False #whether to run nonAD experiments as well
+Run_NonAD               = True #whether to run nonAD experiments as well
 Make_Plots              = True
 
 
