@@ -24,7 +24,7 @@ mystr = lambda x : '{:.2f}'.format(x)
 Run_Baseline            = True
 Run_UB_Ext_Recession    = True
 Run_Recession           = True
-Run_TaxCut_Recession    = True
+Run_TaxCut_Recession    = False
 Run_NonAD               = False #whether to run nonAD experiments as well
 Make_Plots              = True
 
@@ -48,6 +48,55 @@ if __name__ == '__main__':
         t1 = time()
         print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
         
+    #%% 
+    
+    if Run_Recession:
+        # Solving recession under Agg Multiplier   
+        t0 = time()
+        AggDemandEconomy.solveAD_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Recession')
+        t1 = time()
+        print('Solving recession took ' + mystr(t1-t0) + ' seconds.')
+        
+        if Run_NonAD:
+            # Run the recession consumption level in absence of Agg Multiplier
+            t0 = time()
+            AggDemandEconomy.restoreADsolution(name = 'baseline')
+            recession_dict = base_dict_agg.copy()
+            recession_dict.update(**recession_changes)
+            recession_all_results = []
+            recession_results = dict()
+            #  running recession with diferent lengths up to 20q then averaging the result
+            for t in range(max_recession_duration):
+                recession_dict['EconomyMrkv_init'] = [1]*(t+1)
+                this_recession_results = AggDemandEconomy.runExperiment(**recession_dict, Full_Output = False)
+                recession_all_results += [this_recession_results]
+            for key in output_keys:
+                recession_results[key] = np.sum(np.array([recession_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+            saveAsPickleUnderVarName(recession_all_results,figs_dir,locals())
+            saveAsPickleUnderVarName(recession_results,figs_dir,locals())
+            t1 = time()
+            print('Calculating recession consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')    
+        
+           
+        # Run the recession consumption level in presence of the Agg Multiplier
+        t0 = time()
+        AggDemandEconomy.restoreADsolution(name = 'Recession')
+        recession_dict = base_dict_agg.copy()
+        recession_dict.update(**recession_changes)
+        recession_all_results_AD = []
+        recession_results_AD = dict()
+        for t in range(max_recession_duration):
+            recession_dict['EconomyMrkv_init'] = [1]*(t+1)
+            this_recession_results_AD = AggDemandEconomy.runExperiment(**recession_dict, Full_Output = False)
+            recession_all_results_AD += [this_recession_results_AD]
+        for key in output_keys:
+            recession_results_AD[key] = np.sum(np.array([recession_all_results_AD[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+        saveAsPickleUnderVarName(recession_all_results_AD,figs_dir,locals())
+        saveAsPickleUnderVarName(recession_results_AD,figs_dir,locals())
+        t1 = time()
+        print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+
     #%% 
     
     if Run_UB_Ext_Recession:
@@ -115,57 +164,6 @@ if __name__ == '__main__':
         saveAsPickleUnderVarName(recession_UI_results_AD,figs_dir,locals())
         t1 = time()
         print('Calculating recession and extended UI consumption took (with AD) ' + mystr(t1-t0) + ' seconds.')
-    
-    
-    
-    #%% 
-    
-    if Run_Recession:
-        # Solving recession under Agg Multiplier   
-        t0 = time()
-        AggDemandEconomy.solveAD_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Recession')
-        t1 = time()
-        print('Solving recession took ' + mystr(t1-t0) + ' seconds.')
-        
-        if Run_NonAD:
-            # Run the recession consumption level in absence of Agg Multiplier
-            t0 = time()
-            AggDemandEconomy.restoreADsolution(name = 'baseline')
-            recession_dict = base_dict_agg.copy()
-            recession_dict.update(**recession_changes)
-            recession_all_results = []
-            recession_results = dict()
-            #  running recession with diferent lengths up to 20q then averaging the result
-            for t in range(max_recession_duration):
-                recession_dict['EconomyMrkv_init'] = [1]*(t+1)
-                this_recession_results = AggDemandEconomy.runExperiment(**recession_dict, Full_Output = False)
-                recession_all_results += [this_recession_results]
-            for key in output_keys:
-                recession_results[key] = np.sum(np.array([recession_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
-            saveAsPickleUnderVarName(recession_all_results,figs_dir,locals())
-            saveAsPickleUnderVarName(recession_results,figs_dir,locals())
-            t1 = time()
-            print('Calculating recession consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')    
-        
-           
-        # Run the recession consumption level in presence of the Agg Multiplier
-        t0 = time()
-        AggDemandEconomy.restoreADsolution(name = 'Recession')
-        recession_dict = base_dict_agg.copy()
-        recession_dict.update(**recession_changes)
-        recession_all_results_AD = []
-        recession_results_AD = dict()
-        for t in range(max_recession_duration):
-            recession_dict['EconomyMrkv_init'] = [1]*(t+1)
-            this_recession_results_AD = AggDemandEconomy.runExperiment(**recession_dict, Full_Output = False)
-            recession_all_results_AD += [this_recession_results_AD]
-        for key in output_keys:
-            recession_results_AD[key] = np.sum(np.array([recession_all_results_AD[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
-        saveAsPickleUnderVarName(recession_all_results_AD,figs_dir,locals())
-        saveAsPickleUnderVarName(recession_results_AD,figs_dir,locals())
-        t1 = time()
-        print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
-    
     
     #%% 
     
@@ -239,8 +237,9 @@ if __name__ == '__main__':
         max_T = 20
         x_axis = np.arange(1,21)
         
-        folder1 = './Figures/FullRun_Apr18_AD05_800k/'
+        #folder1 = './Figures/FullRun_Apr18_AD05_800k/'
         folder2 = './Figures/FullRun_Apr18_AD05_AllStates_800k/'
+        folder1 = figs_dir
         
         base_results                = loadPickle('base_results',folder1,locals())
 
