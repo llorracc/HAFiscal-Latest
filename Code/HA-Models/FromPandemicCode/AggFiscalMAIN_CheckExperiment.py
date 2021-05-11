@@ -19,13 +19,14 @@ from OtherFunctions import getSimulationDiff, getSimulationPercentDiff, getStimu
 mystr = lambda x : '{:.2f}'.format(x)
 
 
-
+# solves under AD / no AD
 Run_Recession           = True
 Run_Check               = True
-Run_NonAD_Simulations   = False
-Make_Plots              = False
+Run_NonAD_Simulations   = True
+Make_Plots              = True
 
-Run_Baseline_Check      = False
+# This runs some investigations into the baseline check experiment
+Run_Baseline_Check      = True
 
 
 
@@ -180,11 +181,11 @@ if Make_Plots:
     
     plt.figure(figsize=(15,10))
     plt.title('NPV multiplier for Recession + Check experiment', size=30)
-    plt.plot(x_axis,NPV_Multiplier_Check_Rec[0:max_T], color='blue',linestyle='-')
-    plt.plot(x_axis,NPV_Multiplier_Check_Rec_AD[0:max_T], color='red',linestyle='-')
-    plt.plot(x_axis,NPV_Multiplier_Check_Rec_AD_allSt[0:max_T], color='green',linestyle='-')
+    plt.plot(np.arange(1,81),NPV_Multiplier_Check_Rec[0:80], color='blue',linestyle='-')
+    plt.plot(np.arange(1,81),NPV_Multiplier_Check_Rec_AD[0:80], color='red',linestyle='-')
+    plt.plot(np.arange(1,81),NPV_Multiplier_Check_Rec_AD_allSt[0:80], color='green',linestyle='-')
     plt.legend(['no AD',' with AD', 'with AD, all states'], fontsize=14)
-    plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+    plt.xticks(np.arange(1,81, 1.0))
     plt.xlabel('quarter', fontsize=18)
     plt.savefig(figs_dir +'NPVmulti_recession_Check_relrecession.pdf')
     plt.show() 
@@ -220,6 +221,12 @@ if Make_Plots:
     
 if Run_Baseline_Check: 
 
+    # Run the baseline consumption level
+    t0 = time()
+    base_results = AggDemandEconomy.runExperiment(**base_dict_agg, Full_Output = True)
+    t1 = time()
+    print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
+    AggDemandEconomy.storeBaseline(base_results['AggCons']) 
        
     # Run Check experiment during baseline
     t0 = time()
@@ -230,10 +237,48 @@ if Run_Baseline_Check:
     t1 = time()
     print('Calculating check experiment ' + mystr(t1-t0) + ' seconds.')
     
+            
+    output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons', 'pLvl_all','TranShk_all']
+              
+    # Recession only
+    t0 = time()
+    AggDemandEconomy.restoreADsolution(name = 'baseline')
+    recession_dict = base_dict_agg.copy()
+    recession_dict.update(**recession_changes)
+    recession_all_results = []
+    recession_results = dict()
+    #  running recession with diferent lengths up to 20q then averaging the result
+    for t in range(max_recession_duration):
+        recession_dict['EconomyMrkv_init'] = [1]*(t+1)
+        print(recession_dict['EconomyMrkv_init'])
+        this_sim_results = AggDemandEconomy.runExperiment(**recession_dict, Full_Output = True)
+        recession_all_results += [this_sim_results]
+    for key in output_keys:
+        recession_results[key] = np.sum(np.array([recession_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+    t1 = time()
+    print('Calculating recession consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
+    
+    # Recession with Check, no AD
+    t0 = time()
+    AggDemandEconomy.restoreADsolution(name = 'baseline')
+    recession_Check_dict = base_dict_agg.copy()
+    recession_Check_dict.update(**recession_Check_changes)
+    recession_Check_all_results = []
+    recession_Check_results = dict()
+    #  running recession with diferent lengths up to 20q then averaging the result
+    for t in range(max_recession_duration):
+        recession_Check_dict['EconomyMrkv_init'] = [1]*(t+1)
+        recession_Check_dict['EconomyMrkv_init'][0] = 37
+        print(recession_Check_dict['EconomyMrkv_init'])
+        this_sim_results = AggDemandEconomy.runExperiment(**recession_Check_dict, Full_Output = True)
+        recession_Check_all_results += [this_sim_results]
+    for key in output_keys:
+        recession_Check_results[key] = np.sum(np.array([recession_Check_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+    t1 = time()
+    print('Calculating recession + check consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
 
             
-    # Investigate
-    
+    # Investigate   
     def InvestigateResults(base,check):
         x=getSimulationDiff(base,check,'pLvl_all')
         print('Maximum difference in pLvl_all: ', np.max(x), ' (should be 0)')
@@ -258,11 +303,12 @@ if Run_Baseline_Check:
         
       
     InvestigateResults(base_results,Check_results)     
-    
-    # Plot Baseline Check experiment
+    InvestigateResults(recession_results,recession_Check_results)     
     
     AddCons               = getSimulationPercentDiff(base_results,    Check_results,'AggCons')
     AddInc                = getSimulationPercentDiff(base_results,    Check_results,'AggIncome')
+    AddCons_Rec           = getSimulationPercentDiff(recession_results,    recession_Check_results,'AggCons')
+    AddInc_Rec            = getSimulationPercentDiff(recession_results,    recession_Check_results,'AggIncome')
     
     max_T = 20
     x_axis = np.arange(1,21)
@@ -270,77 +316,11 @@ if Run_Baseline_Check:
     plt.figure(figsize=(15,10))
     plt.plot(x_axis,AddCons[0:max_T], color='blue',linestyle='-')
     plt.plot(x_axis,AddInc[0:max_T],  color='blue',linestyle='--')
-    plt.legend(['Cons','Inc'], fontsize=14)
+    plt.plot(x_axis,AddCons_Rec[0:max_T], color='red',linestyle='-')
+    plt.plot(x_axis,AddInc_Rec[0:max_T],  color='red',linestyle='--')
+    plt.legend(['Cons','Inc','Cons Rec','Inc Rec'], fontsize=14)
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
     plt.xlabel('quarter', fontsize=18)
-    plt.show() 
-    
-    
-
-    #%% Check during recession but no AD effects 
-    if Run_Recession:
-        
-        # Recession only
-        output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons', 'pLvl_all','TranShk_all']
-        
-        
-        
-        t0 = time()
-        AggDemandEconomy.restoreADsolution(name = 'baseline')
-        recession_dict = base_dict_agg.copy()
-        recession_dict.update(**recession_changes)
-        recession_all_results = []
-        recession_results = dict()
-        #  running recession with diferent lengths up to 20q then averaging the result
-        for t in range(max_recession_duration):
-            recession_dict['EconomyMrkv_init'] = [1]*(t+1)
-            print(recession_dict['EconomyMrkv_init'])
-            this_sim_results = AggDemandEconomy.runExperiment(**recession_dict, Full_Output = True)
-            recession_all_results += [this_sim_results]
-        for key in output_keys:
-            recession_results[key] = np.sum(np.array([recession_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
-        t1 = time()
-        print('Calculating recession consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
-        
-        # Recession with Check, no AD
-        t0 = time()
-        AggDemandEconomy.restoreADsolution(name = 'baseline')
-        recession_Check_dict = base_dict_agg.copy()
-        recession_Check_dict.update(**recession_Check_changes)
-        recession_Check_all_results = []
-        recession_Check_results = dict()
-        #  running recession with diferent lengths up to 20q then averaging the result
-        for t in range(max_recession_duration):
-            recession_Check_dict['EconomyMrkv_init'] = [1]*(t+1)
-            recession_Check_dict['EconomyMrkv_init'][0] = 37
-            print(recession_Check_dict['EconomyMrkv_init'])
-            this_sim_results = AggDemandEconomy.runExperiment(**recession_Check_dict, Full_Output = True)
-            recession_Check_all_results += [this_sim_results]
-        for key in output_keys:
-            recession_Check_results[key] = np.sum(np.array([recession_Check_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
-        t1 = time()
-        print('Calculating recession + check consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
-      
-    
-        InvestigateResults(recession_results,recession_Check_results)    
-        #%% 
-        
-        AddCons               = getSimulationPercentDiff(base_results,    Check_results,'AggCons')
-        AddInc                = getSimulationPercentDiff(base_results,    Check_results,'AggIncome')
-        AddCons_Rec           = getSimulationPercentDiff(recession_results,    recession_Check_results,'AggCons')
-        AddInc_Rec            = getSimulationPercentDiff(recession_results,    recession_Check_results,'AggIncome')
-        
-        max_T = 20
-        x_axis = np.arange(1,21)
-        
-        plt.figure(figsize=(15,10))
-        plt.plot(x_axis,AddCons[0:max_T], color='blue',linestyle='-')
-        plt.plot(x_axis,AddInc[0:max_T],  color='blue',linestyle='--')
-        plt.plot(x_axis,AddCons_Rec[0:max_T], color='red',linestyle='-')
-        plt.plot(x_axis,AddInc_Rec[0:max_T],  color='red',linestyle='--')
-        plt.legend(['Cons','Inc','Cons Rec','Inc Rec'], fontsize=14)
-        plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
-        plt.xlabel('quarter', fontsize=18)
-        plt.show()     
+    plt.show()     
 
 
