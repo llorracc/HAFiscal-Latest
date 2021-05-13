@@ -18,8 +18,8 @@ for j in range(4):
         UI_dict['EconomyMrkv_init'] = np.array([3, 0]) 
     this_UI_results = AggDemandEconomy.runExperiment(**UI_dict)
     MrkvSim = np.concatenate(([0],UI_dict['EconomyMrkv_init'],[0]*20))
-    this_Errors = [AggDemandEconomy.MacroCFunc[MrkvSim[i]][MrkvSim[i+1]](this_UI_results['Cratio_hist'][i]) for i in range(19)]/this_UI_results['Cratio_hist'][0:19]
-    this_MaxError = np.abs(np.max(this_Errors-1.0))
+    this_Errors = [AggDemandEconomy.CFunc[3*MrkvSim[i]][3*MrkvSim[i+1]](this_UI_results['Cratio_hist'][i]) for i in range(19)]/this_UI_results['Cratio_hist'][0:19]
+    this_MaxError = np.max(np.abs(this_Errors-1.0))
     Errors.append(this_Errors)
     MaxError.append(this_MaxError)
     UI_results.append(this_UI_results)
