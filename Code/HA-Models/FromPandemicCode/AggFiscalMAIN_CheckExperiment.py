@@ -21,9 +21,9 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 # solves under AD / no AD
 Run_Recession           = True
-Run_Check               = True
+Run_Check               = False
 Run_NonAD_Simulations   = False
-Make_Plots              = True
+Make_Plots              = False
 
 # This runs some investigations into the baseline check experiment
 Run_Baseline_Check      = False
@@ -58,6 +58,8 @@ if Run_Recession:
     t1 = time()
     print('Solving recession took ' + mystr(t1-t0) + ' seconds.')
     
+   
+    
 
     # Run the recession consumption level in presence of the Agg Multiplier
     t0 = time()
@@ -76,6 +78,45 @@ if Run_Recession:
     saveAsPickleUnderVarName(recession_results_AD,figs_dir,locals())
     t1 = time()
     print('Calculating recession consumption took ' + mystr(t1-t0) + ' seconds.')
+    
+    
+    #%% Check whether AD Func works properly
+    def percChange(x,y):
+        return 100*abs(y-x)/x
+    
+    # # To check 0 1, 1 0  and 11
+    
+    print('Error [0][1] in %:', percChange(AggDemandEconomy.MacroCFunc[0][1](1),recession_all_results_AD[0]['Cratio_hist'][0]))
+    
+    Error0to0 = np.zeros(1000)
+    i=0
+    for RecLength in range(1,22):
+        for quarter in range(RecLength+1,30):
+            Error0to0[i] = percChange(AggDemandEconomy.MacroCFunc[0][0](recession_all_results_AD[RecLength-1]['Cratio_hist'][quarter-1]), \
+                                                                        recession_all_results_AD[RecLength-1]['Cratio_hist'][quarter])     
+            i +=1
+    print('Maximum percentage error for [0][0]: ', np.max(Error0to0))
+    
+    Error1to1 = np.zeros(1000)
+    i=0
+    for RecLength in range(2,22): 
+        for quarter in range(1,RecLength):
+            Error1to1[i] = percChange(AggDemandEconomy.MacroCFunc[1][1](recession_all_results_AD[RecLength-1]['Cratio_hist'][quarter-1]), \
+                                                                        recession_all_results_AD[RecLength-1]['Cratio_hist'][quarter])
+            i += 1
+    print('Maximum percentage error for [1][1]: ', np.max(Error1to1))
+
+    Error1to0 = np.zeros(1000)
+    for RecLength in range(1,22): 
+        Error1to0[RecLength] = percChange(AggDemandEconomy.MacroCFunc[1][0](recession_all_results_AD[RecLength-1]['Cratio_hist'][RecLength-1]), \
+                                                                            recession_all_results_AD[RecLength-1]['Cratio_hist'][RecLength])   
+    print('Maximum percentage error for [1][0]: ', np.max(Error1to0))      
+    
+    percChange(AggDemandEconomy.MacroCFunc[1][0](recession_all_results_AD[1]['Cratio_hist'][1]), \
+                                                                            recession_all_results_AD[0]['Cratio_hist'][2]) 
+    
+    #%%
+    
     
     if Run_NonAD_Simulations:
         t0 = time()
@@ -127,7 +168,7 @@ if Run_Check:
     print('Calculating recession + check consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
     
     
-    #%% Check
+    #%% Check whether AD Func works properly
     def percChange(x,y):
         return 100*abs(y-x)/x
     
@@ -135,13 +176,35 @@ if Run_Check:
     
     print('Error [37][1] in %:', percChange(AggDemandEconomy.MacroCFunc[37][1](recession_Check_all_results_AD[0]['Cratio_hist'][0]),recession_Check_all_results_AD[1]['Cratio_hist'][1]))
     
+    print('Error [37][0] in %:', percChange(AggDemandEconomy.MacroCFunc[37][0](recession_Check_all_results_AD[0]['Cratio_hist'][0]),recession_Check_all_results_AD[0]['Cratio_hist'][1]))
     
-    for i in range(max_recession_duration):
-        print('Error [1][1] for q', i ,'in %:',  percChange(AggDemandEconomy.MacroCFunc[1][1](recession_Check_all_results_AD[-1]['Cratio_hist'][i+1]),recession_Check_all_results_AD[-1]['Cratio_hist'][i+2]))
     
-    # missing 0 0 and 1 0
+    Error1to1 = np.zeros(1000)
+    i=0
+    for RecLength in range(3,22): #RecLength at least three to get 1 1 jump
+        for quarter in range(2,RecLength):
+            Error1to1[i] = percChange(AggDemandEconomy.MacroCFunc[1][1](recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][quarter-1]), \
+                                                                        recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][quarter])           
+            #print('Error [1][1] from q', quarter ,'to next q, and RecLength', RecLength ,'in %:', Error1to1[i])
+            i += 1
+    print('Maximum percentage error for [1][1]: ', np.max(Error1to1))
 
-        
+    Error1to0 = np.zeros(1000)
+    for RecLength in range(2,22): #RecLength 2 first Recession jumping from 1 to 0    
+        Error1to0[RecLength] = percChange(AggDemandEconomy.MacroCFunc[1][0](recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][RecLength-1]), \
+                                                                 recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][RecLength])   
+    print('Maximum percentage error for [1][0]: ', np.max(Error1to0))      
+    
+    Error0to0 = np.zeros(1000)
+    i=0
+    for RecLength in range(1,22):
+        for quarter in range(RecLength+1,30):
+            Error0to0[i] = percChange(AggDemandEconomy.MacroCFunc[0][0](recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][quarter-1]), \
+                                                                    recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][quarter])     
+            i +=1
+    print('Maximum percentage error for [0][0]: ', np.max(Error0to0))            
+
+   
 
     #%%
     

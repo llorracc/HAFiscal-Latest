@@ -477,8 +477,8 @@ class AggregateDemandEconomy(Market):
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
-        #self.ADFunc = lambda C, RecState : C**(self.ADelasticity) #in case AD effects are independent of recession state
+        #self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
+        self.ADFunc = lambda C, RecState : C**(self.ADelasticity) #in case AD effects are independent of recession state
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -710,7 +710,7 @@ class AggregateDemandEconomy(Market):
         self.solve()
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = True
+        SimOnlyRecStates = False
         if SimOnlyRecStates:
             SimMrkHist = [0]
         else:
@@ -760,11 +760,16 @@ class AggregateDemandEconomy(Market):
             MacroCFunc[0][1] = CRule(recession_all_results[0]['Cratio_hist'][0],0.0)
             
             if SimOnlyRecStates == False:
-                assymtote10 = recession_all_results[0]['Cratio_hist'][30]
-                slope10 = (recession_all_results[2]['Cratio_hist'][2] - assymtote10)/(recession_all_results[1]['Cratio_hist'][1] - assymtote10)
-                slope10 = np.max([np.min([1.0,slope10]),0.0])
+                # assymtote10 = recession_all_results[0]['Cratio_hist'][30]
+                # slope10 = (recession_all_results[1]['Cratio_hist'][1] - assymtote10)/(recession_all_results[1]['Cratio_hist'][0] - assymtote10)
+                # #slope10 = (recession_all_results[2]['Cratio_hist'][2] - assymtote10)/(recession_all_results[1]['Cratio_hist'][1] - assymtote10)
+                # slope10 = np.max([np.min([1.0,slope10]),0.0])
+                # MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10)
+                
+                assymtote10 = 1
+                slope10     = (recession_all_results[1]['Cratio_hist'][1] - 1)/(recession_all_results[1]['Cratio_hist'][0] - 1)
                 MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10)
-                                   
+                   
                 slope00 = np.mean((np.array(recession_all_results[0]['Cratio_hist'][31])-1)/(np.array(recession_all_results[0]['Cratio_hist'][30])-1))
                 slope00 = np.max([np.min([1.0,slope00]),0.0])
                 MacroCFunc[0][0] = CRule(1.0, slope00)  # when you return to normal state, aggregate consumption will not be equal to baseline
@@ -844,7 +849,7 @@ class AggregateDemandEconomy(Market):
             max_recession = 30
             
             
-            SimOnlyRecStates = True
+            SimOnlyRecStates = False
             
             # Recession lengths 2, max_recession q
             for t in [max_recession]:
@@ -884,7 +889,7 @@ class AggregateDemandEconomy(Market):
             MacroCFunc[1][1]    = CRule(assymtote11 + slope11*(1.0-assymtote11),slope11)
             
             # only important if AD effects are on in all states
-            if SimOnlyRecStates:
+            if SimOnlyRecStates==False:
                 # This jumps only occurs once and only here
                 MacroCFunc[37][0] = CRule(recession_Check_all_results[1]['Cratio_hist'][1],0.0)
                 
