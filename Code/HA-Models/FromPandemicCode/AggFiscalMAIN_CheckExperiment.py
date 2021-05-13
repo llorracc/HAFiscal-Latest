@@ -22,11 +22,11 @@ mystr = lambda x : '{:.2f}'.format(x)
 # solves under AD / no AD
 Run_Recession           = True
 Run_Check               = True
-Run_NonAD_Simulations   = True
+Run_NonAD_Simulations   = False
 Make_Plots              = True
 
 # This runs some investigations into the baseline check experiment
-Run_Baseline_Check      = True
+Run_Baseline_Check      = False
 
 
 
@@ -47,7 +47,6 @@ t1 = time()
 print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
 AggDemandEconomy.storeBaseline(base_results['AggCons']) 
 saveAsPickleUnderVarName(base_results,figs_dir,locals())
-
 
 
 #%% 
@@ -99,7 +98,7 @@ if Run_Recession:
         print('Calculating recession consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
 
 
-if Run_Check:
+if Run_Check:    
     # get AD Solution  
     t0 = time()
     AggDemandEconomy.solveAD_Check_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Check_Rec')
@@ -126,6 +125,25 @@ if Run_Check:
     saveAsPickleUnderVarName(recession_Check_results_AD,figs_dir,locals())
     t1 = time()
     print('Calculating recession + check consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
+    
+    
+    #%% Check
+    def percChange(x,y):
+        return 100*abs(y-x)/x
+    
+    print('Error [0][37] in %:', percChange(AggDemandEconomy.MacroCFunc[0][37](1),recession_Check_all_results_AD[0]['Cratio_hist'][0]))
+    
+    print('Error [37][1] in %:', percChange(AggDemandEconomy.MacroCFunc[37][1](recession_Check_all_results_AD[0]['Cratio_hist'][0]),recession_Check_all_results_AD[1]['Cratio_hist'][1]))
+    
+    
+    for i in range(max_recession_duration):
+        print('Error [1][1] for q', i ,'in %:',  percChange(AggDemandEconomy.MacroCFunc[1][1](recession_Check_all_results_AD[-1]['Cratio_hist'][i+1]),recession_Check_all_results_AD[-1]['Cratio_hist'][i+2]))
+    
+    # missing 0 0 and 1 0
+
+        
+
+    #%%
     
     if Run_NonAD_Simulations:
         # Recession with Check, no AD
