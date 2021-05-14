@@ -897,10 +897,14 @@ class AggregateDemandEconomy(Market):
                 slope00 = np.max([np.min([1.0,slope00]),0.0])
                 MacroCFunc[0][0] = CRule(1.0, slope00)  
                 
-                assymtote10 = recession_Check_all_results[0]['Cratio_hist'][30]
-                slope10     = (recession_Check_all_results[3]['Cratio_hist'][3] - assymtote10)/(recession_Check_all_results[2]['Cratio_hist'][2] - assymtote10)
-                slope10     = np.max([np.min([1.0,slope10]),0.0])
-                MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10) 
+                # assymtote10 = recession_Check_all_results[0]['Cratio_hist'][30]
+                # slope10     = (recession_Check_all_results[3]['Cratio_hist'][3] - assymtote10)/(recession_Check_all_results[2]['Cratio_hist'][2] - assymtote10)
+                # slope10     = np.max([np.min([1.0,slope10]),0.0])
+                # MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10) 
+                
+                assymtote10 = 1
+                slope10     = (recession_Check_all_results[2]['Cratio_hist'][2] - 1)/(recession_Check_all_results[2]['Cratio_hist'][1] - 1)
+                MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10)
                  
        
             self.MacroCFunc = MacroCFunc
