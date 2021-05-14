@@ -477,8 +477,8 @@ class AggregateDemandEconomy(Market):
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
-        #self.ADFunc = lambda C, RecState : C**(self.ADelasticity) #in case AD effects are independent of recession state
+        #self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
+        self.ADFunc = lambda C, RecState : C**(self.ADelasticity) #in case AD effects are independent of recession state
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -714,7 +714,7 @@ class AggregateDemandEconomy(Market):
         if SimOnlyRecStates:
             SimMrkHist = [0]
         else:
-            SimMrkHist = [0,1,2]
+            SimMrkHist = [0,1]
         
         self.ADelasticity = self.demand_ADelasticity
         self.update()    
@@ -735,8 +735,6 @@ class AggregateDemandEconomy(Market):
                     recession_dict['EconomyMrkv_init'] = np.concatenate(([1]*30,[0]*20)).astype(int) 
                 elif j == 1:
                     recession_dict['EconomyMrkv_init'] = np.concatenate(([1]*1,[0]*20)).astype(int) 
-                elif j == 2:
-                    recession_dict['EconomyMrkv_init'] = np.concatenate(([1]*2,[0]*20)).astype(int) 
                 this_recession_results = self.runExperiment(**recession_dict)
                 recession_all_results += [this_recession_results]
                 
@@ -747,8 +745,7 @@ class AggregateDemandEconomy(Market):
                 plt.legend(['0'], fontsize=14)
             else:
                 plt.plot(recession_all_results[1]['Cratio_hist'][0:T_plot])
-                plt.plot(recession_all_results[2]['Cratio_hist'][0:T_plot])
-                plt.legend(['0','1','2'], fontsize=14)
+                plt.legend(['0','1'], fontsize=14)
             plt.pause(1)
             plt.show()
             
@@ -756,28 +753,28 @@ class AggregateDemandEconomy(Market):
             slope11 = (recession_all_results[0]['Cratio_hist'][1] - assymtote11)/(recession_all_results[0]['Cratio_hist'][0] - assymtote11)
             slope11 = np.max([np.min([1.0,slope11]),0.0])
             MacroCFunc[1][1]    = CRule(assymtote11 + slope11*(1.0-assymtote11),slope11)
+            print(11)
+            print(assymtote11)
+            print(slope11)
                       
             MacroCFunc[0][1] = CRule(recession_all_results[0]['Cratio_hist'][0],0.0)
             
             if SimOnlyRecStates == False:
-                assymtote10 = recession_all_results[0]['Cratio_hist'][30]
-                slope10 = (recession_all_results[2]['Cratio_hist'][2] - assymtote10)/(recession_all_results[1]['Cratio_hist'][1] - assymtote10)
-                slope10 = np.max([np.min([1.0,slope10]),0.0])
-                MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10)
-                                   
-                slope00 = np.mean((np.array(recession_all_results[0]['Cratio_hist'][31])-1)/(np.array(recession_all_results[0]['Cratio_hist'][30])-1))
-                slope00 = np.max([np.min([1.0,slope00]),0.0])
-                MacroCFunc[0][0] = CRule(1.0, slope00)  # when you return to normal state, aggregate consumption will not be equal to baseline
-            
-            print(11)
-            print(assymtote11)
-            print(slope11) 
-            
-            if not SimOnlyRecStates:               
+                assymtote10_0 = recession_all_results[0]['Cratio_hist'][30]
+                assymtote10_1 = recession_all_results[0]['Cratio_hist'][29]
+                slope10 = (recession_all_results[1]['Cratio_hist'][1] - assymtote10_0)/(recession_all_results[1]['Cratio_hist'][0] - assymtote10_1)
                 print(10)
-                print(assymtote10)
+                print(assymtote10_0)
+                print(assymtote10_1)
+                print(recession_all_results[1]['Cratio_hist'][1]-assymtote10_0)
+                print(recession_all_results[1]['Cratio_hist'][0]-assymtote10_1)
                 print(slope10)
-                
+                slope10 = np.max([np.min([1.0,slope10]),0.0])
+                MacroCFunc[1][0]    = CRule(assymtote10_0 + slope10*(1.0-assymtote10_1),slope10)
+                                   
+                slope00 = (np.array(recession_all_results[0]['Cratio_hist'][31])-1)/(np.array(recession_all_results[0]['Cratio_hist'][30])-1)
+                slope00 = np.max([np.min([1.0,slope00]),0.0])
+                MacroCFunc[0][0] = CRule(1.0, slope00)  # when you return to normal state, aggregate consumption will not be equal to baseline 
                 print(00)
                 print(1)
                 print(slope00)
@@ -917,9 +914,9 @@ class AggregateDemandEconomy(Market):
         # if AD effects only apply to Rec states set to True
         SimOnlyRecStates = False
         if SimOnlyRecStates:
-            SimMrkHist = [0,1,2]
+            SimMrkHist = [0,1,6]
         else:
-            SimMrkHist = [0,1,2,3,4,5,6,7,8,9,10,11,12]
+            SimMrkHist = [0,1,2,3,4,5,6]
         
         self.ADelasticity = self.demand_ADelasticity
         self.update()    
@@ -937,53 +934,36 @@ class AggregateDemandEconomy(Market):
             UI_all_results = []
             for j in SimMrkHist:
                 if j == 0:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*0,[1]*30,[0]*20)).astype(int) 
+                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*0,[1]*1,[0]*20)).astype(int) 
                 elif j == 1:
                     UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*30,[2]*0,[1]*30,[0]*20)).astype(int) 
                 elif j == 2:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*2,[2]*0,[1]*30,[0]*20)).astype(int) 
-                elif j == 3:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*30,[1]*0,[0]*20)).astype(int) 
-                elif j == 4:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*30,[2]*30,[1]*0,[0]*20)).astype(int)  
-                elif j == 5:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*2,[2]*30,[1]*0,[0]*20)).astype(int)  
-                elif j == 6:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*0,[1]*0,[0]*30)).astype(int)   
-                elif j == 7:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*30,[2]*0,[1]*0,[0]*30)).astype(int)  
-                elif j == 8:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*2,[2]*0,[1]*0,[0]*30)).astype(int) 
-                elif j == 9:
                     UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*1,[1]*0,[0]*20)).astype(int) 
-                elif j == 10:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*2,[1]*0,[0]*20)).astype(int) 
-                elif j == 11:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*0,[1]*1,[0]*20)).astype(int) 
-                elif j == 12:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*0,[1]*2,[0]*20)).astype(int) 
+                elif j == 3:
+                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*30,[2]*30,[1]*0,[0]*20)).astype(int) 
+                elif j == 4:
+                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*0,[1]*0,[0]*20)).astype(int) 
+                elif j == 5:
+                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*30,[2]*0,[1]*0,[0]*20)).astype(int) 
+                elif j == 6:
+                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*0,[1]*30,[0]*20)).astype(int) 
                 this_UI_results = self.runExperiment(**UI_dict)
                 UI_all_results += [this_UI_results]
-                
+                            
             #Debugging
             T_plot = 35
             plt.plot(UI_all_results[0]['Cratio_hist'][0:T_plot]) 
-            plt.plot(UI_all_results[1]['Cratio_hist'][0:T_plot])    
-            plt.plot(UI_all_results[2]['Cratio_hist'][0:T_plot])
+            plt.plot(UI_all_results[1]['Cratio_hist'][0:T_plot])   
+            plt.plot(UI_all_results[6]['Cratio_hist'][0:T_plot])
             if SimOnlyRecStates:
-                plt.legend(['0','1','2'], fontsize=14)
+                plt.legend(['0','1','6'], fontsize=14)
             else:
+                plt.plot(UI_all_results[2]['Cratio_hist'][0:T_plot])
                 plt.plot(UI_all_results[3]['Cratio_hist'][0:T_plot])
                 plt.plot(UI_all_results[4]['Cratio_hist'][0:T_plot])
                 plt.plot(UI_all_results[5]['Cratio_hist'][0:T_plot])
                 plt.plot(UI_all_results[6]['Cratio_hist'][0:T_plot])
-                plt.plot(UI_all_results[7]['Cratio_hist'][0:T_plot])
-                plt.plot(UI_all_results[8]['Cratio_hist'][0:T_plot])
-                plt.plot(UI_all_results[9]['Cratio_hist'][0:T_plot])
-                plt.plot(UI_all_results[10]['Cratio_hist'][0:T_plot])
-                plt.plot(UI_all_results[11]['Cratio_hist'][0:T_plot])
-                plt.plot(UI_all_results[12]['Cratio_hist'][0:T_plot])
-                plt.legend(['0','1','2','3','4','5','6','7','8','9','10','11','12'], fontsize=14)
+                plt.legend(['0','1','2','3','4','5','6'], fontsize=14)
             plt.pause(1)
             plt.show()
             
@@ -992,82 +972,85 @@ class AggregateDemandEconomy(Market):
             slope33 = np.max([np.min([1.0,slope33]),0.0])
             MacroCFunc[3][3]    = CRule(assymtote33 + slope33*(1.0-assymtote33),slope33)
             
-            assymtote31 = UI_all_results[1]['Cratio_hist'][30]
-            slope31 = (UI_all_results[2]['Cratio_hist'][2] - assymtote31)/(UI_all_results[0]['Cratio_hist'][1] - assymtote31)
+            assymtote31_1 = UI_all_results[1]['Cratio_hist'][30]
+            assymtote31_3 = UI_all_results[1]['Cratio_hist'][29]
+            slope31 = (UI_all_results[0]['Cratio_hist'][1] - assymtote31_1)/(UI_all_results[0]['Cratio_hist'][0] - assymtote31_3)
+            print(31)
+            print(assymtote31_1)
+            print(assymtote31_3)
+            print(UI_all_results[0]['Cratio_hist'][1]-assymtote31_1)
+            print(UI_all_results[0]['Cratio_hist'][0]-assymtote31_3)
+            print(slope31)
             slope31 = np.max([np.min([1.0,slope31]),0.0])
-            MacroCFunc[3][1]    = CRule(assymtote31 + slope31*(1.0-assymtote31),slope31)
+            MacroCFunc[3][1]    = CRule(assymtote31_1 + slope31*(1.0-assymtote31_3),slope31)
             
             MacroCFunc[0][3] = CRule(UI_all_results[0]['Cratio_hist'][0],0.0)
             
-            assymtote11 = UI_all_results[0]['Cratio_hist'][29]
-            slope11 = (UI_all_results[0]['Cratio_hist'][2] - assymtote11)/(UI_all_results[0]['Cratio_hist'][1] - assymtote11)
+            assymtote11 = UI_all_results[6]['Cratio_hist'][30]
+            slope11 = (UI_all_results[6]['Cratio_hist'][2] - assymtote11)/(UI_all_results[6]['Cratio_hist'][1] - assymtote11)
             slope11 = np.max([np.min([1.0,slope11]),0.0])
-            MacroCFunc[1][1]    = CRule(assymtote11 + slope11*(1.0-assymtote11),slope11)          
+            MacroCFunc[1][1]    = CRule(assymtote11 + slope11*(1.0-assymtote11),slope11)   
+            print(11)
+            print(slope11)
             
             if SimOnlyRecStates == False:
-                assymtote32 = UI_all_results[4]['Cratio_hist'][30]
-                slope32 = (UI_all_results[5]['Cratio_hist'][2] - assymtote32)/(UI_all_results[3]['Cratio_hist'][1] - assymtote32)
+                assymtote32_2 = UI_all_results[3]['Cratio_hist'][30]
+                assymtote32_3 = UI_all_results[3]['Cratio_hist'][29]
+                slope32 = (UI_all_results[2]['Cratio_hist'][1] - assymtote32_2)/(UI_all_results[2]['Cratio_hist'][0] - assymtote32_3)
+                print(32)
+                print(assymtote32_2)
+                print(assymtote32_3)
+                print(UI_all_results[2]['Cratio_hist'][1]-assymtote32_2)
+                print(UI_all_results[2]['Cratio_hist'][0]-assymtote32_3)
+                print(slope32)
                 slope32 = np.max([np.min([1.0,slope32]),0.0])
-                MacroCFunc[3][2]    = CRule(assymtote32 + slope32*(1.0-assymtote32),slope32)
+                MacroCFunc[3][2]    = CRule(assymtote32_2 + slope32*(1.0-assymtote32_3),slope32)
                 
-                assymtote30 = UI_all_results[7]['Cratio_hist'][30]
-                slope30 = (UI_all_results[8]['Cratio_hist'][2] - assymtote30)/(UI_all_results[6]['Cratio_hist'][1] - assymtote30)
+                assymtote30_0 = UI_all_results[5]['Cratio_hist'][30]
+                assymtote30_3 = UI_all_results[5]['Cratio_hist'][29]
+                slope30 = (UI_all_results[4]['Cratio_hist'][1] - assymtote30_0)/(UI_all_results[4]['Cratio_hist'][0] - assymtote30_3)
+                print(30)
+                print(assymtote30_0)
+                print(assymtote30_3)
+                print(UI_all_results[4]['Cratio_hist'][1]-assymtote30_0)
+                print(UI_all_results[4]['Cratio_hist'][0]-assymtote30_3)
+                print(slope30)
                 slope30 = np.max([np.min([1.0,slope30]),0.0])
-                MacroCFunc[3][0]    = CRule(assymtote30 + slope30*(1.0-assymtote30),slope30)
+                MacroCFunc[3][0]    = CRule(assymtote30_0 + slope30*(1.0-assymtote30_3),slope30)
                 
-                assymtote20 = UI_all_results[3]['Cratio_hist'][31]
-                slope20 = (UI_all_results[10]['Cratio_hist'][3] - assymtote20)/(UI_all_results[9]['Cratio_hist'][2] - assymtote20)
+                assymtote20_0 = UI_all_results[3]['Cratio_hist'][60]
+                assymtote20_2 = UI_all_results[3]['Cratio_hist'][59]
+                slope20 = (UI_all_results[2]['Cratio_hist'][2] - assymtote20_0)/(UI_all_results[2]['Cratio_hist'][1] - assymtote20_2)
+                print(20)
+                print(assymtote20_0)
+                print(assymtote20_2)
+                print(UI_all_results[2]['Cratio_hist'][2]-assymtote20_0)
+                print(UI_all_results[2]['Cratio_hist'][1]-assymtote20_2)
+                print(slope20)
                 slope20 = np.max([np.min([1.0,slope20]),0.0])
-                MacroCFunc[2][0]    = CRule(assymtote20 + slope20*(1.0-assymtote20),slope20)
+                MacroCFunc[2][0]    = CRule(assymtote20_0 + slope20*(1.0-assymtote20_2),slope20)
                     
-                assymtote22 = UI_all_results[3]['Cratio_hist'][30]
-                slope22 = (UI_all_results[3]['Cratio_hist'][2] - assymtote22)/(UI_all_results[3]['Cratio_hist'][1] - assymtote22)
+                assymtote22 = UI_all_results[3]['Cratio_hist'][59]
+                slope22 = (UI_all_results[3]['Cratio_hist'][31] - assymtote22)/(UI_all_results[3]['Cratio_hist'][30] - assymtote22)
                 slope22 = np.max([np.min([1.0,slope22]),0.0])
                 MacroCFunc[2][2]    = CRule(assymtote22 + slope22*(1.0-assymtote22),slope22)
                 
-                assymtote10 = UI_all_results[0]['Cratio_hist'][31]
-                slope10 = (UI_all_results[12]['Cratio_hist'][3] - assymtote10)/(UI_all_results[11]['Cratio_hist'][2] - assymtote10)
+                assymtote10_0 = UI_all_results[1]['Cratio_hist'][60]
+                assymtote10_1 = UI_all_results[1]['Cratio_hist'][59]
+                slope10 = (UI_all_results[0]['Cratio_hist'][2] - assymtote10_0)/(UI_all_results[0]['Cratio_hist'][1] - assymtote10_1)
+                print(10)
+                print(assymtote10_0)
+                print(assymtote10_1)
+                print(UI_all_results[0]['Cratio_hist'][2]-assymtote10_0)
+                print(UI_all_results[0]['Cratio_hist'][1]-assymtote10_1)
+                print(slope10)
                 slope10 = np.max([np.min([1.0,slope10]),0.0])
-                MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10)
+                MacroCFunc[1][0]    = CRule(assymtote10_0 + slope10*(1.0-assymtote10_1),slope10)
 
-                slope00 = np.mean((np.array(UI_all_results[0]['Cratio_hist'][32])-1)/(np.array(UI_all_results[0]['Cratio_hist'][31])-1))
+                slope00 = (np.array(UI_all_results[5]['Cratio_hist'][31])-1)/(np.array(UI_all_results[5]['Cratio_hist'][30])-1)
                 slope00 = np.max([np.min([1.0,slope00]),0.0])
                 MacroCFunc[0][0] = CRule(1.0, slope00)  # when you return to normal state, aggregate consumption will not be equal to baseline
-            print(33)
-            print(assymtote33)
-            print(slope33)  
-            
-            print(31)
-            print(assymtote31)
-            print(slope31) 
-            
-            print(11)
-            print(assymtote11)
-            print(slope11) 
-            
-            if not SimOnlyRecStates:
-                print(32)
-                print(assymtote32)
-                print(slope32) 
-                
-                print(30)
-                print(assymtote30)
-                print(slope30)
-                
-                print(20)
-                print(assymtote20)
-                print(slope20)
-                
-                print(22)
-                print(assymtote22)
-                print(slope22)
-                
-                print(10)
-                print(assymtote10)
-                print(slope10)
-                
-                print(00)
-                print(1)
+                print(0)
                 print(slope00)
             
             self.MacroCFunc = MacroCFunc

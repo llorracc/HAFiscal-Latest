@@ -25,7 +25,7 @@ Run_Baseline            = True
 Run_UB_Ext_Recession    = True
 Run_Recession           = True
 Run_TaxCut_Recession    = False
-Run_NonAD               = True #whether to run nonAD experiments as well
+Run_NonAD               = False #whether to run nonAD experiments as well
 Make_Plots              = False
 
 
@@ -88,7 +88,7 @@ if __name__ == '__main__':
             t1 = time()
             print('Calculating recession and extended UI consumption  (no AD) ' + mystr(t1-t0) + ' seconds.')
             
-            
+     
         # Run UI ext during recession with AD effects
         t0 = time()
         AggDemandEconomy.restoreADsolution(name = 'UI_Rec')
@@ -239,8 +239,10 @@ if __name__ == '__main__':
         x_axis = np.arange(1,21)
         
         #folder1 = './Figures/FullRun_Apr18_AD05_800k/'
-        folder2 = './Figures/FullRun_Apr18_AD05_AllStates_800k/'
-        folder1 = figs_dir
+        #folder2 = './Figures/FullRun_Apr18_AD05_AllStates_800k/'
+        folder1 = './Figures/AD_fix_May13_UIRecStatesOnly_200k/'
+        folder2 = figs_dir
+        
         
         base_results                = loadPickle('base_results',folder1,locals())
 
