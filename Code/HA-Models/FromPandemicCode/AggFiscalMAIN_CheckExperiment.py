@@ -21,9 +21,9 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 # solves under AD / no AD
 Run_Recession           = True
-Run_Check               = False
+Run_Check               = True
 Run_NonAD_Simulations   = False
-Make_Plots              = False
+Make_Plots              = True
 
 # This runs some investigations into the baseline check experiment
 Run_Baseline_Check      = False
@@ -115,7 +115,7 @@ if Run_Recession:
     percChange(AggDemandEconomy.MacroCFunc[1][0](recession_all_results_AD[1]['Cratio_hist'][1]), \
                                                                             recession_all_results_AD[0]['Cratio_hist'][2]) 
     
-    #%%
+
     
     
     if Run_NonAD_Simulations:
@@ -138,7 +138,7 @@ if Run_Recession:
         t1 = time()
         print('Calculating recession consumption took (no Agg Multiplier)' + mystr(t1-t0) + ' seconds.')
 
-
+#%%
 if Run_Check:    
     # get AD Solution  
     t0 = time()

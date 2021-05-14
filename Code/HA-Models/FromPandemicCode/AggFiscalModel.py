@@ -477,8 +477,8 @@ class AggregateDemandEconomy(Market):
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        #self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
-        self.ADFunc = lambda C, RecState : C**(self.ADelasticity) #in case AD effects are independent of recession state
+        self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
+        #self.ADFunc = lambda C, RecState : C**(self.ADelasticity) #in case AD effects are independent of recession state
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -710,7 +710,7 @@ class AggregateDemandEconomy(Market):
         self.solve()
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = False
+        SimOnlyRecStates = True
         if SimOnlyRecStates:
             SimMrkHist = [0]
         else:
@@ -828,6 +828,8 @@ class AggregateDemandEconomy(Market):
         print("Presolving")
         self.solve()
         
+        SimOnlyRecStates = True
+        
         self.ADelasticity = self.demand_ADelasticity
         self.update()   
         recession_Check_dict = {
@@ -848,9 +850,7 @@ class AggregateDemandEconomy(Market):
             recession_Check_all_results = []
             max_recession = 30
             
-            
-            SimOnlyRecStates = False
-            
+
             # Recession lengths 2, max_recession q
             for t in [max_recession]:
                 recession_Check_dict['EconomyMrkv_init']    = [1]*(t)
@@ -903,7 +903,7 @@ class AggregateDemandEconomy(Market):
                 # MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10) 
                 
                 assymtote10 = 1
-                slope10     = (recession_Check_all_results[2]['Cratio_hist'][2] - 1)/(recession_Check_all_results[2]['Cratio_hist'][1] - 1)
+                slope10     = (recession_Check_all_results[0]['Cratio_hist'][30] - 1)/(recession_Check_all_results[0]['Cratio_hist'][29] - 1)
                 MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10)
                  
        
