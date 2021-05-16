@@ -22,7 +22,7 @@ mystr = lambda x : '{:.2f}'.format(x)
 # solves under AD / no AD
 Run_Recession           = True
 Run_Check               = True
-Run_NonAD_Simulations   = False
+Run_NonAD_Simulations   = True
 Make_Plots              = True
 
 # This runs some investigations into the baseline check experiment
@@ -54,11 +54,9 @@ saveAsPickleUnderVarName(base_results,figs_dir,locals())
 if Run_Recession:
     # Solving recession under Agg Multiplier   
     t0 = time()
-    AggDemandEconomy.solveAD_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Recession')
+    AggDemandEconomy.solveAD_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, SimOnlyRecStates = True, name = 'Recession')
     t1 = time()
     print('Solving recession took ' + mystr(t1-t0) + ' seconds.')
-    
-   
     
 
     # Run the recession consumption level in presence of the Agg Multiplier
@@ -142,7 +140,7 @@ if Run_Recession:
 if Run_Check:    
     # get AD Solution  
     t0 = time()
-    AggDemandEconomy.solveAD_Check_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Check_Rec')
+    AggDemandEconomy.solveAD_Check_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, SimOnlyRecStates = True, name = 'Check_Rec')
     t1 = time()
     print('Solving Check during recession took ' + mystr(t1-t0) + ' seconds.')
     
