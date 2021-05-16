@@ -710,7 +710,7 @@ class AggregateDemandEconomy(Market):
         self.solve()
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = False
+        SimOnlyRecStates = True
         if SimOnlyRecStates:
             SimMrkHist = [0]
         else:
@@ -810,7 +810,8 @@ class AggregateDemandEconomy(Market):
             self.storeADsolution(name)
             
             
-    def solveAD_Check_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):      
+    def solveAD_Check_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
+        
         #reset Cfunc
         dim = len(self.CFunc)
         self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
@@ -818,6 +819,8 @@ class AggregateDemandEconomy(Market):
             agent.CFunc = self.CFunc
         print("Presolving")
         self.solve()
+        
+        SimOnlyRecStates = True
         
         self.ADelasticity = self.demand_ADelasticity
         self.update()   
@@ -837,39 +840,63 @@ class AggregateDemandEconomy(Market):
         for i in range(num_max_iterations):
             print("Iteration ", i+1,":")
             recession_Check_all_results = []
-            max_recession = 19
-            # Simulate different recession lengths
-            for t in [0,max_recession-1]:
-                recession_Check_dict['EconomyMrkv_init']    = [1]*(t+1)
+            max_recession = 30
+            
+
+            # Recession lengths 2, max_recession q
+            for t in [max_recession]:
+                recession_Check_dict['EconomyMrkv_init']    = [1]*(t)
                 recession_Check_dict['EconomyMrkv_init'][0] = 37
                 print("recession_Check_dict['EconomyMrkv_init']: ", recession_Check_dict['EconomyMrkv_init'] )
                 this_sim_results = self.runExperiment(**recession_Check_dict)
                 recession_Check_all_results += [this_sim_results]
                 
+            if SimOnlyRecStates == False:
+                # in this case additional
+                for t in [1,2,3]:
+                    recession_Check_dict['EconomyMrkv_init']    = [1]*(t)
+                    recession_Check_dict['EconomyMrkv_init'][0] = 37
+                    print("recession_Check_dict['EconomyMrkv_init']: ", recession_Check_dict['EconomyMrkv_init'] )
+                    this_sim_results = self.runExperiment(**recession_Check_dict)
+                    recession_Check_all_results += [this_sim_results]
+                
             #Debugging
-            plt.plot(recession_Check_all_results[0]['Cratio_hist'][0:20]) 
-            plt.plot(recession_Check_all_results[1]['Cratio_hist'][0:20])    
-            plt.legend(['0','1'], fontsize=14)
+            T_Plot = 35
+            plt.plot(recession_Check_all_results[0]['Cratio_hist'][0:T_Plot])
+            if SimOnlyRecStates == False:
+                plt.plot(recession_Check_all_results[1]['Cratio_hist'][0:T_Plot])
+                plt.plot(recession_Check_all_results[2]['Cratio_hist'][0:T_Plot])
+                plt.plot(recession_Check_all_results[3]['Cratio_hist'][0:T_Plot])
             plt.pause(1)
             plt.show()
             
+            # These jumps only occur once and only here
             MacroCFunc[0][37] = CRule(recession_Check_all_results[0]['Cratio_hist'][0],0.0) 
+            MacroCFunc[37][1] = CRule(recession_Check_all_results[0]['Cratio_hist'][1],0.0) 
             
-            MacroCFunc[37][0] = CRule(recession_Check_all_results[0]['Cratio_hist'][1],0.0)
-
-            MacroCFunc[37][1] = CRule(recession_Check_all_results[1]['Cratio_hist'][1],0.0)            
-
-            startt = 2 
-            endd = max_recession
-            slope_if_recession     = (recession_Check_all_results[1]['Cratio_hist'][startt+1] - recession_Check_all_results[1]['Cratio_hist'][endd-1])/(recession_Check_all_results[1]['Cratio_hist'][startt] - recession_Check_all_results[1]['Cratio_hist'][endd-2])
-            intercept_if_recession =  recession_Check_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_Check_all_results[1]['Cratio_hist'][startt]-1)
-            MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession) 
-
-            slope = (recession_Check_all_results[1]['Cratio_hist'][19]-1)/(recession_Check_all_results[1]['Cratio_hist'][18]-1)
-            MacroCFunc[1][0] = CRule(1.0,slope)
+            # Asymptote logic as in recession_AD
+            assymtote11 = recession_Check_all_results[0]['Cratio_hist'][29]
+            slope11     = (recession_Check_all_results[0]['Cratio_hist'][2] - assymtote11)/(recession_Check_all_results[0]['Cratio_hist'][1] - assymtote11)
+            slope11     = np.max([np.min([1.0,slope11]),0.0])
+            MacroCFunc[1][1]    = CRule(assymtote11 + slope11*(1.0-assymtote11),slope11)
             
-                      
-            MacroCFunc[0][0] = CRule(1.0, np.mean((np.array(recession_Check_all_results[0]['Cratio_hist'][3:10])-1)/(np.array(recession_Check_all_results[0]['Cratio_hist'][2:9])-1)))  # when you return to normal state, aggregate consumption will not be equal to baseline
+            # only important if AD effects are on in all states
+            if SimOnlyRecStates==False:
+                # This jumps only occurs once and only here
+                MacroCFunc[37][0] = CRule(recession_Check_all_results[1]['Cratio_hist'][1],0.0)
+                
+                slope00 = np.mean((np.array(recession_Check_all_results[0]['Cratio_hist'][31])-1)/(np.array(recession_Check_all_results[0]['Cratio_hist'][30])-1))
+                slope00 = np.max([np.min([1.0,slope00]),0.0])
+                MacroCFunc[0][0] = CRule(1.0, slope00)  
+                
+                # assymtote10 = recession_Check_all_results[0]['Cratio_hist'][30]
+                # slope10     = (recession_Check_all_results[3]['Cratio_hist'][3] - assymtote10)/(recession_Check_all_results[2]['Cratio_hist'][2] - assymtote10)
+                # slope10     = np.max([np.min([1.0,slope10]),0.0])
+                # MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10) 
+                
+                assymtote10 = 1
+                slope10     = (recession_Check_all_results[0]['Cratio_hist'][30] - 1)/(recession_Check_all_results[0]['Cratio_hist'][29] - 1)
+                MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10)
                  
        
             self.MacroCFunc = MacroCFunc

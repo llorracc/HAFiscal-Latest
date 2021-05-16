@@ -346,8 +346,7 @@ frictionless_changes = {
 
 quick_test = True
 if quick_test:
-    #AgentCountTotal = 20000 #int(1*1e4)
-    AgentCountTotal = 200000
+    AgentCountTotal = 40000
     DiscFacCount = 1
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
