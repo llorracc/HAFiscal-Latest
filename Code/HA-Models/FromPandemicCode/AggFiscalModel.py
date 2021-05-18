@@ -477,8 +477,8 @@ class AggregateDemandEconomy(Market):
         self.CratioNow_init = 1.0
         self.AggDemandFac_init = 1.0
         self.AggDemandFacPrev_init = 1.0
-        #self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
-        self.ADFunc = lambda C, RecState : C**(self.ADelasticity) #in case AD effects are independent of recession state
+        self.ADFunc = lambda C, RecState : C**(RecState*self.ADelasticity)
+        #self.ADFunc = lambda C, RecState : C**(self.ADelasticity) #in case AD effects are independent of recession state
         self.EconomyMrkvNow_hist = [0] * self.act_T
         StateCount = self.MrkvArray[0].shape[0]
         CFunc_all = []
@@ -939,9 +939,9 @@ class AggregateDemandEconomy(Market):
         self.solve()
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = False
+        SimOnlyRecStates = True
         if SimOnlyRecStates:
-            SimMrkHist = [0,1,6]
+            SimMrkHist = [0,1]
         else:
             SimMrkHist = [0,1,2,3,4,5,6]
         
@@ -981,7 +981,6 @@ class AggregateDemandEconomy(Market):
             T_plot = 35
             plt.plot(UI_all_results[0]['Cratio_hist'][0:T_plot]) 
             plt.plot(UI_all_results[1]['Cratio_hist'][0:T_plot])   
-            plt.plot(UI_all_results[6]['Cratio_hist'][0:T_plot])
             if SimOnlyRecStates:
                 plt.legend(['0','1','6'], fontsize=14)
             else:
@@ -1013,12 +1012,14 @@ class AggregateDemandEconomy(Market):
             
             MacroCFunc[0][3] = CRule(UI_all_results[0]['Cratio_hist'][0],0.0)
             
-            assymtote11 = UI_all_results[6]['Cratio_hist'][30]
-            slope11 = (UI_all_results[6]['Cratio_hist'][2] - assymtote11)/(UI_all_results[6]['Cratio_hist'][1] - assymtote11)
-            slope11 = np.max([np.min([1.0,slope11]),0.0])
-            MacroCFunc[1][1]    = CRule(assymtote11 + slope11*(1.0-assymtote11),slope11)   
-            print(11)
-            print(slope11)
+            # assymtote11 = UI_all_results[6]['Cratio_hist'][30]
+            # slope11 = (UI_all_results[6]['Cratio_hist'][2] - assymtote11)/(UI_all_results[6]['Cratio_hist'][1] - assymtote11)
+            # slope11 = np.max([np.min([1.0,slope11]),0.0])
+            # MacroCFunc[1][1]    = CRule(assymtote11 + slope11*(1.0-assymtote11),slope11)   
+            # print(11)
+            # print(slope11)
+            # overwrite with solution to recession (not stored_solutions contains CFunc, not MacroCFunc, so multiply indices by 3)
+            MacroCFunc[1][1]  = CRule(self.stored_solutions['Recession'].CFunc[3][3].intercept, self.stored_solutions['Recession'].CFunc[3][3].slope)
             
             if SimOnlyRecStates == False:
                 assymtote32_2 = UI_all_results[3]['Cratio_hist'][30]
@@ -1073,12 +1074,19 @@ class AggregateDemandEconomy(Market):
                 print(slope10)
                 slope10 = np.max([np.min([1.0,slope10]),0.0])
                 MacroCFunc[1][0]    = CRule(assymtote10_0 + slope10*(1.0-assymtote10_1),slope10)
+                # overwrite with solution to recession (not stored_solutions contains CFunc, not MacroCFunc, so multiply indices by 3)
+                MacroCFunc[1][0]  = CRule(self.stored_solutions['Recession'].CFunc[3][0].intercept, self.stored_solutions['Recession'].CFunc[3][0].slope)
+                
+
 
                 slope00 = (np.array(UI_all_results[5]['Cratio_hist'][31])-1)/(np.array(UI_all_results[5]['Cratio_hist'][30])-1)
                 slope00 = np.max([np.min([1.0,slope00]),0.0])
                 MacroCFunc[0][0] = CRule(1.0, slope00)  # when you return to normal state, aggregate consumption will not be equal to baseline
                 print(0)
                 print(slope00)
+                # overwrite with solution to recession (not stored_solutions contains CFunc, not MacroCFunc, so multiply indices by 3)
+                MacroCFunc[0][0]  = CRule(self.stored_solutions['Recession'].CFunc[0][0].intercept, self.stored_solutions['Recession'].CFunc[0][0].slope)
+                
             
             self.MacroCFunc = MacroCFunc
             Old_Cfunc  = self.CFunc
