@@ -42,9 +42,9 @@ TaxCutPeriods = 8            # Deterministic duration of tax cut
 TaxCutContinuationProb_Rec = 0.5   # Probability that tax cut is continued after tax cut periods run out, when recession in q8
 TaxCutContinuationProb_Bas = 0.0   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
     #Check experiment parameter
-CheckStimLvl = 0.5
-CheckStimLvl_PLvl_Cutoff_start = 2 #At this Level of permanent inc, Stimulus beings to fall linearly
-CheckStimLvl_PLvl_Cutoff_end = 3 #At this Level of permanent inc, Stimulus is zero
+CheckStimLvl = 1200/15000 #1 = 15k
+CheckStimLvl_PLvl_Cutoff_start = 100/4/15 #100 k yearly income #At this Level of permanent inc, Stimulus beings to fall linearly
+CheckStimLvl_PLvl_Cutoff_end = 150/4/15 #150k yearly income #At this Level of permanent inc, Stimulus is zero
 
 
 UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
@@ -346,7 +346,7 @@ frictionless_changes = {
 
 quick_test = True
 if quick_test:
-    AgentCountTotal = 40000
+    AgentCountTotal = 200000
     DiscFacCount = 1
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]

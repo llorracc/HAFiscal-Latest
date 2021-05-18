@@ -80,7 +80,7 @@ if Run_Recession:
     
     #%% Check whether AD Func works properly
     def percChange(x,y):
-        return 100*abs(y-x)/x
+        return 100*((y/x)-1)
     
     # # To check 0 1, 1 0  and 11
     
@@ -168,7 +168,7 @@ if Run_Check:
     
     #%% Check whether AD Func works properly
     def percChange(x,y):
-        return 100*abs(y-x)/x
+        return 100*((y/x)-1)
     
     print('Error [0][37] in %:', percChange(AggDemandEconomy.MacroCFunc[0][37](1),recession_Check_all_results_AD[0]['Cratio_hist'][0]))
     
@@ -185,13 +185,13 @@ if Run_Check:
                                                                         recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][quarter])           
             #print('Error [1][1] from q', quarter ,'to next q, and RecLength', RecLength ,'in %:', Error1to1[i])
             i += 1
-    print('Maximum percentage error for [1][1]: ', np.max(Error1to1))
+    print('Maximum percentage error for [1][1]: ', np.max(abs(Error1to1)))
 
     Error1to0 = np.zeros(1000)
     for RecLength in range(2,22): #RecLength 2 first Recession jumping from 1 to 0    
         Error1to0[RecLength] = percChange(AggDemandEconomy.MacroCFunc[1][0](recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][RecLength-1]), \
                                                                  recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][RecLength])   
-    print('Maximum percentage error for [1][0]: ', np.max(Error1to0))      
+    print('Maximum percentage error for [1][0]: ', np.max(abs(Error1to0)))
     
     Error0to0 = np.zeros(1000)
     i=0
@@ -200,7 +200,7 @@ if Run_Check:
             Error0to0[i] = percChange(AggDemandEconomy.MacroCFunc[0][0](recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][quarter-1]), \
                                                                     recession_Check_all_results_AD[RecLength-1]['Cratio_hist'][quarter])     
             i +=1
-    print('Maximum percentage error for [0][0]: ', np.max(Error0to0))            
+    print('Maximum percentage error for [0][0]: ', np.max(abs(Error0to0)))            
 
    
 
