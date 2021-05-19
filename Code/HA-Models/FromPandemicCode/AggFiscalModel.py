@@ -700,7 +700,7 @@ class AggregateDemandEconomy(Market):
         print('Total Diff in CFunc: ', Total_Diff)
         return Total_Diff
     
-    def solveAD_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
+    def solveAD_Recession(self, num_max_iterations, convergence_cutoff=1E-3, SimOnlyRecStates=True, name = None):
         #reset Cfunc
         dim = len(self.CFunc)
         self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
@@ -710,7 +710,6 @@ class AggregateDemandEconomy(Market):
         self.solve()
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = True
         if SimOnlyRecStates:
             SimMrkHist = [0]
         else:
@@ -810,7 +809,7 @@ class AggregateDemandEconomy(Market):
             self.storeADsolution(name)
             
             
-    def solveAD_Check_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
+    def solveAD_Check_Recession(self, num_max_iterations, convergence_cutoff=1E-3, SimOnlyRecStates = True, name = None):
         
         #reset Cfunc
         dim = len(self.CFunc)
@@ -820,7 +819,7 @@ class AggregateDemandEconomy(Market):
         print("Presolving")
         self.solve()
         
-        SimOnlyRecStates = True
+        
         
         self.ADelasticity = self.demand_ADelasticity
         self.update()   
@@ -888,15 +887,14 @@ class AggregateDemandEconomy(Market):
                 slope00 = np.mean((np.array(recession_Check_all_results[0]['Cratio_hist'][31])-1)/(np.array(recession_Check_all_results[0]['Cratio_hist'][30])-1))
                 slope00 = np.max([np.min([1.0,slope00]),0.0])
                 MacroCFunc[0][0] = CRule(1.0, slope00)  
-                
-                # assymtote10 = recession_Check_all_results[0]['Cratio_hist'][30]
-                # slope10     = (recession_Check_all_results[3]['Cratio_hist'][3] - assymtote10)/(recession_Check_all_results[2]['Cratio_hist'][2] - assymtote10)
-                # slope10     = np.max([np.min([1.0,slope10]),0.0])
-                # MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10) 
-                
-                assymtote10 = 1
-                slope10     = (recession_Check_all_results[0]['Cratio_hist'][30] - 1)/(recession_Check_all_results[0]['Cratio_hist'][29] - 1)
-                MacroCFunc[1][0]    = CRule(assymtote10 + slope10*(1.0-assymtote10),slope10)
+                             
+                assymtote10_0 = recession_Check_all_results[0]['Cratio_hist'][30]
+                assymtote10_1 = recession_Check_all_results[0]['Cratio_hist'][29]
+                slope10 = (recession_Check_all_results[2]['Cratio_hist'][2] - assymtote10_0)/(recession_Check_all_results[2]['Cratio_hist'][1] - assymtote10_1)
+                slope10 = np.max([np.min([1.0,slope10]),0.0])
+                MacroCFunc[1][0]    = CRule(assymtote10_0 + slope10*(1.0-assymtote10_1),slope10)
+                                   
+
                  
        
             self.MacroCFunc = MacroCFunc
@@ -929,7 +927,7 @@ class AggregateDemandEconomy(Market):
         if name != None:
             self.storeADsolution(name)            
     
-    def solveAD_UIExtension_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
+    def solveAD_UIExtension_Recession(self, num_max_iterations, convergence_cutoff=1E-3, SimOnlyRecStates = True, name = None):
         #reset Cfunc
         dim = len(self.CFunc)
         self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
@@ -939,7 +937,6 @@ class AggregateDemandEconomy(Market):
         self.solve()
         
         # if AD effects only apply to Rec states set to True
-        SimOnlyRecStates = True
         if SimOnlyRecStates:
             SimMrkHist = [0,1]
         else:
