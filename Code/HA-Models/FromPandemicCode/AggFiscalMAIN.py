@@ -1,7 +1,6 @@
 '''
 This is the main script for the paper
 '''
-#$$$$$$$$$$ represents places in the code that need to be adjusted when the markov state space is changed
 from Parameters import T_sim, init_infhorizon, init_ADEconomy, DiscFacDstns,\
      AgentCountTotal, TypeShares, base_dict, recession_changes, sticky_e_changes,\
      UI_changes, recession_UI_changes, TaxCut_changes, recession_TaxCut_changes,\
@@ -18,7 +17,7 @@ from OtherFunctions import getSimulationDiff, getSimulationPercentDiff, getStimu
 mystr = lambda x : '{:.2f}'.format(x)
 
 
-
+SimOnlyRecStates = False
 ## Which experiments to run / plots to show
 Run_Baseline            = True
 Run_Recession           = True
@@ -53,7 +52,8 @@ if __name__ == '__main__':
     if Run_Recession:
         # Solving recession under Agg Multiplier   
         t0 = time()
-        AggDemandEconomy.solveAD_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Recession')
+        AggDemandEconomy.switch_shock_type("recession")
+        AggDemandEconomy.solveAD_Recession(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Recession',SimOnlyRecStates=SimOnlyRecStates)
         t1 = time()
         print('Solving recession took ' + mystr(t1-t0) + ' seconds.')
         

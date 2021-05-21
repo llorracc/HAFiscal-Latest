@@ -11,7 +11,8 @@ from HARK.interpolation import LinearInterp, BilinearInterp, VariableLowerBoundF
                                 LinearInterpOnInterp1D, LowerEnvelope2D, UpperEnvelope, ConstantFunction
 from HARK import Market
 from HARK.core import distanceMetric, HARKobject
-from Parameters import makeMacroMrkvArray, makeCondMrkvArrays, makeFullMrkvArray, T_sim
+from Parameters import makeMacroMrkvArray_recession, makeCondMrkvArrays_recession, makeFullMrkvArray, T_sim, \
+                                                     makeCondMrkvArrays_base
 from copy import copy, deepcopy
 import matplotlib.pyplot as plt
 
@@ -132,15 +133,15 @@ class AggFiscalType(MarkovConsumerType):
         self.unemployment_draw_fixed_hist = self.history['unemployment_draw'].copy()
         self.Mrkv_univ = None
         
-    def hitWithRecessionShock(self):
+    def hitWithRecessionShock(self, shock_type):
         '''
         Alter the Markov state of each simulated agent, jumping some people into
         recession states
         '''
         # Shock unemployment up to ergodic unemployment level in normal or recession state
-        if self.RecessionShock:
+        if shock_type=="recession" or shock_type=="recessionUI" or shock_type=="recessionTaxCut" or shock_type=="recessionCheck":
             this_Urate = self.Urate_recession
-        else:
+        elif shock_type=="base":
             this_Urate = self.Urate_normal
         
         # Draw new Markov states for each agents who are employed
@@ -151,19 +152,10 @@ class AggFiscalType(MarkovConsumerType):
         draws_empy2umemp = draws > 1.0-(this_Urate-old_Urate)/(1.0-old_Urate)
         MrkvNew[np.logical_and(np.equal(self.MrkvNow,0), draws_empy2umemp) ] = 2 # Move people from employment to unemployment such that total unemployment rate is as required. Don't touch already unemployed people.
         
-        #$$$$$$$$$$
-        if (self.RecessionShock): # If the recssion actually occurs,
+        if shock_type=="base":
+            MrkvNew = MrkvNew #no shock
+        elif shock_type=="recession": # If the recssion actually occurs,
             MrkvNew += 3 # then put everyone into the recession 
-        if self.ExtendedUIShock:
-            MrkvNew += 6 # put everyone in the extended UI states
-        if self.TaxCutShock:
-            MrkvNew +=12 # put everyone in the tax cut states
-            #might not change if we keep the order, if +12 relates to 1q of the reform
-        if self.CheckShock:
-            MrkvNew +=36*3 # put everyone in the check state
-        if (self.ExtendedUIShock and self.TaxCutShock):
-            print("Cannot handle UI and TaxCut experiments at the same time (yet)")
-            return
         # Move agents to those Markov states 
         self.MrkvNow = MrkvNew
        
@@ -184,32 +176,26 @@ class AggFiscalType(MarkovConsumerType):
         self.MicroMrkvNow = MicroMrkvNow_start
         self.MacroMrkvNow = MacroMrkvNow_start
         self.MrkvNow = 3*self.MacroMrkvNow + self.MicroMrkvNow
-         
         
         tax_cut_multiplier = np.ones_like(self.history['MrkvNow'])
-        tax_cut_states = np.logical_and(np.greater(self.history['MrkvNow'], 11), np.less(self.history['MrkvNow'],36*3)) #$$$$$$$$$$ assumes all markov states above 11 and below 36 are tax cut states
-        tax_cut_multiplier[tax_cut_states] *= self.TaxCutIncFactor 
-        
+        CheckAmount       = np.zeros_like(self.history['MrkvNow'])
+        if shock_type=="recessionTaxCut":
+            tax_cut_states = np.logical_and(np.greater(self.history['MrkvNow'], 11), np.less(self.history['MrkvNow'],36*3)) #$$$$$$$$$$ assumes all markov states above 11 and below 36 are tax cut states
+            tax_cut_multiplier[tax_cut_states] *= self.TaxCutIncFactor 
+        elif shock_type=="recessionCheck":
+            CheckAmount = np.greater_equal(self.history['MrkvNow'],36*3) * self.CheckStimLvl 
+            #This only works because check occurs in first period
+            CheckAmount[0] = CheckAmount[0] / self.pLvlNow        
+            for agent in range(len(CheckAmount[0])):
+                # Stimulus is a function of permanent income
+                if self.pLvlNow[agent] < self.CheckStimLvl_PLvl_Cutoff_start:
+                    AgentSpecificScalar = 1
+                elif self.pLvlNow[agent] > self.CheckStimLvl_PLvl_Cutoff_end:
+                    AgentSpecificScalar = 0
+                else:
+                    AgentSpecificScalar = 1-(self.pLvlNow[agent]-self.CheckStimLvl_PLvl_Cutoff_start)/(self.CheckStimLvl_PLvl_Cutoff_end-self.CheckStimLvl_PLvl_Cutoff_start)
+                CheckAmount[0][agent] *= AgentSpecificScalar
                 
-        CheckAmount = np.greater_equal(self.history['MrkvNow'],36*3) * self.CheckStimLvl 
-        #This only works because check occurs in first period
-        CheckAmount[0] = CheckAmount[0] / self.pLvlNow        
-        for agent in range(len(CheckAmount[0])):
-            # Stimulus is a function of permanent income
-            if self.pLvlNow[agent] < self.CheckStimLvl_PLvl_Cutoff_start:
-                AgentSpecificScalar = 1
-            elif self.pLvlNow[agent] > self.CheckStimLvl_PLvl_Cutoff_end:
-                AgentSpecificScalar = 0
-            else:
-                AgentSpecificScalar = 1-(self.pLvlNow[agent]-self.CheckStimLvl_PLvl_Cutoff_start)/(self.CheckStimLvl_PLvl_Cutoff_end-self.CheckStimLvl_PLvl_Cutoff_start)
-            CheckAmount[0][agent] *= AgentSpecificScalar
-        
-        # pLvlNow seems to change later on if agent dies
-        # but this only occurs after simulation
-        # leave this error to later
-        
-    
-        
         employed = np.equal(self.history['MrkvNow']%3, 0)
         self.history['PermShkNow'][employed] = self.perm_shock_fixed_hist[employed]
         self.history['TranShkNow'][employed] = self.tran_shock_fixed_hist[employed]*tax_cut_multiplier[employed] + CheckAmount[employed] / self.perm_shock_fixed_hist[employed]
@@ -224,22 +210,28 @@ class AggFiscalType(MarkovConsumerType):
         self.history['update_draw'] = self.update_draw_fixed_hist
         self.history['unemployment_draw'] = self.unemployment_draw_fixed_hist
         
-    def switchToCounterfactualMode(self):
+    def switchToCounterfactualMode(self, shock_type):
         del self.solution
         self.delFromTimeVary('solution')
-        
-        # Swap in "big" versions of the Markov-state-varying attributes
-        self.LivPrb = self.LivPrb_big
-        self.PermGroFac = self.PermGroFac_big
-        self.MrkvArray = self.MrkvArray_big
-        self.Rfree = self.Rfree_big
-        self.IncomeDstn = self.IncomeDstn_big
-        
+        self.switch_shock_type(shock_type)
         # Adjust simulation parameters for the counterfactual experiments
         self.T_sim = T_sim
         self.track_vars = ['cNrmNow','pLvlNow','aNrmNow','mNrmNow','MrkvNowPcvd','MacroMrkvNow','MicroMrkvNow','cLvlNow','cLvl_splurgeNow']
         self.use_prestate = None
         self.track_vars += ['unemployment_draw']
+        
+    def switch_shock_type(self, shock_type):
+        # Swap in "big" versions of the Markov-state-varying attributes
+        if shock_type == "base":
+            self.MrkvArray = self.MrkvArray_base
+            self.IncomeDstn = self.IncomeDstn_base
+        elif shock_type == "recession":
+            self.MrkvArray = self.MrkvArray_recession
+            self.IncomeDstn = self.IncomeDstn_recession
+        num_mrkv_states = self.MrkvArray[0].shape[0]
+        self.LivPrb = [np.array(self.LivPrb_base*num_mrkv_states)]
+        self.PermGroFac =  [np.array(self.PermGroFac_base*num_mrkv_states)]
+        self.Rfree = np.array(num_mrkv_states*self.Rfree_base)
         
     def getRfree(self):
         RfreeNow = self.Rfree[self.MrkvNow]*np.ones(self.AgentCount)
@@ -274,7 +266,6 @@ class AggFiscalType(MarkovConsumerType):
             self.MrkvNowPcvd[self.update] = self.MrkvNow[self.update]
         else: # This only triggers in the first simulated period
             self.MrkvNowPcvd = np.ones(self.AgentCount,dtype=int)*self.MrkvNow
-        #$$$$$$$$$$ 
         # update the idiosyncratic state (employed, unemployed with benefits, unemployed without benefits)
         # but leave the macro state as it is (idiosyncratic state is 'modulo 3')
         self.MrkvNowPcvd = np.remainder(self.MrkvNow,3) + 3*np.floor_divide(self.MrkvNowPcvd,3)
@@ -320,11 +311,17 @@ class AggFiscalType(MarkovConsumerType):
             self.MrkvNow = self.Mrkv_univ*np.ones(self.AgentCount, dtype=int)
             # ^^ Store the real states but force income shocks to be based on one particular state
             
-    def updateMrkvArray(self):
-        MacroMrkvArray = makeMacroMrkvArray(self.Rspell, self.PolicyUBspell, self.TaxCutPeriods, self.TaxCutContinuationProb_Rec, self.TaxCutContinuationProb_Bas)
-        CondMrkvArrays = makeCondMrkvArrays(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.UBspell_extended, self.TaxCutPeriods)
-        MrkvArray = makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays)
-        self.MrkvArray  = MrkvArray
+    def updateMrkvArray(self, shock_type):
+        if shock_type=="base":
+            self.MacroMrkvArray = np.array([[1.0]])
+            self.CondMrkvArrays = makeCondMrkvArrays_base(self.Urate_normal, self.Uspell_normal)
+            self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
+        elif shock_type=="recession":
+            self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell)
+            self.CondMrkvArrays = makeCondMrkvArrays_recession(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession)
+            self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
+        else:
+            print("shock_type not recognized")
     
     def solveIfChanged(self):
         '''
@@ -678,13 +675,11 @@ class AggregateDemandEconomy(Market):
         for agent in self.agents:
             agent.initializeSim()
         
-    def runExperiment(self, RecessionShock = False,TaxCutShock = False, \
-                      ExtendedUIShock =False, CheckShock = False, UpdatePrb = 1.0, Splurge = 0.0, EconomyMrkv_init = [0], Full_Output = True):
+    def runExperiment(self, shock_type = "recession", UpdatePrb = 1.0, Splurge = 0.0, EconomyMrkv_init = [0], Full_Output = True):
         # Make the macro markov history
         self.EconomyMrkvNow_hist = [0] * self.act_T
         self.EconomyMrkvNow_hist[0:len(EconomyMrkv_init)] = EconomyMrkv_init
     
-        
         self.CratioNow_init = self.CFunc[0][EconomyMrkv_init[0]*3].intercept
         RecState = EconomyMrkv_init[0] % 2 == 1
         self.AggDemandFac_init = self.ADFunc(self.CratioNow_init,RecState)
@@ -692,10 +687,7 @@ class AggregateDemandEconomy(Market):
         # Make dictionaries of parameters to give to the agents
         experiment_dict = {
                 'use_prestate' : True,
-                'RecessionShock' : RecessionShock,
-                'TaxCutShock' : TaxCutShock,
-                'ExtendedUIShock' : ExtendedUIShock,
-                'CheckShock': CheckShock,
+                'shock_type' : shock_type,
                 'UpdatePrb' : UpdatePrb
                 }
           
@@ -704,11 +696,11 @@ class AggregateDemandEconomy(Market):
         for ThisType in self.agents:
             ThisType.read_shocks = True
             ThisType(**experiment_dict)
-            ThisType.updateMrkvArray()
+            ThisType.updateMrkvArray(shock_type)
             ThisType.solveIfChanged()
             ThisType.initializeSim()
             ThisType.EconomyMrkvNow_hist = self.EconomyMrkvNow_hist
-            ThisType.hitWithRecessionShock()
+            ThisType.hitWithRecessionShock(shock_type)
             PopCount += ThisType.AgentCount
         self.makeHistory()
         
@@ -789,24 +781,32 @@ class AggregateDemandEconomy(Market):
             CFunc_all.append(copy(CFunc_i))
         self.CFunc = CFunc_all
         
-    def switchToCounterfactualMode(self):
+    def switchToCounterfactualMode(self, shock_type):
         '''
         Very small method that swaps in the "big" Markov-state versions of some
         solution attributes, replacing the "small" two-state versions that are used
         only to generate the pre-recession initial distbution of state variables.
         It then prepares this type to create alternate shock histories so it can
         run counterfactual experiments.
-        '''
-        self.MrkvArray = self.MrkvArray_big
-        self.intercept_prev = self.intercept_prev_big
-        self.slope_prev = self.slope_prev_big
-        self.calcCFunc()
-        
+        '''       
         # Adjust simulation parameters for the counterfactual experiments
+        self.switch_shock_type(shock_type)
         self.act_T = T_sim
         for agent in self.agents:
             agent.getEconomyData(self)
-            agent.switchToCounterfactualMode()
+            agent.switchToCounterfactualMode(shock_type)
+            
+    def switch_shock_type(self, shock_type):
+        if shock_type == "base":
+            self.MrkvArray = self.MrkvArray_base
+        elif shock_type == "recession":
+            self.MrkvArray = self.MrkvArray_recession
+        num_mrkv_states = self.MrkvArray[0].shape[0]
+        self.intercept_prev = np.ones((num_mrkv_states,num_mrkv_states ))
+        self.slope_prev    = np.zeros((num_mrkv_states,num_mrkv_states ))
+        self.calcCFunc()
+        for agent in self.agents:
+            agent.switch_shock_type(shock_type)
             
     def saveState(self):
         for agent in self.agents:
@@ -900,9 +900,7 @@ class AggregateDemandEconomy(Market):
         self.ADelasticity = self.demand_ADelasticity
         self.update()    
         recession_dict = {
-             'RecessionShock' : True,
-             'ExtendedUIShock' : False,
-             'TaxCutShock' : False,
+             'shock_type' : "recession",
              'UpdatePrb': 1.0,
              'Splurge': 0.32,
              }
@@ -992,7 +990,6 @@ class AggregateDemandEconomy(Market):
             
             
     def solveAD_Check_Recession(self, num_max_iterations, convergence_cutoff=1E-3, SimOnlyRecStates = True, name = None):
-        
         #reset Cfunc
         dim = len(self.CFunc)
         self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
@@ -1006,10 +1003,7 @@ class AggregateDemandEconomy(Market):
         self.ADelasticity = self.demand_ADelasticity
         self.update()   
         recession_Check_dict = {
-             'RecessionShock' : True,
-             'ExtendedUIShock' : False,
-             'TaxCutShock' : False,
-             'CheckShock' : True,
+             'shock_type' : "recessionCheck",
              'UpdatePrb': 1.0,
              'Splurge': 0.32,
              }
@@ -1127,9 +1121,7 @@ class AggregateDemandEconomy(Market):
         self.ADelasticity = self.demand_ADelasticity
         self.update()    
         UI_dict = {
-             'RecessionShock' : True,
-             'ExtendedUIShock' : True,
-             'TaxCutShock' : False,
+             'shock_type' : "recessionUI",
              'UpdatePrb': 1.0,
              'Splurge': 0.32,
              }
@@ -1306,9 +1298,7 @@ class AggregateDemandEconomy(Market):
         self.ADelasticity = self.demand_ADelasticity
         self.update()    
         TaxCut_dict = {
-             'RecessionShock' : False,
-             'ExtendedUIShock' : False,
-             'TaxCutShock' : True,
+             'shock_type' : "TaxCut",
              'UpdatePrb': 1.0,
              'Splurge': 0.32,
              }
@@ -1376,9 +1366,7 @@ class AggregateDemandEconomy(Market):
         self.ADelasticity = self.demand_ADelasticity
         self.update()   
         recession_taxcut_dict = {
-             'RecessionShock' : True,
-             'ExtendedUIShock' : False,
-             'TaxCutShock' : True,
+             'shock_type' : "recessionTaxCut",
              'UpdatePrb': 1.0,
              'Splurge': 0.32,
              }
