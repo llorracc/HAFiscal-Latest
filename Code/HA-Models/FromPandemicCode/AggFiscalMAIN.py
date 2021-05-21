@@ -6,7 +6,6 @@ from Parameters import T_sim, init_infhorizon, init_ADEconomy, DiscFacDstns,\
      AgentCountTotal, TypeShares, base_dict, recession_changes, sticky_e_changes,\
      UI_changes, recession_UI_changes, TaxCut_changes, recession_TaxCut_changes,\
      figs_dir, num_max_iterations_solvingAD, convergence_tol_solvingAD
-from FiscalModel import FiscalType
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 from HARK.distribution import DiscreteDistribution
 from time import time
