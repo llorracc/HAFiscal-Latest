@@ -1,7 +1,7 @@
 from Parameters import T_sim, init_infhorizon, init_ADEconomy, DiscFacDstns,\
      AgentCountTotal, TypeShares, base_dict, recession_changes, sticky_e_changes,\
      UI_changes, recession_UI_changes, TaxCut_changes, recession_TaxCut_changes,\
-     figs_dir, num_max_iterations_solvingAD, convergence_tol_solvingAD
+     figs_dir, num_max_iterations_solvingAD, convergence_tol_solvingAD, num_recovery_states
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 from HARK.distribution import DiscreteDistribution
 import numpy as np
@@ -55,7 +55,7 @@ IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1
 IncomeDstn_recession = []
 for ThisType in BaseTypeList:
 
-    for i in range(2): # for normal, rec
+    for i in range(2 + num_recovery_states): # for normal, rec, recovery
         IncomeDstn_recession.append(ThisType.IncomeDstn[0])
         IncomeDstn_recession.append(IncomeDstn_unemp_nobenefits)
         IncomeDstn_recession.append(IncomeDstn_unemp)

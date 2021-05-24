@@ -39,8 +39,7 @@ for j in range(4):
         recession_dict['EconomyMrkv_init'] = np.array([ 1])
     elif j == 2:
         recession_dict['EconomyMrkv_init'] = np.array([1,1,1]) 
-    elif j == 3:
-        recession_dict['EconomyMrkv_init'] = np.array([1, 0]) 
+
     this_UI_results = AggDemandEconomy.runExperiment(**recession_dict)
     MrkvSim = np.concatenate(([0],recession_dict['EconomyMrkv_init'],[0]*50))
     cratio_hist = np.concatenate(([1.0],this_UI_results['Cratio_hist'][0:38]))
