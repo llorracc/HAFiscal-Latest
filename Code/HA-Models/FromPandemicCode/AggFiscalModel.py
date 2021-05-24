@@ -943,7 +943,7 @@ class AggregateDemandEconomy(Market):
                 for j in range(1+self.num_recovery_states):
                     assymtoteab_b = recession_all_results[0]['Cratio_hist'][30+j]
                     assymtoteab_a = recession_all_results[0]['Cratio_hist'][29+j]
-                    slopeab = (recession_all_results[1]['Cratio_hist'][1+j] - assymtoteab_b)/(recession_all_results[1]['Cratio_hist'][j] - assymtoteab_b)
+                    slopeab = (recession_all_results[1]['Cratio_hist'][1+j] - assymtoteab_b)/(recession_all_results[1]['Cratio_hist'][j] - assymtoteab_a)
                     slopeab = np.max([np.min([1.0,slopeab]),0.0])
                     MacroCFunc[1+j][(2+j)%(2+self.num_recovery_states)]    = CRule(assymtoteab_b + slopeab*(1.0-assymtoteab_a),slopeab)
                                    
