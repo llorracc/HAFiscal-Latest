@@ -34,11 +34,11 @@ MaxError = []
 UI_results = []
 for j in range(4):
     if j == 0:
-        recession_dict['EconomyMrkv_init'] = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) 
+        recession_dict['EconomyMrkv_init'] = np.concatenate(([1]*10 + list(np.array(range(AggDemandEconomy.num_recovery_states))+2),[0]*20)).astype(int) 
     elif j == 1:
-        recession_dict['EconomyMrkv_init'] = np.array([ 1])
+        recession_dict['EconomyMrkv_init'] = np.concatenate(([1] + list(np.array(range(AggDemandEconomy.num_recovery_states))+2),[0]*20)).astype(int)
     elif j == 2:
-        recession_dict['EconomyMrkv_init'] = np.array([1,1,1]) 
+        recession_dict['EconomyMrkv_init'] = np.concatenate(([1]*3 + list(np.array(range(AggDemandEconomy.num_recovery_states))+2),[0]*20)).astype(int)
 
     this_UI_results = AggDemandEconomy.runExperiment(**recession_dict)
     MrkvSim = np.concatenate(([0],recession_dict['EconomyMrkv_init'],[0]*50))
