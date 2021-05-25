@@ -90,6 +90,7 @@ CgridBase = np.array([0.8,0.9,0.98,1.0,1.02,1.1,1.2])
 
 num_normal_MrkvStates = 2+ UBspell_normal #employed, unemployed with 2 quarters benefits, unemployed with 1 quarter benefit, unemployed no benefits
 num_recovery_states = 2
+num_afterUBext_states = 2
 
 def makeMacroMrkvArray_recession(Rspell, num_recovery_states):
     R_persist = 1.-1./Rspell
@@ -100,13 +101,27 @@ def makeMacroMrkvArray_recession(Rspell, num_recovery_states):
         MacroMrkvArray[i,i+1] = 1.0 - MacroMrkvArray[i,i]
     MacroMrkvArray[num_recovery_states+1,0] = 1.0 - np.sum(MacroMrkvArray[num_recovery_states+1,1:])
     return MacroMrkvArray
+
+def makeMacroMrkvArray_recessionUI(Rspell, num_recovery_states, ExtraUBperiods, num_afterUBext_states):
+    num_rec_states = 2+num_recovery_states
+    dimension = num_rec_states*(1+ExtraUBperiods + num_afterUBext_states)
+    MacroMrkvArray = np.zeros((dimension, dimension))
+    MacroMrkvArray_recession = makeMacroMrkvArray_recession(Rspell, num_recovery_states)
+    MacroMrkvArray[0:2+num_recovery_states,0:2+num_recovery_states] = MacroMrkvArray_recession
+    for i in np.array(range(ExtraUBperiods+num_afterUBext_states-1)):
+        MacroMrkvArray[num_rec_states*(i+1):num_rec_states*(i+2),num_rec_states*(i+2):num_rec_states*(i+3)] = MacroMrkvArray_recession
+    MacroMrkvArray[num_rec_states*(ExtraUBperiods+num_afterUBext_states):num_rec_states*(ExtraUBperiods+num_afterUBext_states+1),0:num_rec_states] = MacroMrkvArray_recession
+    return MacroMrkvArray
    
-def small_MrkvArray(e,u,ub):
+def small_MrkvArray(e,u,ub,transition_ub=True):
     small_MrkvArray = np.zeros((ub+2, ub+2))
     small_MrkvArray[0,0] = e
     small_MrkvArray[0,1] = 1-e
     for i in np.array(range(ub))+1:
-        small_MrkvArray[i,i+1] = u
+        if transition_ub:
+            small_MrkvArray[i,i+1] = u
+        else:
+            small_MrkvArray[i,i] = u
         small_MrkvArray[i,0] = 1-u
     small_MrkvArray[ub+1,ub+1] = u
     small_MrkvArray[ub+1,0] = 1-u
@@ -134,6 +149,20 @@ def makeCondMrkvArrays_recession(Urate_normal, Uspell_normal, UBspell_normal, Ur
     MrkvArray_recession      = small_MrkvArray(E_persist_recession, U_persist_recession, UBspell_normal)
 
     CondMrkvArrays = [MrkvArray_normal, MrkvArray_recession] + [MrkvArray_normal]*num_recovery_states
+    return CondMrkvArrays
+
+def makeCondMrkvArrays_recessionUI(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_recovery_states, ExtraUBperiods, num_afterUBext_states):
+    U_persist_normal = 1.-1./Uspell_normal
+    E_persist_normal = 1.-Urate_normal*(1.-U_persist_normal)/(1.-Urate_normal)
+    U_persist_recession = 1.-1./Uspell_recession
+    E_persist_recession = 1.-Urate_recession*(1.-U_persist_recession)/(1.-Urate_recession)
+    MrkvArray_normal         = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBspell_normal)
+    MrkvArray_recession      = small_MrkvArray(E_persist_recession, U_persist_recession, UBspell_normal)
+    MrkvArray_normalUI       = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBspell_normal, transition_ub=False)
+    MrkvArray_recessionUI    = small_MrkvArray(E_persist_recession, U_persist_recession, UBspell_normal, transition_ub=False)
+    CondMrkvArrays = [MrkvArray_normal,    MrkvArray_recession]   + [MrkvArray_normal]*num_recovery_states + \
+                     ([MrkvArray_normalUI, MrkvArray_recessionUI] + [MrkvArray_normalUI]*num_recovery_states)*ExtraUBperiods + \
+                     ([MrkvArray_normal,    MrkvArray_recession]   + [MrkvArray_normal]*num_recovery_states)*num_afterUBext_states
     return CondMrkvArrays
 
 # def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb_Rec, TaxCutContinuationProb_Bas):
@@ -259,6 +288,11 @@ MrkvArray_base = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base)
 MacroMrkvArray_recession = makeMacroMrkvArray_recession(Rspell, num_recovery_states)
 CondMrkvArrays_recession = makeCondMrkvArrays_recession(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_recovery_states)
 MrkvArray_recession = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession)
+
+MacroMrkvArray_recessionUI = makeMacroMrkvArray_recessionUI(Rspell, num_recovery_states, UBspell_extended-UBspell_normal, num_afterUBext_states)
+CondMrkvArrays_recessionUI = makeCondMrkvArrays_recessionUI(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_recovery_states, UBspell_extended-UBspell_normal, num_afterUBext_states)
+MrkvArray_recessionUI = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI)
+
 
 # Define permanent income growth rates
 PermGroFac_base =   [1.0]
