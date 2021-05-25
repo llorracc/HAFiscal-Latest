@@ -56,8 +56,8 @@ class AggFiscalType(MarkovConsumerType):
                 self.initializeAges()
         if (hasattr(self,'Mrkv_univ') and self.Mrkv_univ is not None):
             self.MrkvNow[:] = self.Mrkv_univ
-        self.MacroMrkvNow = (np.floor(self.MrkvNow/3)).astype(int)
-        self.MicroMrkvNow = self.MrkvNow%3
+        self.MacroMrkvNow = (np.floor(self.MrkvNow/self.num_normal_MrkvStates)).astype(int)
+        self.MicroMrkvNow = self.MrkvNow%self.num_normal_MrkvStates
         self.EconomyMrkvNow = self.MacroMrkvNow #For aggregate model only
         self.EconomyMrkvNow_hist = [0] * self.T_sim #For aggregate model only
         
@@ -95,7 +95,7 @@ class AggFiscalType(MarkovConsumerType):
         self.Cgrid = Economy.CgridBase               # Ratio of consumption to steady state consumption
         self.CFunc = Economy.CFunc                   # Next period's consumption ratio function
         self.ADFunc = Economy.ADFunc                 # Function that takes aggregate consumption to agg. demand function
-        self.addToTimeInv('Cgrid', 'CFunc','ADFunc','num_recovery_states')
+        self.addToTimeInv('Cgrid', 'CFunc','ADFunc','num_recovery_states','num_normal_MrkvStates')
         # self.PermGroFacAgg = Economy.PermGroFacAgg   # Aggregate permanent productivity growth
         #self.addToTimeInv('Cgrid', 'CFunc', 'PermGroFacAgg','ADFunc')
         
@@ -150,19 +150,19 @@ class AggFiscalType(MarkovConsumerType):
         MrkvNew = self.MrkvNow
         old_Urate = self.Urate_normal
         draws_empy2umemp = draws > 1.0-(this_Urate-old_Urate)/(1.0-old_Urate)
-        MrkvNew[np.logical_and(np.equal(self.MrkvNow,0), draws_empy2umemp) ] = 2 # Move people from employment to unemployment such that total unemployment rate is as required. Don't touch already unemployed people.
+        MrkvNew[np.logical_and(np.equal(self.MrkvNow,0), draws_empy2umemp) ] = 1 # Move people from employment to unemployment such that total unemployment rate is as required. Don't touch already unemployed people.
         
         if shock_type=="base":
             MrkvNew = MrkvNew #no shock
         elif shock_type=="recession": # If the recssion actually occurs,
-            MrkvNew += 3 # then put everyone into the recession 
+            MrkvNew += self.num_normal_MrkvStates # then put everyone into the recession 
         # Move agents to those Markov states 
         self.MrkvNow = MrkvNew
        
         self.history['MrkvNow'] = np.ones_like(self.history['PermShkNow'])
         t_age_start = copy(self.t_age)
-        self.MicroMrkvNow = self.MrkvNow % 3
-        self.MacroMrkvNow = np.floor(self.MrkvNow/3).astype(int)
+        self.MicroMrkvNow = self.MrkvNow % self.num_normal_MrkvStates
+        self.MacroMrkvNow = np.floor(self.MrkvNow/self.num_normal_MrkvStates).astype(int)
         MicroMrkvNow_start = copy(self.MicroMrkvNow)
         MacroMrkvNow_start = copy(self.MacroMrkvNow)
         for t in range(self.T_sim):
@@ -170,12 +170,12 @@ class AggFiscalType(MarkovConsumerType):
             self.MacroMrkvNow = self.EconomyMrkvNow_hist[t] 
             unemployment_draw = self.unemployment_draw_fixed_hist[t]
             self.getMicroMarkvStates_guts(unemployment_draw)
-            MrkvNow = 3*self.MacroMrkvNow + self.MicroMrkvNow
+            MrkvNow = self.num_normal_MrkvStates*self.MacroMrkvNow + self.MicroMrkvNow
             self.history['MrkvNow'][t] = MrkvNow.astype(int)
         self.t_age = t_age_start
         self.MicroMrkvNow = MicroMrkvNow_start
         self.MacroMrkvNow = MacroMrkvNow_start
-        self.MrkvNow = 3*self.MacroMrkvNow + self.MicroMrkvNow
+        self.MrkvNow = self.num_normal_MrkvStates*self.MacroMrkvNow + self.MicroMrkvNow
         
         tax_cut_multiplier = np.ones_like(self.history['MrkvNow'])
         CheckAmount       = np.zeros_like(self.history['MrkvNow'])
@@ -196,13 +196,13 @@ class AggFiscalType(MarkovConsumerType):
                     AgentSpecificScalar = 1-(self.pLvlNow[agent]-self.CheckStimLvl_PLvl_Cutoff_start)/(self.CheckStimLvl_PLvl_Cutoff_end-self.CheckStimLvl_PLvl_Cutoff_start)
                 CheckAmount[0][agent] *= AgentSpecificScalar
                 
-        employed = np.equal(self.history['MrkvNow']%3, 0)
+        employed = np.equal(self.history['MrkvNow']%self.num_normal_MrkvStates, 0)
         self.history['PermShkNow'][employed] = self.perm_shock_fixed_hist[employed]
         self.history['TranShkNow'][employed] = self.tran_shock_fixed_hist[employed]*tax_cut_multiplier[employed] + CheckAmount[employed] / self.perm_shock_fixed_hist[employed]
-        unemp_without_benefits = np.equal(self.history['MrkvNow']%3, 1)
+        unemp_without_benefits = np.equal(self.history['MrkvNow']%self.num_normal_MrkvStates, self.num_normal_MrkvStates-1)
         self.history['PermShkNow'][unemp_without_benefits] = 1.0
         self.history['TranShkNow'][unemp_without_benefits] = self.IncUnempNoBenefits + CheckAmount[unemp_without_benefits] 
-        unemp_with_benefits = np.equal(self.history['MrkvNow']%3, 2)
+        unemp_with_benefits = np.logical_not(np.logical_or(employed,unemp_without_benefits))
         self.history['PermShkNow'][unemp_with_benefits] = 1.0
         self.history['TranShkNow'][unemp_with_benefits] = self.IncUnemp + CheckAmount[unemp_with_benefits] 
         
@@ -267,8 +267,8 @@ class AggFiscalType(MarkovConsumerType):
         else: # This only triggers in the first simulated period
             self.MrkvNowPcvd = np.ones(self.AgentCount,dtype=int)*self.MrkvNow
         # update the idiosyncratic state (employed, unemployed with benefits, unemployed without benefits)
-        # but leave the macro state as it is (idiosyncratic state is 'modulo 3')
-        self.MrkvNowPcvd = np.remainder(self.MrkvNow,3) + 3*np.floor_divide(self.MrkvNowPcvd,3)
+        # but leave the macro state as it is (idiosyncratic state is 'modulo self.num_normal_MrkvStates')
+        self.MrkvNowPcvd = np.remainder(self.MrkvNow,self.num_normal_MrkvStates) + self.num_normal_MrkvStates*np.floor_divide(self.MrkvNowPcvd,self.num_normal_MrkvStates)
         self.mNrmNow = self.bNrmNow + self.TranShkNow*self.AggDemandFac # Market resources after income accounting for Agg Demand factor (this is for simulation)
         
     def getMacroMarkovStates(self):
@@ -304,7 +304,7 @@ class AggFiscalType(MarkovConsumerType):
     def getMarkovStates(self):
         self.getMacroMarkovStates()
         self.getMicroMarkovStates()
-        MrkvNow = 3*self.MacroMrkvNow + self.MicroMrkvNow
+        MrkvNow = self.num_normal_MrkvStates*self.MacroMrkvNow + self.MicroMrkvNow
         self.MrkvNow = MrkvNow.astype(int)
         if (hasattr(self,'Mrkv_univ') and self.Mrkv_univ is not None):
             self.MrkvNow_temp = self.MrkvNow
@@ -314,7 +314,7 @@ class AggFiscalType(MarkovConsumerType):
     def updateMrkvArray(self, shock_type):
         if shock_type=="base":
             self.MacroMrkvArray = np.array([[1.0]])
-            self.CondMrkvArrays = makeCondMrkvArrays_base(self.Urate_normal, self.Uspell_normal)
+            self.CondMrkvArrays = makeCondMrkvArrays_base(self.Urate_normal, self.Uspell_normal, self.UBspell_normal)
             self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
         elif shock_type=="recession":
             self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell, self.num_recovery_states)
@@ -411,7 +411,7 @@ class AggFiscalType(MarkovConsumerType):
                 
 def solveAggConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,PermGroFac,
                                  MrkvArray,BoroCnstArt,aXtraGrid, Cgrid, CFunc, ADFunc,
-                                 num_recovery_states):
+                                 num_recovery_states, num_normal_MrkvStates):
     '''
     Solves a single period consumption-saving problem with risky income and
     stochastic transitions between discrete states, in a Markov fashion.  Has
@@ -494,7 +494,7 @@ def solveAggConsMarkovALT(solution_next,IncomeDstn,LivPrb,DiscFac,CRRA,Rfree,Per
         Cnext_array = np.tile(np.reshape(Cgrid, (Ccount, 1, 1)), (1, aCount, ShkCount)) 
 
         # Calculate AggDemandFac
-        AggState = np.floor(j/3)
+        AggState = np.floor(j/num_normal_MrkvStates)
         RecState = AggState % (2+num_recovery_states) == 1
         AggDemandFacnext_array = ADFunc(Cnext_array,RecState)
         TranShkValsNext_tiled = AggDemandFacnext_array*TranShkValsNext_tiled_noAD
@@ -632,7 +632,7 @@ class AggregateDemandEconomy(Market):
             cLvl_all_splurge = np.concatenate([this_cLvl for this_cLvl in cLvl_splurgeNow])      
             AggCons   = np.sum(cLvl_all_splurge)
             self.CratioNow = AggCons/self.base_AggCons[self.Shk_idx] 
-            CratioNext = self.CFunc[EconomyMrkvNow*3][EconomyMrkvNext*3](self.CratioNow)
+            CratioNext = self.CFunc[EconomyMrkvNow*self.num_normal_MrkvStates][EconomyMrkvNext*self.num_normal_MrkvStates](self.CratioNow)
         else:
             self.CratioNow = 1.0
             CratioNext = 1.0
@@ -681,7 +681,7 @@ class AggregateDemandEconomy(Market):
         self.EconomyMrkvNow_hist = [0] * self.act_T
         self.EconomyMrkvNow_hist[0:len(EconomyMrkv_init)] = EconomyMrkv_init
     
-        self.CratioNow_init = self.CFunc[0][EconomyMrkv_init[0]*3].intercept
+        self.CratioNow_init = self.CFunc[0][EconomyMrkv_init[0]*self.num_normal_MrkvStates].intercept
         RecState = EconomyMrkv_init[0] % (2+self.num_recovery_states) == 1
         self.AggDemandFac_init = self.ADFunc(self.CratioNow_init,RecState)
         
@@ -846,10 +846,10 @@ class AggregateDemandEconomy(Market):
         Converts the aggregate CFunc for Macro transitions to one for micro transitions
         '''
         dim = len(MacroCFunc)
-        MicroCFunc = [[CRule(1.0,0.0) for i in range(dim*3)] for j in range(dim*3)]
-        for i in range(dim*3):
-            for j in range(dim*3):
-                MicroCFunc[i][j] = MacroCFunc[int(np.floor(i/3))][int(np.floor(j/3))]
+        MicroCFunc = [[CRule(1.0,0.0) for i in range(dim*self.num_normal_MrkvStates)] for j in range(dim*self.num_normal_MrkvStates)]
+        for i in range(dim*self.num_normal_MrkvStates):
+            for j in range(dim*self.num_normal_MrkvStates):
+                MicroCFunc[i][j] = MacroCFunc[int(np.floor(i/self.num_normal_MrkvStates))][int(np.floor(j/self.num_normal_MrkvStates))]
         return MicroCFunc
     
     def CompareCFuncConvergence(self,Old_Cfunc,New_Cfunc):
@@ -862,13 +862,13 @@ class AggregateDemandEconomy(Market):
                 DiffIntercepts[i,j] = abs(New_Cfunc[i][j].intercept - Old_Cfunc[i][j].intercept)
         Slopes_Diff                         = np.linalg.norm(DiffSlopes)
         [i,j]                               = np.unravel_index(DiffSlopes.argmax(),DiffSlopes.shape)
-        FromMrkState_Slopes_Largest_Diff    = int(np.floor(i/3))
-        ToMrkState_Slopes_Largest_Diff      = int(np.floor(j/3))
+        FromMrkState_Slopes_Largest_Diff    = int(np.floor(i/self.num_normal_MrkvStates))
+        ToMrkState_Slopes_Largest_Diff      = int(np.floor(j/self.num_normal_MrkvStates))
         
         Intercept_Diff                      = np.linalg.norm(DiffIntercepts)
         [i,j]                               = np.unravel_index(DiffIntercepts.argmax(),DiffIntercepts.shape)
-        FromMrkState_Intercept_Largest_Diff = int(np.floor(i/3))
-        ToMrkState_Intercept_Largest_Diff   = int(np.floor(j/3))
+        FromMrkState_Intercept_Largest_Diff = int(np.floor(i/self.num_normal_MrkvStates))
+        ToMrkState_Intercept_Largest_Diff   = int(np.floor(j/self.num_normal_MrkvStates))
         
         Total_Diff          = (Slopes_Diff**2 + Intercept_Diff**2)**0.5
         print('Diff in Slopes in CFunc: ', Slopes_Diff)
@@ -905,7 +905,7 @@ class AggregateDemandEconomy(Market):
              'UpdatePrb': 1.0,
              'Splurge': 0.32,
              }
-        dim = int(len(self.CFunc)/3)
+        dim = int(len(self.CFunc)/self.num_normal_MrkvStates)
         MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]  
         for i in range(num_max_iterations):
             print("Iteration ", i+1,":")
@@ -1004,7 +1004,7 @@ class AggregateDemandEconomy(Market):
              'Splurge': 0.32,
              }
         
-        dim = int(len(self.CFunc)/3)
+        dim = int(len(self.CFunc)/self.num_normal_MrkvStates)
         MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
         
         # Iterate until CRules coincide with actual consumption dynmics
@@ -1121,7 +1121,7 @@ class AggregateDemandEconomy(Market):
              'UpdatePrb': 1.0,
              'Splurge': 0.32,
              }
-        dim = int(len(self.CFunc)/3)
+        dim = int(len(self.CFunc)/self.num_normal_MrkvStates)
         MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]  
         for i in range(num_max_iterations):
             print("Iteration ", i+1,":")
@@ -1298,7 +1298,7 @@ class AggregateDemandEconomy(Market):
              'UpdatePrb': 1.0,
              'Splurge': 0.32,
              }
-        dim = int(len(self.CFunc)/3)
+        dim = int(len(self.CFunc)/self.num_normal_MrkvStates)
         MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]  
         # this sets the belief for agg consumption in next period when running experiment
         # The consumption rule has intercept 1 and slope 0 implying the prediction is simply 1 and thus baseline consumption ratio
@@ -1349,10 +1349,7 @@ class AggregateDemandEconomy(Market):
             
         if name != None:
             self.storeADsolution(name)
-            
-
-            
-        
+ 
             
     def solveAD_Recession_TaxCut(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
         #reset Cfunc
@@ -1366,7 +1363,7 @@ class AggregateDemandEconomy(Market):
              'UpdatePrb': 1.0,
              'Splurge': 0.32,
              }
-        dim = int(len(self.CFunc)/3)
+        dim = int(len(self.CFunc)/self.num_normal_MrkvStates)
         MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
         for i in range(num_max_iterations):
             print("Iteration ", i+1,":")
