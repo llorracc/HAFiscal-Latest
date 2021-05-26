@@ -58,6 +58,7 @@ for ThisType in BaseTypeList:
     IncomeDstn_recession = [ThisType.IncomeDstn[0]*(2*(num_experiment_periods+1))] # for normal, rec, recovery  
     ThisType.IncomeDstn_base = ThisType.IncomeDstn
     ThisType.IncomeDstn_recession = IncomeDstn_recession
+    ThisType.IncomeDstn_recessionUI = IncomeDstn_recession
     ThisType.AgentCount = AgentCountTotal
     ThisType.DiscFac = 0.96
     ThisType.seed = 0

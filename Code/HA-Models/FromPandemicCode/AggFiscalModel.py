@@ -12,7 +12,7 @@ from HARK.interpolation import LinearInterp, BilinearInterp, VariableLowerBoundF
 from HARK import Market
 from HARK.core import distanceMetric, HARKobject
 from Parameters import makeMacroMrkvArray_recession, makeCondMrkvArrays_recession, makeFullMrkvArray, T_sim, \
-                                                     makeCondMrkvArrays_base
+                                                     makeCondMrkvArrays_base, makeCondMrkvArrays_recessionUI
 from copy import copy, deepcopy
 import matplotlib.pyplot as plt
 
@@ -154,7 +154,7 @@ class AggFiscalType(MarkovConsumerType):
         
         if shock_type=="base":
             MrkvNew = MrkvNew #no shock
-        elif shock_type=="recession": # If the recssion actually occurs,
+        elif shock_type=="recession" or shock_type=="recessionUI": # If the recssion actually occurs,
             MrkvNew += 2*self.num_base_MrkvStates # then put everyone into the recession 
         # Move agents to those Markov states 
         self.MrkvNow = MrkvNew
@@ -225,9 +225,15 @@ class AggFiscalType(MarkovConsumerType):
         if shock_type == "base":
             self.MrkvArray = self.MrkvArray_base
             self.IncomeDstn = self.IncomeDstn_base
+            self.CondMrkvArrays = self.CondMrkvArrays_recession
         elif shock_type == "recession":
             self.MrkvArray = self.MrkvArray_recession
             self.IncomeDstn = self.IncomeDstn_recession
+            self.CondMrkvArrays = self.CondMrkvArrays_recession
+        elif shock_type == "recessionUI":
+            self.MrkvArray = self.MrkvArray_recessionUI
+            self.IncomeDstn = self.IncomeDstn_recessionUI
+            self.CondMrkvArrays = self.CondMrkvArrays_recessionUI
         num_mrkv_states = self.MrkvArray[0].shape[0]
         self.LivPrb = [np.array(self.LivPrb_base*num_mrkv_states)]
         self.PermGroFac =  [np.array(self.PermGroFac_base*num_mrkv_states)]
@@ -319,6 +325,10 @@ class AggFiscalType(MarkovConsumerType):
         elif shock_type=="recession":
             self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell, self.num_experiment_periods)
             self.CondMrkvArrays = makeCondMrkvArrays_recession(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.num_experiment_periods)
+            self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
+        elif shock_type=="recessionUI":
+            self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell, self.num_experiment_periods)
+            self.CondMrkvArrays = makeCondMrkvArrays_recessionUI(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.num_experiment_periods,  self.UBspell_extended-self.UBspell_normal)
             self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
         else:
             print("shock_type not recognized")
@@ -731,9 +741,7 @@ class AggregateDemandEconomy(Market):
             for t in range(Periods):
                 NPV[t] = np.sum(X[0:t+1]*NPV_discount[0:t+1])    
             return NPV
-        
-    
-        
+
         # calculate NPV
         NPV_AggIncome = calculate_NPV(AggIncome,self.act_T,ThisType.Rfree[0])
         NPV_AggCons   = calculate_NPV(AggCons,self.act_T,ThisType.Rfree[0])
@@ -802,6 +810,8 @@ class AggregateDemandEconomy(Market):
             self.MrkvArray = self.MrkvArray_base
         elif shock_type == "recession":
             self.MrkvArray = self.MrkvArray_recession
+        elif shock_type == "recessionUI":
+            self.MrkvArray = self.MrkvArray_recessionUI
         num_mrkv_states = self.MrkvArray[0].shape[0]
         self.intercept_prev = np.ones((num_mrkv_states,num_mrkv_states ))
         self.slope_prev    = np.zeros((num_mrkv_states,num_mrkv_states ))
@@ -883,7 +893,7 @@ class AggregateDemandEconomy(Market):
         print('Total Diff in CFunc: ', Total_Diff)
         return Total_Diff
     
-    def solveAD_Recession(self, num_max_iterations, convergence_cutoff=1E-3, SimOnlyRecStates=True, name = None):
+    def solveAD_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None, shock_type = "recession"):
         #reset Cfunc
         dim = len(self.CFunc)
         self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
@@ -895,7 +905,7 @@ class AggregateDemandEconomy(Market):
         self.ADelasticity = self.demand_ADelasticity
         self.update()    
         recession_dict = {
-             'shock_type' : "recession",
+             'shock_type' : shock_type,
              'UpdatePrb': 1.0,
              'Splurge': 0.32,
              }
@@ -1063,192 +1073,8 @@ class AggregateDemandEconomy(Market):
         if name != None:
             self.storeADsolution(name)            
     
-    def solveAD_UIExtension_Recession(self, num_max_iterations, convergence_cutoff=1E-3, SimOnlyRecStates = True, name = None):
-        #reset Cfunc
-        dim = len(self.CFunc)
-        self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
-        for agent in self.agents:
-            agent.CFunc = self.CFunc
-        print("Presolving")
-        self.solve()
-        
-        # if AD effects only apply to Rec states set to True
-        if SimOnlyRecStates:
-            SimMrkHist = [0,1]
-        else:
-            SimMrkHist = [0,1,2,3,4,5,6]
-        
-        self.ADelasticity = self.demand_ADelasticity
-        self.update()    
-        UI_dict = {
-             'shock_type' : "recessionUI",
-             'UpdatePrb': 1.0,
-             'Splurge': 0.32,
-             }
-        dim = int(len(self.CFunc)/self.num_base_MrkvStates)
-        MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]  
-        for i in range(num_max_iterations):
-            print("Iteration ", i+1,":")
-            UI_all_results = []
-            for j in SimMrkHist:
-                if j == 0:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*0,[1]*1,[0]*20)).astype(int) 
-                elif j == 1:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*30,[2]*0,[1]*30,[0]*20)).astype(int) 
-                elif j == 2:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*1,[1]*0,[0]*20)).astype(int) 
-                elif j == 3:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*30,[2]*30,[1]*0,[0]*20)).astype(int) 
-                elif j == 4:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*0,[1]*0,[0]*20)).astype(int) 
-                elif j == 5:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*30,[2]*0,[1]*0,[0]*20)).astype(int) 
-                elif j == 6:
-                    UI_dict['EconomyMrkv_init'] = np.concatenate(([3]*1,[2]*0,[1]*30,[0]*20)).astype(int) 
-                this_UI_results = self.runExperiment(**UI_dict)
-                UI_all_results += [this_UI_results]
-                            
-            #Debugging
-            T_plot = 35
-            plt.plot(UI_all_results[0]['Cratio_hist'][0:T_plot]) 
-            plt.plot(UI_all_results[1]['Cratio_hist'][0:T_plot])   
-            if SimOnlyRecStates:
-                plt.legend(['0','1','6'], fontsize=14)
-            else:
-                plt.plot(UI_all_results[2]['Cratio_hist'][0:T_plot])
-                plt.plot(UI_all_results[3]['Cratio_hist'][0:T_plot])
-                plt.plot(UI_all_results[4]['Cratio_hist'][0:T_plot])
-                plt.plot(UI_all_results[5]['Cratio_hist'][0:T_plot])
-                plt.plot(UI_all_results[6]['Cratio_hist'][0:T_plot])
-                plt.legend(['0','1','2','3','4','5','6'], fontsize=14)
-            plt.pause(1)
-            plt.show()
-            
-            assymtote33 = UI_all_results[1]['Cratio_hist'][29]
-            slope33 = (UI_all_results[1]['Cratio_hist'][1] - assymtote33)/(UI_all_results[1]['Cratio_hist'][0] - assymtote33)
-            slope33 = np.max([np.min([1.0,slope33]),0.0])
-            MacroCFunc[3][3]    = CRule(assymtote33 + slope33*(1.0-assymtote33),slope33)
-            
-            assymtote31_1 = UI_all_results[1]['Cratio_hist'][30]
-            assymtote31_3 = UI_all_results[1]['Cratio_hist'][29]
-            slope31 = (UI_all_results[0]['Cratio_hist'][1] - assymtote31_1)/(UI_all_results[0]['Cratio_hist'][0] - assymtote31_3)
-            print(31)
-            print(assymtote31_1)
-            print(assymtote31_3)
-            print(UI_all_results[0]['Cratio_hist'][1]-assymtote31_1)
-            print(UI_all_results[0]['Cratio_hist'][0]-assymtote31_3)
-            print(slope31)
-            slope31 = np.max([np.min([1.0,slope31]),0.0])
-            MacroCFunc[3][1]    = CRule(assymtote31_1 + slope31*(1.0-assymtote31_3),slope31)
-            
-            MacroCFunc[0][3] = CRule(UI_all_results[0]['Cratio_hist'][0],0.0)
-            
-            # assymtote11 = UI_all_results[6]['Cratio_hist'][30]
-            # slope11 = (UI_all_results[6]['Cratio_hist'][2] - assymtote11)/(UI_all_results[6]['Cratio_hist'][1] - assymtote11)
-            # slope11 = np.max([np.min([1.0,slope11]),0.0])
-            # MacroCFunc[1][1]    = CRule(assymtote11 + slope11*(1.0-assymtote11),slope11)   
-            # print(11)
-            # print(slope11)
-            # overwrite with solution to recession (not stored_solutions contains CFunc, not MacroCFunc, so multiply indices by 3)
-            MacroCFunc[1][1]  = CRule(self.stored_solutions['Recession'].CFunc[3][3].intercept, self.stored_solutions['Recession'].CFunc[3][3].slope)
-            
-            if SimOnlyRecStates == False:
-                assymtote32_2 = UI_all_results[3]['Cratio_hist'][30]
-                assymtote32_3 = UI_all_results[3]['Cratio_hist'][29]
-                slope32 = (UI_all_results[2]['Cratio_hist'][1] - assymtote32_2)/(UI_all_results[2]['Cratio_hist'][0] - assymtote32_3)
-                print(32)
-                print(assymtote32_2)
-                print(assymtote32_3)
-                print(UI_all_results[2]['Cratio_hist'][1]-assymtote32_2)
-                print(UI_all_results[2]['Cratio_hist'][0]-assymtote32_3)
-                print(slope32)
-                slope32 = np.max([np.min([1.0,slope32]),0.0])
-                MacroCFunc[3][2]    = CRule(assymtote32_2 + slope32*(1.0-assymtote32_3),slope32)
-                
-                assymtote30_0 = UI_all_results[5]['Cratio_hist'][30]
-                assymtote30_3 = UI_all_results[5]['Cratio_hist'][29]
-                slope30 = (UI_all_results[4]['Cratio_hist'][1] - assymtote30_0)/(UI_all_results[4]['Cratio_hist'][0] - assymtote30_3)
-                print(30)
-                print(assymtote30_0)
-                print(assymtote30_3)
-                print(UI_all_results[4]['Cratio_hist'][1]-assymtote30_0)
-                print(UI_all_results[4]['Cratio_hist'][0]-assymtote30_3)
-                print(slope30)
-                slope30 = np.max([np.min([1.0,slope30]),0.0])
-                MacroCFunc[3][0]    = CRule(assymtote30_0 + slope30*(1.0-assymtote30_3),slope30)
-                
-                assymtote20_0 = UI_all_results[3]['Cratio_hist'][60]
-                assymtote20_2 = UI_all_results[3]['Cratio_hist'][59]
-                slope20 = (UI_all_results[2]['Cratio_hist'][2] - assymtote20_0)/(UI_all_results[2]['Cratio_hist'][1] - assymtote20_2)
-                print(20)
-                print(assymtote20_0)
-                print(assymtote20_2)
-                print(UI_all_results[2]['Cratio_hist'][2]-assymtote20_0)
-                print(UI_all_results[2]['Cratio_hist'][1]-assymtote20_2)
-                print(slope20)
-                slope20 = np.max([np.min([1.0,slope20]),0.0])
-                MacroCFunc[2][0]    = CRule(assymtote20_0 + slope20*(1.0-assymtote20_2),slope20)
-                    
-                assymtote22 = UI_all_results[3]['Cratio_hist'][59]
-                slope22 = (UI_all_results[3]['Cratio_hist'][31] - assymtote22)/(UI_all_results[3]['Cratio_hist'][30] - assymtote22)
-                slope22 = np.max([np.min([1.0,slope22]),0.0])
-                MacroCFunc[2][2]    = CRule(assymtote22 + slope22*(1.0-assymtote22),slope22)
-                
-                assymtote10_0 = UI_all_results[1]['Cratio_hist'][60]
-                assymtote10_1 = UI_all_results[1]['Cratio_hist'][59]
-                slope10 = (UI_all_results[0]['Cratio_hist'][2] - assymtote10_0)/(UI_all_results[0]['Cratio_hist'][1] - assymtote10_1)
-                print(10)
-                print(assymtote10_0)
-                print(assymtote10_1)
-                print(UI_all_results[0]['Cratio_hist'][2]-assymtote10_0)
-                print(UI_all_results[0]['Cratio_hist'][1]-assymtote10_1)
-                print(slope10)
-                slope10 = np.max([np.min([1.0,slope10]),0.0])
-                MacroCFunc[1][0]    = CRule(assymtote10_0 + slope10*(1.0-assymtote10_1),slope10)
-                # overwrite with solution to recession (not stored_solutions contains CFunc, not MacroCFunc, so multiply indices by 3)
-                MacroCFunc[1][0]  = CRule(self.stored_solutions['Recession'].CFunc[3][0].intercept, self.stored_solutions['Recession'].CFunc[3][0].slope)
-                
-
-
-                slope00 = (np.array(UI_all_results[5]['Cratio_hist'][31])-1)/(np.array(UI_all_results[5]['Cratio_hist'][30])-1)
-                slope00 = np.max([np.min([1.0,slope00]),0.0])
-                MacroCFunc[0][0] = CRule(1.0, slope00)  # when you return to normal state, aggregate consumption will not be equal to baseline
-                print(0)
-                print(slope00)
-                # overwrite with solution to recession (not stored_solutions contains CFunc, not MacroCFunc, so multiply indices by 3)
-                MacroCFunc[0][0]  = CRule(self.stored_solutions['Recession'].CFunc[0][0].intercept, self.stored_solutions['Recession'].CFunc[0][0].slope)
-                
-            
-            self.MacroCFunc = MacroCFunc
-            Old_Cfunc  = self.CFunc
-            New_Cfunc  = self.Macro2MicroCFunc(MacroCFunc)
-            
-            step = self.Cfunc_iter_stepsize 
-            dim = int(len(self.CFunc))
-            Step_Cfunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
-            for ii in range(dim):
-                for jj in range(dim):
-                    Step_Cfunc[ii][jj].slope      = Old_Cfunc[ii][jj].slope     + step*(New_Cfunc[ii][jj].slope-Old_Cfunc[ii][jj].slope)
-                    Step_Cfunc[ii][jj].intercept  = Old_Cfunc[ii][jj].intercept + step*(New_Cfunc[ii][jj].intercept-Old_Cfunc[ii][jj].intercept)
-                    
-            self.CFunc = Step_Cfunc
-            for agent in self.agents:
-                agent.CFunc = self.CFunc
-            print("solving again...")
-            self.solve()
-            
-            
-            Total_Diff = self.CompareCFuncConvergence(Old_Cfunc,self.CFunc)
-
-            if Total_Diff < convergence_cutoff:
-                print("Convergence criterion reached.")
-                break
-            else:                    
-                print("Convergence criterion not reached.")
-                
-        if name != None:
-            self.storeADsolution(name)
-        
+    def solveAD_UIExtension_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
+        self.solveAD_Recession(num_max_iterations, convergence_cutoff, name = name, shock_type = "recessionUI")       
             
     def solveAD_TaxCut(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
         #reset Cfunc

@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Check_Experiment/'
+figs_dir = './Figures/Test/'
 
 try:
     os.mkdir(figs_dir)
@@ -132,19 +132,17 @@ def makeCondMrkvArrays_recession(Urate_normal, Uspell_normal, UBspell_normal, Ur
     CondMrkvArrays = [MrkvArray_normal, MrkvArray_recession]*(num_experiment_periods+1)
     return CondMrkvArrays
 
-# def makeCondMrkvArrays_recessionUI(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_recovery_states, ExtraUBperiods, num_afterUBext_states):
-#     U_persist_normal = 1.-1./Uspell_normal
-#     E_persist_normal = 1.-Urate_normal*(1.-U_persist_normal)/(1.-Urate_normal)
-#     U_persist_recession = 1.-1./Uspell_recession
-#     E_persist_recession = 1.-Urate_recession*(1.-U_persist_recession)/(1.-Urate_recession)
-#     MrkvArray_normal         = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBspell_normal)
-#     MrkvArray_recession      = small_MrkvArray(E_persist_recession, U_persist_recession, UBspell_normal)
-#     MrkvArray_normalUI       = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBspell_normal, transition_ub=False)
-#     MrkvArray_recessionUI    = small_MrkvArray(E_persist_recession, U_persist_recession, UBspell_normal, transition_ub=False)
-#     CondMrkvArrays = [MrkvArray_normal,    MrkvArray_recession]   + [MrkvArray_normal]*num_recovery_states + \
-#                      ([MrkvArray_normalUI, MrkvArray_recessionUI] + [MrkvArray_normalUI]*num_recovery_states)*ExtraUBperiods + \
-#                      ([MrkvArray_normal,    MrkvArray_recession]   + [MrkvArray_normal]*num_recovery_states)*num_afterUBext_states
-#     return CondMrkvArrays
+def makeCondMrkvArrays_recessionUI(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, ExtraUBperiods):
+    U_persist_normal = 1.-1./Uspell_normal
+    E_persist_normal = 1.-Urate_normal*(1.-U_persist_normal)/(1.-Urate_normal)
+    U_persist_recession = 1.-1./Uspell_recession
+    E_persist_recession = 1.-Urate_recession*(1.-U_persist_recession)/(1.-Urate_recession)
+    MrkvArray_normal         = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBspell_normal)
+    MrkvArray_recession      = small_MrkvArray(E_persist_recession, U_persist_recession, UBspell_normal)
+    MrkvArray_normalUI       = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBspell_normal, transition_ub=False)
+    MrkvArray_recessionUI    = small_MrkvArray(E_persist_recession, U_persist_recession, UBspell_normal, transition_ub=False)
+    CondMrkvArrays = [MrkvArray_normal, MrkvArray_recession] + [MrkvArray_normalUI, MrkvArray_recessionUI]*ExtraUBperiods + [MrkvArray_normal, MrkvArray_recession]*(num_experiment_periods-ExtraUBperiods)
+    return CondMrkvArrays
 
 # def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb_Rec, TaxCutContinuationProb_Bas):
 #     '''
@@ -266,6 +264,11 @@ MacroMrkvArray_recession = makeMacroMrkvArray_recession(Rspell, num_experiment_p
 CondMrkvArrays_recession = makeCondMrkvArrays_recession(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
 MrkvArray_recession = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession)
 
+MacroMrkvArray_recessionUI = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
+CondMrkvArrays_recessionUI = makeCondMrkvArrays_recessionUI(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
+MrkvArray_recessionUI = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI)
+
+
 # Define permanent income growth rates
 PermGroFac_base =   [1.0]
 
@@ -297,6 +300,9 @@ init_infhorizon = {"T_cycle": T_cycle,
                 "MrkvArray_recession" : MrkvArray_recession,
                 "MacroMrkvArray_recession" : MacroMrkvArray_recession,
                 "CondMrkvArrays_recession" : CondMrkvArrays_recession,
+                "MrkvArray_recessionUI" : MrkvArray_recessionUI,
+                "MacroMrkvArray_recessionUI" : MacroMrkvArray_recessionUI,
+                "CondMrkvArrays_recessionUI" : CondMrkvArrays_recessionUI,
                 "Rfree" : np.array(num_base_MrkvStates*Rfree_base),
                 "PermGroFac": [np.array(PermGroFac_base*num_base_MrkvStates)],
                 "LivPrb": [np.array(LivPrb_base*num_base_MrkvStates)],
@@ -415,6 +421,7 @@ init_ADEconomy = {'intercept_prev': intercept_prev,
                      'Cfunc_iter_stepsize' : Cfunc_iter_stepsize,
                      'MrkvArray' : MrkvArray_base,
                      'MrkvArray_recession' : MrkvArray_recession,
+                     'MrkvArray_recessionUI' : MrkvArray_recessionUI,
                      'num_base_MrkvStates' : num_base_MrkvStates,
                      'num_experiment_periods' : num_experiment_periods,
                      "MrkvArray_base" : MrkvArray_base, 
