@@ -86,7 +86,7 @@ DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).appr
 DiscFacDstns = [DiscFacDstn]
 
 # Define grid of aggregate assets to labor
-CgridBase = np.array([0.8,0.9,0.98,1.0,1.02,1.1,1.2])  
+CgridBase = np.array([0.8, 1.0, 1.2])  
 
 num_base_MrkvStates = 2+ UBspell_normal #employed, unemployed with 2 quarters benefits, unemployed with 1 quarter benefit, unemployed no benefits
 num_experiment_periods = 20

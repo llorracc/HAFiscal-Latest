@@ -678,6 +678,8 @@ class AggregateDemandEconomy(Market):
                 CFunc_i.append(CRule(self.intercept_prev[i,j], self.slope_prev[i,j]))
             CFunc_all.append(copy(CFunc_i))
         self.CFunc = CFunc_all
+        for agent in self.agents:
+            agent.getEconomyData(self)
 
     def reset(self):
         self.Shk_idx = 0
@@ -727,7 +729,7 @@ class AggregateDemandEconomy(Market):
         cLvl_all    = np.concatenate([ThisType.history['cLvlNow'] for ThisType in self.agents], axis=1)
         cLvl_all_splurge = np.concatenate([ThisType.history['cLvl_splurgeNow'] for ThisType in self.agents], axis=1)
         
-        IndIncome = pLvl_all*TranShk_all*np.array(self.history['AggDemandFac'])[:,None] #changed this to AggDemandFac
+        IndIncome = pLvl_all*TranShk_all*np.array(self.history['AggDemandFacPrev'])[:,None] #changed this to AggDemandFac
         AggIncome = np.sum(IndIncome,1)
         AggCons   = np.sum(cLvl_all_splurge,1)
         
@@ -818,6 +820,7 @@ class AggregateDemandEconomy(Market):
         self.calcCFunc()
         for agent in self.agents:
             agent.switch_shock_type(shock_type)
+            agent.getEconomyData(self)
             
     def saveState(self):
         for agent in self.agents:

@@ -66,7 +66,7 @@ if __name__ == '__main__':
             recession_results = dict()
             #  running recession with diferent lengths up to 20q then averaging the result
             for t in range(max_recession_duration):
-                recession_dict['EconomyMrkv_init'] = list(np.arange(1,AggDemandEconomy.num_experiment_periods+1)*2) + [0]*5 
+                recession_dict['EconomyMrkv_init'] = list(np.arange(1,AggDemandEconomy.num_experiment_periods+1)*2) + [0]*20 
                 recession_dict['EconomyMrkv_init'][0:t+1] = np.array(recession_dict['EconomyMrkv_init'][0:t+1]) +1
                 this_recession_results = AggDemandEconomy.runExperiment(**recession_dict, Full_Output = False)
                 recession_all_results += [this_recession_results]
