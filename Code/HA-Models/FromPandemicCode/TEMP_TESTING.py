@@ -19,7 +19,7 @@ for j in range(4):
     this_UI_results = AggDemandEconomy.runExperiment(**UI_dict)
     MrkvSim = np.concatenate(([0],UI_dict['EconomyMrkv_init'],[0]*20))
     cratio_hist = np.concatenate(([1.0],this_UI_results['Cratio_hist'][0:18]))
-    this_Errors = [AggDemandEconomy.CFunc[3*MrkvSim[i]][3*MrkvSim[i+1]](cratio_hist[i]) for i in range(19)]/this_UI_results['Cratio_hist'][0:19]
+    this_Errors = [AggDemandEconomy.CFunc[num_base_MrkvStates*MrkvSim[i]][num_base_MrkvStates*MrkvSim[i+1]](cratio_hist[i]) for i in range(19)]/this_UI_results['Cratio_hist'][0:19]
     this_MaxError = np.max(np.abs(this_Errors-1.0))
     Errors.append(this_Errors)
     MaxError.append(this_MaxError)
@@ -32,19 +32,19 @@ recession_dict.update(**recession_changes)
 Errors = []
 MaxError = []
 UI_results = []
-for j in range(4):
+for j in range(3):
+    recession_dict['EconomyMrkv_init'] = list(np.arange(1,AggDemandEconomy.num_experiment_periods+1)*2) + [0]*20 
     if j == 0:
-        recession_dict['EconomyMrkv_init'] = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) 
+        recession_dict['EconomyMrkv_init'][0:10] = np.array(recession_dict['EconomyMrkv_init'][0:10]) +1
     elif j == 1:
-        recession_dict['EconomyMrkv_init'] = np.array([ 1])
+        recession_dict['EconomyMrkv_init'][0:1] = np.array(recession_dict['EconomyMrkv_init'][0:1]) +1
     elif j == 2:
-        recession_dict['EconomyMrkv_init'] = np.array([1,1,1]) 
-    elif j == 3:
-        recession_dict['EconomyMrkv_init'] = np.array([1, 0]) 
+        recession_dict['EconomyMrkv_init'][0:20] = np.array(recession_dict['EconomyMrkv_init'][0:20]) +1
+
     this_UI_results = AggDemandEconomy.runExperiment(**recession_dict)
     MrkvSim = np.concatenate(([0],recession_dict['EconomyMrkv_init'],[0]*50))
     cratio_hist = np.concatenate(([1.0],this_UI_results['Cratio_hist'][0:38]))
-    this_Errors = [AggDemandEconomy.CFunc[3*MrkvSim[i]][3*MrkvSim[i+1]](cratio_hist[i]) for i in range(39)]/this_UI_results['Cratio_hist'][0:39]
+    this_Errors = [AggDemandEconomy.CFunc[num_base_MrkvStates*MrkvSim[i]][num_base_MrkvStates*MrkvSim[i+1]](cratio_hist[i]) for i in range(39)]/this_UI_results['Cratio_hist'][0:39]
     this_MaxError = np.max(np.abs(this_Errors-1.0))
     Errors.append(this_Errors)
     MaxError.append(this_MaxError)
