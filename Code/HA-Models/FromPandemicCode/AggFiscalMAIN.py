@@ -122,6 +122,7 @@ if __name__ == '__main__':
             for t in range(max_recession_duration):
                 recession_UI_dict['EconomyMrkv_init'] = list(np.arange(1,AggDemandEconomy.num_experiment_periods+1)*2) + [0]*20 
                 recession_UI_dict['EconomyMrkv_init'][0:t+1] = np.array(recession_UI_dict['EconomyMrkv_init'][0:t+1]) +1
+                #print(recession_UI_dict['EconomyMrkv_init'])
                 this_recession_UI_results = AggDemandEconomy.runExperiment(**recession_UI_dict, Full_Output = False)
                 recession_UI_all_results += [this_recession_UI_results]
             for key in output_keys:
@@ -158,6 +159,7 @@ if __name__ == '__main__':
     if Run_TaxCut_Recession:
         # Solving tax cut during recession under Agg Multiplier  
         t0 = time()
+        AggDemandEconomy.switch_shock_type("recessionTaxCut")
         AggDemandEconomy.solveAD_Recession_TaxCut(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Recession_TaxCut')
         t1 = time()
         print('Solving payroll tax cut during recession took ' + mystr(t1-t0) + ' seconds.')
@@ -224,25 +226,19 @@ if __name__ == '__main__':
         max_T = 20
         x_axis = np.arange(1,21)
         
-        #folder1 = './Figures/FullRun_Apr18_AD05_800k/'
-        #folder2 = './Figures/FullRun_Apr18_AD05_AllStates_800k/'
-        folder1 = './Figures/AD_fix_May13_UIRecStatesOnly_200k/'
-        folder2 = figs_dir
+        folder = figs_dir
         
         
-        base_results                = loadPickle('base_results',folder2,locals())
+        base_results                = loadPickle('base_results',folder,locals())
 
-        recession_results               = loadPickle('recession_results',folder2,locals())
-        recession_results_AD            = loadPickle('recession_results_AD',folder2,locals())
-        recession_results_AD_allStates  = loadPickle('recession_results_AD',folder2,locals())
+        recession_results               = loadPickle('recession_results',folder,locals())
+        recession_results_AD            = loadPickle('recession_results_AD',folder,locals())
         
-        recession_UI_results                = loadPickle('recession_UI_results',folder2,locals())       
-        recession_UI_results_AD             = loadPickle('recession_UI_results_AD',folder2,locals())
-        recession_UI_results_AD_allStates   = loadPickle('recession_UI_results_AD',folder2,locals())
+        recession_UI_results                = loadPickle('recession_UI_results',folder,locals())       
+        recession_UI_results_AD             = loadPickle('recession_UI_results_AD',folder,locals())
         
-        recession_TaxCut_results                = loadPickle('recession_TaxCut_results',folder1,locals())
-        recession_TaxCut_results_AD             = loadPickle('recession_TaxCut_results_AD',folder1,locals())
-        recession_TaxCut_results_AD_allStates   = loadPickle('recession_TaxCut_results_AD',folder2,locals())
+        #recession_TaxCut_results                = loadPickle('recession_TaxCut_results',folder,locals())
+        #recession_TaxCut_results_AD             = loadPickle('recession_TaxCut_results_AD',folder,locals())
         
         
         
@@ -253,21 +249,19 @@ if __name__ == '__main__':
         NPV_AddInc_UI_Rec                       = getSimulationDiff(recession_results,recession_UI_results,'NPV_AggIncome') # Policy expenditure
         NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_results,               recession_UI_results,               NPV_AddInc_UI_Rec)
         NPV_Multiplier_UI_Rec_AD                = getNPVMultiplier(recession_results_AD,            recession_UI_results_AD,            NPV_AddInc_UI_Rec)
-        NPV_Multiplier_UI_Rec_AD_allStates      = getNPVMultiplier(recession_results_AD_allStates,  recession_UI_results_AD_allStates,  NPV_AddInc_UI_Rec)
         
         
-        NPV_AddInc_Rec_TaxCut                   = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome') 
-        NPV_Multiplier_Rec_TaxCut               = getNPVMultiplier(recession_results,               recession_TaxCut_results,               NPV_AddInc_Rec_TaxCut)
-        NPV_Multiplier_Rec_TaxCut_AD            = getNPVMultiplier(recession_results_AD,            recession_TaxCut_results_AD,            NPV_AddInc_Rec_TaxCut)
-        NPV_Multiplier_Rec_TaxCut_AD_allStates  = getNPVMultiplier(recession_results_AD_allStates,  recession_TaxCut_results_AD_allStates,  NPV_AddInc_Rec_TaxCut)
+        # NPV_AddInc_Rec_TaxCut                   = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome') 
+        # NPV_Multiplier_Rec_TaxCut               = getNPVMultiplier(recession_results,               recession_TaxCut_results,               NPV_AddInc_Rec_TaxCut)
+        # NPV_Multiplier_Rec_TaxCut_AD            = getNPVMultiplier(recession_results_AD,            recession_TaxCut_results_AD,            NPV_AddInc_Rec_TaxCut)
+        # NPV_Multiplier_Rec_TaxCut_AD_allStates  = getNPVMultiplier(recession_results_AD_allStates,  recession_TaxCut_results_AD_allStates,  NPV_AddInc_Rec_TaxCut)
         
         print('NPV_Multiplier_UI_Rec: ',mystr(NPV_Multiplier_UI_Rec[-1]))
         print('NPV_Multiplier_UI_Rec_AD: ',mystr(NPV_Multiplier_UI_Rec_AD[-1]))
-        print('NPV_Multiplier_UI_Rec_AD_allStates: ',mystr(NPV_Multiplier_UI_Rec_AD_allStates[-1]))
         
-        print('NPV_Multiplier_Rec_TaxCut: ',mystr(NPV_Multiplier_Rec_TaxCut[-1]))
-        print('NPV_Multiplier_Rec_TaxCut_AD: ',mystr(NPV_Multiplier_Rec_TaxCut_AD[-1]))
-        print('NPV_Multiplier_Rec_TaxCut_AD_allStates: ',mystr(NPV_Multiplier_Rec_TaxCut_AD_allStates[-1]))
+        # print('NPV_Multiplier_Rec_TaxCut: ',mystr(NPV_Multiplier_Rec_TaxCut[-1]))
+        # print('NPV_Multiplier_Rec_TaxCut_AD: ',mystr(NPV_Multiplier_Rec_TaxCut_AD[-1]))
+        # print('NPV_Multiplier_Rec_TaxCut_AD_allStates: ',mystr(NPV_Multiplier_Rec_TaxCut_AD_allStates[-1]))
         
         #%% Income and Consumption paths UI extension
     
@@ -277,20 +271,15 @@ if __name__ == '__main__':
         AddCons_UI_Ext_Rec_RelRec_AD            = getSimulationPercentDiff(recession_results_AD,    recession_UI_results_AD,'AggCons')
         AddInc_UI_Ext_Rec_RelRec_AD             = getSimulationPercentDiff(recession_results_AD,    recession_UI_results_AD,'AggIncome')
         
-        AddCons_UI_Ext_Rec_RelRec_AD_allStates  = getSimulationPercentDiff(recession_results_AD_allStates,    recession_UI_results_AD_allStates,'AggCons')
-        AddInc_UI_Ext_Rec_RelRec_AD_allStates   = getSimulationPercentDiff(recession_results_AD_allStates,    recession_UI_results_AD_allStates,'AggIncome')
-
         
         plt.figure(figsize=(15,10))
         plt.title('Recession + UI extension', size=30)
         plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec[0:max_T],              color='blue',linestyle='-')
         plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec_AD[0:max_T],           color='blue',linestyle='--')
-        plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec_AD_allStates[0:max_T], color='blue',linestyle=':')
         plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec[0:max_T],             color='red',linestyle='-')
-        plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec_AD[0:max_T],          color='red',linestyle='--')
-        plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec_AD_allStates[0:max_T],color='red',linestyle=':')  
-        plt.legend(['Inc, no AD effects','Inc, AD effects','Inc, AD effects all States',\
-                    'Cons, no AD effects','Cons, AD effects','Cons, AD effects all States'], fontsize=14)
+        plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec_AD[0:max_T],          color='red',linestyle='--') 
+        plt.legend(['Inc, no AD effects','Inc, AD effects',\
+                    'Cons, no AD effects','Cons, AD effects'], fontsize=14)
         plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
         plt.xlabel('quarter', fontsize=18)
         plt.ylabel('% diff. rel. to recession', fontsize=16)
@@ -329,33 +318,29 @@ if __name__ == '__main__':
         
         #%% The following sections look at all results, i.e. not just the weighted sum across all recessions but each single simulation
         
-        recession_all_results               = loadPickle('recession_all_results',folder1,locals())
-        recession_all_results_AD            = loadPickle('recession_all_results_AD',folder1,locals())
-        recession_all_results_AD_allStates  = loadPickle('recession_all_results_AD',folder2,locals())
-        
-        recession_all_UI_results                = loadPickle('recession_UI_all_results',folder1,locals())       
-        recession_all_UI_results_AD             = loadPickle('recession_UI_all_results_AD',folder1,locals())
-        recession_all_UI_results_AD_allStates   = loadPickle('recession_UI_all_results_AD',folder2,locals())
-    
+        recession_all_results               = loadPickle('recession_all_results',folder,locals())
+        recession_all_results_AD            = loadPickle('recession_all_results_AD',folder,locals())
+
+        recession_all_UI_results                = loadPickle('recession_UI_all_results',folder,locals())       
+        recession_all_UI_results_AD             = loadPickle('recession_UI_all_results_AD',folder,locals())     
     
         #%% Function that returns information on a UI experiment with specific RecLength and PolicyLength
-        def PlotsforSpecificRecandPolicyLength(RecLength,PolicyLength): 
-            NPV_AddInc_UI_Rec                       = getSimulationDiff(recession_all_results[RecLength-1],recession_all_UI_results[(RecLength-1)*6+(PolicyLength-1)],'NPV_AggIncome') # Policy expenditure
-            NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_all_results[RecLength-1],               recession_all_UI_results[(RecLength-1)*6+(PolicyLength-1)],               NPV_AddInc_UI_Rec)
-            NPV_Multiplier_UI_Rec_AD                = getNPVMultiplier(recession_all_results_AD[RecLength-1],            recession_all_UI_results_AD[(RecLength-1)*6+(PolicyLength-1)],            NPV_AddInc_UI_Rec)
-            NPV_Multiplier_UI_Rec_AD_allStates      = getNPVMultiplier(recession_all_results_AD_allStates[RecLength-1],  recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],  NPV_AddInc_UI_Rec)
+        def PlotsforSpecificRecandPolicyLength(RecLength): 
+            NPV_AddInc_UI_Rec                       = getSimulationDiff(recession_all_results[RecLength-1],recession_all_UI_results[RecLength-1],'NPV_AggIncome') # Policy expenditure
+            NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_all_results[RecLength-1],               recession_all_UI_results[RecLength-1],               NPV_AddInc_UI_Rec)
+            NPV_Multiplier_UI_Rec_AD                = getNPVMultiplier(recession_all_results_AD[RecLength-1],            recession_all_UI_results_AD[RecLength-1],            NPV_AddInc_UI_Rec)
             
-            # When does multipiler rise above 2? very early!
-            plt.figure(figsize=(15,10))
-            plt.plot(x_axis,NPV_Multiplier_UI_Rec_AD_allStates[0:max_T])
-            plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
-            plt.xlabel('quarter', fontsize=18)
-            plt.show() 
+            # # When does multipiler rise above 2? very early!
+            # plt.figure(figsize=(15,10))
+            # plt.plot(x_axis,NPV_Multiplier_UI_Rec_AD_allStates[0:max_T])
+            # plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+            # plt.xlabel('quarter', fontsize=18)
+            # plt.show() 
 
             
-            Multipliers = [NPV_Multiplier_UI_Rec[-1],NPV_Multiplier_UI_Rec_AD[-1],NPV_Multiplier_UI_Rec_AD_allStates[-1]]
+            Multipliers = [NPV_Multiplier_UI_Rec[-1],NPV_Multiplier_UI_Rec_AD[-1]]
             
-            PlotEach = True
+            PlotEach = False
             
             if PlotEach:
             
@@ -365,76 +350,37 @@ if __name__ == '__main__':
                 AddCons_UI_Ext_Rec_RelRec_AD            = getSimulationPercentDiff(recession_all_results_AD[RecLength-1],    recession_all_UI_results_AD[(RecLength-1)*6+(PolicyLength-1)],'AggCons')
                 AddInc_UI_Ext_Rec_RelRec_AD             = getSimulationPercentDiff(recession_all_results_AD[RecLength-1],    recession_all_UI_results_AD[(RecLength-1)*6+(PolicyLength-1)],'AggIncome')
                 
-                AddCons_UI_Ext_Rec_RelRec_AD_allStates  = getSimulationPercentDiff(recession_all_results_AD_allStates[RecLength-1],    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggCons')
-                AddInc_UI_Ext_Rec_RelRec_AD_allStates   = getSimulationPercentDiff(recession_all_results_AD_allStates[RecLength-1],    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggIncome')
-                
+   
                 plt.figure(figsize=(15,10))
                 plt.title('Recession lasts ' + str(RecLength) + 'q, UI extension lasts ' + str(PolicyLength) + 'q', size=30)
                 plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec[0:max_T],              color='blue',linestyle='-')
                 plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec_AD[0:max_T],           color='blue',linestyle='--')
-                plt.plot(x_axis,AddInc_UI_Ext_Rec_RelRec_AD_allStates[0:max_T], color='blue',linestyle=':')
                 plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec[0:max_T],             color='red',linestyle='-')
-                plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec_AD[0:max_T],          color='red',linestyle='--')
-                plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec_AD_allStates[0:max_T],color='red',linestyle=':')  
-                plt.legend(['Inc, no AD effects','Inc, AD effects','Inc, AD effects all States',\
-                            'Cons, no AD effects','Cons, AD effects','Cons, AD effects all States'], fontsize=14)
+                plt.plot(x_axis,AddCons_UI_Ext_Rec_RelRec_AD[0:max_T],          color='red',linestyle='--') 
+                plt.legend(['Inc, no AD effects','Inc, AD effects',\
+                            'Cons, no AD effects','Cons, AD effects'], fontsize=14)
                 plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
                 plt.xlabel('quarter', fontsize=18)
                 plt.ylabel('% diff. rel. to no UI extension', fontsize=16)
                 plt.savefig(figs_dir +'Rec' + str(RecLength) +'q_UiExt' + str(PolicyLength) + 'q_relrecession.pdf')
                 plt.show() 
                 
-                
-                # AddCons_UI_Ext_Rec_RelBase_AD_allStates = getSimulationPercentDiff(base_results,    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggCons')         
-                # AddCons_Rec_RelBase_AD_allStates        = getSimulationPercentDiff(base_results,    recession_all_results_AD_allStates[RecLength-1],'AggCons')
-                # AddInc_UI_Ext_Rec_RelBase_AD_allStates  = getSimulationPercentDiff(base_results,    recession_all_UI_results_AD_allStates[(RecLength-1)*6+(PolicyLength-1)],'AggIncome')
-                # AddInc_Rec_RelBase_AD_allStates         = getSimulationPercentDiff(base_results,    recession_all_results_AD_allStates[RecLength-1],'AggIncome')
-                
-                # plt.figure(figsize=(15,10))
-                # plt.title('Recession lasts ' + str(RecLength) + 'q, UI extension lasts ' + str(PolicyLength) + 'q', size=30)
-                # plt.plot(x_axis,AddInc_Rec_RelBase_AD_allStates[0:max_T]        , color='blue',linestyle='-')
-                # plt.plot(x_axis,AddCons_Rec_RelBase_AD_allStates[0:max_T]       , color='red' ,linestyle='-')  
-                # plt.plot(x_axis,AddInc_UI_Ext_Rec_RelBase_AD_allStates[0:max_T] , color='blue',linestyle=':')             
-                # plt.plot(x_axis,AddCons_UI_Ext_Rec_RelBase_AD_allStates[0:max_T], color='red' ,linestyle=':') 
-                # plt.legend(['Inc, Rec','Cons, Rec',\
-                #             'Inc, Rec + UI', 'Cons, Rec + UI'], fontsize=14)
-                # plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
-                # plt.xlabel('quarter', fontsize=18)
-                # plt.ylabel('% diff. rel. to baseline', fontsize=16)
-                # plt.show() 
             
             return Multipliers
         
         #%% Plotting long-run multiplier as a function of recession and policy duration
         max_recession_duration = 21
-        max_policy_duration = 6
-        Multipliers = np.zeros((max_recession_duration+1,max_policy_duration+1,3))
+        Multipliers = np.zeros((max_recession_duration+1,2))
         for RecLength in range(1,max_recession_duration+1,1):
-            for PolicyLength in range(1,max_policy_duration+1,1):
-                Multipliers[RecLength][PolicyLength][0:3] = PlotsforSpecificRecandPolicyLength(RecLength,PolicyLength)
+            Multipliers[RecLength][0:2] = PlotsforSpecificRecandPolicyLength(RecLength)
 
               
         plt.figure(figsize=(15,10))
         plt.title('Multipliers as function of Recession length', size=30)
-        plt.plot(x_axis,Multipliers[1:21,1,0], color='black',)
-        plt.plot(x_axis,Multipliers[1:21,1,1], color='blue',linestyle='-')
-        plt.plot(x_axis,Multipliers[1:21,2,1], color='orange',linestyle='-')
-        plt.plot(x_axis,Multipliers[1:21,4,1], color='red',linestyle='-')
-        plt.plot(x_axis,Multipliers[1:21,6,1], color='green',linestyle='-')
-        
-        plt.plot(x_axis,Multipliers[1:21,1,2], color='blue',linestyle='--')
-        plt.plot(x_axis,Multipliers[1:21,2,2], color='orange',linestyle='--')
-        plt.plot(x_axis,Multipliers[1:21,4,2], color='red',linestyle='--')
-        plt.plot(x_axis,Multipliers[1:21,6,2], color='green',linestyle='--') 
+        plt.plot(x_axis,Multipliers[1:21,0], color='black',)
+        plt.plot(x_axis,Multipliers[1:21,1], color='blue',linestyle='-')
         plt.legend(['no AD effects',\
-                    'AD effects Rec states, UI ext 1q',\
-                    'AD effects Rec states, UI ext 2q',\
-                    'AD effects Rec states, UI ext 4q',\
-                    'AD effects Rec states, UI ext 6q',\
-                    'AD effects all states, UI ext 1q',\
-                    'AD effects all states, UI ext 2q',\
-                    'AD effects all states, UI ext 4q',\
-                    'AD effects all states, UI ext 6q'], fontsize=14)
+                    'AD effects Rec states'], fontsize=14)
         plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
         plt.xlabel('recession lasts quarter', fontsize=18)
         plt.ylabel('Long-run NPV multiplier', fontsize=16)
