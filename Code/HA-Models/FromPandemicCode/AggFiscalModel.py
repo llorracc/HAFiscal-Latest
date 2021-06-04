@@ -909,10 +909,10 @@ class AggregateDemandEconomy(Market):
         # print('Slope: Largest Diff from Mrk State: ', FromMrkState_Slopes_Largest_Diff)
         # print('Slope: Largest Diff to Mrk State: ', ToMrkState_Slopes_Largest_Diff)
         
-        print('Diff in Intercepts in CFunc: ', Intercept_Diff) 
-        print('Largest diff', np.max(DiffIntercepts))
-        print('Intercept: Largest Diff from Mrk State: ', FromMrkState_Intercept_Largest_Diff)
-        print('Intercept: Largest Diff to Mrk State: ', ToMrkState_Intercept_Largest_Diff)
+        # print('Diff in Intercepts in CFunc: ', Intercept_Diff) 
+        # print('Largest diff', np.max(DiffIntercepts))
+        # print('Intercept: Largest Diff from Mrk State: ', FromMrkState_Intercept_Largest_Diff)
+        # print('Intercept: Largest Diff to Mrk State: ', ToMrkState_Intercept_Largest_Diff)
         print('Total Diff in CFunc: ', Total_Diff)
         return Total_Diff
     
