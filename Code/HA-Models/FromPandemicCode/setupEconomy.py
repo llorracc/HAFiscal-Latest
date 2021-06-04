@@ -2,7 +2,7 @@ from Parameters import T_sim, init_infhorizon, init_ADEconomy, DiscFacDstns,\
      AgentCountTotal, TypeShares, base_dict, recession_changes, sticky_e_changes,\
      UI_changes, recession_UI_changes, TaxCut_changes, recession_TaxCut_changes,\
      figs_dir, num_max_iterations_solvingAD, convergence_tol_solvingAD,\
-     UBspell_normal, num_experiment_periods
+     UBspell_normal, num_experiment_periods, num_base_MrkvStates
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 from HARK.distribution import DiscreteDistribution
 import numpy as np
@@ -53,12 +53,30 @@ IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1
 #     ThisType.DiscFac = 0.96
 #     ThisType.seed = 0
 
+
+
 for ThisType in BaseTypeList:
+    
+    EmployedIncomeDstn = deepcopy(ThisType.IncomeDstn[0])
+    
     ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0]] + [IncomeDstn_unemp]*UBspell_normal + [IncomeDstn_unemp_nobenefits] 
     IncomeDstn_recession = [ThisType.IncomeDstn[0]*(2*(num_experiment_periods+1))] # for normal, rec, recovery  
     ThisType.IncomeDstn_base = ThisType.IncomeDstn
     ThisType.IncomeDstn_recession = IncomeDstn_recession
     ThisType.IncomeDstn_recessionUI = IncomeDstn_recession
+    
+    EmployedIncomeDstn.X[1] = EmployedIncomeDstn.X[1]*ThisType.TaxCutIncFactor
+    TaxCutStatesIncomeDstn = [EmployedIncomeDstn] + [IncomeDstn_unemp]*UBspell_normal + [IncomeDstn_unemp_nobenefits] 
+    IncomeDstn_recessionTaxCut = deepcopy(IncomeDstn_recession)
+    # Tax states are 2,3 (q1) 4,5 (q2) ... 16,17 (q8)
+    for i in range(2*num_base_MrkvStates,18*num_base_MrkvStates,1):
+        IncomeDstn_recessionTaxCut[0][i] =  TaxCutStatesIncomeDstn[np.mod(i,4)]
+    ThisType.IncomeDstn_recessionTaxCut = IncomeDstn_recessionTaxCut
+    
+    ThisType.IncomeDstn_recessionCheck = deepcopy(IncomeDstn_recession)
+    
+    ##needs to be fixed
+    
     ThisType.AgentCount = AgentCountTotal
     ThisType.DiscFac = 0.96
     ThisType.seed = 0
@@ -106,6 +124,3 @@ Rspell = AggDemandEconomy.agents[0].Rspell #NOTE - this should come from the mar
 R_persist = 1.-1./Rspell
 recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
 recession_prob_array[-1] = 1.0 - np.sum(recession_prob_array[:-1])
-
-recession_Cond9q_prob_array = deepcopy(recession_prob_array[0:13])
-recession_Cond9q_prob_array[-1] = 1.0 - np.sum(recession_Cond9q_prob_array[:-1])

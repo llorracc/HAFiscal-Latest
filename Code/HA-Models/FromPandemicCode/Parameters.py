@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Test/'
+figs_dir = './Figures/FullRun_June4th/'
 
 try:
     os.mkdir(figs_dir)
@@ -18,30 +18,29 @@ else:
 
 
 # Parameters concerning the distribution of discount factors
-DiscFacMean = 0.986     # Mean intertemporal discount factor 
-DiscFacSpread = 0.0183  # Half-width of uniform distribution of discount factors
+DiscFacMean     = 0.986     # Mean intertemporal discount factor 
+DiscFacSpread   = 0.0183    # Half-width of uniform distribution of discount factors
 
 # Parameters concerning Markov transition matrix
-
-    # Normal
+# Normal
 Urate_normal = 0.05          # Unemployment rate in normal times
 Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
-    # Recession
+# Recession
 Urate_recession = 0.1        # Unemployment rate in recession
 Uspell_recession = 4         # Average duration of unemployment spell in recession, in quarters
 Rspell = 6                   # Expected length of recession, in quarters. If R_shared = True, must be an integer
 R_shared = False             # Indicator for whether the recession shared (True) or idiosyncratic (False)
-    # UI extension
+# UI extension
 UBspell_extended = 4         # Average duration of unemployment benefits when extended and assuming policy remains in place, in quarters
 PolicyUBspell = 2            # Average duration that policy of extended unemployment benefits is in place
-    # Tax Cut parameter
+# Tax Cut parameter
 PolicyTaxCutspell = 2        # Average duration that policy of payroll tax cuts
 TaxCutIncFactor = 1.02       # Amount by which the payroll tax cut increases after-tax income
 TaxCutPeriods = 8            # Deterministic duration of tax cut 
 TaxCutContinuationProb_Rec = 0.5   # Probability that tax cut is continued after tax cut periods run out, when recession in q8
 TaxCutContinuationProb_Bas = 0.0   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
-    #Check experiment parameter
+#Check experiment parameter
 CheckStimLvl = 1200/15000 #1 = 15k
 CheckStimLvl_PLvl_Cutoff_start = 100/4/15 #100 k yearly income #At this Level of permanent inc, Stimulus beings to fall linearly
 CheckStimLvl_PLvl_Cutoff_end = 150/4/15 #150k yearly income #At this Level of permanent inc, Stimulus is zero
@@ -144,106 +143,6 @@ def makeCondMrkvArrays_recessionUI(Urate_normal, Uspell_normal, UBspell_normal, 
     CondMrkvArrays = [MrkvArray_normal, MrkvArray_recession] + [MrkvArray_normalUI, MrkvArray_recessionUI]*ExtraUBperiods + [MrkvArray_normal, MrkvArray_recession]*(num_experiment_periods-ExtraUBperiods)
     return CondMrkvArrays
 
-# def makeMacroMrkvArray(Rspell, PolicyUBspell, TaxCutPeriods, TaxCutContinuationProb_Rec, TaxCutContinuationProb_Bas):
-#     '''
-#     Make a Markov transition matrix for the macro states
-    
-#     Parameters
-#     ----------
-#     Rspell: float
-#         Expected length of a recession
-#     PolicyUBspell: float
-#         Expected length of time the POLICY of entending unemployment benefits remains in place
-#     TaxCutPeriods : int
-#         Number of periods for which the tax cut is in place
-#     '''
-#     R_persist = 1.-1./Rspell
-#     PolicyUBpersist = 1.-1./PolicyUBspell # persistence of the extended unemployment POLICY (not the benefits themselves)
-    
-#     MacroMrkvArray = np.array([[1.0,                               0.0,                           0.0,                           0.0],
-#                                [1-R_persist,                       R_persist,                     0.0,                           0.0],
-#                                [1-PolicyUBpersist,                 0.0,                           PolicyUBpersist,               0.0],
-#                                [(1-PolicyUBpersist)*(1-R_persist), (1-PolicyUBpersist)*R_persist, PolicyUBpersist*(1-R_persist), PolicyUBpersist*R_persist]])
-    
-    
-#     MacroMrkStates_TaxCut = TaxCutPeriods * 4  # recession and normal, first and 2nd cycle
-#     MacroTaxCutArray = np.zeros((MacroMrkStates_TaxCut,MacroMrkStates_TaxCut))
-#     for i in range(2*TaxCutPeriods-1):
-#         # after the initial cycle of Tax Cut, there is a TaxCutContinuationProb_Rec chance of jumping into the second cycle, but only if recession is active in q8
-#         if i==TaxCutPeriods-1: 
-#             MacroTaxCutArray[2*i:2*i+2,2*i+2:2*i+4] = np.array([[TaxCutContinuationProb_Bas * 1,         0.0],
-#                                                                 [TaxCutContinuationProb_Rec *(1-R_persist), TaxCutContinuationProb_Rec *R_persist]])
-#         else:
-#             MacroTaxCutArray[2*i:2*i+2,2*i+2:2*i+4] =np.array([[1.0,         0.0],
-#                                                                [1-R_persist, R_persist]])
-                
-#     MacroMrkvArray = np.concatenate((np.concatenate((MacroMrkvArray,np.zeros((MacroMrkvArray.shape[0],MacroMrkStates_TaxCut))),axis=1),np.concatenate((np.zeros((MacroMrkStates_TaxCut,MacroMrkvArray.shape[0])),MacroTaxCutArray),axis=1)),axis=0)
-    
-#     # From the first Tax cut state, there is a (1-TaxCutContinuationProb_Rec) chance of jumpting back into baseline/recession
-#     MacroMrkvArray[4+2*(TaxCutPeriods-1):4+2*(TaxCutPeriods-1)+2,0:2] =   np.array([[(1-TaxCutContinuationProb_Bas)*1.0,         0.0],
-#                                                                                     [(1-TaxCutContinuationProb_Rec)*(1-R_persist), (1-TaxCutContinuationProb_Rec)*R_persist]])
-    
-#     # From the last TaxCut state in the 2nd cycle, one jumps back into baseline / recession
-#     MacroMrkvArray[-2:,0:2] =  np.array([[1.0,         0.0],
-#                                         [1-R_persist, R_persist]])
-    
-#     # Add Check Experiment states
-#     NewDim = len(MacroMrkvArray)+2
-#     MacroCheckArray = np.zeros((2,NewDim))
-#     MacroCheckArray[0,0] = 1            #Transisition from check in normal to normal is 100% because check only lasts 1 q
-#     MacroCheckArray[1,0] = 1-R_persist  #Transisition from check in rec to normal
-#     MacroCheckArray[1,1] = R_persist    #Transisition from check in rec to rec
-#     MacroMrkvArray = np.concatenate((MacroMrkvArray,np.zeros((MacroMrkvArray.shape[0],2))),axis=1) #extend to dim 38 in width
-#     MacroMrkvArray = np.concatenate((MacroMrkvArray,MacroCheckArray),axis = 0) #append check transitions
-    
- 
-#     return MacroMrkvArray
-    
-# def makeCondMrkvArrays(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, UBspell_extended, TaxCutPeriods):
-#     '''
-#     Make a Markov transition matrix for the micro state conditional on 
-#     the macro state
-    
-#     Parameters
-#     ----------
-#     Urate_normal: float
-#         Erogodic unemployment rate in normal times
-#     Uspell_normal: float
-#         Expected length of unemployment spell in normal times
-#     UBspell_normal: float
-#         Expected length of unemployment benefits without extension
-#     Urate_recession: float
-#         Erogodic unemployment rate in a recession
-#     Uspell_recession: float
-#         Expected length of unemployment spell in a recession
-#     UBspell_extended: float
-#         Expected length of unemployment benefits WITH extension (if policy remains in place)
-#     TaxCutPeriods : int
-#         Number of periods for which the tax cut is in place
-#     '''
-#     U_persist_normal = 1.-1./Uspell_normal
-#     E_persist_normal = 1.-Urate_normal*(1.-U_persist_normal)/(1.-Urate_normal)
-#     UB_persist_normal = 1.-1./UBspell_normal
-#     U_persist_recession = 1.-1./Uspell_recession
-#     E_persist_recession = 1.-Urate_recession*(1.-U_persist_recession)/(1.-Urate_recession)
-#     UBpersist_extended = 1.-1./UBspell_extended # persistence of unemployment benefits when they have been extended
-
-#     def small_MrkvArray(e,u,ub):
-#         small_MrkvArray = np.array([[e,           0.0,       1-e     ],    # Start state: employed
-#                                      [1-u,        u,         0.0     ],    # Start state: unemployed, no benefits
-#                                      [1-u,        u*(1-ub),  u*ub   ]])  # Start state: unemployed, benefits
-#         return small_MrkvArray
-    
-#     # 3x3 lists (rows x colums)
-#     MrkvArray_normal         = small_MrkvArray(E_persist_normal,    U_persist_normal,    UB_persist_normal)
-#     MrkvArray_recession      = small_MrkvArray(E_persist_recession, U_persist_recession, UB_persist_normal)
-#     MrkvArray_normal_exUB    = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBpersist_extended)
-#     MrkvArray_recession_exUB = small_MrkvArray(E_persist_recession, U_persist_recession, UBpersist_extended)
-    
-#     CondMrkvArrays = [MrkvArray_normal, MrkvArray_recession, MrkvArray_normal_exUB, MrkvArray_recession_exUB]
-#     CondMrkvArrays += [MrkvArray_normal, MrkvArray_recession]*TaxCutPeriods*2
-#     CondMrkvArrays += [MrkvArray_normal, MrkvArray_recession]*2 #CheckStates
-#     return CondMrkvArrays
 
 def makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays):
     for i in range(MacroMrkvArray.shape[0]):
@@ -263,6 +162,14 @@ MrkvArray_base = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base)
 MacroMrkvArray_recession = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
 CondMrkvArrays_recession = makeCondMrkvArrays_recession(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
 MrkvArray_recession = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession)
+
+MacroMrkvArray_recessionCheck = MacroMrkvArray_recession
+CondMrkvArrays_recessionCheck = CondMrkvArrays_recession
+MrkvArray_recessionCheck = makeFullMrkvArray(MacroMrkvArray_recessionCheck, CondMrkvArrays_recessionCheck)
+
+MacroMrkvArray_recessionTaxCut = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
+CondMrkvArrays_recessionTaxCut = makeCondMrkvArrays_recession(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
+MrkvArray_recessionTaxCut = makeFullMrkvArray(MacroMrkvArray_recessionTaxCut, CondMrkvArrays_recessionTaxCut)
 
 MacroMrkvArray_recessionUI = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
 CondMrkvArrays_recessionUI = makeCondMrkvArrays_recessionUI(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
@@ -303,6 +210,12 @@ init_infhorizon = {"T_cycle": T_cycle,
                 "MrkvArray_recessionUI" : MrkvArray_recessionUI,
                 "MacroMrkvArray_recessionUI" : MacroMrkvArray_recessionUI,
                 "CondMrkvArrays_recessionUI" : CondMrkvArrays_recessionUI,
+                "MrkvArray_recessionTaxCut" : MrkvArray_recessionTaxCut,
+                "MacroMrkvArray_recessionTaxCut" : MacroMrkvArray_recessionTaxCut,
+                "CondMrkvArrays_recessionTaxCut" : CondMrkvArrays_recessionTaxCut,
+                "MrkvArray_recessionCheck" : MrkvArray_recessionCheck,
+                "MacroMrkvArray_recessionCheck" : MacroMrkvArray_recessionCheck,
+                "CondMrkvArrays_recessionCheck" : CondMrkvArrays_recessionCheck,
                 "Rfree" : np.array(num_base_MrkvStates*Rfree_base),
                 "PermGroFac": [np.array(PermGroFac_base*num_base_MrkvStates)],
                 "LivPrb": [np.array(LivPrb_base*num_base_MrkvStates)],
@@ -399,7 +312,7 @@ frictionless_changes = {
 
 quick_test = True
 if quick_test:
-    AgentCountTotal = 40000
+    AgentCountTotal = 200000
     DiscFacCount = 1
     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstn]
@@ -422,6 +335,8 @@ init_ADEconomy = {'intercept_prev': intercept_prev,
                      'MrkvArray' : MrkvArray_base,
                      'MrkvArray_recession' : MrkvArray_recession,
                      'MrkvArray_recessionUI' : MrkvArray_recessionUI,
+                     'MrkvArray_recessionTaxCut' : MrkvArray_recessionTaxCut,
+                     'MrkvArray_recessionCheck' : MrkvArray_recessionCheck,
                      'num_base_MrkvStates' : num_base_MrkvStates,
                      'num_experiment_periods' : num_experiment_periods,
                      "MrkvArray_base" : MrkvArray_base, 

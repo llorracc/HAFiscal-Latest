@@ -154,7 +154,7 @@ class AggFiscalType(MarkovConsumerType):
         
         if shock_type=="base":
             MrkvNew = MrkvNew #no shock
-        elif shock_type=="recession" or shock_type=="recessionUI": # If the recssion actually occurs,
+        elif shock_type=="recession" or shock_type=="recessionUI" or shock_type=="recessionTaxCut" or shock_type=="recessionCheck": # If the recssion actually occurs,
             MrkvNew += 2*self.num_base_MrkvStates # then put everyone into the recession 
         # Move agents to those Markov states 
         self.MrkvNow = MrkvNew
@@ -177,13 +177,13 @@ class AggFiscalType(MarkovConsumerType):
         self.MacroMrkvNow = MacroMrkvNow_start
         self.MrkvNow = self.num_base_MrkvStates*self.MacroMrkvNow + self.MicroMrkvNow
         
-        tax_cut_multiplier = np.ones_like(self.history['MrkvNow'])
-        CheckAmount       = np.zeros_like(self.history['MrkvNow'])
+        tax_cut_multiplier  = np.ones_like(self.history['MrkvNow'])
+        CheckAmount         = np.zeros_like(self.history['MrkvNow'])
         if shock_type=="recessionTaxCut":
-            tax_cut_states = np.logical_and(np.greater(self.history['MrkvNow'], 11), np.less(self.history['MrkvNow'],36*3)) #$$$$$$$$$$ assumes all markov states above 11 and below 36 are tax cut states
+            tax_cut_states = np.logical_and(np.greater(self.history['MrkvNow'], 2*self.num_base_MrkvStates), np.less(self.history['MrkvNow'],9*2*self.num_base_MrkvStates)) #$$$$$$$$$$ assumes all markov states above 11 and below 36 are tax cut states
             tax_cut_multiplier[tax_cut_states] *= self.TaxCutIncFactor 
         elif shock_type=="recessionCheck":
-            CheckAmount = np.greater_equal(self.history['MrkvNow'],36*3) * self.CheckStimLvl 
+            CheckAmount = np.equal(self.history['MrkvNow'],3*self.num_base_MrkvStates) * self.CheckStimLvl # only if MrkvState is 3
             #This only works because check occurs in first period
             CheckAmount[0] = CheckAmount[0] / self.pLvlNow        
             for agent in range(len(CheckAmount[0])):
@@ -234,6 +234,14 @@ class AggFiscalType(MarkovConsumerType):
             self.MrkvArray = self.MrkvArray_recessionUI
             self.IncomeDstn = self.IncomeDstn_recessionUI
             self.CondMrkvArrays = self.CondMrkvArrays_recessionUI
+        elif shock_type == "recessionTaxCut":
+            self.MrkvArray = self.MrkvArray_recessionTaxCut
+            self.IncomeDstn = self.IncomeDstn_recessionTaxCut
+            self.CondMrkvArrays = self.CondMrkvArrays_recessionTaxCut
+        elif shock_type == "recessionCheck":
+            self.MrkvArray = self.MrkvArray_recessionCheck
+            self.IncomeDstn = self.IncomeDstn_recessionCheck
+            self.CondMrkvArrays = self.CondMrkvArrays_recessionCheck
         num_mrkv_states = self.MrkvArray[0].shape[0]
         self.LivPrb = [np.array(self.LivPrb_base*num_mrkv_states)]
         self.PermGroFac =  [np.array(self.PermGroFac_base*num_mrkv_states)]
@@ -329,6 +337,14 @@ class AggFiscalType(MarkovConsumerType):
         elif shock_type=="recessionUI":
             self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell, self.num_experiment_periods)
             self.CondMrkvArrays = makeCondMrkvArrays_recessionUI(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.num_experiment_periods,  self.UBspell_extended-self.UBspell_normal)
+            self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
+        elif shock_type=="recessionTaxCut":
+            self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell, self.num_experiment_periods)
+            self.CondMrkvArrays = makeCondMrkvArrays_recession(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.num_experiment_periods)
+            self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
+        elif shock_type=="recessionCheck":
+            self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell, self.num_experiment_periods)
+            self.CondMrkvArrays = makeCondMrkvArrays_recession(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.num_experiment_periods)
             self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
         else:
             print("shock_type not recognized")
@@ -814,6 +830,10 @@ class AggregateDemandEconomy(Market):
             self.MrkvArray = self.MrkvArray_recession
         elif shock_type == "recessionUI":
             self.MrkvArray = self.MrkvArray_recessionUI
+        elif shock_type == "recessionTaxCut":
+            self.MrkvArray = self.MrkvArray_recessionTaxCut
+        elif shock_type == "recessionCheck":
+            self.MrkvArray = self.MrkvArray_recessionCheck
         num_mrkv_states = self.MrkvArray[0].shape[0]
         self.intercept_prev = np.ones((num_mrkv_states,num_mrkv_states ))
         self.slope_prev    = np.zeros((num_mrkv_states,num_mrkv_states ))
@@ -962,314 +982,14 @@ class AggregateDemandEconomy(Market):
             self.storeADsolution(name)
             
             
-    def solveAD_Check_Recession(self, num_max_iterations, convergence_cutoff=1E-3, SimOnlyRecStates = True, name = None):
-        #reset Cfunc
-        dim = len(self.CFunc)
-        self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
-        for agent in self.agents:
-            agent.CFunc = self.CFunc
-        print("Presolving")
-        self.solve()
-        
-        
-        
-        self.ADelasticity = self.demand_ADelasticity
-        self.update()   
-        recession_Check_dict = {
-             'shock_type' : "recessionCheck",
-             'UpdatePrb': 1.0,
-             'Splurge': 0.32,
-             }
-        
-        dim = int(len(self.CFunc)/self.num_base_MrkvStates)
-        MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
-        
-        # Iterate until CRules coincide with actual consumption dynmics
-        for i in range(num_max_iterations):
-            print("Iteration ", i+1,":")
-            recession_Check_all_results = []
-            max_recession = 30
-            
-
-            # Recession lengths 2, max_recession q
-            for t in [max_recession]:
-                recession_Check_dict['EconomyMrkv_init']    = [1]*(t)
-                recession_Check_dict['EconomyMrkv_init'][0] = 37
-                print("recession_Check_dict['EconomyMrkv_init']: ", recession_Check_dict['EconomyMrkv_init'] )
-                this_sim_results = self.runExperiment(**recession_Check_dict)
-                recession_Check_all_results += [this_sim_results]
-                
-            if SimOnlyRecStates == False:
-                # in this case additional
-                for t in [1,2,3]:
-                    recession_Check_dict['EconomyMrkv_init']    = [1]*(t)
-                    recession_Check_dict['EconomyMrkv_init'][0] = 37
-                    print("recession_Check_dict['EconomyMrkv_init']: ", recession_Check_dict['EconomyMrkv_init'] )
-                    this_sim_results = self.runExperiment(**recession_Check_dict)
-                    recession_Check_all_results += [this_sim_results]
-                
-            #Debugging
-            T_Plot = 35
-            plt.plot(recession_Check_all_results[0]['Cratio_hist'][0:T_Plot])
-            if SimOnlyRecStates == False:
-                plt.plot(recession_Check_all_results[1]['Cratio_hist'][0:T_Plot])
-                plt.plot(recession_Check_all_results[2]['Cratio_hist'][0:T_Plot])
-                plt.plot(recession_Check_all_results[3]['Cratio_hist'][0:T_Plot])
-            plt.pause(1)
-            plt.show()
-            
-            # These jumps only occur once and only here
-            MacroCFunc[0][37] = CRule(recession_Check_all_results[0]['Cratio_hist'][0],0.0) 
-            MacroCFunc[37][1] = CRule(recession_Check_all_results[0]['Cratio_hist'][1],0.0) 
-            
-            # Asymptote logic as in recession_AD
-            assymtote11 = recession_Check_all_results[0]['Cratio_hist'][29]
-            slope11     = (recession_Check_all_results[0]['Cratio_hist'][2] - assymtote11)/(recession_Check_all_results[0]['Cratio_hist'][1] - assymtote11)
-            slope11     = np.max([np.min([1.0,slope11]),0.0])
-            MacroCFunc[1][1]    = CRule(assymtote11 + slope11*(1.0-assymtote11),slope11)
-            
-            # only important if AD effects are on in all states
-            if SimOnlyRecStates==False:
-                # This jumps only occurs once and only here
-                MacroCFunc[37][0] = CRule(recession_Check_all_results[1]['Cratio_hist'][1],0.0)
-                
-                slope00 = np.mean((np.array(recession_Check_all_results[0]['Cratio_hist'][31])-1)/(np.array(recession_Check_all_results[0]['Cratio_hist'][30])-1))
-                slope00 = np.max([np.min([1.0,slope00]),0.0])
-                MacroCFunc[0][0] = CRule(1.0, slope00)  
-                             
-                assymtote10_0 = recession_Check_all_results[0]['Cratio_hist'][30]
-                assymtote10_1 = recession_Check_all_results[0]['Cratio_hist'][29]
-                slope10 = (recession_Check_all_results[2]['Cratio_hist'][2] - assymtote10_0)/(recession_Check_all_results[2]['Cratio_hist'][1] - assymtote10_1)
-                slope10 = np.max([np.min([1.0,slope10]),0.0])
-                MacroCFunc[1][0]    = CRule(assymtote10_0 + slope10*(1.0-assymtote10_1),slope10)
-                                   
-
-                 
-       
-            self.MacroCFunc = MacroCFunc
-            Old_Cfunc  = self.CFunc
-            New_Cfunc  = self.Macro2MicroCFunc(MacroCFunc)
-            
-            step = self.Cfunc_iter_stepsize 
-            dim = int(len(self.CFunc))
-            Step_Cfunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
-            for ii in range(dim):
-                for jj in range(dim):
-                    Step_Cfunc[ii][jj].slope      = Old_Cfunc[ii][jj].slope     + step*(New_Cfunc[ii][jj].slope-Old_Cfunc[ii][jj].slope)
-                    Step_Cfunc[ii][jj].intercept  = Old_Cfunc[ii][jj].intercept + step*(New_Cfunc[ii][jj].intercept-Old_Cfunc[ii][jj].intercept)
-                    
-            self.CFunc = Step_Cfunc
-            for agent in self.agents:
-                agent.CFunc = self.CFunc
-            print("solving again...")
-            self.solve()
-            
-            
-            Total_Diff = self.CompareCFuncConvergence(Old_Cfunc,self.CFunc)
-
-            if Total_Diff < convergence_cutoff:
-                print("Convergence criterion reached.")
-                break
-            else:                    
-                print("Convergence criterion not reached.")
-                
-        if name != None:
-            self.storeADsolution(name)            
+    def solveAD_Check_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
+        self.solveAD_Recession(num_max_iterations, convergence_cutoff, name = name, shock_type = "recessionCheck")   
     
     def solveAD_UIExtension_Recession(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
         self.solveAD_Recession(num_max_iterations, convergence_cutoff, name = name, shock_type = "recessionUI")       
-            
-    def solveAD_TaxCut(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
-        #reset Cfunc
-        dim = len(self.CFunc)
-        self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
-        
-        self.ADelasticity = self.demand_ADelasticity
-        self.update()    
-        TaxCut_dict = {
-             'shock_type' : "TaxCut",
-             'UpdatePrb': 1.0,
-             'Splurge': 0.32,
-             }
-        dim = int(len(self.CFunc)/self.num_base_MrkvStates)
-        MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]  
-        # this sets the belief for agg consumption in next period when running experiment
-        # The consumption rule has intercept 1 and slope 0 implying the prediction is simply 1 and thus baseline consumption ratio
-        
-        for i in range(num_max_iterations):
-            print("Iteration ", i+1,":")
-            taxcut_all_results = []
-            for j in [0,1]:
-                TaxCut_dict['EconomyMrkv_init'] = np.array([ 4,  6,  8, 10, 12, 14, 16, 18, 20*j,  22*j,  24*j, 26*j, 28*j, 30*j, 32*j, 34*j]) # Either 1 or 2 cycles of tax cuts
-                this_taxcut_results = self.runExperiment(**TaxCut_dict)  #run under the belief as imposed above
-                taxcut_all_results += [this_taxcut_results]  
-           
-            
-            # In the following MacroCFunc is updated according to what actually happened
-            # MacroCFunc[i][j] is the prediction function for Agg Cons today to tomorrow when one jumps from macro state i to j
-            # However, we need to add here first a cascade of checks, comparing MacroCFunc as current with CRule
-            MacroCFunc[0][4] = CRule(taxcut_all_results[0]['Cratio_hist'][0],0.0)    # Rule is set to be whatever consumption jumps to (when going from state 0 to state 4) with no slope because earlier consumption cannot predict what happens next at beginning
-            for t in range(15):
-                MacroCFunc[4+2*t][6+2*t] = CRule(taxcut_all_results[1]['Cratio_hist'][t+1],0.0)  #When tax shock is ongoing one assumes consumption to stay constant
-            
-            
-            # When tax shocks end or repeats there is a discrete jump
-            MacroCFunc[18][0] = CRule(taxcut_all_results[0]['Cratio_hist'][8],0.0)
-            MacroCFunc[34][0] = CRule(taxcut_all_results[1]['Cratio_hist'][16],0.0)  
-            
-            # The next tries to get at the slope by checking how Consumption falls
-            MacroCFunc[0][0] = CRule(1.0, np.mean((np.array(taxcut_all_results[0]['Cratio_hist'][9:13])-1)/(np.array(taxcut_all_results[0]['Cratio_hist'][8:12])-1)))  # when you return to normal state, aggregate consumption will not be equal to baseline
-            
-                             
-            # The new MacroCFunc is imposed and the economy resolved
-            # then the experiment above is repeated and the MacroCFunc updated again until believes are consistent with what happens           
-            self.MacroCFunc = MacroCFunc
-            Old_Cfunc = self.CFunc
-            self.CFunc = self.Macro2MicroCFunc(MacroCFunc) 
-            for agent in self.agents:
-                agent.CFunc = self.CFunc
-            print("solving again...")
-            self.solve()
-            
-            Total_Diff = self.CompareCFuncConvergence(Old_Cfunc,self.CFunc)
-
-            if Total_Diff < convergence_cutoff:
-                print("Convergence criterion reached.")
-                break
-            else:                    
-                print("Convergence criterion not reached.")
-            
-            
-        if name != None:
-            self.storeADsolution(name)
- 
-            
+                        
     def solveAD_Recession_TaxCut(self, num_max_iterations, convergence_cutoff=1E-3, name = None):
-        #reset Cfunc
-        dim = len(self.CFunc)
-        self.CFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
-        
-        self.ADelasticity = self.demand_ADelasticity
-        self.update()   
-        recession_taxcut_dict = {
-             'shock_type' : "recessionTaxCut",
-             'UpdatePrb': 1.0,
-             'Splurge': 0.32,
-             }
-        dim = int(len(self.CFunc)/self.num_base_MrkvStates)
-        MacroCFunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
-        for i in range(num_max_iterations):
-            print("Iteration ", i+1,":")
-            recession_all_results = []
-            max_recession = 19
-            
-            if self.TaxCutContinuationProb_Rec > 0:
-                cases = [0,1,2,3]
-            else:
-                cases = [0,1]
-                
-            for c in cases:
-                if c == 0:
-                    recession_taxcut_dict['EconomyMrkv_init'] = np.array([ 5,  6,  8, 10, 12, 14, 16, 18, 0])
-                elif c == 1:
-                    recession_taxcut_dict['EconomyMrkv_init'] = np.concatenate((np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1, np.array([1]*(11))))
-                elif c == 2:
-                    recession_taxcut_dict['EconomyMrkv_init'] = np.concatenate((np.array([ 4,  6,  8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34])+1, np.array([1]*(3))))
-                elif c == 3:
-                    recession_taxcut_dict['EconomyMrkv_init'] = np.concatenate((np.array([ 4,  6,  8, 10, 12, 14, 16, 18])+1, np.array([21, 22, 24, 26, 28, 30, 32, 34]), np.array([0]*3)))
-                this_recession_results = self.runExperiment(**recession_taxcut_dict)
-                recession_all_results += [this_recession_results]
-                
-            # consumption when you jump into recession/taxcut from steady state    
-            MacroCFunc[0][5] = CRule(recession_all_results[0]['Cratio_hist'][0],0.0) 
-            
-            # When recession remains for the entire first 8q of tax cut
-            for t in range(7):
-                MacroCFunc[5+2*t][7+2*t] = CRule(recession_all_results[1]['Cratio_hist'][t+1],0.0)  #When tax shock is ongoing one assumes consumption to stay constant    
-            
-                 
-            # When recession ends during the first 8q of tax cut
-            slope = (recession_all_results[0]['Cratio_hist'][1]-1)/(recession_all_results[0]['Cratio_hist'][0]-1)
-            for t in range(7):    
-                MacroCFunc[5+2*t][6+2*t] = CRule(1.0,slope) 
-
-            # Once recession state is left
-            for t in range(6):
-                MacroCFunc[6+2*t][8+2*t] = CRule(recession_all_results[0]['Cratio_hist'][t+1+1],0.0)
-                # 6 to 8 occurs from q1 to q2, thus t+2
-                
-            # Leaving tax cut
-            MacroCFunc[18][0] = CRule(recession_all_results[0]['Cratio_hist'][8],0.0)    #When tax shocks end, there is a discrete jump
-            MacroCFunc[19][0] = CRule(recession_all_results[0]['Cratio_hist'][8],0.0)    #When tax shocks end, there is a discrete jump                  
-            MacroCFunc[19][1] = CRule(recession_all_results[1]['Cratio_hist'][8],0.0) 
-            
-            # When there is a second cycle of tax cuts
-            if self.TaxCutContinuationProb_Rec > 0:
-            
-                MacroCFunc[19][21] = CRule(recession_all_results[2]['Cratio_hist'][8],0.0) # discrete jump
-                #MacroCFunc[19][20] = CRule(recession_all_results[3]['Cratio_hist'][8],0.0) # discrete jump
-                
-                # continuing recession
-                for t in range(7):    
-                    MacroCFunc[21+2*t][23+2*t] = CRule(recession_all_results[2]['Cratio_hist'][t+8+1],0.0)
-                
-                # end of recession
-                slope = (recession_all_results[3]['Cratio_hist'][9]-1)/(recession_all_results[3]['Cratio_hist'][8]-1)
-                for t in range(7):    
-                    MacroCFunc[21+2*t][22+2*t] = CRule(1.0,slope) 
-                    
-                # Once recession state is left
-                for t in range(7):
-                    MacroCFunc[20+2*t][22+2*t] = CRule(recession_all_results[3]['Cratio_hist'][t+8+1],0.0)
-                    
-                # Leaving tax cut
-                MacroCFunc[34][0] = CRule(recession_all_results[3]['Cratio_hist'][16],0.0)    
-                MacroCFunc[35][0] = CRule(recession_all_results[3]['Cratio_hist'][16],0.0)                      
-                MacroCFunc[35][1] = CRule(recession_all_results[2]['Cratio_hist'][16],0.0)
-                
-                 
-            # If stays in recession for a long time, then Cratio will hit an asymtote. Take advantage of that here:
-            startt = 8
-            slope_if_recession     = (recession_all_results[1]['Cratio_hist'][startt+1] - recession_all_results[1]['Cratio_hist'][max_recession-1])/(recession_all_results[1]['Cratio_hist'][startt] - recession_all_results[1]['Cratio_hist'][max_recession-2])
-            intercept_if_recession =  recession_all_results[1]['Cratio_hist'][startt+1] - slope_if_recession*(recession_all_results[1]['Cratio_hist'][startt]-1)
-            MacroCFunc[1][1]       = CRule(intercept_if_recession,slope_if_recession)           
-            
-            slope = (recession_all_results[1]['Cratio_hist'][19]-1)/(recession_all_results[1]['Cratio_hist'][18]-1)
-            MacroCFunc[1][0] = CRule(1.0,slope)
-            
-            # In normal times, Cratio=1 must map to Cratio=1, so just calculate slope
-            slope_normal           = np.mean((np.array(recession_all_results[0]['Cratio_hist'][10:19])-1)/(np.array(recession_all_results[0]['Cratio_hist'][9:18])-1))
-            MacroCFunc[0][0]       = CRule(1.0,slope_normal) 
-
-            
-            self.MacroCFunc = MacroCFunc
-            Old_Cfunc  = self.CFunc
-            New_Cfunc  = self.Macro2MicroCFunc(MacroCFunc)
-            
-            step = self.Cfunc_iter_stepsize 
-            dim = int(len(self.CFunc))
-            Step_Cfunc = [[CRule(1.0,0.0) for i in range(dim)] for j in range(dim)]
-            for ii in range(dim):
-                for jj in range(dim):
-                    Step_Cfunc[ii][jj].slope      = Old_Cfunc[ii][jj].slope     + step*(New_Cfunc[ii][jj].slope-Old_Cfunc[ii][jj].slope)
-                    Step_Cfunc[ii][jj].intercept  = Old_Cfunc[ii][jj].intercept + step*(New_Cfunc[ii][jj].intercept-Old_Cfunc[ii][jj].intercept)
-                    
-            self.CFunc = Step_Cfunc
-            for agent in self.agents:
-                agent.CFunc = self.CFunc
-            print("solving again...")
-            self.solve()
-            
-            Total_Diff = self.CompareCFuncConvergence(Old_Cfunc,self.CFunc)
-
-            if Total_Diff < convergence_cutoff:
-                print("Convergence criterion reached.")
-                break
-            else:                    
-                print("Convergence criterion not reached.")
-                
-        if name != None:
-            self.storeADsolution(name)
+        self.solveAD_Recession(num_max_iterations, convergence_cutoff, name = name, shock_type = "recessionTaxCut")
             
             
 
