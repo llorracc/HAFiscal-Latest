@@ -74,7 +74,7 @@ TranShkCount = 7        # Number of points in equiprobable discrete approximatio
 
 # Size of simulations
 AgentCountTotal = 50000 # Total simulated population
-T_sim = 80              # Number of quarters to simulate in counterfactuals
+T_sim = 160              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
 T_cycle = 1
