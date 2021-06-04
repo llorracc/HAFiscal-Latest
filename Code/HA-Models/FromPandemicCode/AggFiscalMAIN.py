@@ -142,7 +142,7 @@ if __name__ == '__main__':
             t1 = time()
             print('Solving UI during recession took ' + mystr(t1-t0) + ' seconds.')
             
-            print('Calculating UI recession with  AD effects')
+            print('Calculating UI recession with AD effects')
             AggDemandEconomy.switch_shock_type("recessionUI")
             AggDemandEconomy.restoreADsolution(name = 'UI_Rec')
             [recession_UI_results_AD,recession_UI_all_results_AD] = runExperimentsAllRecessions(recession_UI_changes)
@@ -359,13 +359,13 @@ if __name__ == '__main__':
         Multiplier21qRecession_Check = PlotsforSpecificRecLength(21,'recession_Check')
         
    
-        print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
+        #print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
         print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1]))
         
-        print('NPV_Multiplier_Rec_TaxCut for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[0]))
+        #print('NPV_Multiplier_Rec_TaxCut for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[0]))
         print('NPV_Multiplier_Rec_TaxCut_AD for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[1]))
 
-        print('NPV_Multiplier_Rec_Check for 21q recession: ',mystr(Multiplier21qRecession_Check[0]))
+        #print('NPV_Multiplier_Rec_Check for 21q recession: ',mystr(Multiplier21qRecession_Check[0]))
         print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1]))
 
 
