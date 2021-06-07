@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/FullRun_June4th/'
+figs_dir = './Figures/FullRun_June7th/'
 
 try:
     os.mkdir(figs_dir)
@@ -74,7 +74,7 @@ TranShkCount = 7        # Number of points in equiprobable discrete approximatio
 
 # Size of simulations
 AgentCountTotal = 50000 # Total simulated population
-T_sim = 160              # Number of quarters to simulate in counterfactuals
+T_sim = 80              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
 T_cycle = 1
@@ -323,7 +323,7 @@ slope_prev = np.zeros((num_base_MrkvStates,num_base_MrkvStates ))       # Slope 
 ADelasticity = 0.50                                                         # Elasticity of productivity to consumption
 
 num_max_iterations_solvingAD = 15
-convergence_tol_solvingAD = 1E-5
+convergence_tol_solvingAD = 1E-4
 Cfunc_iter_stepsize       = 0.75
 
 # Make a dictionary to specify a Cobb-Douglas economy
