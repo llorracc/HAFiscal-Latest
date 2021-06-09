@@ -19,11 +19,11 @@ mystr = lambda x : '{:.2f}'.format(x)
 ## Which experiments to run / plots to show
 Run_Baseline            = True
 Run_Recession           = True
-Run_Check_Recession     = True
-Run_UB_Ext_Recession    = True
+Run_Check_Recession     = False
+Run_UB_Ext_Recession    = False
 Run_TaxCut_Recession    = True
 
-Run_AD                  = True
+Run_AD                  = False
 Run_NonAD               = True #whether to run nonAD experiments as well
 
 Make_Plots              = True
@@ -35,8 +35,7 @@ if __name__ == '__main__':
         
     
     # Setting up AggDemandEconmy
-    from setupEconomy import AggDemandEconomy, base_dict_agg, max_recession_duration, output_keys, recession_prob_array, \
-                             max_policy_duration, policy_prob_array
+    from setupEconomy import AggDemandEconomy, base_dict_agg, max_recession_duration, output_keys, recession_prob_array
         
         
     if Run_Baseline:   
@@ -68,9 +67,16 @@ if __name__ == '__main__':
         t1 = time()
         print('Calculating took ' + mystr(t1-t0) + ' seconds.') 
         return [avg_results,all_results]
+
     
-    
-    
+    #%% delete later
+        output_keys = ['TranShk_all' ,'cLvl_all' , 'pLvl_all' , 'Mrkv_hist' , 'Mrkv_init' , 'cLvl_all_splurge' ,\
+                            'NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons', 'Cratio_hist', 'mNrm_all', 'aNrm_all']  
+        
+        recession_TaxCut_results = dict()
+        for key in output_keys:
+            recession_TaxCut_results[key] = np.sum(np.array([recession_TaxCut_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)   
+
 
     #%% 
     if Run_Recession:
@@ -217,7 +223,10 @@ if __name__ == '__main__':
         NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_results,               recession_UI_results,               NPV_AddInc_UI_Rec)
         NPV_Multiplier_UI_Rec_AD                = getNPVMultiplier(recession_results_AD,            recession_UI_results_AD,            NPV_AddInc_UI_Rec)
          
-        NPV_AddInc_Rec_TaxCut                   = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome') 
+        NPV_AddInc_Rec_TaxCut                   = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome')
+        # Alternative
+        NPV_TaxCut_Recession = loadPickle('NPV_TaxCut_Recession',folder,locals())
+        NPV_AddInc_Rec_TaxCut = NPV_TaxCut_Recession
         NPV_Multiplier_Rec_TaxCut               = getNPVMultiplier(recession_results,               recession_TaxCut_results,               NPV_AddInc_Rec_TaxCut)
         NPV_Multiplier_Rec_TaxCut_AD            = getNPVMultiplier(recession_results_AD,            recession_TaxCut_results_AD,            NPV_AddInc_Rec_TaxCut)
        
@@ -233,6 +242,9 @@ if __name__ == '__main__':
 
         print('NPV_Multiplier_Rec_Check: ',mystr(NPV_Multiplier_Rec_Check[-1]))
         print('NPV_Multiplier_Rec_Check_AD: ',mystr(NPV_Multiplier_Rec_Check_AD[-1]))
+        
+        
+        # Multipliers in non-AD are less than 1 -> this is because of deaths!
         
         #%% Income and Consumption paths UI extension
     
@@ -394,6 +406,77 @@ if __name__ == '__main__':
         # plt.savefig(figs_dir +'Multipliers_RecLength_PolicyLength2.pdf')
         # plt.show() 
             
+    #%% Test whether multipliers < 1 in non-AD because of Dying
+                   
+    max_T = 20
+    x_axis = np.arange(1,21) 
+    folder = './Figures/Test_FullOutput/'
+    
+    base_results                = loadPickle('base_results',folder,locals())
+    recession_results           = loadPickle('recession_results',folder,locals())
+    recession_all_results       = loadPickle('recession_all_results',folder,locals())
+    recession_TaxCut_results    = loadPickle('recession_TaxCut_results',folder,locals())
+    
+    # Recalulcate multiplier
+    NPV_AddInc_Rec_TaxCut       = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome')
+    NPV_Multiplier_Rec_TaxCut   = getNPVMultiplier(recession_results, recession_TaxCut_results, NPV_AddInc_Rec_TaxCut)
+    print(NPV_Multiplier_Rec_TaxCut[-1])
+    
+    def calculate_NPV(X,Periods,R):
+        NPV_discount = np.zeros(Periods)
+        for t in range(Periods):
+            NPV_discount[t] = 1/(R**t)
+        NPV = np.zeros(Periods)
+        for t in range(Periods):
+            NPV[t] = np.sum(X[0:t+1]*NPV_discount[0:t+1])    
+        return NPV
+     
+    def getIndividualNPV(scenario,ag):
+        AggIncome           = scenario['pLvl_all'][:,ag]*scenario['TranShk_all'][:,ag]
+        AggCons             = scenario['cLvl_all_splurge'][:,ag]
+        NPV_AggIncome       = calculate_NPV(AggIncome,80,1.01)
+        NPV_AggCons         = calculate_NPV(AggCons,80,1.01)
+        return [NPV_AggIncome,NPV_AggCons]
+    
+    
+    def getIndividualMult(agent):
+        [NPV_AggIncome_Rec,NPV_AggCons_Rec] = getIndividualNPV(recession_results,agent)       
+        [NPV_AggIncome_Rec_TaxCut,NPV_AggCons_Rec_TaxCut] = getIndividualNPV(recession_TaxCut_results,agent)       
+        return ((NPV_AggCons_Rec_TaxCut[-1]-NPV_AggCons_Rec[-1])/(NPV_AggIncome_Rec_TaxCut[-1]-NPV_AggIncome_Rec[-1])) 
+    
+    # need to simulate first
+    AgentsWhoDied = np.any(AggDemandEconomy.agents[0].history['who_dies'],axis=0)
+    
+    # This shows multiplier different from one by less than 1 % for those that have not died:
+    for agent in range(0,100):
+        Died = AgentsWhoDied[agent]
+        if Died == False:
+            print(abs(getIndividualMult(agent)-1)>1E-2)
+    
+    
+    #%% Calculate policy expenditure for tax cut
+    def calcAggIncomeEmployed(scenario):
+        AggIncomeEmployed = np.zeros(80)
+        
+        employed = np.equal(AggDemandEconomy.agents[0].history['MrkvNow']%4, 0)
+        
+        for ag in range(200000):
+            for t in range(80):
+                if employed[t,ag]:
+                    AggIncomeEmployed[t] += scenario['pLvl_all'][t,ag]*scenario['TranShk_all'][t,ag]
+        return AggIncomeEmployed
+    
+    AggIncomeEmployed_recession = calcAggIncomeEmployed(recession_results)
 
-
-          
+    PolicyExpenditureTaxCut = deepcopy(AggIncomeEmployed_recession)
+    PolicyExpenditureTaxCut = PolicyExpenditureTaxCut*0.02
+    PolicyExpenditureTaxCut[8:] = 0
+    NPV_TaxCut_Recession = calculate_NPV(PolicyExpenditureTaxCut,80,1.01)
+    saveAsPickleUnderVarName(NPV_TaxCut_Recession,figs_dir,locals())
+    
+    AggIncomeEmployed_recession = calcAggIncomeEmployed(recession_all_results[-1])
+    PolicyExpenditureTaxCut = deepcopy(AggIncomeEmployed_recession)
+    PolicyExpenditureTaxCut = PolicyExpenditureTaxCut*0.02
+    PolicyExpenditureTaxCut[8:] = 0
+    NPV_TaxCut_Recession21q = calculate_NPV(PolicyExpenditureTaxCut,80,1.01)
+    saveAsPickleUnderVarName(NPV_TaxCut_Recession21q,figs_dir,locals())

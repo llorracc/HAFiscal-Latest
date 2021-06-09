@@ -775,20 +775,20 @@ class AggregateDemandEconomy(Market):
         Mrkv_init = np.concatenate([ThisType.history['MrkvNow'][0,:] for ThisType in self.agents])
         
         if Full_Output:
-            return_dict = {'cNrm_all' : cNrm_all,
-                           'TranShk_all' : TranShk_all,
-                           'cLvl_all' : cLvl_all,
-                           'pLvl_all' : pLvl_all,
-                           'Mrkv_hist' : Mrkv_hist,
-                           'Mrkv_init' : Mrkv_init,
-                           'mNrm_all' : mNrm_all,
-                           'aNrm_all' : aNrm_all,
+            return_dict = {'cNrm_all' :     cNrm_all,
+                           'TranShk_all' :  TranShk_all,
+                           'cLvl_all' :     cLvl_all,
+                           'pLvl_all' :     pLvl_all,
+                           'Mrkv_hist' :    Mrkv_hist,
+                           'Mrkv_init' :    Mrkv_init,
+                           'mNrm_all' :     mNrm_all,
+                           'aNrm_all' :     aNrm_all,
                            'cLvl_all_splurge' : cLvl_all_splurge,
                            'NPV_AggIncome': NPV_AggIncome,
-                           'NPV_AggCons': NPV_AggCons,
-                           'AggIncome': AggIncome,
-                           'AggCons': AggCons,
-                           'Cratio_hist' : Cratio_hist}
+                           'NPV_AggCons':   NPV_AggCons,
+                           'AggIncome':     AggIncome,
+                           'AggCons':       AggCons,
+                           'Cratio_hist' :  Cratio_hist}
         else:
             return_dict = {'NPV_AggIncome': NPV_AggIncome,
                            'NPV_AggCons':   NPV_AggCons,
