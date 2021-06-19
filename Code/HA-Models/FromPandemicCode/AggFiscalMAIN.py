@@ -18,13 +18,13 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 ## Which experiments to run / plots to show
 Run_Baseline            = True
-Run_Recession           = True
+Run_Recession           = False
 Run_Check_Recession     = False
 Run_UB_Ext_Recession    = False
-Run_TaxCut_Recession    = True
+Run_TaxCut_Recession    = False
 
 Run_AD                  = False
-Run_NonAD               = True #whether to run nonAD experiments as well
+Run_NonAD               = False #whether to run nonAD experiments as well
 
 Make_Plots              = True
 
@@ -69,13 +69,13 @@ if __name__ == '__main__':
         return [avg_results,all_results]
 
     
-    #%% delete later
-        output_keys = ['TranShk_all' ,'cLvl_all' , 'pLvl_all' , 'Mrkv_hist' , 'Mrkv_init' , 'cLvl_all_splurge' ,\
-                            'NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons', 'Cratio_hist', 'mNrm_all', 'aNrm_all']  
+    # #%% delete later
+    #     output_keys = ['TranShk_all' ,'cLvl_all' , 'pLvl_all' , 'Mrkv_hist' , 'Mrkv_init' , 'cLvl_all_splurge' ,\
+    #                         'NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons', 'Cratio_hist', 'mNrm_all', 'aNrm_all']  
         
-        recession_TaxCut_results = dict()
-        for key in output_keys:
-            recession_TaxCut_results[key] = np.sum(np.array([recession_TaxCut_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)   
+    #     recession_TaxCut_results = dict()
+    #     for key in output_keys:
+    #         recession_TaxCut_results[key] = np.sum(np.array([recession_TaxCut_all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)   
 
 
     #%% 
@@ -336,7 +336,7 @@ if __name__ == '__main__':
             NPV_Multiplier_AD    = getNPVMultiplier(recession_all_results_AD[RecLength-1],            recession_all_policy_results_AD[RecLength-1],            NPV_AddInc)
             
  
-            Multipliers = [NPV_Multiplier[-1],NPV_Multiplier_AD[-1]]
+            Multipliers = [NPV_Multiplier,NPV_Multiplier_AD]
             
             PlotEach = False
             
@@ -372,13 +372,13 @@ if __name__ == '__main__':
         
    
         #print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
-        print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1]))
+        print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1][-1]))
         
         #print('NPV_Multiplier_Rec_TaxCut for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[0]))
-        print('NPV_Multiplier_Rec_TaxCut_AD for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[1]))
+        print('NPV_Multiplier_Rec_TaxCut_AD for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[1][-1]))
 
         #print('NPV_Multiplier_Rec_Check for 21q recession: ',mystr(Multiplier21qRecession_Check[0]))
-        print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1]))
+        print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1][-1]))
 
 
      
@@ -410,7 +410,6 @@ if __name__ == '__main__':
                    
     max_T = 20
     x_axis = np.arange(1,21) 
-    folder = './Figures/Test_FullOutput/'
     
     base_results                = loadPickle('base_results',folder,locals())
     recession_results           = loadPickle('recession_results',folder,locals())
