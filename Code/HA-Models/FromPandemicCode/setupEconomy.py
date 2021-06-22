@@ -119,7 +119,7 @@ PolicyUBpersist = 1.-1./PolicyUBspell
 policy_prob_array = np.array([PolicyUBpersist**t*(1-PolicyUBpersist) for t in range(max_policy_duration)])
 policy_prob_array[-1] = 1.0 - np.sum(policy_prob_array[:-1])
 
-max_recession_duration = 21
+max_recession_duration = 41 #21
 Rspell = AggDemandEconomy.agents[0].Rspell #NOTE - this should come from the market, not the agent
 R_persist = 1.-1./Rspell
 recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])

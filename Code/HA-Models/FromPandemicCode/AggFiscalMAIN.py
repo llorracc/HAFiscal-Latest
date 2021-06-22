@@ -18,15 +18,15 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 ## Which experiments to run / plots to show
 Run_Baseline            = True
-Run_Recession           = False
+Run_Recession           = True
 Run_Check_Recession     = False
-Run_UB_Ext_Recession    = False
+Run_UB_Ext_Recession    = True
 Run_TaxCut_Recession    = False
 
-Run_AD                  = False
+Run_AD                  = True
 Run_NonAD               = False #whether to run nonAD experiments as well
 
-Make_Plots              = True
+Make_Plots              = False
 
 
 #%% 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         dictt.update(**dict_changes)
         all_results = []
         avg_results = dict()
-        #  running recession with diferent lengths up to 20q then averaging the result
+        #  running recession with diferent lengths up to max_recession_duration then averaging the result
         for t in range(max_recession_duration):
             dictt['EconomyMrkv_init'] = list(np.arange(1,AggDemandEconomy.num_experiment_periods+1)*2) + [0]*20 
             dictt['EconomyMrkv_init'][0:t+1] = np.array(dictt['EconomyMrkv_init'][0:t+1]) +1
@@ -193,8 +193,8 @@ if __name__ == '__main__':
         
     if Make_Plots:
         
-        max_T = 20
-        x_axis = np.arange(1,21)
+        max_T = 60
+        x_axis = np.arange(1,max_T+1)
         
         folder = figs_dir
         
@@ -225,8 +225,8 @@ if __name__ == '__main__':
          
         NPV_AddInc_Rec_TaxCut                   = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome')
         # Alternative
-        NPV_TaxCut_Recession = loadPickle('NPV_TaxCut_Recession',folder,locals())
-        NPV_AddInc_Rec_TaxCut = NPV_TaxCut_Recession
+        #NPV_TaxCut_Recession = loadPickle('NPV_TaxCut_Recession',folder,locals())
+        #NPV_AddInc_Rec_TaxCut = NPV_TaxCut_Recession
         NPV_Multiplier_Rec_TaxCut               = getNPVMultiplier(recession_results,               recession_TaxCut_results,               NPV_AddInc_Rec_TaxCut)
         NPV_Multiplier_Rec_TaxCut_AD            = getNPVMultiplier(recession_results_AD,            recession_TaxCut_results_AD,            NPV_AddInc_Rec_TaxCut)
        
@@ -338,7 +338,7 @@ if __name__ == '__main__':
  
             Multipliers = [NPV_Multiplier,NPV_Multiplier_AD]
             
-            PlotEach = False
+            PlotEach = True
             
             if PlotEach:
             
@@ -365,10 +365,11 @@ if __name__ == '__main__':
             
             return Multipliers
         
-        
-        Multiplier21qRecession_UI = PlotsforSpecificRecLength(21,'recession_UI')
-        Multiplier21qRecession_TaxCut = PlotsforSpecificRecLength(21,'recession_TaxCut')
-        Multiplier21qRecession_Check = PlotsforSpecificRecLength(21,'recession_Check')
+    #%%
+        RecLengthInspect = 41
+        Multiplier21qRecession_UI = PlotsforSpecificRecLength(RecLengthInspect,'recession_UI')
+        Multiplier21qRecession_TaxCut = PlotsforSpecificRecLength(RecLengthInspect,'recession_TaxCut')
+        Multiplier21qRecession_Check = PlotsforSpecificRecLength(RecLengthInspect,'recession_Check')
         
    
         #print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
@@ -381,101 +382,4 @@ if __name__ == '__main__':
         print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1][-1]))
 
 
-     
-        # #%% Plotting long-run multiplier as a function of recession and policy duration
-        # max_recession_duration = 21
-        # Multipliers = np.zeros((max_recession_duration+1,2))
-        # for RecLength in range(1,max_recession_duration+1,1):
-        #     Multipliers[RecLength][0:2] = PlotsforSpecificRecandPolicyLength(RecLength)
-
-
-        # print('NPV_Multiplier_UI_Rec when recession lasts 20q: ',Multipliers[-1][0])
-        # print('NPV_Multiplier_UI_Rec_AD: when recession lasts 20q:',Multipliers[-1][1])
               
-        # x_axis = np.arange(2,21)
-        
-        # plt.figure(figsize=(15,10))
-        # plt.title('Multipliers as function of Recession length', size=30)
-        # plt.plot(x_axis,Multipliers[2:21,0], color='black',)
-        # plt.plot(x_axis,Multipliers[2:21,1], color='blue',linestyle='-')
-        # plt.legend(['no AD effects',\
-        #             'AD effects Rec states'], fontsize=14)
-        # plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
-        # plt.xlabel('recession lasts quarter', fontsize=18)
-        # plt.ylabel('Long-run NPV multiplier', fontsize=16)
-        # plt.savefig(figs_dir +'Multipliers_RecLength_PolicyLength2.pdf')
-        # plt.show() 
-            
-    #%% Test whether multipliers < 1 in non-AD because of Dying
-                   
-    max_T = 20
-    x_axis = np.arange(1,21) 
-    
-    base_results                = loadPickle('base_results',folder,locals())
-    recession_results           = loadPickle('recession_results',folder,locals())
-    recession_all_results       = loadPickle('recession_all_results',folder,locals())
-    recession_TaxCut_results    = loadPickle('recession_TaxCut_results',folder,locals())
-    
-    # Recalulcate multiplier
-    NPV_AddInc_Rec_TaxCut       = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome')
-    NPV_Multiplier_Rec_TaxCut   = getNPVMultiplier(recession_results, recession_TaxCut_results, NPV_AddInc_Rec_TaxCut)
-    print(NPV_Multiplier_Rec_TaxCut[-1])
-    
-    def calculate_NPV(X,Periods,R):
-        NPV_discount = np.zeros(Periods)
-        for t in range(Periods):
-            NPV_discount[t] = 1/(R**t)
-        NPV = np.zeros(Periods)
-        for t in range(Periods):
-            NPV[t] = np.sum(X[0:t+1]*NPV_discount[0:t+1])    
-        return NPV
-     
-    def getIndividualNPV(scenario,ag):
-        AggIncome           = scenario['pLvl_all'][:,ag]*scenario['TranShk_all'][:,ag]
-        AggCons             = scenario['cLvl_all_splurge'][:,ag]
-        NPV_AggIncome       = calculate_NPV(AggIncome,80,1.01)
-        NPV_AggCons         = calculate_NPV(AggCons,80,1.01)
-        return [NPV_AggIncome,NPV_AggCons]
-    
-    
-    def getIndividualMult(agent):
-        [NPV_AggIncome_Rec,NPV_AggCons_Rec] = getIndividualNPV(recession_results,agent)       
-        [NPV_AggIncome_Rec_TaxCut,NPV_AggCons_Rec_TaxCut] = getIndividualNPV(recession_TaxCut_results,agent)       
-        return ((NPV_AggCons_Rec_TaxCut[-1]-NPV_AggCons_Rec[-1])/(NPV_AggIncome_Rec_TaxCut[-1]-NPV_AggIncome_Rec[-1])) 
-    
-    # need to simulate first
-    AgentsWhoDied = np.any(AggDemandEconomy.agents[0].history['who_dies'],axis=0)
-    
-    # This shows multiplier different from one by less than 1 % for those that have not died:
-    for agent in range(0,100):
-        Died = AgentsWhoDied[agent]
-        if Died == False:
-            print(abs(getIndividualMult(agent)-1)>1E-2)
-    
-    
-    #%% Calculate policy expenditure for tax cut
-    def calcAggIncomeEmployed(scenario):
-        AggIncomeEmployed = np.zeros(80)
-        
-        employed = np.equal(AggDemandEconomy.agents[0].history['MrkvNow']%4, 0)
-        
-        for ag in range(200000):
-            for t in range(80):
-                if employed[t,ag]:
-                    AggIncomeEmployed[t] += scenario['pLvl_all'][t,ag]*scenario['TranShk_all'][t,ag]
-        return AggIncomeEmployed
-    
-    AggIncomeEmployed_recession = calcAggIncomeEmployed(recession_results)
-
-    PolicyExpenditureTaxCut = deepcopy(AggIncomeEmployed_recession)
-    PolicyExpenditureTaxCut = PolicyExpenditureTaxCut*0.02
-    PolicyExpenditureTaxCut[8:] = 0
-    NPV_TaxCut_Recession = calculate_NPV(PolicyExpenditureTaxCut,80,1.01)
-    saveAsPickleUnderVarName(NPV_TaxCut_Recession,figs_dir,locals())
-    
-    AggIncomeEmployed_recession = calcAggIncomeEmployed(recession_all_results[-1])
-    PolicyExpenditureTaxCut = deepcopy(AggIncomeEmployed_recession)
-    PolicyExpenditureTaxCut = PolicyExpenditureTaxCut*0.02
-    PolicyExpenditureTaxCut[8:] = 0
-    NPV_TaxCut_Recession21q = calculate_NPV(PolicyExpenditureTaxCut,80,1.01)
-    saveAsPickleUnderVarName(NPV_TaxCut_Recession21q,figs_dir,locals())

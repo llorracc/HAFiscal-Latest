@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/FullRun_June7th/'
+figs_dir = './Figures/Run_MaxRec_40/'
 
 try:
     os.mkdir(figs_dir)
@@ -88,7 +88,7 @@ DiscFacDstns = [DiscFacDstn]
 CgridBase = np.array([0.8, 1.0, 1.2])  
 
 num_base_MrkvStates = 2+ UBspell_normal #employed, unemployed with 2 quarters benefits, unemployed with 1 quarter benefit, unemployed no benefits
-num_experiment_periods = 20
+num_experiment_periods = 40 #20
 
 def makeMacroMrkvArray_recession(Rspell, num_experiment_periods):
     R_persist = 1.-1./Rspell
@@ -322,9 +322,9 @@ intercept_prev = np.ones((num_base_MrkvStates,num_base_MrkvStates ))    # Interc
 slope_prev = np.zeros((num_base_MrkvStates,num_base_MrkvStates ))       # Slope of aggregate savings function
 ADelasticity = 0.50                                                         # Elasticity of productivity to consumption
 
-num_max_iterations_solvingAD = 15
-convergence_tol_solvingAD = 1E-4
-Cfunc_iter_stepsize       = 0.75
+num_max_iterations_solvingAD = 30
+convergence_tol_solvingAD = 1E-6
+Cfunc_iter_stepsize       = 1
 
 # Make a dictionary to specify a Cobb-Douglas economy
 init_ADEconomy = {'intercept_prev': intercept_prev,
