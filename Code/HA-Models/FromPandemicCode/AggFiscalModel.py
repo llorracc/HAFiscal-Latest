@@ -745,7 +745,7 @@ class AggregateDemandEconomy(Market):
         cLvl_all    = np.concatenate([ThisType.history['cLvlNow'] for ThisType in self.agents], axis=1)
         cLvl_all_splurge = np.concatenate([ThisType.history['cLvl_splurgeNow'] for ThisType in self.agents], axis=1)
         
-        IndIncome = pLvl_all*TranShk_all*np.array(self.history['AggDemandFac'])[:,None] #changed this to AggDemandFac, change back to Prev
+        IndIncome = pLvl_all*TranShk_all*np.array(self.history['AggDemandFacPrev'])[:,None]
         AggIncome = np.sum(IndIncome,1)
         AggCons   = np.sum(cLvl_all_splurge,1)
         

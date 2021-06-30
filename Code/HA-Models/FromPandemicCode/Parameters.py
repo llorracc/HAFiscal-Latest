@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Run_MaxRec_40/'
+figs_dir = './Figures/Test/'
 
 try:
     os.mkdir(figs_dir)
@@ -88,7 +88,7 @@ DiscFacDstns = [DiscFacDstn]
 CgridBase = np.array([0.8, 1.0, 1.2])  
 
 num_base_MrkvStates = 2+ UBspell_normal #employed, unemployed with 2 quarters benefits, unemployed with 1 quarter benefit, unemployed no benefits
-num_experiment_periods = 40 #20
+num_experiment_periods = 40
 
 def makeMacroMrkvArray_recession(Rspell, num_experiment_periods):
     R_persist = 1.-1./Rspell

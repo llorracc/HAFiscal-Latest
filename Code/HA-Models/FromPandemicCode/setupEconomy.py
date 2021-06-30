@@ -23,35 +23,6 @@ BaseTypeList = [InfHorizonTypeAgg]
 # NOTE: THIS ASSUMES NO LIFECYCLE
 IncomeDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg.IncUnemp])])
 IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg.IncUnempNoBenefits])])
-# IncomeDstn_big = []
-# for ThisType in BaseTypeList:
-#     IncomeDstn_taxcut = deepcopy(ThisType.IncomeDstn[0])
-#     IncomeDstn_taxcut.X[1] = IncomeDstn_taxcut.X[1]*ThisType.TaxCutIncFactor
-    
-
-#     for i in range(4): # for normal, rec, UI normal, UI rec states
-#         IncomeDstn_big.append(ThisType.IncomeDstn[0])
-#         IncomeDstn_big.append(IncomeDstn_unemp_nobenefits)
-#         IncomeDstn_big.append(IncomeDstn_unemp)
-
-#     for i in range(32): # for 16 tax cut states for each business cycle state
-#         IncomeDstn_big.append(IncomeDstn_taxcut)
-#         IncomeDstn_big.append(IncomeDstn_unemp_nobenefits)
-#         IncomeDstn_big.append(IncomeDstn_unemp)
-
-#     for i in range(2): # check state in normal and rec
-#         IncomeDstn_big.append(ThisType.IncomeDstn[0])
-#         IncomeDstn_big.append(IncomeDstn_unemp_nobenefits)
-#         IncomeDstn_big.append(IncomeDstn_unemp)
-        
-#     IncomeDstn_big = [IncomeDstn_big] #required to bring it in right form
-                       
-                           
-#     ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0], IncomeDstn_unemp_nobenefits, IncomeDstn_unemp]
-#     ThisType.IncomeDstn_big = IncomeDstn_big
-#     ThisType.AgentCount = AgentCountTotal
-#     ThisType.DiscFac = 0.96
-#     ThisType.seed = 0
 
 
 
@@ -113,13 +84,7 @@ AggDemandEconomy.makeIdiosyncraticShockHistories()
 
 output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
 
-max_policy_duration = 6
-PolicyUBspell = AggDemandEconomy.agents[0].PolicyUBspell #NOTE - this should come from the market, not the agent
-PolicyUBpersist = 1.-1./PolicyUBspell
-policy_prob_array = np.array([PolicyUBpersist**t*(1-PolicyUBpersist) for t in range(max_policy_duration)])
-policy_prob_array[-1] = 1.0 - np.sum(policy_prob_array[:-1])
-
-max_recession_duration = 41 #21
+max_recession_duration = 41
 Rspell = AggDemandEconomy.agents[0].Rspell #NOTE - this should come from the market, not the agent
 R_persist = 1.-1./Rspell
 recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
