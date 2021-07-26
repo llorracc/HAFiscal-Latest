@@ -24,11 +24,11 @@ Run_UB_Ext_Recession    = True
 Run_TaxCut_Recession    = True
 
 Run_AD                  = True
-Run_1stRoundAD          = True
-Run_NonAD               = True #whether to run nonAD experiments as well
+Run_1stRoundAD          = False
+Run_NonAD               = False #whether to run nonAD experiments as well
 
 
-Make_Plots              = True
+Make_Plots              = False
 
 
 #%% 
@@ -303,6 +303,24 @@ if __name__ == '__main__':
         
         # Multipliers in non-AD are less than 1 -> this is because of deaths!
         
+        
+        max_T = 45
+        x_axis = np.arange(1,max_T+1)
+        plt.figure(figsize=(15,10))
+        plt.title('NPV multipliers at different horizons with AD effects', size=30)
+        plt.plot(x_axis,NPV_Multiplier_UI_Rec_AD[0:max_T],                  color='blue',linestyle='-')
+        plt.plot(x_axis,NPV_Multiplier_Rec_TaxCut_AD[0:max_T],              color='red',linestyle='-')
+        plt.plot(x_axis,NPV_Multiplier_Rec_Check_AD[0:max_T],               color='green',linestyle='-')
+        plt.plot(x_axis,NPV_Multiplier_UI_Rec_firstRoundAD[0:max_T],        color='blue',linestyle='--')
+        plt.plot(x_axis,NPV_Multiplier_Rec_TaxCut_firstRoundAD[0:max_T],    color='red',linestyle='--')
+        plt.plot(x_axis,NPV_Multiplier_Rec_Check_firstRoundAD[0:max_T],     color='green',linestyle='--')
+        plt.legend(['UI','Tax Cut','Check','UI, first round only','Tax Cut, first round only','Check, first round only'], fontsize=14)
+        plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+        plt.xlabel('quarter', fontsize=18)
+        plt.ylabel('NPV', fontsize=16)
+        plt.savefig(figs_dir +'NPV_multipliers.pdf')
+        plt.show()
+        
         #%% Income and Consumption paths UI extension
     
         AddCons_UI_Ext_Rec_RelRec               = getSimulationPercentDiff(recession_results,    recession_UI_results,'AggCons')
@@ -412,7 +430,7 @@ if __name__ == '__main__':
  
             Multipliers = [NPV_Multiplier,NPV_Multiplier_AD,NPV_Multiplier_firstRoundAD]
             
-            PlotEach = False
+            PlotEach = True
             
             if PlotEach:
             
@@ -440,7 +458,7 @@ if __name__ == '__main__':
             return Multipliers
         
     #%%
-        RecLengthInspect = 41
+        RecLengthInspect = 40
         Multiplier21qRecession_UI = PlotsforSpecificRecLength(RecLengthInspect,'recession_UI')
         #print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
         print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1][-1]))

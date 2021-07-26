@@ -2,7 +2,7 @@ from Parameters import T_sim, init_infhorizon, init_ADEconomy, DiscFacDstns,\
      AgentCountTotal, TypeShares, base_dict, recession_changes, sticky_e_changes,\
      UI_changes, recession_UI_changes, TaxCut_changes, recession_TaxCut_changes,\
      figs_dir, num_max_iterations_solvingAD, convergence_tol_solvingAD,\
-     UBspell_normal, num_experiment_periods, num_base_MrkvStates
+     UBspell_normal, num_experiment_periods, num_base_MrkvStates, max_recession_duration
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 from HARK.distribution import DiscreteDistribution
 import numpy as np
@@ -84,7 +84,7 @@ AggDemandEconomy.makeIdiosyncraticShockHistories()
 
 output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
 
-max_recession_duration = 41
+
 Rspell = AggDemandEconomy.agents[0].Rspell #NOTE - this should come from the market, not the agent
 R_persist = 1.-1./Rspell
 recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
