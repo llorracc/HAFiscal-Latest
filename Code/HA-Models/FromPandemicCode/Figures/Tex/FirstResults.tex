@@ -9,11 +9,130 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{booktabs}
+\usepackage{comment}
 \bibliographystyle{unsrtnat}
 
 
 \begin{document}
 	
+\section{Update - Aug 4th 2021}
+\FloatBarrier
+
+\subsection{Experiments}
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../FullRun_June7th/recession_taxcut_relrecession}
+	\caption{}
+	\label{fig:recessiontaxcutrelrecession}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../FullRun_June7th/recession_UI_relrecession}
+	\caption{}
+	\label{fig:recessionuirelrecession}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../FullRun_June7th/recession_Check_relrecession}
+	\caption{}
+	\label{fig:recessioncheckrelrecession}
+\end{figure}
+
+
+\FloatBarrier
+\subsection{Multipliers}
+
+We can look at three different multipliers
+
+\begin{enumerate}
+	\item Period multiplier: The ratio of additional consumption to policy expenditures at a certain point in time
+	\begin{equation}
+	PM(t) = \frac{\Delta C (t) }{\Delta G(t)}
+	\end{equation}	
+	where $\Delta X(t)$ is the difference in the variable $X$ between the no-policy and policy scenario at time $t$.
+	
+	\textit{Useful to investigate at which point in time a policy is most effective}
+		
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=\linewidth]{../FullRun_June7th/P_multipliers}
+		\caption{}
+		\label{fig:pmultipliers}
+	\end{figure}
+	
+	\item Net present value multiplier: The ratio of the NPV of additional consumption to the NPV of policy expenditure up to a certain point in time.
+	\begin{equation}
+	NPVM(t) = \frac{NPV(t,\Delta C)}{NPV (t,\Delta G)}
+	\end{equation}	
+	where the net present value of a variable X at horizon t is given by
+	\begin{equation}
+	NPV(t,X) = \sum_{s=0}^{t} \left( \prod_{i=1}^{s} \frac{1}{R_i} \right) X_s
+	\end{equation}
+	
+	\textit{Useful to investigate at which horizons the policy becomes effective}
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{../FullRun_June7th/NPV_multipliers}
+		\caption{Net present value multipliers at horizon 1 (impact multiplier) to 30}
+		\label{fig:npvmultipliers}
+	\end{figure}
+	
+	
+	\item Cummulative multiplier: The ratio of the NPV of additional consumption up to time $t$ to the infinite-horizon NPV of policy expenditure
+	\begin{equation}
+	CM(t) = \frac{NPV(t,\Delta C)}{NPV (\infty,\Delta G)}
+	\end{equation}
+	
+	\textit{Useful to investigate when additional consumption occurs}
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{../FullRun_June7th/C_multipliers}
+		\caption{}
+		\label{fig:cmultipliers}
+	\end{figure}
+	
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+	
+
+
+\FloatBarrier
+\subsection{Long-run NPV multipliers table}
+
+The table shows $NPVM(\infty)$.
+
+\begin{table}[htb]
+	\centering
+	\begin{tabular}{@{}llllll@{}}
+		\toprule
+		Experiment  	& no AD effects & AD = 0.5 		& AD = 0.5 (1st round)	& AD = 0.25 	& AD = 0.75 	\\ \midrule
+		Payroll tax cut & 1 			& 1.28   		& 1.18  			    & 1.10			& 1.58			\\
+		UI extension    & 0.98 			& 1.74 			& 1.51 					& 1.30			& 2.42			\\
+		Check		    & 0.97 			& 1.62 			& 1.40 					& 1.23			& 2.25			\\ \bottomrule
+	\end{tabular}	
+	\caption{Long-run multipliers}
+\end{table}
+
+
+	
+
+\begin{comment}
+
+
 \section{Update - May 19th 2021}
 
 \begin{figure}
@@ -526,7 +645,7 @@ Figure \ref{fig:CRatio} plots $CR_t$ on  $CR_{t-1}$ where $CR_t$ is the ratio of
 \end{figure}
 
 
-
+\end{comment}
 
 
 

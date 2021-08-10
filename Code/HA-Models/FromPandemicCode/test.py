@@ -5,7 +5,7 @@
 BaseCons = 100
 Stimulus = 1
 MPC = 0.8
-AD = 0.5
+AD = 0.25
 
 
 
