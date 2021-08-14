@@ -1,0 +1,349 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import csv
+from HARK.distribution import Uniform
+from importlib import reload
+
+
+figs_dir = './Figures/FullRun_June7th/'
+
+try:
+    os.mkdir(figs_dir)
+except OSError:
+    print ("Creation of the directory %s failed" % figs_dir)
+else:
+    print ("Successfully created the directory %s " % figs_dir)
+
+
+
+# Parameters concerning the distribution of discount factors
+DiscFacMean     = 0.986     # Mean intertemporal discount factor 
+DiscFacSpread   = 0.0183    # Half-width of uniform distribution of discount factors
+
+# Parameters concerning Markov transition matrix
+# Normal
+Urate_normal = 0.05          # Unemployment rate in normal times
+Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
+UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
+# Recession
+Urate_recession = 0.1        # Unemployment rate in recession
+Uspell_recession = 4         # Average duration of unemployment spell in recession, in quarters
+Rspell = 6                   # Expected length of recession, in quarters. If R_shared = True, must be an integer
+R_shared = False             # Indicator for whether the recession shared (True) or idiosyncratic (False)
+# UI extension
+UBspell_extended = 4         # Average duration of unemployment benefits when extended and assuming policy remains in place, in quarters
+PolicyUBspell = 2            # Average duration that policy of extended unemployment benefits is in place
+# Tax Cut parameter
+PolicyTaxCutspell = 2        # Average duration that policy of payroll tax cuts
+TaxCutIncFactor = 1.02       # Amount by which the payroll tax cut increases after-tax income
+TaxCutPeriods = 8            # Deterministic duration of tax cut 
+TaxCutContinuationProb_Rec = 0.5   # Probability that tax cut is continued after tax cut periods run out, when recession in q8
+TaxCutContinuationProb_Bas = 0.0   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
+#Check experiment parameter
+CheckStimLvl = 1200/15000 #1 = 15k
+CheckStimLvl_PLvl_Cutoff_start = 100/4/15 #100 k yearly income #At this Level of permanent inc, Stimulus beings to fall linearly
+CheckStimLvl_PLvl_Cutoff_end = 150/4/15 #150k yearly income #At this Level of permanent inc, Stimulus is zero
+
+
+UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
+Splurge = 0.32      # amount of income that is splurged
+
+
+# Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
+CRRA = 1.0              # Coefficient of relative risk aversion
+PopGroFac = 1.0 #1.01**0.25  # Population growth factor
+PermGroFacAgg = 1.0 #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
+
+IncUnemp = 0.3          # Unemployment benefits replacement rate (proportion of permanent income)
+IncUnempNoBenefits = 0.05          # Unemployment income when benefits run out (proportion of permanent income)
+
+# Parameters concerning the initial distribution of permanent income 
+pLvlInitMean = 0 
+pLvlInitStd = 0.4           # Standard deviation of initial log permanent income 
+
+# Parameters concerning grid sizes: assets, permanent income shocks, transitory income shocks
+aXtraMin = 0.001        # Lowest non-zero end-of-period assets above minimum gridpoint
+aXtraMax = 40           # Highest non-zero end-of-period assets above minimum gridpoint
+aXtraCount = 48         # Base number of end-of-period assets above minimum gridpoints
+aXtraExtra = [0.002,0.003] # Additional gridpoints to "force" into the grid
+aXtraNestFac = 3        # Exponential nesting factor for aXtraGrid (how dense is grid near zero)
+PermShkCount = 7        # Number of points in equiprobable discrete approximation to permanent shock distribution
+TranShkCount = 7        # Number of points in equiprobable discrete approximation to transitory shock distribution
+
+
+# Size of simulations
+AgentCountTotal = 50000 # Total simulated population
+T_sim = 80              # Number of quarters to simulate in counterfactuals
+
+# Basic lifecycle length parameters (don't touch these)
+T_cycle = 1
+
+# Define the distribution of the discount factor for each eduation level
+DiscFacCount = 7
+DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
+DiscFacDstns = [DiscFacDstn]
+
+# Define grid of aggregate assets to labor
+CgridBase = np.array([0.8, 1.0, 1.2])  
+
+num_base_MrkvStates = 2+ UBspell_normal #employed, unemployed with 2 quarters benefits, unemployed with 1 quarter benefit, unemployed no benefits
+num_experiment_periods = 20
+max_recession_duration = 21
+
+def makeMacroMrkvArray_recession(Rspell, num_experiment_periods):
+    R_persist = 1.-1./Rspell
+    recession_transitions = np.array([[1.0, 0.0],[1-R_persist, R_persist]])
+    MacroMrkvArray = np.zeros((2*(num_experiment_periods+1), 2*(num_experiment_periods+1)))
+    MacroMrkvArray[0:2,0:2] = recession_transitions
+    for i in np.array(range(num_experiment_periods-1))+1:
+        MacroMrkvArray[2*i:2*i+2, 2*i+2:2*i+4] = recession_transitions
+    MacroMrkvArray[2*num_experiment_periods:2*num_experiment_periods+2, 0:2] = recession_transitions 
+    return MacroMrkvArray
+
+def small_MrkvArray(e,u,ub,transition_ub=True):
+    small_MrkvArray = np.zeros((ub+2, ub+2))
+    small_MrkvArray[0,0] = e
+    small_MrkvArray[0,1] = 1-e
+    for i in np.array(range(ub))+1:
+        if transition_ub:
+            small_MrkvArray[i,i+1] = u
+        else:
+            small_MrkvArray[i,i] = u
+        small_MrkvArray[i,0] = 1-u
+    small_MrkvArray[ub+1,ub+1] = u
+    small_MrkvArray[ub+1,0] = 1-u
+    return small_MrkvArray 
+
+def makeCondMrkvArrays_base(Urate_normal, Uspell_normal, UBspell_normal):
+    U_persist_normal = 1.-1./Uspell_normal
+    E_persist_normal = 1.-Urate_normal*(1.-U_persist_normal)/(1.-Urate_normal)
+    MrkvArray_normal         = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBspell_normal)
+    CondMrkvArrays = [MrkvArray_normal]
+    return CondMrkvArrays
+
+def makeCondMrkvArrays_recession(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods):
+    U_persist_normal = 1.-1./Uspell_normal
+    E_persist_normal = 1.-Urate_normal*(1.-U_persist_normal)/(1.-Urate_normal)
+    U_persist_recession = 1.-1./Uspell_recession
+    E_persist_recession = 1.-Urate_recession*(1.-U_persist_recession)/(1.-Urate_recession)
+    MrkvArray_normal         = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBspell_normal)
+    MrkvArray_recession      = small_MrkvArray(E_persist_recession, U_persist_recession, UBspell_normal)
+    CondMrkvArrays = [MrkvArray_normal, MrkvArray_recession]*(num_experiment_periods+1)
+    return CondMrkvArrays
+
+def makeCondMrkvArrays_recessionUI(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, ExtraUBperiods):
+    U_persist_normal = 1.-1./Uspell_normal
+    E_persist_normal = 1.-Urate_normal*(1.-U_persist_normal)/(1.-Urate_normal)
+    U_persist_recession = 1.-1./Uspell_recession
+    E_persist_recession = 1.-Urate_recession*(1.-U_persist_recession)/(1.-Urate_recession)
+    MrkvArray_normal         = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBspell_normal)
+    MrkvArray_recession      = small_MrkvArray(E_persist_recession, U_persist_recession, UBspell_normal)
+    MrkvArray_normalUI       = small_MrkvArray(E_persist_normal,    U_persist_normal,    UBspell_normal, transition_ub=False)
+    MrkvArray_recessionUI    = small_MrkvArray(E_persist_recession, U_persist_recession, UBspell_normal, transition_ub=False)
+    CondMrkvArrays = [MrkvArray_normal, MrkvArray_recession] + [MrkvArray_normalUI, MrkvArray_recessionUI]*ExtraUBperiods + [MrkvArray_normal, MrkvArray_recession]*(num_experiment_periods-ExtraUBperiods)
+    return CondMrkvArrays
+
+
+def makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays):
+    for i in range(MacroMrkvArray.shape[0]):
+        this_row = MacroMrkvArray[i,0]*CondMrkvArrays[0]
+        for j in range(MacroMrkvArray.shape[0]-1):
+            this_row = np.concatenate((this_row, MacroMrkvArray[i,j+1]*CondMrkvArrays[j+1]),axis=1)
+        if i==0:
+            FullMrkv = this_row
+        else:
+            FullMrkv = np.concatenate((FullMrkv, this_row), axis=0)
+    return [FullMrkv]
+
+MacroMrkvArray_base = np.array([[1.0]])
+CondMrkvArrays_base = makeCondMrkvArrays_base(Urate_normal, Uspell_normal, UBspell_normal)
+MrkvArray_base = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base)
+
+MacroMrkvArray_recession = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
+CondMrkvArrays_recession = makeCondMrkvArrays_recession(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
+MrkvArray_recession = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession)
+
+MacroMrkvArray_recessionCheck = MacroMrkvArray_recession
+CondMrkvArrays_recessionCheck = CondMrkvArrays_recession
+MrkvArray_recessionCheck = makeFullMrkvArray(MacroMrkvArray_recessionCheck, CondMrkvArrays_recessionCheck)
+
+MacroMrkvArray_recessionTaxCut = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
+CondMrkvArrays_recessionTaxCut = makeCondMrkvArrays_recession(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
+MrkvArray_recessionTaxCut = makeFullMrkvArray(MacroMrkvArray_recessionTaxCut, CondMrkvArrays_recessionTaxCut)
+
+MacroMrkvArray_recessionUI = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
+CondMrkvArrays_recessionUI = makeCondMrkvArrays_recessionUI(Urate_normal, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
+MrkvArray_recessionUI = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI)
+
+
+# Define permanent income growth rates
+PermGroFac_base =   [1.0]
+
+# Define the permanent and transitory shocks 
+TranShkStd = [0.1]
+PermShkStd = [0.05]
+Rfree_base = [1.01]
+
+LivPrb_base     = [1.0-1/240.0]
+# find intial distribution of states
+vals, vecs = np.linalg.eig(np.transpose(MrkvArray_base[0]))
+dist = np.abs(np.abs(vals) - 1.)
+idx = np.argmin(dist)
+init_mrkv_dist = vecs[:,idx].astype(float)/np.sum(vecs[:,idx].astype(float))
+
+
+# Define a parameter dictionary
+init_infhorizon = {"T_cycle": T_cycle,
+                'T_sim': 400, #Simulate up to age 400
+                'T_age': None,
+                'AgentCount': 10000,
+                "PermGroFacAgg": PermGroFacAgg,
+                "PopGroFac": PopGroFac,
+                "CRRA": CRRA,
+                "DiscFac": 0.98, # This will be overwritten at type construction
+                "Rfree_base" : Rfree_base,
+                "PermGroFac_base": PermGroFac_base,
+                "LivPrb_base": LivPrb_base,
+                "MrkvArray_recession" : MrkvArray_recession,
+                "MacroMrkvArray_recession" : MacroMrkvArray_recession,
+                "CondMrkvArrays_recession" : CondMrkvArrays_recession,
+                "MrkvArray_recessionUI" : MrkvArray_recessionUI,
+                "MacroMrkvArray_recessionUI" : MacroMrkvArray_recessionUI,
+                "CondMrkvArrays_recessionUI" : CondMrkvArrays_recessionUI,
+                "MrkvArray_recessionTaxCut" : MrkvArray_recessionTaxCut,
+                "MacroMrkvArray_recessionTaxCut" : MacroMrkvArray_recessionTaxCut,
+                "CondMrkvArrays_recessionTaxCut" : CondMrkvArrays_recessionTaxCut,
+                "MrkvArray_recessionCheck" : MrkvArray_recessionCheck,
+                "MacroMrkvArray_recessionCheck" : MacroMrkvArray_recessionCheck,
+                "CondMrkvArrays_recessionCheck" : CondMrkvArrays_recessionCheck,
+                "Rfree" : np.array(num_base_MrkvStates*Rfree_base),
+                "PermGroFac": [np.array(PermGroFac_base*num_base_MrkvStates)],
+                "LivPrb": [np.array(LivPrb_base*num_base_MrkvStates)],
+                "MrkvArray_base" : MrkvArray_base, 
+                "MacroMrkvArray_base" : MacroMrkvArray_base,
+                "CondMrkvArrays_base" : CondMrkvArrays_base,
+                "MrkvArray" : MrkvArray_base, 
+                "MacroMrkvArray" : MacroMrkvArray_base,
+                "CondMrkvArrays" : CondMrkvArrays_base,
+                "BoroCnstArt": 0.0,
+                "PermShkStd": PermShkStd,
+                "PermShkCount": PermShkCount,
+                "TranShkStd": TranShkStd,
+                "TranShkCount": TranShkCount,
+                "UnempPrb": 0.0, # Unemployment is modeled as a Markov state
+                "IncUnemp": IncUnemp,
+                "IncUnempNoBenefits": IncUnempNoBenefits,
+                "aXtraMin": aXtraMin,
+                "aXtraMax": aXtraMax,
+                "aXtraCount": aXtraCount,
+                "aXtraExtra": aXtraExtra,
+                "aXtraNestFac": aXtraNestFac,
+                "CubicBool": False,
+                "vFuncBool": False,
+                'aNrmInitMean': np.log(0.00001), # Initial assets are zero
+                'aNrmInitStd': 0.0,
+                'pLvlInitMean': pLvlInitMean,
+                'pLvlInitStd': pLvlInitStd,
+                "MrkvPrbsInit" : np.array(list(init_mrkv_dist)),
+                'Urate_normal' : Urate_normal,
+                'Uspell_normal' : Uspell_normal,
+                'UBspell_normal' : UBspell_normal,
+                'num_base_MrkvStates' : num_base_MrkvStates,
+                'Urate_recession' : Urate_recession,
+                'Uspell_recession' : Uspell_recession,
+                'num_experiment_periods' : num_experiment_periods,
+                'Rspell' : Rspell,
+                'R_shared' : R_shared,
+                'UBspell_extended' : UBspell_extended,
+                'PolicyUBspell' : PolicyUBspell,
+                'PolicyTaxCutspell' : PolicyTaxCutspell,
+                'TaxCutIncFactor' : TaxCutIncFactor,
+                'TaxCutPeriods' : TaxCutPeriods,
+                'TaxCutContinuationProb_Rec' : TaxCutContinuationProb_Rec,
+                'TaxCutContinuationProb_Bas' : TaxCutContinuationProb_Bas,
+                'CheckStimLvl' : CheckStimLvl,
+                'CheckStimLvl_PLvl_Cutoff_start' : CheckStimLvl_PLvl_Cutoff_start,
+                'CheckStimLvl_PLvl_Cutoff_end' : CheckStimLvl_PLvl_Cutoff_end,
+                'UpdatePrb' : 1.0,
+                'Splurge' : Splurge,
+                'track_vars' : []
+                }
+
+if R_shared:
+    init_infhorizon['T_recession'] = int(Rspell)
+    
+# Population share of each type (at present only one type)    
+TypeShares = [1.0]
+
+# Define a dictionary to represent the baseline scenario
+base_dict = {'shock_type' : "base",
+             'UpdatePrb' : 1.0,
+             'Splurge' : Splurge
+             }
+# Define a dictionary to mutate baseline for the recession
+recession_changes = {
+             'shock_type' : "recession",
+             }
+UI_changes = {
+             'shock_type' : "UI",
+             }
+recession_UI_changes = {
+             'shock_type' : "recessionUI",
+             }
+TaxCut_changes = {
+             'shock_type' : "TaxCut",
+             }
+recession_TaxCut_changes = {
+             'shock_type' : "recessionTaxCut",
+             }
+Check_changes = {
+             'shock_type' : "Check",
+             }
+recession_Check_changes = {
+             'shock_type' : "recessionCheck",
+             }
+sticky_e_changes = {
+             'UpdatePrb' : UpdatePrb
+             }
+frictionless_changes = {
+             'UpdatePrb' : 1.0
+             }
+
+
+quick_test = True
+if quick_test:
+    AgentCountTotal = 200000
+    DiscFacCount = 1
+    DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
+    DiscFacDstns = [DiscFacDstn]
+    
+# Parameters for AggregateDemandEconomy economy
+intercept_prev = np.ones((num_base_MrkvStates,num_base_MrkvStates ))    # Intercept of aggregate savings function
+slope_prev = np.zeros((num_base_MrkvStates,num_base_MrkvStates ))       # Slope of aggregate savings function
+ADelasticity = 0.75                                                         # Elasticity of productivity to consumption
+
+num_max_iterations_solvingAD = 30
+convergence_tol_solvingAD = 1E-6
+Cfunc_iter_stepsize       = 1
+
+# Make a dictionary to specify a Cobb-Douglas economy
+init_ADEconomy = {'intercept_prev': intercept_prev,
+                     'slope_prev': slope_prev,
+                     'ADelasticity' : 0.0,
+                     'demand_ADelasticity' : ADelasticity,
+                     'Cfunc_iter_stepsize' : Cfunc_iter_stepsize,
+                     'MrkvArray' : MrkvArray_base,
+                     'MrkvArray_recession' : MrkvArray_recession,
+                     'MrkvArray_recessionUI' : MrkvArray_recessionUI,
+                     'MrkvArray_recessionTaxCut' : MrkvArray_recessionTaxCut,
+                     'MrkvArray_recessionCheck' : MrkvArray_recessionCheck,
+                     'num_base_MrkvStates' : num_base_MrkvStates,
+                     'num_experiment_periods' : num_experiment_periods,
+                     "MrkvArray_base" : MrkvArray_base, 
+                     'CgridBase' : CgridBase,
+                     'EconomyMrkvNow_init': 0,
+                     'act_T' : 400,
+                     'TaxCutContinuationProb_Rec' : TaxCutContinuationProb_Rec,
+                     'TaxCutContinuationProb_Bas' : TaxCutContinuationProb_Bas
+                     }
