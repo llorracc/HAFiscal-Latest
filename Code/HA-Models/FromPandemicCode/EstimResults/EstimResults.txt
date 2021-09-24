@@ -1,0 +1,38 @@
+
+         Current function value: 74.404259
+         Iterations: 273
+         Function evaluations: 476
+Time to estimate is 62702.131474494934 seconds.
+Finished estimating. Optimal betas are:
+[0.85679734 0.90394383 2.09933073]
+Optimal spread = 0.03
+
+initValues
+Out[168]: [0.9637, 0.9705, 0.97557, 0.0253]
+
+betasObjFunc(opt_params[0:3], opt_params[3], print_mode=True)
+
+Lorenz shares Dropouts:
+[0.         0.         0.         4.57985733]
+Lorenz shares Highschoolers:
+[ 0.          0.          2.02112724 19.86984033]
+Lorenz shares Collegegoers:
+[ 4.57817484 14.53194277 29.63876077 51.80903563]
+
+Data targets: 
+data_LorenzPts
+Out[172]: [[0, 0.01, 0.6, 3.58], [0.06, 0.63, 2.98, 11.6], [0.15, 0.92, 3.27, 10.3]]
+
+Average LW/PI-ratios: D = 0.95 H = 2.18 C = 110.15
+Total LW/Total PI (not targeted): D = 0.93 H = 2.16 C = 109.54
+
+data_avgLWPI
+Out[171]: [15.7, 47.7, 111]
+data_LWoPI
+Out[173]: [28.1, 59.6, 162]
+
+
+Wealth Shares: D = 0.09 H = 1.72 C = 98.19
+data_WealthShares
+Out[170]: array([ 0.8, 17.9, 81.2])
+
