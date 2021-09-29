@@ -238,7 +238,7 @@ def betasObjFunc(betas, spread, print_mode=False):
     baseline_commands = ['simulate()', 'saveState()']
     multiThreadCommandsFake(TypeListNew, baseline_commands)
     
-    Stats = calcEstimStats()
+    Stats = calcEstimStats(TypeListNew)
     
     sumSquares = 10*np.sum((np.array(Stats.avgLWPI)-data_avgLWPI)**2) \
         + np.sum((np.array(Stats.LorenzPts) - data_LorenzPtsAll)**2)
