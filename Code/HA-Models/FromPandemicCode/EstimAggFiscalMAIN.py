@@ -107,14 +107,44 @@ def calcWealthShareByEd(Agents):
     
     return np.array(WealthShares)
 # -----------------------------------------------------------------------------
+def calcLorenzPts(Agents):
+    '''
+    Calculate the 20th, 40th, 60th, and 80th percentile points of the
+    Lorenz curve for (liquid) wealth for the given set of Agents. 
+
+    Parameters
+    ----------
+    Agents : [AgentType]
+        List of AgentTypes.
+
+    Returns
+    -------
+    LorenzPts : [float]
+        The 20th, 40th, 60th, and 80th percentile points of the Lorenz curve for 
+        (liquid) wealth.
+    '''
+    aLvlAll = np.concatenate([ThisType.aLvlNow for ThisType in Agents])
+    numAgents = 0
+    for ThisType in Agents: 
+        numAgents += ThisType.AgentCount
+    weights = np.ones(numAgents) / numAgents      # just using equal weights for now
+    
+    # Lorenz points:
+    LorenzPts = 100*getLorenzShares(aLvlAll, weights=weights, percentiles = [0.2, 0.4, 0.6, 0.8] )
+
+    return LorenzPts
+# -----------------------------------------------------------------------------
 #%% 
 # Make education types
 num_types = 3
 # This is not the number of discount factors, but the number of household types
 
 InfHorizonTypeAgg_d = AggFiscalType(**init_dropout)
+InfHorizonTypeAgg_d.cycles = 0
 InfHorizonTypeAgg_h = AggFiscalType(**init_highschool)
+InfHorizonTypeAgg_h.cycles = 0
 InfHorizonTypeAgg_c = AggFiscalType(**init_college)
+InfHorizonTypeAgg_c.cycles = 0
 AggDemandEconomy = AggregateDemandEconomy(**init_ADEconomy)
 InfHorizonTypeAgg_d.getEconomyData(AggDemandEconomy)
 InfHorizonTypeAgg_h.getEconomyData(AggDemandEconomy)
@@ -166,7 +196,7 @@ output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
 
 #%% 
 # -----------------------------------------------------------------------------
-def betasObjFunc(betas, spread, print_mode=False):
+def betasObjFunc(betas, spread, target_option=1, print_mode=False):
     '''
     Objective function for the estimation of discount factor distributions for the 
     three education groups. The groups differ in the centering of their discount 
@@ -181,6 +211,9 @@ def betasObjFunc(betas, spread, print_mode=False):
         Half the width of each discount factor distribution.
     print_mode : boolean, optional
         If true, statistics for each education level are printed. The default is False.
+    target_option : integer
+        = 1: Target avgLWPI and LorenzPtsAll 
+        = 2: Target avgLWPI and LorenzPts_d, _h and _c
 
     Returns
     -------
@@ -240,19 +273,37 @@ def betasObjFunc(betas, spread, print_mode=False):
     
     Stats = calcEstimStats(TypeListNew)
     
-    sumSquares = 10*np.sum((np.array(Stats.avgLWPI)-data_avgLWPI)**2) \
-        + np.sum((np.array(Stats.LorenzPts) - data_LorenzPtsAll)**2)
+    sumSquares = 10*np.sum((np.array(Stats.avgLWPI)-data_avgLWPI)**2)
+    
+    if target_option == 1:
+        sumSquares += np.sum((np.array(Stats.LorenzPts) - data_LorenzPtsAll)**2)
+    elif target_option == 2:
+        lp_d = calcLorenzPts(TypeListNew[0:DiscFacCount])
+        lp_h = calcLorenzPts(TypeListNew[DiscFacCount:2*DiscFacCount])
+        lp_c = calcLorenzPts(TypeListNew[2*DiscFacCount:3*DiscFacCount])
+        
+        sumSquares += np.sum((np.array(lp_d)-data_LorenzPts[0])**2) 
+        sumSquares += np.sum((np.array(lp_h)-data_LorenzPts[1])**2) 
+        sumSquares += np.sum((np.array(lp_c)-data_LorenzPts[2])**2) 
     
     distance = np.sqrt(sumSquares)
 
     # When testing, print stats by education level
     if print_mode:
-        print('Lorenz shares:')
-        print(Stats.LorenzPts)
         print('Average LW/PI-ratios: D = ' + mystr(Stats.avgLWPI[0]) + ' H = ' + mystr(Stats.avgLWPI[1]) \
               + ' C = ' + mystr(Stats.avgLWPI[2])) 
+        print('Lorenz shares - all:')
+        print(Stats.LorenzPts)
+        if target_option == 2:
+            print('Lorenz shares - Dropouts:')
+            print(lp_d)
+            print('Lorenz shares - Highschool:')
+            print(lp_h)
+            print('Lorenz shares - College:')
+            print(lp_c) 
+        
         print('Distance = ' + mystr(distance))
-        print('Total LW/Total PI (not targeted): D = ' + mystr(Stats.LWoPI[0]) + ' H = ' + mystr(Stats.LWoPI[1]) \
+        print('Total LW/Total PI: D = ' + mystr(Stats.LWoPI[0]) + ' H = ' + mystr(Stats.LWoPI[1]) \
               + ' C = ' + mystr(Stats.LWoPI[2]))
         WealthShares = calcWealthShareByEd(TypeListNew)
         print('Wealth Shares: D = ' + mystr(WealthShares[0]) + \
@@ -282,20 +333,18 @@ betasObjFunc([0.90, 0.94, 0.98], 0.015, print_mode=True)
 #%%
 # Estimate discount factor distributions 
 
-f_temp = lambda x : betasObjFunc(x[0:3],x[3])
+f_temp = lambda x : betasObjFunc(x[0:3],x[3], target_option=2)
 initValues = deepcopy(DiscFacInit)
 initValues.append(DiscFacSpread)
 opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
 
 print('Finished estimating. Optimal betas are:')
 print(opt_params[0:3]) 
-print('Optimal spread = ' + mystr(opt_params[3]) )
+print('Optimal spread = ' + str(opt_params[3]) )
 
-betasObjFunc(opt_params[0:3], opt_params[3], print_mode=True)
+betasObjFunc(opt_params[0:3], opt_params[3], target_option = 2, print_mode=True)
 
- 
-# Estimation example: Wealth shares included as targets
-exOptParams1 = [0.85679734, 0.90394383, 2.09933073, 0.03]
-betasObjFunc(exOptParams1[0:3], exOptParams1[3], print_mode=True)
-
+#%% Some stored results: 
+# Estimation 1: 
+opt_params = [0.9682, 0.9712, 0.9721, 0.02505]    
               

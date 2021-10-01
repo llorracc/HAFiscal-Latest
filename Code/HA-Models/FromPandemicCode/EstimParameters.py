@@ -25,9 +25,9 @@ data_LorenzPts_c = [0.15, 0.92, 3.27, 10.3] # /
 data_LorenzPts = [data_LorenzPts_d, data_LorenzPts_h, data_LorenzPts_c]
 data_LorenzPtsAll = np.array([0.03, 0.35, 1.84, 7.42])
 # From SCF 2004: Average liquid wealth to permanent income ratio 
-data_avgLWPI = np.array([15.7, 47.7, 111]) # weighted average of fractions in percent
+data_avgLWPI = np.array([15.7, 47.7, 111])*4 # weighted average of fractions in percent
 # From SCF 2004: Total LW over total PI by education group
-data_LWoPI = np.array([28.1, 59.6, 162]) # units: %
+data_LWoPI = np.array([28.1, 59.6, 162])*4 # units: %
 
 # Population share of each type
 data_EducShares = [0.093, 0.527, 0.38] # Proportion of dropouts, HS grads, college types, SCF 2004 
