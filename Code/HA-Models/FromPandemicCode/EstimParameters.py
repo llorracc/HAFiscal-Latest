@@ -35,7 +35,7 @@ data_EducShares = [0.093, 0.527, 0.38] # Proportion of dropouts, HS grads, colle
 data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total wealth of dropouts, HS grads, college types, SCF 2004 
 
 # Parameters concerning the distribution of discount factors
-# Initial values for estimation, taken from pandemic paper
+# Initial values for estimation, taken from pandemic paperCondMrkvArrays_base
 DiscFacMeanD = 0.9637   # Mean intertemporal discount factor for dropout types
 DiscFacMeanH = 0.9705   # Mean intertemporal discount factor for high school types
 DiscFacMeanC = 0.97557  # Mean intertemporal discount factor for college types
@@ -50,12 +50,15 @@ DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpread, DiscFacMeanC+DiscFacSpread).a
 DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
 
 # Parameters concerning Markov transition matrix
-# Normal
-Urate_normal = 0.05          # Unemployment rate in normal times
+#https://www.statista.com/statistics/232942/unemployment-rate-by-level-of-education-in-the-us/
+Urate_normal_d = 0.085        # Unemployment rate in normal times, dropouts 2004
+Urate_normal_h = 0.05         # Unemployment rate in normal times, highschoolers 2004
+Urate_normal_c = 0.04         # Unemployment rate in normal times, college 2004
+
 Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
 
-Splurge = 0.15 #0.32      # amount of income that is splurged
+Splurge = 0.32      # amount of income that is splurged
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
 CRRA = 1.0              # Coefficient of relative risk aversion
@@ -125,28 +128,38 @@ def makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays):
     return [FullMrkv]
 
 MacroMrkvArray_base = np.array([[1.0]])
-CondMrkvArrays_base = makeCondMrkvArrays_base(Urate_normal, Uspell_normal, UBspell_normal)
-MrkvArray_base = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base)
-
+CondMrkvArrays_base_d = makeCondMrkvArrays_base(Urate_normal_d, Uspell_normal, UBspell_normal)
+MrkvArray_base_d = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base_d)
+CondMrkvArrays_base_h = makeCondMrkvArrays_base(Urate_normal_h, Uspell_normal, UBspell_normal)
+MrkvArray_base_h = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base_h)
+CondMrkvArrays_base_c = makeCondMrkvArrays_base(Urate_normal_c, Uspell_normal, UBspell_normal)
+MrkvArray_base_c = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base_c)
 
 # Define permanent income growth rates
 PermGroFac_base =   [1.0]
+PermGroFac_base_d = [1.0 + 0.01421/4]  # From Pandemic paper: avg growth rates during 
+PermGroFac_base_h = [1.0 + 0.01812/4]  # working life for each education group 
+PermGroFac_base_c = [1.0 + 0.01958/4]
 
-# Define the permanent and transitory shocks 
-TranShkStd = [0.1]
-PermShkStd = [0.05]
+# # Define the permanent and transitory shocks 
+# TranShkStd = [0.1]
+# PermShkStd = [0.05]
+#From Sticky expectations paper: 
+TranShkStd = [0.12]
+PermShkStd = [0.003]
+
 Rfree_base = [1.01]
-
-LivPrb_base     = [1.0-1/240.0]
+LivPrb_base = [1.0-1/240.0]
 # find intial distribution of states
-vals, vecs = np.linalg.eig(np.transpose(MrkvArray_base[0]))
+vals, vecs = np.linalg.eig(np.transpose(MrkvArray_base[0])) #CONTINUE HERE! Check if needs
+#to be education specific or if it doesn't matter
 dist = np.abs(np.abs(vals) - 1.)
 idx = np.argmin(dist)
 init_mrkv_dist = vecs[:,idx].astype(float)/np.sum(vecs[:,idx].astype(float))
 
 
 # Define a parameter dictionary for dropout type
-init_dropout = {"cycles": 0,
+init_dropout = {"cycles": 0, # This will be overwritten at type construction
                 "T_cycle": T_cycle,
                 'T_sim': 400, #Simulate up to age 400
                 'T_age': None,
@@ -156,17 +169,17 @@ init_dropout = {"cycles": 0,
                 "CRRA": CRRA,
                 "DiscFac": 0.98, # This will be overwritten at type construction
                 "Rfree_base" : Rfree_base,
-                "PermGroFac_base": PermGroFac_base,
+                "PermGroFac_base": PermGroFac_base_d,
                 "LivPrb_base": LivPrb_base,
                 "Rfree" : np.array(num_base_MrkvStates*Rfree_base),
-                "PermGroFac": [np.array(PermGroFac_base*num_base_MrkvStates)],
+                "PermGroFac": [np.array(PermGroFac_base_d*num_base_MrkvStates)],
                 "LivPrb": [np.array(LivPrb_base*num_base_MrkvStates)],
                 "MrkvArray_base" : MrkvArray_base, 
                 "MacroMrkvArray_base" : MacroMrkvArray_base,
-                "CondMrkvArrays_base" : CondMrkvArrays_base,
-                "MrkvArray" : MrkvArray_base, 
+                "CondMrkvArrays_base" : CondMrkvArrays_base_d,
+                "MrkvArray" : MrkvArray_base_d, 
                 "MacroMrkvArray" : MacroMrkvArray_base,
-                "CondMrkvArrays" : CondMrkvArrays_base,
+                "CondMrkvArrays" : CondMrkvArrays_base_d,
                 "BoroCnstArt": 0.0,
                 "PermShkStd": PermShkStd,
                 "PermShkCount": PermShkCount,
@@ -187,7 +200,7 @@ init_dropout = {"cycles": 0,
                 'pLvlInitMean': pLvlInitMeanD,
                 'pLvlInitStd': pLvlInitStd,
                 "MrkvPrbsInit" : np.array(list(init_mrkv_dist)),
-                'Urate_normal' : Urate_normal,
+                'Urate_normal' : Urate_normal_d,
                 'Uspell_normal' : Uspell_normal,
                 'UBspell_normal' : UBspell_normal,
                 'num_base_MrkvStates' : num_base_MrkvStates,
@@ -198,13 +211,25 @@ init_dropout = {"cycles": 0,
                 }
 
 adj_highschool = {
+    "PermGroFac_base": PermGroFac_base_h,
+    "PermGroFac": [np.array(PermGroFac_base_h*num_base_MrkvStates)],
+    "CondMrkvArrays_base" : CondMrkvArrays_base_h,
+    "MrkvArray" : MrkvArray_base_h, 
+    "CondMrkvArrays" : CondMrkvArrays_base_h,
     'pLvlInitMean': pLvlInitMeanH,
+    'Urate_normal' : Urate_normal_h,
     'EducType' : 1}
 init_highschool = init_dropout.copy()
 init_highschool.update(adj_highschool)
 
 adj_college = {
+    "PermGroFac_base": PermGroFac_base_c,
+    "PermGroFac": [np.array(PermGroFac_base_c*num_base_MrkvStates)],
+    "CondMrkvArrays_base" : CondMrkvArrays_base_c,
+    "MrkvArray" : MrkvArray_base_c, 
+    "CondMrkvArrays" : CondMrkvArrays_base_c,
     'pLvlInitMean': pLvlInitMeanC,
+    'Urate_normal' : Urate_normal_c,
     'EducType' : 2}
 init_college = init_dropout.copy()
 init_college.update(adj_college)

@@ -282,9 +282,9 @@ def betasObjFunc(betas, spread, target_option=1, print_mode=False):
         lp_h = calcLorenzPts(TypeListNew[DiscFacCount:2*DiscFacCount])
         lp_c = calcLorenzPts(TypeListNew[2*DiscFacCount:3*DiscFacCount])
         
-        sumSquares += np.sum((np.array(lp_d)-data_LorenzPts[0])**2) 
-        sumSquares += np.sum((np.array(lp_h)-data_LorenzPts[1])**2) 
-        sumSquares += np.sum((np.array(lp_c)-data_LorenzPts[2])**2) 
+        sumSquares += np.sum((np.array(lp_d)-data_LorenzPts[0])**2)
+        sumSquares += np.sum((np.array(lp_h)-data_LorenzPts[1])**2)
+        sumSquares += np.sum((np.array(lp_c)-data_LorenzPts[2])**2)
     
     distance = np.sqrt(sumSquares)
 
@@ -311,7 +311,6 @@ def betasObjFunc(betas, spread, target_option=1, print_mode=False):
 
     return distance 
 # -----------------------------------------------------------------------------
-
 #%%
 # Test function (check that repeated calls yield same answer -> no difference due 
 # to random numbers generated)
