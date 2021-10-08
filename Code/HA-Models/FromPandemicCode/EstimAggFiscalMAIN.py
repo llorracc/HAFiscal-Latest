@@ -1,16 +1,6 @@
 '''
 This is the main script for estimating the discount factor distributions.
 '''
-from EstimParameters import T_sim, init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
-     DiscFacCount, AgentCountTotal, base_dict, figs_dir, num_max_iterations_solvingAD,\
-     convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
-     data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, data_EducShares, data_WealthShares,\
-     DiscFacInit, DiscFacSpread
-from EstimAggFiscalModel import AggFiscalType, AggregateDemandEconomy
-from HARK.distribution import DiscreteDistribution, Uniform
-from HARK import multiThreadCommands, multiThreadCommandsFake
-from HARK.utilities import getPercentiles, getLorenzShares
-from HARK.estimation import minimizeNelderMead
 from time import time
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,8 +8,18 @@ from copy import deepcopy
 from collections import namedtuple 
 import pickle
 import random 
+from HARK.distribution import DiscreteDistribution, Uniform
+from HARK import multiThreadCommands, multiThreadCommandsFake
+from HARK.utilities import getPercentiles, getLorenzShares
+from HARK.estimation import minimizeNelderMead
 from OtherFunctions import getSimulationDiff, getSimulationPercentDiff, getStimulus, getNPVMultiplier, \
                     saveAsPickleUnderVarName, loadPickle, namestr     
+from EstimParameters import T_sim, init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
+     DiscFacCount, AgentCountTotal, base_dict, figs_dir, num_max_iterations_solvingAD,\
+     convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
+     data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, data_EducShares, data_WealthShares,\
+     DiscFacInit, DiscFacSpread
+from EstimAggFiscalModel import AggFiscalType, AggregateDemandEconomy
 mystr = lambda x : '{:.2f}'.format(x)
 
 # -----------------------------------------------------------------------------
@@ -341,9 +341,8 @@ print('Finished estimating. Optimal betas are:')
 print(opt_params[0:3]) 
 print('Optimal spread = ' + str(opt_params[3]) )
 
-betasObjFunc(opt_params[0:3], opt_params[3], target_option = 2, print_mode=True)
+betasObjFunc(opt_params[0:3], opt_params[3], target_option = 1, print_mode=True)
 
 #%% Some stored results: 
 # Estimation 1: 
-opt_params = [0.9682, 0.9712, 0.9721, 0.02505]    
-              
+opt_params = [0.96825, 0.97116, 0.97213, 0.02505]    

@@ -68,10 +68,10 @@ IncUnemp = 0.3              # Unemployment benefits replacement rate (proportion
 IncUnempNoBenefits = 0.05   # Unemployment income when benefits run out (proportion of permanent income)
 
 # Parameters concerning the initial distribution of permanent income 
-pLvlInitMeanD = np.log(5.0)  # Average quarterly permanent income of "newborn" HS dropout ($1000)
-pLvlInitMeanH = np.log(7.5)  # Average quarterly permanent income of "newborn" HS graduate ($1000)
-pLvlInitMeanC = np.log(12.0) # Average quarterly permanent income of "newborn" HS  ($1000)
-pLvlInitStd = 0.4           # Standard deviation of initial log permanent income 
+pLvlInitMean_d = np.log(5.0)  # Average quarterly permanent income of "newborn" HS dropout ($1000)
+pLvlInitMean_h = np.log(7.5)  # Average quarterly permanent income of "newborn" HS graduate ($1000)
+pLvlInitMean_c = np.log(12.0) # Average quarterly permanent income of "newborn" HS  ($1000)
+pLvlInitStd = 0.4             # Standard deviation of initial log permanent income 
 
 # Parameters concerning grid sizes: assets, permanent income shocks, transitory income shocks
 aXtraMin = 0.001        # Lowest non-zero end-of-period assets above minimum gridpoint
@@ -150,13 +150,21 @@ PermShkStd = [0.003]
 
 Rfree_base = [1.01]
 LivPrb_base = [1.0-1/240.0]
-# find intial distribution of states
-vals, vecs = np.linalg.eig(np.transpose(MrkvArray_base[0])) #CONTINUE HERE! Check if needs
-#to be education specific or if it doesn't matter
-dist = np.abs(np.abs(vals) - 1.)
-idx = np.argmin(dist)
-init_mrkv_dist = vecs[:,idx].astype(float)/np.sum(vecs[:,idx].astype(float))
+# find intial distribution of states for each education type
+vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
+dist_d = np.abs(np.abs(vals_d) - 1.)
+idx_d = np.argmin(dist_d)
+init_mrkv_dist_d = vecs_d[:,idx_d].astype(float)/np.sum(vecs_d[:,idx_d].astype(float))
 
+vals_h, vecs_h = np.linalg.eig(np.transpose(MrkvArray_base_h[0])) 
+dist_h = np.abs(np.abs(vals_h) - 1.)
+idx_h = np.argmin(dist_h)
+init_mrkv_dist_h = vecs_h[:,idx_h].astype(float)/np.sum(vecs_h[:,idx_h].astype(float))
+
+vals_c, vecs_c = np.linalg.eig(np.transpose(MrkvArray_base_c[0])) 
+dist_c = np.abs(np.abs(vals_c) - 1.)
+idx_c = np.argmin(dist_c)
+init_mrkv_dist_c = vecs_c[:,idx_c].astype(float)/np.sum(vecs_c[:,idx_c].astype(float))
 
 # Define a parameter dictionary for dropout type
 init_dropout = {"cycles": 0, # This will be overwritten at type construction
@@ -174,7 +182,7 @@ init_dropout = {"cycles": 0, # This will be overwritten at type construction
                 "Rfree" : np.array(num_base_MrkvStates*Rfree_base),
                 "PermGroFac": [np.array(PermGroFac_base_d*num_base_MrkvStates)],
                 "LivPrb": [np.array(LivPrb_base*num_base_MrkvStates)],
-                "MrkvArray_base" : MrkvArray_base, 
+                "MrkvArray_base" : MrkvArray_base_d, 
                 "MacroMrkvArray_base" : MacroMrkvArray_base,
                 "CondMrkvArrays_base" : CondMrkvArrays_base_d,
                 "MrkvArray" : MrkvArray_base_d, 
@@ -197,9 +205,9 @@ init_dropout = {"cycles": 0, # This will be overwritten at type construction
                 "vFuncBool": False,
                 'aNrmInitMean': np.log(0.00001), # Initial assets are zero
                 'aNrmInitStd': 0.0,
-                'pLvlInitMean': pLvlInitMeanD,
+                'pLvlInitMean': pLvlInitMean_d,
                 'pLvlInitStd': pLvlInitStd,
-                "MrkvPrbsInit" : np.array(list(init_mrkv_dist)),
+                "MrkvPrbsInit" : np.array(list(init_mrkv_dist_d)),
                 'Urate_normal' : Urate_normal_d,
                 'Uspell_normal' : Uspell_normal,
                 'UBspell_normal' : UBspell_normal,
@@ -213,10 +221,12 @@ init_dropout = {"cycles": 0, # This will be overwritten at type construction
 adj_highschool = {
     "PermGroFac_base": PermGroFac_base_h,
     "PermGroFac": [np.array(PermGroFac_base_h*num_base_MrkvStates)],
+    "MrkvArray_base" : MrkvArray_base_h, 
     "CondMrkvArrays_base" : CondMrkvArrays_base_h,
     "MrkvArray" : MrkvArray_base_h, 
     "CondMrkvArrays" : CondMrkvArrays_base_h,
-    'pLvlInitMean': pLvlInitMeanH,
+    'pLvlInitMean': pLvlInitMean_h,
+    "MrkvPrbsInit" : np.array(list(init_mrkv_dist_h)),
     'Urate_normal' : Urate_normal_h,
     'EducType' : 1}
 init_highschool = init_dropout.copy()
@@ -225,10 +235,12 @@ init_highschool.update(adj_highschool)
 adj_college = {
     "PermGroFac_base": PermGroFac_base_c,
     "PermGroFac": [np.array(PermGroFac_base_c*num_base_MrkvStates)],
+    "MrkvArray_base" : MrkvArray_base_c, 
     "CondMrkvArrays_base" : CondMrkvArrays_base_c,
     "MrkvArray" : MrkvArray_base_c, 
     "CondMrkvArrays" : CondMrkvArrays_base_c,
-    'pLvlInitMean': pLvlInitMeanC,
+    'pLvlInitMean': pLvlInitMean_c,
+    "MrkvPrbsInit" : np.array(list(init_mrkv_dist_c)),
     'Urate_normal' : Urate_normal_c,
     'EducType' : 2}
 init_college = init_dropout.copy()
@@ -259,9 +271,9 @@ init_ADEconomy = {'intercept_prev': intercept_prev,
                      'ADelasticity' : 0.0,
                      'demand_ADelasticity' : ADelasticity,
                      'Cfunc_iter_stepsize' : Cfunc_iter_stepsize,
-                     'MrkvArray' : MrkvArray_base,
+                     'MrkvArray' : MrkvArray_base_h,
                      'num_base_MrkvStates' : num_base_MrkvStates,
-                     "MrkvArray_base" : MrkvArray_base, 
+                     "MrkvArray_base" : MrkvArray_base_h, 
                      'CgridBase' : CgridBase,
                      'EconomyMrkvNow_init': 0,
                      'act_T' : 400
