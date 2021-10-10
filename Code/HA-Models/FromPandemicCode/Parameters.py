@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/FullRun_June7th/'
+figs_dir = './Figures/Test/'
 
 try:
     os.mkdir(figs_dir)
@@ -104,7 +104,7 @@ TranShkCount = 7        # Number of points in equiprobable discrete approximatio
 
 
 # Size of simulations
-AgentCountTotal = 2000  # Total simulated population
+AgentCountTotal = 200   # Total simulated population
 T_sim = 80              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
@@ -119,8 +119,8 @@ T_cycle = 1
 CgridBase = np.array([0.8, 1.0, 1.2])  
 
 num_base_MrkvStates = 2 + UBspell_normal #employed, unemployed with 2 quarters benefits, unemployed with 1 quarter benefit, unemployed no benefits
-num_experiment_periods = 20
-max_recession_duration = 21
+num_experiment_periods = 10
+max_recession_duration = 11
 
 def makeMacroMrkvArray_recession(Rspell, num_experiment_periods):
     R_persist = 1.-1./Rspell
@@ -248,7 +248,7 @@ init_dropout = {"cycles": 0, # This will be overwritten at type construction
                 "T_cycle": T_cycle,
                 'T_sim': 400, #Simulate up to age 400
                 'T_age': None,
-                'AgentCount': 10000,
+                'AgentCount': 200,
                 "PermGroFacAgg": PermGroFacAgg,
                 "PopGroFac": PopGroFac,
                 "CRRA": CRRA,
@@ -350,8 +350,6 @@ adj_college = {
 init_college = init_dropout.copy()
 init_college.update(adj_college)
 
-if R_shared:
-    init_infhorizon['T_recession'] = int(Rspell)
     
 # Population share of each type (at present only one type)    
 TypeShares = [1.0]

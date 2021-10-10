@@ -151,7 +151,7 @@ if __name__ == '__main__':
         for t in range(max_recession_duration):
             dictt['EconomyMrkv_init'] = list(np.arange(1,AggDemandEconomy.num_experiment_periods+1)*2) + [0]*20 
             dictt['EconomyMrkv_init'][0:t+1] = np.array(dictt['EconomyMrkv_init'][0:t+1]) +1
-            #print(dictt['EconomyMrkv_init'])
+            print(dictt['EconomyMrkv_init'])
             this_result = AggDemandEconomy.runExperiment(**dictt, Full_Output = False)
             all_results += [this_result]
         for key in output_keys:
