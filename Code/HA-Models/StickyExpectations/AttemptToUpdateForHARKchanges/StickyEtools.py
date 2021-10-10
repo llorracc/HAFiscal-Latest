@@ -199,6 +199,8 @@ def runTaxCutExperiment(BaseEconomy,T_after,num_agg_sims = 20):
     cLvl_StickyNone = np.zeros(T_after)
     cLvl_FrictionlessTaxCut = np.zeros(T_after)
     cLvl_FrictionlessNone = np.zeros(T_after)
+    pLvlend = np.zeros((4,T_after))
+    mrkvend = np.zeros((4,T_after))
     for agent in BaseEconomy.agents:
         agent.pLvlNow_start = agent.pLvlNow
         agent.pLvlTrue_start = agent.pLvlTrue
@@ -217,7 +219,7 @@ def runTaxCutExperiment(BaseEconomy,T_after,num_agg_sims = 20):
             for agent in Economy.agents:
                 agent(UpdatePrb = 1.0)
         for n in range(num_agg_sims):
-            Economy.Shk_idx = 0
+            Economy.Shk_idx = 0         
             for agent in Economy.agents:
                 agent.pLvlNow = agent.pLvlNow_start
                 agent.pLvlTrue = agent.pLvlTrue_start
@@ -238,17 +240,19 @@ def runTaxCutExperiment(BaseEconomy,T_after,num_agg_sims = 20):
                 cutoffs = np.cumsum(Economy.MrkvArray, axis=1)
                 MrkvNow = Economy.MrkvNow_init
                 t = 0
-                draws = Uniform().draw(N=T_after, seed=75+n)
+                draws = Uniform(seed=75+n).draw(N=T_after)
                 for t in range(draws.size):  # Add act_T_orig more periods
                     MrkvNow_hist[t] = MrkvNow
                     MrkvNow = np.searchsorted(cutoffs[MrkvNow, :], draws[t])
                 Economy.MrkvNow_hist = MrkvNow_hist
 
                 Economy.makeAggShkHist_fixMrkv()
-            for n in range(len(Economy.agents)):
-                Economy.agents[n].getEconomyData(Economy) # Have the consumers inherit relevant objects from the economy
+            for k in range(len(Economy.agents)):
+                Economy.agents[k].getEconomyData(Economy) # Have the consumers inherit relevant objects from the economy
     
             this_cLvl = Economy.runTaxCutExperiment(T_after)
+#            pLvlend[i,:] = plvl
+#            mrkvend[i,:] = mrkv
 
             if i==0:
                 cLvl_StickyNone += this_cLvl/num_agg_sims
@@ -258,6 +262,14 @@ def runTaxCutExperiment(BaseEconomy,T_after,num_agg_sims = 20):
                 cLvl_FrictionlessNone += this_cLvl/num_agg_sims
             if i==3:
                 cLvl_FrictionlessTaxCut += this_cLvl/num_agg_sims
+                
+    plt.plot(cLvl_StickyNone)
+    plt.plot(cLvl_StickyTaxCut)
+    plt.show()
+    
+    plt.plot(cLvl_FrictionlessNone)
+    plt.plot(cLvl_FrictionlessTaxCut)
+    plt.show()
             
         
     return cLvl_StickyTaxCut, cLvl_StickyNone, cLvl_FrictionlessTaxCut, cLvl_FrictionlessNone

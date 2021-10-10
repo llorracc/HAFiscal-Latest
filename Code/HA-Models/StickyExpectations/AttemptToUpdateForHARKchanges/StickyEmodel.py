@@ -133,8 +133,8 @@ class StickyEconsumerType(AggShockConsumerType):
         # AggShockMarkovConsumerType respectively.  This will be simplified in Python 3.
         super(self.__class__,self).getShocks() # Get permanent and transitory combined shocks
         newborns = self.t_age == 0
-        self.TranShkNow[newborns] = self.TranShkAggNow*self.wRteNow # Turn off idiosyncratic shocks for newborns
-        self.PermShkNow[newborns] = self.PermShkAggNow
+        self.shocks['TranShkNow'][newborns] = self.TranShkAggNow*self.wRteNow # Turn off idiosyncratic shocks for newborns
+        self.shocks['PermShkNow'][newborns] = self.PermShkAggNow
         self.getUpdaters() # Randomly draw which agents will update their beliefs
 
         # Calculate innovation to the productivity level perception error
@@ -142,10 +142,10 @@ class StickyEconsumerType(AggShockConsumerType):
         self.pLvlErrNow *= pLvlErrNew # Perception error accumulation
 
         # Calculate (mis)perceptions of the permanent shock
-        PermShkPcvd = self.PermShkNow/pLvlErrNew
+        PermShkPcvd = self.shocks['PermShkNow']/pLvlErrNew
         PermShkPcvd[self.update] *= self.pLvlErrNow[self.update] # Updaters see the true permanent shock and all missed news
         self.pLvlErrNow[self.update] = 1.0
-        self.PermShkNow = PermShkPcvd
+        self.shocks['PermShkNow'] = PermShkPcvd
         
         # The block of code below will only ever activate during an experiment about the MPC
         # from the arrival of a transitory shock that can be foreseen and borrowed against
@@ -160,9 +160,9 @@ class StickyEconsumerType(AggShockConsumerType):
                 noticers = np.logical_and(self.update, np.logical_not(self.noticed)) 
             else: # Everyone notices when bonus check actually arrives
                 noticers = np.logical_not(self.noticed) 
-            BonusNrm = np.zeros_like(self.TranShkNow)
-            BonusNrm[noticers] = self.BonusLvl/(self.pLvlNow[noticers]*self.PermShkNow[noticers])
-            self.TranShkNow += BonusNrm*self.getRfree()**(-self.t_until_bonus)
+            BonusNrm = np.zeros_like(self.shocks['TranShkNow'])
+            BonusNrm[noticers] = self.BonusLvl/(self.pLvlNow[noticers]*self.shocks['PermShkNow'][noticers])
+            self.shocks['TranShkNow'] += BonusNrm*self.getRfree()**(-self.t_until_bonus)
             # Agents who notice the check perceive it as a transitory shock to their income,
             # normalized by their perception of their permanent income and discounted by
             # the interest factor T periods ahead.
@@ -186,7 +186,7 @@ class StickyEconsumerType(AggShockConsumerType):
         '''
         # Update consumers' perception of their permanent income level
         pLvlPrev = self.pLvlNow
-        self.pLvlNow = pLvlPrev*self.PermShkNow # Perceived permanent income level (only correct if macro state is observed this period)
+        self.pLvlNow = pLvlPrev*self.shocks['PermShkNow'] # Perceived permanent income level (only correct if macro state is observed this period)
         self.PlvlAggNow *= self.PermShkAggNow # Updated aggregate permanent productivity level
         self.pLvlTrue = self.pLvlNow*self.pLvlErrNow
 
@@ -194,7 +194,7 @@ class StickyEconsumerType(AggShockConsumerType):
         RfreeNow = self.getRfree()
         bLvlNow = RfreeNow*self.aLvlNow # This is the true level
 
-        yLvlNow = self.pLvlTrue*self.TranShkNow # This is true income level
+        yLvlNow = self.pLvlTrue*self.shocks['TranShkNow'] # This is true income level
         mLvlTrueNow = bLvlNow + yLvlNow # This is true market resource level
         mNrmPcvdNow = mLvlTrueNow/self.pLvlNow # This is perceived normalized resources
         self.mNrmNow = mNrmPcvdNow
@@ -412,7 +412,8 @@ class StickySmallOpenMarkovEconomy(SmallOpenMarkovEconomy):
         PermShkAggHistAll = np.zeros((StateCount, sim_periods))
         TranShkAggHistAll = np.zeros((StateCount, sim_periods))
         for i in range(StateCount):
-            AggShockDraws = self.AggShkDstn[i].drawDiscrete(N=sim_periods, seed=0)
+            #self.AggShkDstn[i].reset()
+            AggShockDraws = self.AggShkDstn[i].drawDiscrete(N=sim_periods)
             PermShkAggHistAll[i, :] = AggShockDraws[0,:]
             TranShkAggHistAll[i, :] = AggShockDraws[1,:]
 

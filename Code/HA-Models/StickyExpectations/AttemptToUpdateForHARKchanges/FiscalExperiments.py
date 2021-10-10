@@ -109,7 +109,7 @@ if __name__ == '__main__':
                 plt.show()
     #       Run the "Tax Cut experiment"
             if run_tax_cut:
-                num_agg_sims =100
+                num_agg_sims =1
                 T_after = 40
                 t_start = time()
                 cLvl_StickyTaxCut, cLvl_StickyNone, cLvl_FrictionlessTaxCut, cLvl_FrictionlessNone = runTaxCutExperiment(StickySOmarkovEconomy,T_after=T_after,num_agg_sims=num_agg_sims) 

@@ -35,6 +35,10 @@ TranShkVarAnn = importParam('TranShkVarAnn') # Annual variance of idiosyncratic 
 PermShkVarAnn = importParam('PermShkVarAnn') # Annual variance of idiosyncratic permanent shocks
 TranShkAggVar = importParam('TranShkAggVar') # Variance of aggregate transitory shocks
 PermShkAggVar = importParam('PermShkAggVar') # Variance of aggregate permanent shocks
+
+TranShkAggVar = 0.000000000001 # Variance of aggregate transitory shocks
+PermShkAggVar = 0.000000000001 # Variance of aggregate permanent shocks
+
 DiscFacSOE = importParam('betaSOE')          # Discount factor, SOE model
 
 # Calculate parameters based on the primitive parameters
