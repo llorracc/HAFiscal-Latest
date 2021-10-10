@@ -19,9 +19,9 @@ else:
 # Targets in the estimation of the discount factor distributions for each 
 # education level. 
 # From SCF 2004: [20,40,60,80]-percentiles of the Lorenz curve for liquid wealth
-data_LorenzPts_d = [0, 0.01, 0.60, 3.58]    # \
-data_LorenzPts_h = [0.06, 0.63, 2.98, 11.6] # -> units: % 
-data_LorenzPts_c = [0.15, 0.92, 3.27, 10.3] # /
+data_LorenzPts_d = np.array([0, 0.01, 0.60, 3.58])    # \
+data_LorenzPts_h = np.array([0.06, 0.63, 2.98, 11.6]) # -> units: % 
+data_LorenzPts_c = np.array([0.15, 0.92, 3.27, 10.3]) # /
 data_LorenzPts = [data_LorenzPts_d, data_LorenzPts_h, data_LorenzPts_c]
 data_LorenzPtsAll = np.array([0.03, 0.35, 1.84, 7.42])
 # From SCF 2004: Average liquid wealth to permanent income ratio 
@@ -36,11 +36,11 @@ data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total we
 
 # Parameters concerning the distribution of discount factors
 # Initial values for estimation, taken from pandemic paperCondMrkvArrays_base
-DiscFacMeanD = 0.9637   # Mean intertemporal discount factor for dropout types
-DiscFacMeanH = 0.9705   # Mean intertemporal discount factor for high school types
-DiscFacMeanC = 0.97557  # Mean intertemporal discount factor for college types
+DiscFacMeanD = 0.9647   # Mean intertemporal discount factor for dropout types
+DiscFacMeanH = 0.9727   # Mean intertemporal discount factor for high school types
+DiscFacMeanC = 0.9740  # Mean intertemporal discount factor for college types
 DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
-DiscFacSpread = 0.0253  # Half-width of uniform distribution of discount factors
+DiscFacSpread = 0.0260  # Half-width of uniform distribution of discount factors
 
 # Define the distribution of the discount factor for each eduation level
 DiscFacCount = 7

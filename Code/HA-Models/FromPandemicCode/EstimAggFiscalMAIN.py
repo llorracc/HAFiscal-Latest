@@ -196,7 +196,7 @@ output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
 
 #%% 
 # -----------------------------------------------------------------------------
-def betasObjFunc(betas, spread, target_option=1, print_mode=False):
+def betasObjFunc(betas, spreads, target_option=1, print_mode=False):
     '''
     Objective function for the estimation of discount factor distributions for the 
     three education groups. The groups differ in the centering of their discount 
@@ -225,11 +225,12 @@ def betasObjFunc(betas, spread, target_option=1, print_mode=False):
     # random.seed(1234)
 
     beta_d, beta_h, beta_c = betas
+    spread_d, spread_h, spread_c = spreads
 
     # # Overwrite the discount factor distribution for each education level with new values
-    dfs_d = Uniform(beta_d-spread, beta_d+spread).approx(DiscFacCount)
-    dfs_h = Uniform(beta_h-spread, beta_h+spread).approx(DiscFacCount)
-    dfs_c = Uniform(beta_c-spread, beta_c+spread).approx(DiscFacCount)
+    dfs_d = Uniform(beta_d-spread_d, beta_d+spread_d).approx(DiscFacCount)
+    dfs_h = Uniform(beta_h-spread_h, beta_h+spread_h).approx(DiscFacCount)
+    dfs_c = Uniform(beta_c-spread_c, beta_c+spread_c).approx(DiscFacCount)
     dfs = [dfs_d, dfs_h, dfs_c]
 
     # # Update discount factors of all agents 
@@ -273,18 +274,18 @@ def betasObjFunc(betas, spread, target_option=1, print_mode=False):
     
     Stats = calcEstimStats(TypeListNew)
     
-    sumSquares = 10*np.sum((np.array(Stats.avgLWPI)-data_avgLWPI)**2)
+    sumSquares = np.sum((np.array(Stats.avgLWPI)-data_avgLWPI)**2)
     
     if target_option == 1:
-        sumSquares += np.sum((np.array(Stats.LorenzPts) - data_LorenzPtsAll)**2)
+        sumSquares += np.sum((np.array(10*Stats.LorenzPts) - 10*data_LorenzPtsAll)**2)
     elif target_option == 2:
         lp_d = calcLorenzPts(TypeListNew[0:DiscFacCount])
         lp_h = calcLorenzPts(TypeListNew[DiscFacCount:2*DiscFacCount])
         lp_c = calcLorenzPts(TypeListNew[2*DiscFacCount:3*DiscFacCount])
         
-        sumSquares += np.sum((np.array(lp_d)-data_LorenzPts[0])**2)
-        sumSquares += np.sum((np.array(lp_h)-data_LorenzPts[1])**2)
-        sumSquares += np.sum((np.array(lp_c)-data_LorenzPts[2])**2)
+        sumSquares += np.sum((10*np.array(lp_d)-10*data_LorenzPts[0])**2)
+        sumSquares += np.sum((10*np.array(lp_h)-10*data_LorenzPts[1])**2)
+        sumSquares += np.sum((10*np.array(lp_c)-10*data_LorenzPts[2])**2)
     
     distance = np.sqrt(sumSquares)
 
@@ -332,7 +333,7 @@ betasObjFunc([0.90, 0.94, 0.98], 0.015, print_mode=True)
 #%%
 # Estimate discount factor distributions 
 
-f_temp = lambda x : betasObjFunc(x[0:3],x[3], target_option=2)
+f_temp = lambda x : betasObjFunc(x[0:3],x[3], target_option=1)
 initValues = deepcopy(DiscFacInit)
 initValues.append(DiscFacSpread)
 opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
@@ -341,8 +342,25 @@ print('Finished estimating. Optimal betas are:')
 print(opt_params[0:3]) 
 print('Optimal spread = ' + str(opt_params[3]) )
 
-betasObjFunc(opt_params[0:3], opt_params[3], target_option = 1, print_mode=True)
+betasObjFunc(opt_params[0:3], opt_params[3], target_option = 2, print_mode=True)
+#%%
+# Estimate discount factor distributions with separate spreads
+
+f_temp = lambda x : betasObjFunc(x[0:3],x[3:6], target_option=2)
+initValues = deepcopy(DiscFacInit)
+initValues.append(DiscFacSpread)
+initValues.append(DiscFacSpread)
+initValues.append(DiscFacSpread)
+opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
+
+print('Finished estimating. Optimal betas are:')
+print(opt_params[0:3]) 
+print('Optimal spreads are:')
+print(opt_params[3:6])
+betasObjFunc(opt_params[0:3], opt_params[3:6], target_option = 2, print_mode=True)
 
 #%% Some stored results: 
 # Estimation 1: 
 opt_params = [0.96825, 0.97116, 0.97213, 0.02505]    
+# Estimation 2: 
+opt_params = [0.96971, 0.98628, 0.98764, 0.00981]
