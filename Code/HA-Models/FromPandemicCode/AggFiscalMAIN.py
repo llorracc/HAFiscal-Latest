@@ -1,10 +1,17 @@
 '''
 This is the main script for the paper
 '''
-from Parameters import T_sim, init_infhorizon, init_ADEconomy, DiscFacDstns,\
-     AgentCountTotal, TypeShares, base_dict, recession_changes, sticky_e_changes,\
-     UI_changes, recession_UI_changes, TaxCut_changes, recession_TaxCut_changes,\
-     recession_Check_changes, figs_dir, num_max_iterations_solvingAD, convergence_tol_solvingAD
+from Parameters import T_sim, init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
+     DiscFacCount, AgentCountTotal, base_dict, figs_dir, num_max_iterations_solvingAD,\
+     convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
+     data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, data_EducShares, data_WealthShares,\
+     DiscFacInit, DiscFacSpread,\
+     max_recession_duration, num_experiment_periods,\
+     recession_changes, sticky_e_changes, UI_changes, recession_UI_changes,\
+     TaxCut_changes, recession_TaxCut_changes,recession_Check_changes
+         
+     # init_infhorizon, TypeShares, \
+     
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 from HARK.distribution import DiscreteDistribution
 from time import time
@@ -19,16 +26,16 @@ mystr = lambda x : '{:.2f}'.format(x)
 ## Which experiments to run / plots to show
 Run_Baseline            = True
 Run_Recession           = True
-Run_Check_Recession     = True
-Run_UB_Ext_Recession    = True
-Run_TaxCut_Recession    = True
+Run_Check_Recession     = False
+Run_UB_Ext_Recession    = False
+Run_TaxCut_Recession    = False
 
-Run_AD                  = True
+Run_AD                  = False
 Run_1stRoundAD          = False
-Run_NonAD               = False #whether to run nonAD experiments as well
+Run_NonAD               = True #whether to run nonAD experiments as well
 
 
-Make_Plots              = True
+Make_Plots              = False
 
 
 #%% 
@@ -37,8 +44,91 @@ if __name__ == '__main__':
         
     
     # Setting up AggDemandEconmy
-    from setupEconomy import AggDemandEconomy, base_dict_agg, max_recession_duration, output_keys, recession_prob_array
+    
+    #%% 
+    # Make education types
+    num_types = 3
+    # This is not the number of discount factors, but the number of household types
+    
+    InfHorizonTypeAgg_d = AggFiscalType(**init_dropout)
+    InfHorizonTypeAgg_d.cycles = 0
+    InfHorizonTypeAgg_h = AggFiscalType(**init_highschool)
+    InfHorizonTypeAgg_h.cycles = 0
+    InfHorizonTypeAgg_c = AggFiscalType(**init_college)
+    InfHorizonTypeAgg_c.cycles = 0
+    AggDemandEconomy = AggregateDemandEconomy(**init_ADEconomy)
+    InfHorizonTypeAgg_d.getEconomyData(AggDemandEconomy)
+    InfHorizonTypeAgg_h.getEconomyData(AggDemandEconomy)
+    InfHorizonTypeAgg_c.getEconomyData(AggDemandEconomy)
+    BaseTypeList = [InfHorizonTypeAgg_d, InfHorizonTypeAgg_h, InfHorizonTypeAgg_c ]
+          
+    # Fill in the Markov income distribution for each base type
+    # NOTE: THIS ASSUMES NO LIFECYCLE
+    IncomeDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg_d.IncUnemp])])
+    IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg_d.IncUnempNoBenefits])])
         
+    for ThisType in BaseTypeList:
+        EmployedIncomeDstn = deepcopy(ThisType.IncomeDstn[0])
+        ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0]] + [IncomeDstn_unemp]*UBspell_normal + [IncomeDstn_unemp_nobenefits] 
+        ThisType.IncomeDstn_base = ThisType.IncomeDstn
+        
+        IncomeDstn_recession = [ThisType.IncomeDstn[0]*(2*(num_experiment_periods+1))] # for normal, rec, recovery  
+        ThisType.IncomeDstn_recession = IncomeDstn_recession
+        ThisType.IncomeDstn_recessionUI = IncomeDstn_recession
+        
+        EmployedIncomeDstn.X[1] = EmployedIncomeDstn.X[1]*ThisType.TaxCutIncFactor
+        TaxCutStatesIncomeDstn = [EmployedIncomeDstn] + [IncomeDstn_unemp]*UBspell_normal + [IncomeDstn_unemp_nobenefits] 
+        IncomeDstn_recessionTaxCut = deepcopy(IncomeDstn_recession)
+        # Tax states are 2,3 (q1) 4,5 (q2) ... 16,17 (q8)
+        for i in range(2*num_base_MrkvStates,18*num_base_MrkvStates,1):
+            IncomeDstn_recessionTaxCut[0][i] =  TaxCutStatesIncomeDstn[np.mod(i,4)]
+        ThisType.IncomeDstn_recessionTaxCut = IncomeDstn_recessionTaxCut
+        
+        ThisType.IncomeDstn_recessionCheck = deepcopy(IncomeDstn_recession)
+    
+
+        
+    # Make the overall list of types
+    TypeList = []
+    n = 0
+    for e in range(num_types):
+        for b in range(DiscFacCount):
+            DiscFac = DiscFacDstns[e].X[b]
+            AgentCount = int(np.floor(AgentCountTotal*data_EducShares[e]*DiscFacDstns[e].pmf[b]))
+            ThisType = deepcopy(BaseTypeList[e])
+            ThisType.AgentCount = AgentCount
+            ThisType.DiscFac = DiscFac
+            ThisType.seed = n
+            TypeList.append(ThisType)
+            n += 1
+    #base_dict['Agents'] = TypeList    
+    
+    AggDemandEconomy.agents = TypeList
+    AggDemandEconomy.solve()
+    
+    AggDemandEconomy.reset()
+    for agent in AggDemandEconomy.agents:
+        agent.initializeSim()
+        agent.AggDemandFac = 1.0
+        agent.RfreeNow = 1.0
+        agent.CaggNow = 1.0
+    
+    AggDemandEconomy.makeHistory()   
+    AggDemandEconomy.saveState()   
+    AggDemandEconomy.switchToCounterfactualMode("base")
+    AggDemandEconomy.makeIdiosyncraticShockHistories()
+    
+    output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
+    
+    
+    base_dict_agg = deepcopy(base_dict)
+    
+    Rspell = AggDemandEconomy.agents[0].Rspell #NOTE - this should come from the market, not the agent
+    R_persist = 1.-1./Rspell
+    recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
+    recession_prob_array[-1] = 1.0 - np.sum(recession_prob_array[:-1])
+    
+       
         
     if Run_Baseline:   
         # Run the baseline consumption level

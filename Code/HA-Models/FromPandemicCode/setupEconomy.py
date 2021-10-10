@@ -11,7 +11,7 @@ from copy import deepcopy
 base_dict_agg = deepcopy(base_dict)
     
 # Make baseline types - for now only one type, might add more
-num_types = 1 
+num_types = 3 
 # This is not the number of discount factors, but the number of household types; in pandemic paper, there were different education groups
 InfHorizonTypeAgg = AggFiscalType(**init_infhorizon)
 InfHorizonTypeAgg.cycles = 0
