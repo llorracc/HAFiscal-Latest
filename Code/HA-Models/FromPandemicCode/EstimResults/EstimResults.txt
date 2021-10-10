@@ -1,3 +1,7 @@
+This file contains results of estimations conducted after calibrating the
+differences between the three education groups. 
+----------------------------------------------------------------------
+
 Potential estimation targets in the data: 
 Lorenz Pts from the whole population: 
 data_LorenzPtsAll = [0.03, 0.35, 1.84, 7.42]
@@ -14,87 +18,72 @@ data_LWoPI = [28.1, 59.6, 162]*4 = [112.4, 238.4, 648]
 Wealth shares of each education group: 
 data_WealthShares = [0.8, 17.9, 81.2] 
 ----------------------------------------------------------------------
-Estimation 1: Targets are 10*data_avgLWPI 
-			  and data_LorenzPtsAll 
+Estimation 1: Targets are sqrt(10)*data_avgLWPI and data_LorenzPtsAll 
 
 Estimation output: 
-IOStream.flush timed out
 Optimization terminated successfully.
-         Current function value: 5.125111
-         Iterations: 161
-         Function evaluations: 281
-Time to estimate is 48447.655017375946 seconds.
+         Current function value: 4.746567
+         Iterations: 151
+         Function evaluations: 272
+Time to estimate is 47933.70352888107 seconds.
 Finished estimating. Optimal betas are:
-[0.96824847 0.97116348 0.97212968]
-Optimal spread = 0.02504764739859531
+[0.96470921 0.97272694 0.97400212]
+Optimal spread = 0.02600516351124062
 
-betasObjFunc(opt_params[0:3], opt_params[3], print_mode=True)
-Out[32]: 5.125111394854976
-
+Average LW/PI-ratios: D = 62.80 H = 190.80 C = 444.00
 Lorenz shares (for all agents):
-[ 0.38869435  1.74595722  4.66836645 11.44334347]
-Average LW/PI-ratios: D = 62.79 H = 190.81 C = 444.01
-Distance = 5.13
-Total LW/Total PI (not targeted): D = 59.32 H = 148.58 C = 303.33
-Wealth Shares (not targeted): D = 1.43 H = 29.86 C = 68.71
+[0.07924111 0.35813835 0.99733318 2.74910903]
+
+Distance = 4.75
+Total LW/Total PI (not targeted): D = 64.47 H = 279.01 C = 764.31
+Wealth Shares (not targeted): D = 0.35 H = 20.94 C = 78.71
 Lorenz Pts by education groups (not targeted): 
-Dropouts: [1.28, 5.75, 15.1, 34.4] 
-Highschool: [0.61, 2.74, 7.22, 17.5] 
-College: [0.34, 1.44, 3.77, 9.26] 
-
-----------------------------------------------------------------------
-Estimation 2: Targets are 10*data_avgLWPI 
-			  and data_LorenzPts_d, data_LorenzPts_h, data_LorenzPts_c
-			  
-Estimation output: 
-Optimization terminated successfully.
-         Current function value: 35.356513
-         Iterations: 148
-         Function evaluations: 274
-Time to estimate is 47205.2122862339 seconds.
-Finished estimating. Optimal betas are:
-[0.96834121 0.97116984 0.97213575]
-Optimal spread = 0.025040527447208673
-Average LW/PI-ratios: D = 63.48 H = 190.86 C = 444.01
-Lorenz shares - all:
-[ 0.38916724  1.74753965  4.67209604 11.45240517]
 Lorenz shares - Dropouts:
-[ 1.27797012  5.72264391 15.08430722 34.27016549]
+[ 1.87401853  6.87258716 16.06083381 33.33123142]
 Lorenz shares - Highschool:
-[ 0.60906085  2.73970515  7.2167368  17.52340521]
+[0.18985144 0.85327649 2.34774776 6.36591847]
 Lorenz shares - College:
-[0.3361664  1.43658086 3.7760634  9.25840195]
-Distance = 35.36
-Total LW/Total PI: D = 59.92 H = 148.62 C = 303.34
-Wealth Shares: D = 1.45 H = 29.86 C = 68.70
-Out[67]: 35.35651251685335
+[0.04424481 0.21596283 0.64217357 1.9476428 ]
 
 ----------------------------------------------------------------------
-Estimation 3: Targets are data_avgLWPI 
-			  and data_LorenzPts_d, data_LorenzPts_h, data_LorenzPts_c
+Estimation 2: Targets are data_avgLWPI and 10*data_LorenzPts_all
 
 Estimation output: 
 Optimization terminated successfully.
-         Current function value: 34.751587
-         Iterations: 152
-         Function evaluations: 269
-Time to estimate is 46161.54178595543 seconds.
+         Current function value: 13.893983
+         Iterations: 221
+         Function evaluations: 372
+Time to estimate is 65776.44566106796 seconds.
 Finished estimating. Optimal betas are:
-[0.96904308 0.97122494 0.97218815]
-Optimal spread = 0.02497879700062602
-Average LW/PI-ratios: D = 69.70 H = 191.35 C = 443.96
+[0.96970922 0.98627515 0.98764118]
+Optimal spread = 0.009814700349617081
+
+Average LW/PI-ratios: D = 62.49 H = 190.93 C = 443.98
 Lorenz shares - all:
-[ 0.39290518  1.75993439  4.7017999  11.52771827]
+[0.30927035 1.1297018  2.79372251 6.84224727]
+
 Lorenz shares - Dropouts:
-[ 1.23685878  5.49423593 14.49060749 33.17075752]
+[ 2.86385901  9.3437759  19.85049497 37.7024808 ]
 Lorenz shares - Highschool:
-[ 0.61094944  2.74488782  7.2257298  17.53407987]
+[ 0.87779605  3.02711773  7.080437   16.24788507]
 Lorenz shares - College:
-[0.33788549 1.44242345 3.78912792 9.28419664]
-Distance = 34.75
-Total LW/Total PI: D = 65.19 H = 148.96 C = 303.35
-Wealth Shares: D = 1.57 H = 29.87 C = 68.56
-Out[95]: 34.75158733490491
+[0.24027768 0.86084178 2.13929076 5.53196442]
+Distance = 41.22
+Total LW/Total PI: D = 63.74 H = 239.17 C = 711.33
+Wealth Shares: D = 0.38 H = 19.60 C = 80.02
+
+
+----------------------------------------------------------------------
+Estimation : Targets are data_avgLWPI 
+			  and 10*data_LorenzPts_d, 10*data_LorenzPts_h, 10*data_LorenzPts_c
+			  (allow for separate spreads for each education group)
+Estimation output: 
+
+
+----------------------------------------------------------------------
+Estimation : Targets are data_avgLWPI 
+			  and data_LorenzPts_d, data_LorenzPts_h, data_LorenzPts_c
+
 
 
 
