@@ -26,16 +26,16 @@ mystr = lambda x : '{:.2f}'.format(x)
 ## Which experiments to run / plots to show
 Run_Baseline            = True
 Run_Recession           = True
-Run_Check_Recession     = False
-Run_UB_Ext_Recession    = False
-Run_TaxCut_Recession    = False
+Run_Check_Recession     = True
+Run_UB_Ext_Recession    = True
+Run_TaxCut_Recession    = True
 
-Run_AD                  = False
-Run_1stRoundAD          = False
+Run_AD                  = True
+Run_1stRoundAD          = True
 Run_NonAD               = True #whether to run nonAD experiments as well
 
 
-Make_Plots              = False
+Make_Plots              = True
 
 
 #%% 
@@ -301,7 +301,7 @@ if __name__ == '__main__':
             AggDemandEconomy.solveAD_Recession_TaxCut(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Recession_TaxCut')
             t1 = time()
             print('Solving payroll tax cut during recession took ' + mystr(t1-t0) + ' seconds.')
-            
+            LivPrb
             print('Calculating tax cut recession with AD effects')
             AggDemandEconomy.switch_shock_type("recessionTaxCut")
             AggDemandEconomy.restoreADsolution(name = 'Recession_TaxCut')
