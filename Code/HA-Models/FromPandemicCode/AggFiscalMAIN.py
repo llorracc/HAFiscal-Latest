@@ -25,10 +25,10 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 ## Which experiments to run / plots to show
 Run_Baseline            = True
-Run_Recession           = True
+Run_Recession           = False
 Run_Check_Recession     = True
-Run_UB_Ext_Recession    = True
-Run_TaxCut_Recession    = True
+Run_UB_Ext_Recession    = False
+Run_TaxCut_Recession    = False
 
 Run_AD                  = True
 Run_1stRoundAD          = True
@@ -301,7 +301,7 @@ if __name__ == '__main__':
             AggDemandEconomy.solveAD_Recession_TaxCut(num_max_iterations=num_max_iterations_solvingAD,convergence_cutoff=convergence_tol_solvingAD, name = 'Recession_TaxCut')
             t1 = time()
             print('Solving payroll tax cut during recession took ' + mystr(t1-t0) + ' seconds.')
-            LivPrb
+            
             print('Calculating tax cut recession with AD effects')
             AggDemandEconomy.switch_shock_type("recessionTaxCut")
             AggDemandEconomy.restoreADsolution(name = 'Recession_TaxCut')
@@ -591,19 +591,19 @@ if __name__ == '__main__':
             
             return Multipliers
         
-    #%%
-        RecLengthInspect = 21
-        Multiplier21qRecession_UI = PlotsforSpecificRecLength(RecLengthInspect,'recession_UI')
-        #print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
-        print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1][-1]))
-     #%%    
-        Multiplier21qRecession_TaxCut = PlotsforSpecificRecLength(RecLengthInspect,'recession_TaxCut')
-        #print('NPV_Multiplier_Rec_TaxCut for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[0]))
-        print('NPV_Multiplier_Rec_TaxCut_AD for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[1][-1]))
-     #%%   
-        Multiplier21qRecession_Check = PlotsforSpecificRecLength(RecLengthInspect,'recession_Check')
-        #print('NPV_Multiplier_Rec_Check for 21q recession: ',mystr(Multiplier21qRecession_Check[0]))
-        print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1][-1]))
+    # #%%
+    #     RecLengthInspect = 21
+    #     Multiplier21qRecession_UI = PlotsforSpecificRecLength(RecLengthInspect,'recession_UI')
+    #     #print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
+    #     print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1][-1]))
+    #  #%%    
+    #     Multiplier21qRecession_TaxCut = PlotsforSpecificRecLength(RecLengthInspect,'recession_TaxCut')
+    #     #print('NPV_Multiplier_Rec_TaxCut for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[0]))
+    #     print('NPV_Multiplier_Rec_TaxCut_AD for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[1][-1]))
+    #  #%%   
+    #     Multiplier21qRecession_Check = PlotsforSpecificRecLength(RecLengthInspect,'recession_Check')
+    #     #print('NPV_Multiplier_Rec_Check for 21q recession: ',mystr(Multiplier21qRecession_Check[0]))
+    #     print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1][-1]))
 
 
               

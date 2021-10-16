@@ -35,11 +35,11 @@ data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total we
 
 # Parameters concerning the distribution of discount factors
 # Initial values for estimation, taken from pandemic paperCondMrkvArrays_base
-DiscFacMeanD = 0.9637   # Mean intertemporal discount factor for dropout types
-DiscFacMeanH = 0.9705   # Mean intertemporal discount factor for high school types
-DiscFacMeanC = 0.97557  # Mean intertemporal discount factor for college types
+DiscFacMeanD = 0.96971   # Mean intertemporal discount factor for dropout types
+DiscFacMeanH = 0.98628  # Mean intertemporal discount factor for high school types
+DiscFacMeanC = 0.98764  # Mean intertemporal discount factor for college types
 DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
-DiscFacSpread = 0.0253  # Half-width of uniform distribution of discount factors
+DiscFacSpread = 0.00981  # Half-width of uniform distribution of discount factors
 
 # Define the distribution of the discount factor for each eduation level
 DiscFacCount = 7
@@ -104,7 +104,7 @@ TranShkCount = 7        # Number of points in equiprobable discrete approximatio
 
 
 # Size of simulations
-AgentCountTotal = 200   # Total simulated population
+AgentCountTotal = 10000  # Total simulated population
 T_sim = 80              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
@@ -119,8 +119,8 @@ T_cycle = 1
 CgridBase = np.array([0.8, 1.0, 1.2])  
 
 num_base_MrkvStates = 2 + UBspell_normal #employed, unemployed with 2 quarters benefits, unemployed with 1 quarter benefit, unemployed no benefits
-num_experiment_periods = 10
-max_recession_duration = 11
+num_experiment_periods = 20
+max_recession_duration = 21
 
 def makeMacroMrkvArray_recession(Rspell, num_experiment_periods):
     R_persist = 1.-1./Rspell
@@ -189,28 +189,43 @@ def makeFullMrkvArray(MacroMrkvArray, CondMrkvArrays):
 
 MacroMrkvArray_base = np.array([[1.0]])
 CondMrkvArrays_base_d = makeCondMrkvArrays_base(Urate_normal_d, Uspell_normal, UBspell_normal)
-MrkvArray_base_d = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base_d)
 CondMrkvArrays_base_h = makeCondMrkvArrays_base(Urate_normal_h, Uspell_normal, UBspell_normal)
-MrkvArray_base_h = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base_h)
 CondMrkvArrays_base_c = makeCondMrkvArrays_base(Urate_normal_c, Uspell_normal, UBspell_normal)
+MrkvArray_base_d = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base_d)
+MrkvArray_base_h = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base_h)
 MrkvArray_base_c = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base_c)
 
 MacroMrkvArray_recession = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
-CondMrkvArrays_recession = makeCondMrkvArrays_recession(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
-MrkvArray_recession = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession)
+CondMrkvArrays_recession_d = makeCondMrkvArrays_recession(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
+CondMrkvArrays_recession_h = makeCondMrkvArrays_recession(Urate_normal_h, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
+CondMrkvArrays_recession_c = makeCondMrkvArrays_recession(Urate_normal_c, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
+MrkvArray_recession_d = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession_d)
+MrkvArray_recession_h = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession_h)
+MrkvArray_recession_c = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession_c)
 
 MacroMrkvArray_recessionCheck = MacroMrkvArray_recession
-CondMrkvArrays_recessionCheck = CondMrkvArrays_recession
-MrkvArray_recessionCheck = makeFullMrkvArray(MacroMrkvArray_recessionCheck, CondMrkvArrays_recessionCheck)
+CondMrkvArrays_recessionCheck_d = CondMrkvArrays_recession_d
+CondMrkvArrays_recessionCheck_h = CondMrkvArrays_recession_h
+CondMrkvArrays_recessionCheck_c = CondMrkvArrays_recession_c
+MrkvArray_recessionCheck_d = makeFullMrkvArray(MacroMrkvArray_recessionCheck, CondMrkvArrays_recessionCheck_d)
+MrkvArray_recessionCheck_h = makeFullMrkvArray(MacroMrkvArray_recessionCheck, CondMrkvArrays_recessionCheck_h)
+MrkvArray_recessionCheck_c = makeFullMrkvArray(MacroMrkvArray_recessionCheck, CondMrkvArrays_recessionCheck_c)
 
-MacroMrkvArray_recessionTaxCut = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
-CondMrkvArrays_recessionTaxCut = makeCondMrkvArrays_recession(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
-MrkvArray_recessionTaxCut = makeFullMrkvArray(MacroMrkvArray_recessionTaxCut, CondMrkvArrays_recessionTaxCut)
+MacroMrkvArray_recessionTaxCut = MacroMrkvArray_recession
+CondMrkvArrays_recessionTaxCut_d = CondMrkvArrays_recession_d
+CondMrkvArrays_recessionTaxCut_h = CondMrkvArrays_recession_h
+CondMrkvArrays_recessionTaxCut_c = CondMrkvArrays_recession_c
+MrkvArray_recessionTaxCut_d = makeFullMrkvArray(MacroMrkvArray_recessionTaxCut, CondMrkvArrays_recessionTaxCut_d)
+MrkvArray_recessionTaxCut_h = makeFullMrkvArray(MacroMrkvArray_recessionTaxCut, CondMrkvArrays_recessionTaxCut_h)
+MrkvArray_recessionTaxCut_c = makeFullMrkvArray(MacroMrkvArray_recessionTaxCut, CondMrkvArrays_recessionTaxCut_c)
 
-MacroMrkvArray_recessionUI = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
-CondMrkvArrays_recessionUI = makeCondMrkvArrays_recessionUI(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
-MrkvArray_recessionUI = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI)
-
+MacroMrkvArray_recessionUI = MacroMrkvArray_recession
+CondMrkvArrays_recessionUI_d = makeCondMrkvArrays_recessionUI(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
+CondMrkvArrays_recessionUI_h = makeCondMrkvArrays_recessionUI(Urate_normal_h, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
+CondMrkvArrays_recessionUI_c = makeCondMrkvArrays_recessionUI(Urate_normal_c, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
+MrkvArray_recessionUI_d    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_d)
+MrkvArray_recessionUI_h    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_h)
+MrkvArray_recessionUI_c    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_c)
 
 # Define permanent income growth rates
 PermGroFac_base =   [1.0]
@@ -231,24 +246,26 @@ LivPrb_base = [1.0-1/240.0]
 vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
 dist_d = np.abs(np.abs(vals_d) - 1.)
 idx_d = np.argmin(dist_d)
-init_mrkv_dist_d = vecs_d[:,idx_d].astype(float)/np.sum(vecs_d[:,idx_d].astype(float))
+init_mrkv_dist_d = vecs_d[:,idx_d].real/np.sum(vecs_d[:,idx_d].real)
 
 vals_h, vecs_h = np.linalg.eig(np.transpose(MrkvArray_base_h[0])) 
 dist_h = np.abs(np.abs(vals_h) - 1.)
 idx_h = np.argmin(dist_h)
-init_mrkv_dist_h = vecs_h[:,idx_h].astype(float)/np.sum(vecs_h[:,idx_h].astype(float))
+init_mrkv_dist_h = vecs_h[:,idx_h].real/np.sum(vecs_h[:,idx_h].real)
 
 vals_c, vecs_c = np.linalg.eig(np.transpose(MrkvArray_base_c[0])) 
 dist_c = np.abs(np.abs(vals_c) - 1.)
 idx_c = np.argmin(dist_c)
-init_mrkv_dist_c = vecs_c[:,idx_c].astype(float)/np.sum(vecs_c[:,idx_c].astype(float))
+init_mrkv_dist_c = vecs_c[:,idx_c].real/np.sum(vecs_c[:,idx_c].real)
+
+
 
 # Define a parameter dictionary for dropout type
-init_dropout = {"cycles": 0, # This will be overwritten at type construction
+init_dropout = {"cycles": 0, # 00This will be overwritten at type construction
                 "T_cycle": T_cycle,
-                'T_sim': 400, #Simulate up to age 400
+                'T_sim': 400, #Simhulate up to age 400
                 'T_age': None,
-                'AgentCount': 200,
+                'AgentCount': 1000,
                 "PermGroFacAgg": PermGroFacAgg,
                 "PopGroFac": PopGroFac,
                 "CRRA": CRRA,
@@ -256,18 +273,18 @@ init_dropout = {"cycles": 0, # This will be overwritten at type construction
                 "Rfree_base" : Rfree_base,
                 "PermGroFac_base": PermGroFac_base_d,
                 "LivPrb_base": LivPrb_base,
-                "MrkvArray_recession" : MrkvArray_recession,
+                "MrkvArray_recession" : MrkvArray_recession_d,
                 "MacroMrkvArray_recession" : MacroMrkvArray_recession,
-                "CondMrkvArrays_recession" : CondMrkvArrays_recession,
-                "MrkvArray_recessionUI" : MrkvArray_recessionUI,
+                "CondMrkvArrays_recession" : CondMrkvArrays_recession_d,
+                "MrkvArray_recessionUI" : MrkvArray_recessionUI_d,
                 "MacroMrkvArray_recessionUI" : MacroMrkvArray_recessionUI,
-                "CondMrkvArrays_recessionUI" : CondMrkvArrays_recessionUI,
-                "MrkvArray_recessionTaxCut" : MrkvArray_recessionTaxCut,
+                "CondMrkvArrays_recessionUI" : CondMrkvArrays_recessionUI_d,
+                "MrkvArray_recessionTaxCut" : MrkvArray_recessionTaxCut_d,
                 "MacroMrkvArray_recessionTaxCut" : MacroMrkvArray_recessionTaxCut,
-                "CondMrkvArrays_recessionTaxCut" : CondMrkvArrays_recessionTaxCut,
-                "MrkvArray_recessionCheck" : MrkvArray_recessionCheck,
+                "CondMrkvArrays_recessionTaxCut" : CondMrkvArrays_recessionTaxCut_d,
+                "MrkvArray_recessionCheck" : MrkvArray_recessionCheck_d,
                 "MacroMrkvArray_recessionCheck" : MacroMrkvArray_recessionCheck,
-                "CondMrkvArrays_recessionCheck" : CondMrkvArrays_recessionCheck,
+                "CondMrkvArrays_recessionCheck" : CondMrkvArrays_recessionCheck_d,
                 "Rfree" : np.array(num_base_MrkvStates*Rfree_base),
                 "PermGroFac": [np.array(PermGroFac_base_d*num_base_MrkvStates)],
                 "LivPrb": [np.array(LivPrb_base*num_base_MrkvStates)],
@@ -329,6 +346,14 @@ adj_highschool = {
     "CondMrkvArrays_base" : CondMrkvArrays_base_h,
     "MrkvArray" : MrkvArray_base_h, 
     "CondMrkvArrays" : CondMrkvArrays_base_h,
+    "MrkvArray_recession" : MrkvArray_recession_h,
+    "CondMrkvArrays_recession" : CondMrkvArrays_recession_h,
+    "MrkvArray_recessionUI" : MrkvArray_recessionUI_h,
+    "CondMrkvArrays_recessionUI" : CondMrkvArrays_recessionUI_h,
+    "MrkvArray_recessionTaxCut" : MrkvArray_recessionTaxCut_h,
+    "CondMrkvArrays_recessionTaxCut" : CondMrkvArrays_recessionTaxCut_h,
+    "MrkvArray_recessionCheck" : MrkvArray_recessionCheck_h,
+    "CondMrkvArrays_recessionCheck" : CondMrkvArrays_recessionCheck_h,  
     'pLvlInitMean': pLvlInitMean_h,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_h)),
     'Urate_normal' : Urate_normal_h,
@@ -343,6 +368,14 @@ adj_college = {
     "CondMrkvArrays_base" : CondMrkvArrays_base_c,
     "MrkvArray" : MrkvArray_base_c, 
     "CondMrkvArrays" : CondMrkvArrays_base_c,
+    "MrkvArray_recession" : MrkvArray_recession_c,
+    "CondMrkvArrays_recession" : CondMrkvArrays_recession_c,
+    "MrkvArray_recessionUI" : MrkvArray_recessionUI_c,
+    "CondMrkvArrays_recessionUI" : CondMrkvArrays_recessionUI_c,
+    "MrkvArray_recessionTaxCut" : MrkvArray_recessionTaxCut_c,
+    "CondMrkvArrays_recessionTaxCut" : CondMrkvArrays_recessionTaxCut_c,
+    "MrkvArray_recessionCheck" : MrkvArray_recessionCheck_c,
+    "CondMrkvArrays_recessionCheck" : CondMrkvArrays_recessionCheck_c, 
     'pLvlInitMean': pLvlInitMean_c,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_c)),
     'Urate_normal' : Urate_normal_c,
@@ -399,10 +432,10 @@ frictionless_changes = {
 # Parameters for AggregateDemandEconomy economy
 intercept_prev = np.ones((num_base_MrkvStates,num_base_MrkvStates ))    # Intercept of aggregate savings function
 slope_prev = np.zeros((num_base_MrkvStates,num_base_MrkvStates ))       # Slope of aggregate savings function
-ADelasticity = 0.75                                                     # Elasticity of productivity to consumption
+ADelasticity = 0.5                                                      # Elasticity of productivity to consumption
 
-num_max_iterations_solvingAD = 30
-convergence_tol_solvingAD = 1E-6
+num_max_iterations_solvingAD = 15
+convergence_tol_solvingAD = 1E-4
 Cfunc_iter_stepsize       = 1
 
 # Make a dictionary to specify a Cobb-Douglas economy
@@ -412,10 +445,10 @@ init_ADEconomy = {'intercept_prev': intercept_prev,
                      'demand_ADelasticity' : ADelasticity,
                      'Cfunc_iter_stepsize' : Cfunc_iter_stepsize,
                      'MrkvArray' : MrkvArray_base_h,
-                     'MrkvArray_recession' : MrkvArray_recession,
-                     'MrkvArray_recessionUI' : MrkvArray_recessionUI,
-                     'MrkvArray_recessionTaxCut' : MrkvArray_recessionTaxCut,
-                     'MrkvArray_recessionCheck' : MrkvArray_recessionCheck,
+                     'MrkvArray_recession' : MrkvArray_recession_h,
+                     'MrkvArray_recessionUI' : MrkvArray_recessionUI_h,
+                     'MrkvArray_recessionTaxCut' : MrkvArray_recessionTaxCut_h,
+                     'MrkvArray_recessionCheck' : MrkvArray_recessionCheck_h,
                      'num_base_MrkvStates' : num_base_MrkvStates,
                      'num_experiment_periods' : num_experiment_periods,
                      "MrkvArray_base" : MrkvArray_base_h, 
