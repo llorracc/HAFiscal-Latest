@@ -591,19 +591,19 @@ if __name__ == '__main__':
             
             return Multipliers
         
-    # #%%
-    #     RecLengthInspect = 21
-    #     Multiplier21qRecession_UI = PlotsforSpecificRecLength(RecLengthInspect,'recession_UI')
-    #     #print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
-    #     print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1][-1]))
-    #  #%%    
-    #     Multiplier21qRecession_TaxCut = PlotsforSpecificRecLength(RecLengthInspect,'recession_TaxCut')
-    #     #print('NPV_Multiplier_Rec_TaxCut for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[0]))
-    #     print('NPV_Multiplier_Rec_TaxCut_AD for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[1][-1]))
-    #  #%%   
-    #     Multiplier21qRecession_Check = PlotsforSpecificRecLength(RecLengthInspect,'recession_Check')
-    #     #print('NPV_Multiplier_Rec_Check for 21q recession: ',mystr(Multiplier21qRecession_Check[0]))
-    #     print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1][-1]))
+    #%%
+        RecLengthInspect = 21
+        Multiplier21qRecession_UI = PlotsforSpecificRecLength(RecLengthInspect,'recession_UI')
+        #print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
+        print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1][-1]))
+      #%%    
+        Multiplier21qRecession_TaxCut = PlotsforSpecificRecLength(RecLengthInspect,'recession_TaxCut')
+        #print('NPV_Multiplier_Rec_TaxCut for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[0]))
+        print('NPV_Multiplier_Rec_TaxCut_AD for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[1][-1]))
+      #%%   
+        Multiplier21qRecession_Check = PlotsforSpecificRecLength(RecLengthInspect,'recession_Check')
+        #print('NPV_Multiplier_Rec_Check for 21q recession: ',mystr(Multiplier21qRecession_Check[0]))
+        print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1][-1]))
 
 
               
