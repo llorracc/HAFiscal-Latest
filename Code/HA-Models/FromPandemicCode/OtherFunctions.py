@@ -3,6 +3,9 @@ import pickle
 def namestr(obj,namespace):
     return [name for name in namespace if namespace[name] is obj][0]
 
+def saveAsPickle(name,obj,save_dir):
+     with open(save_dir + name + '.csv', 'wb') as handle:
+            pickle.dump(obj, handle, protocol=pickle.HIGHEST_PROTOCOL)    
 
 def saveAsPickleUnderVarName(obj,save_dir,scope):
     with open(save_dir + namestr(obj,scope) + '.csv', 'wb') as handle:

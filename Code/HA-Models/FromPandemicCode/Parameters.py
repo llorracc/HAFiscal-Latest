@@ -57,7 +57,10 @@ Urate_normal_c = 0.04         # Unemployment rate in normal times, college 2004
 Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
 # Recession
-Urate_recession = 0.1        # Unemployment rate in recession
+Urate_recession_d = 2 * Urate_normal_d # Unemployment rate in recession
+Urate_recession_h = 2 * Urate_normal_h 
+Urate_recession_c = 2 * Urate_normal_c
+
 Uspell_recession = 4         # Average duration of unemployment spell in recession, in quarters
 Rspell = 6                   # Expected length of recession, in quarters. If R_shared = True, must be an integer
 R_shared = False             # Indicator for whether the recession shared (True) or idiosyncratic (False)
@@ -196,9 +199,9 @@ MrkvArray_base_h = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base_h)
 MrkvArray_base_c = makeFullMrkvArray(MacroMrkvArray_base, CondMrkvArrays_base_c)
 
 MacroMrkvArray_recession = makeMacroMrkvArray_recession(Rspell, num_experiment_periods)
-CondMrkvArrays_recession_d = makeCondMrkvArrays_recession(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
-CondMrkvArrays_recession_h = makeCondMrkvArrays_recession(Urate_normal_h, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
-CondMrkvArrays_recession_c = makeCondMrkvArrays_recession(Urate_normal_c, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods)
+CondMrkvArrays_recession_d = makeCondMrkvArrays_recession(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession_d, Uspell_recession, num_experiment_periods)
+CondMrkvArrays_recession_h = makeCondMrkvArrays_recession(Urate_normal_h, Uspell_normal, UBspell_normal, Urate_recession_h, Uspell_recession, num_experiment_periods)
+CondMrkvArrays_recession_c = makeCondMrkvArrays_recession(Urate_normal_c, Uspell_normal, UBspell_normal, Urate_recession_c, Uspell_recession, num_experiment_periods)
 MrkvArray_recession_d = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession_d)
 MrkvArray_recession_h = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession_h)
 MrkvArray_recession_c = makeFullMrkvArray(MacroMrkvArray_recession, CondMrkvArrays_recession_c)
@@ -220,9 +223,9 @@ MrkvArray_recessionTaxCut_h = makeFullMrkvArray(MacroMrkvArray_recessionTaxCut, 
 MrkvArray_recessionTaxCut_c = makeFullMrkvArray(MacroMrkvArray_recessionTaxCut, CondMrkvArrays_recessionTaxCut_c)
 
 MacroMrkvArray_recessionUI = MacroMrkvArray_recession
-CondMrkvArrays_recessionUI_d = makeCondMrkvArrays_recessionUI(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
-CondMrkvArrays_recessionUI_h = makeCondMrkvArrays_recessionUI(Urate_normal_h, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
-CondMrkvArrays_recessionUI_c = makeCondMrkvArrays_recessionUI(Urate_normal_c, Uspell_normal, UBspell_normal, Urate_recession, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
+CondMrkvArrays_recessionUI_d = makeCondMrkvArrays_recessionUI(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession_d, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
+CondMrkvArrays_recessionUI_h = makeCondMrkvArrays_recessionUI(Urate_normal_h, Uspell_normal, UBspell_normal, Urate_recession_h, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
+CondMrkvArrays_recessionUI_c = makeCondMrkvArrays_recessionUI(Urate_normal_c, Uspell_normal, UBspell_normal, Urate_recession_c, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
 MrkvArray_recessionUI_d    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_d)
 MrkvArray_recessionUI_h    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_h)
 MrkvArray_recessionUI_c    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_c)
@@ -265,7 +268,7 @@ init_dropout = {"cycles": 0, # 00This will be overwritten at type construction
                 "T_cycle": T_cycle,
                 'T_sim': 400, #Simhulate up to age 400
                 'T_age': None,
-                'AgentCount': 1000,
+                'AgentCount': 1000, #number overwritten later
                 "PermGroFacAgg": PermGroFacAgg,
                 "PopGroFac": PopGroFac,
                 "CRRA": CRRA,
@@ -318,7 +321,7 @@ init_dropout = {"cycles": 0, # 00This will be overwritten at type construction
                 'Uspell_normal' : Uspell_normal,
                 'UBspell_normal' : UBspell_normal,
                 'num_base_MrkvStates' : num_base_MrkvStates,
-                'Urate_recession' : Urate_recession,
+                'Urate_recession' : Urate_recession_d,
                 'Uspell_recession' : Uspell_recession,
                 'num_experiment_periods' : num_experiment_periods,
                 'Rspell' : Rspell,
@@ -357,6 +360,7 @@ adj_highschool = {
     'pLvlInitMean': pLvlInitMean_h,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_h)),
     'Urate_normal' : Urate_normal_h,
+    'Urate_recession' : Urate_recession_h,
     'EducType' : 1}
 init_highschool = init_dropout.copy()
 init_highschool.update(adj_highschool)
@@ -379,6 +383,7 @@ adj_college = {
     'pLvlInitMean': pLvlInitMean_c,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_c)),
     'Urate_normal' : Urate_normal_c,
+    'Urate_recession' : Urate_recession_c,
     'EducType' : 2}
 init_college = init_dropout.copy()
 init_college.update(adj_college)
