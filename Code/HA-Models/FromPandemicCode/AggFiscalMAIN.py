@@ -255,8 +255,10 @@ if __name__ == '__main__':
         
 #%% Parallel
         
-        
-        
+    Thread(target = Run_FullRoutine('recession')).start()
+    Thread(target = Run_FullRoutine('recessionCheck')).start()    
+    Thread(target = Run_FullRoutine('recessionUI')).start() 
+    Thread(target = Run_FullRoutine('recessionTaxCut')).start()     
         
     #%% Plotting
         
