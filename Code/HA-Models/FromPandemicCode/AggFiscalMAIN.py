@@ -27,18 +27,18 @@ from threading import Thread
 mystr = lambda x : '{:.2f}'.format(x)
 
 ## Which experiments to run / plots to show
-Run_Baseline            = False
+Run_Baseline            = True
 Run_Recession           = True
-Run_Check_Recession     = False
-Run_UB_Ext_Recession    = False
-Run_TaxCut_Recession    = False
+Run_Check_Recession     = True
+Run_UB_Ext_Recession    = True
+Run_TaxCut_Recession    = True
 
 Run_AD                  = True
-Run_1stRoundAD          = True
+Run_1stRoundAD          = False
 Run_NonAD               = True #whether to run nonAD experiments as well
 
 
-Make_Plots              = True
+Make_Plots              = False
 
 
 #%% 
@@ -48,7 +48,6 @@ if __name__ == '__main__':
     
     # Setting up AggDemandEconmy
     
-    #%% 
     # Make education types
     num_types = 3
     # This is not the number of discount factors, but the number of household types
@@ -190,8 +189,8 @@ if __name__ == '__main__':
             AggDemandEconomy_Routine.switch_shock_type(shock_type)
             AggDemandEconomy_Routine.solve()
             [results,all_results] = runExperimentsAllRecessions(changes,AggDemandEconomy_Routine)
-            saveAsPickle(shock_type + '_all_results',results,figs_dir,locals())
-            saveAsPickle(shock_type + '_results',all_results,figs_dir,locals())
+            saveAsPickle(shock_type + '_results',results,figs_dir)
+            saveAsPickle(shock_type + '_all_results',all_results,figs_dir)
         
         if Run_AD:
             # Solving recession under Agg Multiplier   
@@ -208,12 +207,12 @@ if __name__ == '__main__':
             t1 = time()
             print('Solving took ' + mystr(t1-t0) + ' seconds for shock_type: ', shock_type)
             
-            print('Calculating no AD effects for shock_type: ', shock_type)
+            print('Calculating AD effects for shock_type: ', shock_type)
             AggDemandEconomy_Routine.switch_shock_type(shock_type)
             AggDemandEconomy_Routine.restoreADsolution(name = shock_type)
             [results_AD,all_results_AD] = runExperimentsAllRecessions(changes,AggDemandEconomy_Routine)
-            saveAsPickle(shock_type + '_all_results_AD',figs_dir,locals())
-            saveAsPickle(shock_type + '_results_AD',figs_dir,locals())
+            saveAsPickle(shock_type + '_results_AD',results_AD,figs_dir)
+            saveAsPickle(shock_type + '_all_results_AD',all_results_AD,figs_dir)
         
         if Run_1stRoundAD:
             # Solving recession under Agg Multiplier   
@@ -235,30 +234,72 @@ if __name__ == '__main__':
             AggDemandEconomy_Routine.switch_shock_type(shock_type)
             AggDemandEconomy_Routine.restoreADsolution(name = shock_type + '1stRoundAD')
             [results_firstRoundAD,all_results_firstRoundAD] = runExperimentsAllRecessions(changes,AggDemandEconomy_Routine)
-            saveAsPickleUnderVarName(shock_type + '_all_results_firstRoundAD',figs_dir,locals())
-            saveAsPickleUnderVarName(shock_type + '_results_firstRoundAD',figs_dir,locals())
+            saveAsPickleUnderVarName(shock_type + '_results_firstRoundAD',results_firstRoundAD,figs_dir)
+            saveAsPickleUnderVarName(shock_type + '_all_results_firstRoundAD',all_results_firstRoundAD,figs_dir)
     
-           
-#%% 
-            
-    if Run_Recession:     
-        Run_FullRoutine('recession')   
-    
-    if Run_Check_Recession:
-        Run_FullRoutine('recessionCheck') 
-                   
-    if Run_UB_Ext_Recession:
-        Run_FullRoutine('recessionUI') 
-        
-    if Run_TaxCut_Recession:
-        Run_FullRoutine('recessionTaxCut') 
+         
+
+         
         
 #%% Parallel
         
-    Thread(target = Run_FullRoutine('recession')).start()
-    Thread(target = Run_FullRoutine('recessionCheck')).start()    
-    Thread(target = Run_FullRoutine('recessionUI')).start() 
-    Thread(target = Run_FullRoutine('recessionTaxCut')).start()     
+    def func1():
+        Run_FullRoutine('recession')
+    def func2():
+        Run_FullRoutine('recessionCheck')
+    def func3():
+        Run_FullRoutine('recessionUI') 
+    def func4():
+        Run_FullRoutine('recessionTaxCut')
+        
+        
+    t1 = Thread(target = func1)
+    t2 = Thread(target = func2)  
+    t3 = Thread(target = func3)  
+    t4 = Thread(target = func4)
+    
+    if Run_Recession:     
+        t1.start()   
+    
+    if Run_Check_Recession:
+        t2.start()  
+        
+    t1.join() 
+    t2.join() #Wait for t1 AND t2 to finish
+                   
+    if Run_UB_Ext_Recession:
+        t3.start()   
+        
+    if Run_TaxCut_Recession:
+        t4.start()  
+        
+    t3.join()
+    t4.join() #Wait for t3 and t4 to finish
+        
+        
+    
+    
+#%% Parallel testing
+
+# import time
+        
+# def func1():
+#     print('1')
+#     time.sleep(3)
+#     print('1done')
+    
+# def func2():
+#     print('2')
+#     time.sleep(6)
+#     print('2done')
+    
+# t1 = Thread(target = func1)    
+# t2 = Thread(target = func2)
+
+# t1.start() 
+# t2.start()
+# t1.join()
+
         
     #%% Plotting
         
@@ -281,52 +322,54 @@ if __name__ == '__main__':
         recession_results_AD                = loadPickle('recession_results_AD',folder_AD,locals())
         recession_results_firstRoundAD      = loadPickle('recession_results_firstRoundAD',folder_firstroundAD,locals())
         
-        recession_UI_results                = loadPickle('recession_UI_results',folder_noAD,locals())       
-        recession_UI_results_AD             = loadPickle('recession_UI_results_AD',folder_AD,locals())
-        recession_UI_results_firstRoundAD   = loadPickle('recession_UI_results_firstRoundAD',folder_firstroundAD,locals())
+        recession_UI_results                = loadPickle('recessionUI_results',folder_noAD,locals())       
+        recession_UI_results_AD             = loadPickle('recessionUI_results_AD',folder_AD,locals())
+        recession_UI_results_firstRoundAD   = loadPickle('recessionUI_results_firstRoundAD',folder_firstroundAD,locals())
         
-        recession_Check_results                = loadPickle('recession_Check_results',folder_noAD,locals())       
-        recession_Check_results_AD             = loadPickle('recession_Check_results_AD',folder_AD,locals())
-        recession_Check_results_firstRoundAD   = loadPickle('recession_Check_results_firstRoundAD',folder_firstroundAD,locals())
+        recession_Check_results                = loadPickle('recessionCheck_results',folder_noAD,locals())       
+        recession_Check_results_AD             = loadPickle('recessionCheck_results_AD',folder_AD,locals())
+        recession_Check_results_firstRoundAD   = loadPickle('recessionCheck_results_firstRoundAD',folder_firstroundAD,locals())
         
-        recession_TaxCut_results                = loadPickle('recession_TaxCut_results',folder_noAD,locals())
-        recession_TaxCut_results_AD             = loadPickle('recession_TaxCut_results_AD',folder_AD,locals())
-        recession_TaxCut_results_firstRoundAD   = loadPickle('recession_TaxCut_results_firstRoundAD',folder_firstroundAD,locals())
+        recession_TaxCut_results                = loadPickle('recessionTaxCut_results',folder_noAD,locals())
+        recession_TaxCut_results_AD             = loadPickle('recessionTaxCut_results_AD',folder_AD,locals())
+        recession_TaxCut_results_firstRoundAD   = loadPickle('recessionTaxCut_results_firstRoundAD',folder_firstroundAD,locals())
               
         
        
         
+
+
         #%% Multipliers
         
         NPV_AddInc_UI_Rec                       = getSimulationDiff(recession_results,recession_UI_results,'NPV_AggIncome') # Policy expenditure
         NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_results,               recession_UI_results,               NPV_AddInc_UI_Rec)
         NPV_Multiplier_UI_Rec_AD                = getNPVMultiplier(recession_results_AD,            recession_UI_results_AD,            NPV_AddInc_UI_Rec)
-        NPV_Multiplier_UI_Rec_firstRoundAD      = getNPVMultiplier(recession_results_firstRoundAD,  recession_UI_results_firstRoundAD,  NPV_AddInc_UI_Rec)
+        #NPV_Multiplier_UI_Rec_firstRoundAD      = getNPVMultiplier(recession_results_firstRoundAD,  recession_UI_results_firstRoundAD,  NPV_AddInc_UI_Rec)
         
         
         NPV_AddInc_Rec_TaxCut                   = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome')
         NPV_Multiplier_Rec_TaxCut               = getNPVMultiplier(recession_results,               recession_TaxCut_results,               NPV_AddInc_Rec_TaxCut)
         NPV_Multiplier_Rec_TaxCut_AD            = getNPVMultiplier(recession_results_AD,            recession_TaxCut_results_AD,            NPV_AddInc_Rec_TaxCut)
-        NPV_Multiplier_Rec_TaxCut_firstRoundAD  = getNPVMultiplier(recession_results_firstRoundAD,  recession_TaxCut_results_firstRoundAD,  NPV_AddInc_Rec_TaxCut)
+        #NPV_Multiplier_Rec_TaxCut_firstRoundAD  = getNPVMultiplier(recession_results_firstRoundAD,  recession_TaxCut_results_firstRoundAD,  NPV_AddInc_Rec_TaxCut)
        
         NPV_AddInc_Rec_Check                    = getSimulationDiff(recession_results,recession_Check_results,'NPV_AggIncome') 
         NPV_Multiplier_Rec_Check                = getNPVMultiplier(recession_results,               recession_Check_results,               NPV_AddInc_Rec_Check)
         NPV_Multiplier_Rec_Check_AD             = getNPVMultiplier(recession_results_AD,            recession_Check_results_AD,            NPV_AddInc_Rec_Check)
-        NPV_Multiplier_Rec_Check_firstRoundAD   = getNPVMultiplier(recession_results_firstRoundAD,  recession_Check_results_firstRoundAD,  NPV_AddInc_Rec_Check)
+        #NPV_Multiplier_Rec_Check_firstRoundAD   = getNPVMultiplier(recession_results_firstRoundAD,  recession_Check_results_firstRoundAD,  NPV_AddInc_Rec_Check)
                 
         print('NPV Multiplier UI recession no AD: \t\t',mystr(NPV_Multiplier_UI_Rec[-1]))
         print('NPV Multiplier UI recession with AD: \t\t',mystr(NPV_Multiplier_UI_Rec_AD[-1]))
-        print('NPV Multiplier UI recession 1st round AD: \t',mystr(NPV_Multiplier_UI_Rec_firstRoundAD[-1]))
+        #print('NPV Multiplier UI recession 1st round AD: \t',mystr(NPV_Multiplier_UI_Rec_firstRoundAD[-1]))
         print('')
         
         print('NPV Multiplier tax cut recession no AD: \t',mystr(NPV_Multiplier_Rec_TaxCut[-1]))
         print('NPV Multiplier tax cut recession with AD: \t',mystr(NPV_Multiplier_Rec_TaxCut_AD[-1]))
-        print('NPV Multiplier tax cut recession 1st round AD:  ',mystr(NPV_Multiplier_Rec_TaxCut_firstRoundAD[-1]))
+        #print('NPV Multiplier tax cut recession 1st round AD:  ',mystr(NPV_Multiplier_Rec_TaxCut_firstRoundAD[-1]))
         print('')
         
         print('NPV Multiplier check recession no AD: \t\t',mystr(NPV_Multiplier_Rec_Check[-1]))
         print('NPV Multiplier check recession with AD: \t',mystr(NPV_Multiplier_Rec_Check_AD[-1]))
-        print('NPV Multiplier check recession 1st round AD: \t',mystr(NPV_Multiplier_Rec_Check_firstRoundAD[-1]))
+        #print('NPV Multiplier check recession 1st round AD: \t',mystr(NPV_Multiplier_Rec_Check_firstRoundAD[-1]))
         print('')
         
         # Multipliers in non-AD are less than 1 -> this is because of deaths!
@@ -527,18 +570,18 @@ if __name__ == '__main__':
             return Multipliers
         
     #%%
-        RecLengthInspect = 21
-        Multiplier21qRecession_UI = PlotsforSpecificRecLength(RecLengthInspect,'recession_UI')
-        #print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
-        print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1][-1]))
-      #%%    
-        Multiplier21qRecession_TaxCut = PlotsforSpecificRecLength(RecLengthInspect,'recession_TaxCut')
-        #print('NPV_Multiplier_Rec_TaxCut for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[0]))
-        print('NPV_Multiplier_Rec_TaxCut_AD for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[1][-1]))
-      #%%   
-        Multiplier21qRecession_Check = PlotsforSpecificRecLength(RecLengthInspect,'recession_Check')
-        #print('NPV_Multiplier_Rec_Check for 21q recession: ',mystr(Multiplier21qRecession_Check[0]))
-        print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1][-1]))
+      #   RecLengthInspect = 21
+      #   Multiplier21qRecession_UI = PlotsforSpecificRecLength(RecLengthInspect,'recession_UI')
+      #   #print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
+      #   print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1][-1]))
+      # #%%    
+      #   Multiplier21qRecession_TaxCut = PlotsforSpecificRecLength(RecLengthInspect,'recession_TaxCut')
+      #   #print('NPV_Multiplier_Rec_TaxCut for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[0]))
+      #   print('NPV_Multiplier_Rec_TaxCut_AD for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[1][-1]))
+      # #%%   
+      #   Multiplier21qRecession_Check = PlotsforSpecificRecLength(RecLengthInspect,'recession_Check')
+      #   #print('NPV_Multiplier_Rec_Check for 21q recession: ',mystr(Multiplier21qRecession_Check[0]))
+      #   print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1][-1]))
 
 
               

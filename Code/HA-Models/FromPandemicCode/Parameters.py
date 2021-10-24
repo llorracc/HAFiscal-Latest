@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Test/'
+figs_dir = './Figures/Test_Parallel/'
 
 try:
     os.mkdir(figs_dir)
@@ -108,7 +108,7 @@ TranShkCount = 7        # Number of points in equiprobable discrete approximatio
 
 # Size of simulations
 AgentCountTotal = 10000  # Total simulated population
-T_sim = 80              # Number of quarters to simulate in counterfactuals
+T_sim = 40              # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
 T_cycle = 1
