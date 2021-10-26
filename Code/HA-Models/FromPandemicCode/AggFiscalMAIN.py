@@ -34,11 +34,11 @@ Run_UB_Ext_Recession    = True
 Run_TaxCut_Recession    = True
 
 Run_AD                  = True
-Run_1stRoundAD          = False
+Run_1stRoundAD          = True
 Run_NonAD               = True #whether to run nonAD experiments as well
 
 
-Make_Plots              = False
+Make_Plots              = True
 
 
 #%% 
@@ -261,20 +261,23 @@ if __name__ == '__main__':
     if Run_Recession:     
         t1.start()   
     
+    t1.join() #Wait for t1
+    
     if Run_Check_Recession:
         t2.start()  
         
-    t1.join() 
-    t2.join() #Wait for t1 AND t2 to finish
+    t2.join() #Wait for t2
                    
     if Run_UB_Ext_Recession:
         t3.start()   
         
+    t3.join()
+        
     if Run_TaxCut_Recession:
         t4.start()  
         
-    t3.join()
-    t4.join() #Wait for t3 and t4 to finish
+    
+    t4.join() 
         
         
     
