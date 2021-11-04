@@ -26,10 +26,22 @@ The table shows $NPVM(\infty)$.
 	\centering
 	\begin{tabular}{@{}lllll@{}}
 		\toprule
-		Experiment  	& no AD effects & AD = 0.5 		& AD = 0.5 (1st round)	 \\ \midrule 
-		Payroll tax cut & 0.93(1)		& 1.20(1.28)   	& 1.11(1.18)  			   		\\
-		UI extension    & 0.95(0.98) 	& 1.58(1.74) 	& 1.39(1.51) 						\\
-		Check		    & 0.93(0.97)	& 1.54(1.62) 	& 1.34(1.40) 						\\ \bottomrule
+		Experiment  	& AD = 0.5 		\\ \midrule 
+		UI extension    & 1.56(1.74) 					\\
+		Payroll tax cut & 1.16(1.28)  		   	\\
+		Check		    & 1.50(1.62) 		\\ \bottomrule
+	\end{tabular}	
+	\caption{Long-run multipliers for new calibration (old calibration)}
+\end{table}
+
+\begin{table}[htb]
+	\centering
+	\begin{tabular}{@{}lllll@{}}
+		\toprule
+		Experiment  	& no AD effects & AD = 0.5 		& AD = 0.5 (1st round)	\\ \midrule 
+		UI extension    & 0.93(0.98) 	& 1.56(1.74) 	& 1.37(1.51) 				\\
+		Payroll tax cut & 0.89(1)		& 1.16(1.28)   	& 1.07(1.18)  			   	\\
+		Check		    & 0.91(0.97)	& 1.50(1.62) 	& 1.30(1.40) 				\\ \bottomrule
 	\end{tabular}	
 	\caption{Long-run multipliers for new calibration (old calibration)}
 \end{table}
@@ -43,7 +55,33 @@ DiscFacSpread : 0.00981   Half-width of uniform distribution of discount factors
 Old discount factors: \\
 DiscFacMean     : 0.986      Mean intertemporal discount factor  \\
 DiscFacSpread   : 0.0183     Half-width of uniform distribution of discount factors\\
-	
+\\
+Reason: The college / HS groups are large and have relatively large betas, so average MPC in the population has gone down.
+
+
+\subsection{Response of income / consumption in experiments}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_3Educ_Oct24th/recession_taxcut_relrecession}
+	\caption{}
+	\label{fig:recessiontaxcutrelrecession}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_3Educ_Oct24th/recession_UI_relrecession}
+	\caption{}
+	\label{fig:recessionuirelrecession}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_3Educ_Oct24th/recession_Check_relrecession}
+	\caption{}
+	\label{fig:recessioncheckrelrecession}
+\end{figure}
+
+
+	\FloatBarrier
 \section{Update - Aug 4th 2021}
 \FloatBarrier
 
