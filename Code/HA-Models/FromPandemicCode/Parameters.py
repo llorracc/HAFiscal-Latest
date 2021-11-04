@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/Full_Run_3Educ_Oct24th/'
+figs_dir = './Figures/Full_Run_3Educ_Nov4th/'
 
 try:
     os.mkdir(figs_dir)
@@ -18,15 +18,17 @@ else:
 # Targets in the estimation of the discount factor distributions for each 
 # education level. 
 # From SCF 2004: [20,40,60,80]-percentiles of the Lorenz curve for liquid wealth
-data_LorenzPts_d = [0, 0.01, 0.60, 3.58]    # \
-data_LorenzPts_h = [0.06, 0.63, 2.98, 11.6] # -> units: % 
-data_LorenzPts_c = [0.15, 0.92, 3.27, 10.3] # /
+data_LorenzPts_d = np.array([0, 0.01, 0.60, 3.58])    # \
+data_LorenzPts_h = np.array([0.06, 0.63, 2.98, 11.6]) # -> units: % 
+data_LorenzPts_c = np.array([0.15, 0.92, 3.27, 10.3]) # /
 data_LorenzPts = [data_LorenzPts_d, data_LorenzPts_h, data_LorenzPts_c]
 data_LorenzPtsAll = np.array([0.03, 0.35, 1.84, 7.42])
 # From SCF 2004: Average liquid wealth to permanent income ratio 
 data_avgLWPI = np.array([15.7, 47.7, 111])*4 # weighted average of fractions in percent
 # From SCF 2004: Total LW over total PI by education group
 data_LWoPI = np.array([28.1, 59.6, 162])*4 # units: %
+# From SCF 2004: Weighted median of liquid wealth to permanent income ratio
+data_medianLWPI = np.array([1.16, 7.55, 28.2])*4 # weighted median of fractions in percent
 
 # Population share of each type
 data_EducShares = [0.093, 0.527, 0.38] # Proportion of dropouts, HS grads, college types, SCF 2004 
@@ -35,17 +37,19 @@ data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total we
 
 # Parameters concerning the distribution of discount factors
 # Initial values for estimation, taken from pandemic paperCondMrkvArrays_base
-DiscFacMeanD = 0.96971   # Mean intertemporal discount factor for dropout types
-DiscFacMeanH = 0.98628  # Mean intertemporal discount factor for high school types
-DiscFacMeanC = 0.98764  # Mean intertemporal discount factor for college types
+DiscFacMeanD = 0.87509113   # Mean intertemporal discount factor for dropout types
+DiscFacMeanH = 0.96597689  # Mean intertemporal discount factor for high school types
+DiscFacMeanC = 0.9886787  # Mean intertemporal discount factor for college types
 DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
-DiscFacSpread = 0.00981  # Half-width of uniform distribution of discount factors
+DiscFacSpreadD = 0.13891492
+DiscFacSpreadH = 0.03307152
+DiscFacSpreadC = 0.00772621 # Half-width of uniform distribution of discount factors
 
 # Define the distribution of the discount factor for each eduation level
 DiscFacCount = 7
-DiscFacDstnD = Uniform(DiscFacMeanD-DiscFacSpread, DiscFacMeanD+DiscFacSpread).approx(DiscFacCount)
-DiscFacDstnH = Uniform(DiscFacMeanH-DiscFacSpread, DiscFacMeanH+DiscFacSpread).approx(DiscFacCount)
-DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpread, DiscFacMeanC+DiscFacSpread).approx(DiscFacCount)
+DiscFacDstnD = Uniform(DiscFacMeanD-DiscFacSpreadD, DiscFacMeanD+DiscFacSpreadD).approx(DiscFacCount)
+DiscFacDstnH = Uniform(DiscFacMeanH-DiscFacSpreadH, DiscFacMeanH+DiscFacSpreadH).approx(DiscFacCount)
+DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpreadC, DiscFacMeanC+DiscFacSpreadC).approx(DiscFacCount)
 DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
 
 # Parameters concerning Markov transition matrix
@@ -56,6 +60,7 @@ Urate_normal_c = 0.04         # Unemployment rate in normal times, college 2004
 
 Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
+
 # Recession
 Urate_recession_d = 2 * Urate_normal_d # Unemployment rate in recession
 Urate_recession_h = 2 * Urate_normal_h 
@@ -107,16 +112,11 @@ TranShkCount = 7        # Number of points in equiprobable discrete approximatio
 
 
 # Size of simulations
-AgentCountTotal = 10000  # Total simulated population
-T_sim = 40              # Number of quarters to simulate in counterfactuals
+AgentCountTotal = 10000     # Total simulated population
+T_sim = 40                  # Number of quarters to simulate in counterfactuals
 
 # Basic lifecycle length parameters (don't touch these)
 T_cycle = 1
-
-# Define the distribution of the discount factor for each eduation level
-# DiscFacCount = 7
-# DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
-# DiscFacDstns = [DiscFacDstn]
 
 # Define grid of aggregate assets to labor
 CgridBase = np.array([0.8, 1.0, 1.2])  
@@ -427,12 +427,6 @@ frictionless_changes = {
              }
 
 
-# quick_test = True
-# if quick_test:
-#     AgentCountTotal = 2000
-#     DiscFacCount = 1
-#     DiscFacDstn = Uniform(DiscFacMean-DiscFacSpread, DiscFacMean+DiscFacSpread).approx(DiscFacCount)
-#     DiscFacDstns = [DiscFacDstn]
     
 # Parameters for AggregateDemandEconomy economy
 intercept_prev = np.ones((num_base_MrkvStates,num_base_MrkvStates ))    # Intercept of aggregate savings function
