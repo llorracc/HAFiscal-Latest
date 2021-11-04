@@ -28,6 +28,8 @@ data_LorenzPtsAll = np.array([0.03, 0.35, 1.84, 7.42])
 data_avgLWPI = np.array([15.7, 47.7, 111])*4 # weighted average of fractions in percent
 # From SCF 2004: Total LW over total PI by education group
 data_LWoPI = np.array([28.1, 59.6, 162])*4 # units: %
+# From SCF 2004: Weighted median of liquid wealth to permanent income ratio
+data_medianLWPI = np.array([1.16, 7.55, 28.2])*4 # weighted median of fractions in percent
 
 # Population share of each type
 data_EducShares = [0.093, 0.527, 0.38] # Proportion of dropouts, HS grads, college types, SCF 2004 
@@ -36,17 +38,21 @@ data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total we
 
 # Parameters concerning the distribution of discount factors
 # Initial values for estimation, taken from pandemic paperCondMrkvArrays_base
+# Note: not really using these anymore
 DiscFacMeanD = 0.9647   # Mean intertemporal discount factor for dropout types
-DiscFacMeanH = 0.9727   # Mean intertemporal discount factor for high school types
-DiscFacMeanC = 0.9740  # Mean intertemporal discount factor for college types
+DiscFacMeanH = 0.98051  # Mean intertemporal discount factor for high school types
+DiscFacMeanC = 0.99160  # Mean intertemporal discount factor for college types
+
 DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
-DiscFacSpread = 0.0260  # Half-width of uniform distribution of discount factors
+DiscFacSpreadD = 0.025
+DiscFacSpreadH = 0.01676
+DiscFacSpreadC = 0.00480  # Half-width of uniform distribution of discount factors
 
 # Define the distribution of the discount factor for each eduation level
 DiscFacCount = 7
-DiscFacDstnD = Uniform(DiscFacMeanD-DiscFacSpread, DiscFacMeanD+DiscFacSpread).approx(DiscFacCount)
-DiscFacDstnH = Uniform(DiscFacMeanH-DiscFacSpread, DiscFacMeanH+DiscFacSpread).approx(DiscFacCount)
-DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpread, DiscFacMeanC+DiscFacSpread).approx(DiscFacCount)
+DiscFacDstnD = Uniform(DiscFacMeanD-DiscFacSpreadD, DiscFacMeanD+DiscFacSpreadD).approx(DiscFacCount)
+DiscFacDstnH = Uniform(DiscFacMeanH-DiscFacSpreadH, DiscFacMeanH+DiscFacSpreadH).approx(DiscFacCount)
+DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpreadC, DiscFacMeanC+DiscFacSpreadC).approx(DiscFacCount)
 DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
 
 # Parameters concerning Markov transition matrix
