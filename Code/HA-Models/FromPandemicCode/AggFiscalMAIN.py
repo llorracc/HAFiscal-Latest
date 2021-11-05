@@ -5,7 +5,7 @@ from Parameters import T_sim, init_dropout, init_highschool, init_college, init_
      DiscFacCount, AgentCountTotal, base_dict, figs_dir, num_max_iterations_solvingAD,\
      convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
      data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, data_EducShares, data_WealthShares,\
-     DiscFacInit, DiscFacSpread,\
+     DiscFacInit,\
      max_recession_duration, num_experiment_periods,\
      recession_changes, sticky_e_changes, UI_changes, recession_UI_changes,\
      TaxCut_changes, recession_TaxCut_changes,recession_Check_changes
