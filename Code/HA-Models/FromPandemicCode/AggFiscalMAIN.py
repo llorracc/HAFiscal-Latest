@@ -396,6 +396,95 @@ if __name__ == '__main__':
         plt.savefig(figs_dir +'NPV_multipliers.pdf')
         plt.show()
         
+        #%% Share of expenditures during recession
+        
+        # max_T = 21
+        # from Parameters import Rspell
+        # R_persist = 1.-1./Rspell
+        # Prob_Recession_ongoing = np.array([R_persist**t for t in range(max_T)])
+        
+        # def ShareOfPolicyDuringRec(rec,UI,TaxCut,Check,NPV_UI,NPV_TaxCut,NPV_Check,Prob_Recession_ongoing,max_T):
+        #     #Cummulative for base experiments
+            
+        #     C_Multiplier_UI_Rec                = getNPVMultiplier(rec,            UI,            NPV_UI[-1])
+        #     Perc_Spent_inQ_UI_Rec = C_Multiplier_UI_Rec[0:max_T]- np.concatenate(([0] , C_Multiplier_UI_Rec[0:max_T-1]))
+        #     C_Multiplier_Rec_TaxCut            = getNPVMultiplier(rec,            TaxCut,        NPV_TaxCut[-1])
+        #     Perc_Spent_inQ_TaxCut  = C_Multiplier_Rec_TaxCut[0:max_T]- np.concatenate(([0] , C_Multiplier_Rec_TaxCut[0:max_T-1]))
+        #     C_Multiplier_Rec_Check             = getNPVMultiplier(rec,            Check,         NPV_Check[-1])
+        #     Perc_Spent_inQ_Check   = C_Multiplier_Rec_Check[0:max_T]- np.concatenate(([0] , C_Multiplier_Rec_Check[0:max_T-1]))
+            
+    
+        #     x_axis = np.arange(1,max_T+1)
+        #     plt.figure(figsize=(15,10))
+        #     plt.title('Percent of total policy spending spent at different periods', size=30)
+        #     plt.plot(x_axis,Perc_Spent_inQ_UI_Rec,                  color='blue',linestyle='-')
+        #     plt.plot(x_axis,Perc_Spent_inQ_TaxCut,              color='red',linestyle='-')
+        #     plt.plot(x_axis,Perc_Spent_inQ_Check,               color='green',linestyle='-')
+        #     plt.plot(x_axis[0:max_T],Prob_Recession_ongoing,color='black',linestyle=':')
+        #     plt.legend(['UI','Tax Cut','Check','Prob. recession ongoing'], fontsize=14)
+        #     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
+        #     plt.xlabel('quarter', fontsize=18)
+        #     plt.savefig(figs_dir +'C_noAD_multipliers.pdf')
+        #     plt.show()
+            
+        #     print('Expected share of UI policy expenditure occuring during recession: ', np.sum(Perc_Spent_inQ_UI_Rec*Prob_Recession_ongoing))
+        #     print('Expected share of Tax cut policy expenditure occuring during recession: ', np.sum(Perc_Spent_inQ_TaxCut*Prob_Recession_ongoing))
+        #     print('Expected share of Check policy expenditure occuring during recession: ', np.sum(Perc_Spent_inQ_Check*Prob_Recession_ongoing))
+        
+        
+        # ShareOfPolicyDuringRec(recession_results,recession_UI_results,recession_TaxCut_results,recession_Check_results,\
+        #                        NPV_AddInc_UI_Rec,NPV_AddInc_Rec_TaxCut,NPV_AddInc_Rec_Check,Prob_Recession_ongoing,max_T)
+        
+            
+        # NPV_AddInc_UI_Rec_AD    = getSimulationDiff(recession_results_AD,recession_UI_results_AD,'NPV_AggIncome')
+        # NPV_AddInc_Rec_TaxCut_AD= getSimulationDiff(recession_results_AD,recession_TaxCut_results_AD,'NPV_AggIncome')
+        # NPV_AddInc_Rec_Check_AD = getSimulationDiff(recession_results_AD,recession_Check_results_AD,'NPV_AggIncome') 
+        
+        # ShareOfPolicyDuringRec(recession_results_AD,recession_UI_results_AD,recession_TaxCut_results_AD,recession_Check_results_AD,\
+        #                        NPV_AddInc_UI_Rec_AD,NPV_AddInc_Rec_TaxCut_AD,NPV_AddInc_Rec_Check_AD,Prob_Recession_ongoing,max_T)
+        
+        #%% Better way to calculate share of policy expenditure during recession
+        # considers each run with differen rec lengths and calculates expenditure share within those runs
+        # then sums it up weighing by probability of that recession length
+            
+       
+        from Parameters import Rspell
+        R_persist = 1.-1./Rspell        
+        recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
+        recession_prob_array[-1] = 1.0 - np.sum(recession_prob_array[:-1])
+             
+        def ShareOfPolicyDuringRec2(rec,UI,TaxCut,Check,recession_prob_array,max_T):
+                 #Cummulative for base experiments
+                 
+            ShareExpDuringRecession= np.zeros(3)
+                 
+            for i in range(max_T):
+                
+                NPV_UI                  = getSimulationDiff(rec[i],UI[i],'NPV_AggIncome') 
+                C_Multiplier_UI_Rec     = getNPVMultiplier(rec[i], UI[i], NPV_UI[-1])
+                ShareExpDuringRecession[0] += C_Multiplier_UI_Rec[i]*recession_prob_array[i]
+                
+                NPV_TaxCut              = getSimulationDiff(rec[i],TaxCut[i],'NPV_AggIncome') 
+                C_Multiplier_TaxCut_Rec = getNPVMultiplier(rec[i], TaxCut[i], NPV_TaxCut[-1])
+                ShareExpDuringRecession[1] += C_Multiplier_TaxCut_Rec[i]*recession_prob_array[i]
+                
+                NPV_Check               = getSimulationDiff(rec[i],Check[i],'NPV_AggIncome') 
+                C_Multiplier_Check_Rec  = getNPVMultiplier(rec[i], Check[i], NPV_Check[-1])
+                ShareExpDuringRecession[2] += C_Multiplier_Check_Rec[i]*recession_prob_array[i]
+               
+            print('Share of UI policy expenditure occuring during recession: ', ShareExpDuringRecession[0])
+            print('Share of Tax cut policy expenditure occuring during recession: ', ShareExpDuringRecession[1])
+            print('Share of Check policy expenditure occuring during recession: ', ShareExpDuringRecession[2])
+            
+             
+                
+        recession_all_results_AD        = loadPickle('recession_all_results_AD',folder_AD,locals())   
+        recession_all_results_UI_AD     = loadPickle('recessionUI_all_results_AD',folder_AD,locals())
+        recession_all_results_TaxCut_AD = loadPickle('recessionTaxCut_all_results_AD',folder_AD,locals())
+        recession_all_results_Check_AD  = loadPickle('recessionCheck_all_results_AD',folder_AD,locals())
+            
+        ShareOfPolicyDuringRec2(recession_all_results_AD,recession_all_results_UI_AD,\
+                                recession_all_results_TaxCut_AD,recession_all_results_Check_AD,recession_prob_array,max_recession_duration)
         #%% Income and Consumption paths UI extension
     
         AddCons_UI_Ext_Rec_RelRec               = getSimulationPercentDiff(recession_results,    recession_UI_results,'AggCons')

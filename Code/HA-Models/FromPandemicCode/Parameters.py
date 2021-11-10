@@ -95,9 +95,9 @@ IncUnemp = 0.3              # Unemployment benefits replacement rate (proportion
 IncUnempNoBenefits = 0.05   # Unemployment income when benefits run out (proportion of permanent income)
 
 # Parameters concerning the initial distribution of permanent income 
-pLvlInitMean_d = np.log(5.0)  # Average quarterly permanent income of "newborn" HS dropout ($1000)
-pLvlInitMean_h = np.log(7.5)  # Average quarterly permanent income of "newborn" HS graduate ($1000)
-pLvlInitMean_c = np.log(12.0) # Average quarterly permanent income of "newborn" HS  ($1000)
+pLvlInitMean_d = np.log(5.0)  # Average quarterly permanent income of "newborn" HS dropout ($5000)
+pLvlInitMean_h = np.log(7.5)  # Average quarterly permanent income of "newborn" HS graduate ($7500)
+pLvlInitMean_c = np.log(12.0) # Average quarterly permanent income of "newborn" HS  ($12000)
 pLvlInitStd = 0.4             # Standard deviation of initial log permanent income 
 
 # Parameters concerning grid sizes: assets, permanent income shocks, transitory income shocks
