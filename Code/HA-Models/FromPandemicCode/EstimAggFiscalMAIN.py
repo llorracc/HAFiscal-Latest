@@ -472,10 +472,19 @@ betasObjFunc(opt_params[0:3], opt_params[3:6], target_option = 2, print_mode=Tru
 # Estimation 1: 
 opt_params = [0.96825, 0.97116, 0.97213, 0.02505]    
 # Estimation 2: 
-opt_params = [0.96971, 0.98628, 0.98764, 0.00981]
+opt_params = [0.96971, 0.98628, 0.98764, 0.009815]
 # Estimation 3: 
 opt_params = [0.88622648, 0.98265369, 0.97298556, 0.12578517, 0.01426293, 0.0271796 ]
-    
+betasObjFunc(opt_params[0:3], 3*[opt_params[3]], target_option = 2, print_mode=True)    
+
+# Implied discount factor distributions:
+DiscFacDstnD = Uniform(opt_params[0]-opt_params[3], opt_params[0]+opt_params[3]).approx(DiscFacCount)
+DiscFacDstnH = Uniform(opt_params[1]-opt_params[3], opt_params[1]+opt_params[3]).approx(DiscFacCount)
+DiscFacDstnC = Uniform(opt_params[2]-opt_params[3], opt_params[2]+opt_params[3]).approx(DiscFacCount)
+print([DiscFacDstnD.X[0], DiscFacDstnD.X[6]])
+print([DiscFacDstnH.X[0], DiscFacDstnH.X[6]])
+print([DiscFacDstnC.X[0], DiscFacDstnC.X[6]])
+
 #%% A test: 
 test_vals = [0.88622648, 0.98265369, 0.98764, 0.12578517, 0.01426293, 0.00981 ]
 betasObjFunc(test_vals[0:3], test_vals[3:6], target_option = 2, print_mode=True)
