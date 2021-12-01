@@ -28,8 +28,8 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 ## Which experiments to run / plots to show
 Run_Baseline            = True
-Run_Recession           = False
-Run_Check_Recession     = False
+Run_Recession           = True
+Run_Check_Recession     = True
 Run_UB_Ext_Recession    = True
 Run_TaxCut_Recession    = True
 
@@ -139,7 +139,7 @@ if __name__ == '__main__':
     if Run_Baseline:   
         # Run the baseline consumption level
         t0 = time()
-        base_results = AggDemandEconomy.runExperiment(**base_dict_agg, Full_Output = False)
+        base_results = AggDemandEconomy.runExperiment(**base_dict_agg, Full_Output = True)
         saveAsPickleUnderVarName(base_results,figs_dir,locals())
         AggDemandEconomy.storeBaseline(base_results['AggCons'])     
         t1 = time()
@@ -161,7 +161,7 @@ if __name__ == '__main__':
             dictt['EconomyMrkv_init'] = list(np.arange(1,AggDemandEconomy.num_experiment_periods+1)*2) + [0]*20 
             dictt['EconomyMrkv_init'][0:t+1] = np.array(dictt['EconomyMrkv_init'][0:t+1]) +1
             print(dictt['EconomyMrkv_init'])
-            this_result = AggDemandEconomy.runExperiment(**dictt, Full_Output = False)
+            this_result = AggDemandEconomy.runExperiment(**dictt, Full_Output = True)
             all_results += [this_result]
         for key in output_keys:
             avg_results[key] = np.sum(np.array([all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)   
