@@ -776,7 +776,7 @@ class AggregateDemandEconomy(Market):
         # Get initial Markov states
         Mrkv_init = np.concatenate([ThisType.history['MrkvNow'][0,:] for ThisType in self.agents])
         
-        if Full_Output:
+        if Full_Output==True:
             return_dict = {'cNrm_all' :     cNrm_all,
                            'TranShk_all' :  TranShk_all,
                            'cLvl_all' :     cLvl_all,
@@ -786,6 +786,13 @@ class AggregateDemandEconomy(Market):
                            'mNrm_all' :     mNrm_all,
                            'aNrm_all' :     aNrm_all,
                            'cLvl_all_splurge' : cLvl_all_splurge,
+                           'NPV_AggIncome': NPV_AggIncome,
+                           'NPV_AggCons':   NPV_AggCons,
+                           'AggIncome':     AggIncome,
+                           'AggCons':       AggCons,
+                           'Cratio_hist' :  Cratio_hist}
+        elif Full_Output=='ForWelfare':
+            return_dict = {'cLvl_all_splurge' : cLvl_all_splurge,
                            'NPV_AggIncome': NPV_AggIncome,
                            'NPV_AggCons':   NPV_AggCons,
                            'AggIncome':     AggIncome,
