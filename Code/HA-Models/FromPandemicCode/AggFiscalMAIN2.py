@@ -8,7 +8,7 @@ from Parameters import T_sim, init_dropout, init_highschool, init_college, init_
      DiscFacInit,\
      max_recession_duration, num_experiment_periods,\
      recession_changes, sticky_e_changes, UI_changes, recession_UI_changes,\
-     TaxCut_changes, recession_TaxCut_changes,recession_Check_changes
+     TaxCut_changes, recession_TaxCut_changes, Check_changes, recession_Check_changes
          
      # init_infhorizon, TypeShares, \
      
@@ -28,18 +28,22 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 ## Which experiments to run / plots to show
 Run_Baseline            = True
-Run_Recession           = True
-Run_Check_Recession     = True
-Run_UB_Ext_Recession    = True
-Run_TaxCut_Recession    = True
+Run_Recession           = False
+Run_Check_Recession     = False
+Run_UB_Ext_Recession    = False
+Run_TaxCut_Recession    = False
+Run_Check               = False
+Run_UB_Ext              = False
+Run_TaxCut              = True
 
-Run_AD                  = True
-Run_1stRoundAD          = True
-Run_NonAD               = True #whether to run nonAD experiments as well
+Run_AD                  = False
+Run_1stRoundAD          = False
+Run_NonAD               = False #whether to run nonAD experiments as well
 
 
 Make_Plots              = False
 Plot_1stRoundAd         = False
+Run_Welfare             = True
 
 
 #%% 
@@ -169,8 +173,16 @@ if __name__ == '__main__':
         print('Calculating took ' + mystr(t1-t0) + ' seconds.') 
         return [avg_results,all_results]
     
-   
-
+    def runExperimentsNoRecessions(dict_changes,AggDemandEconomy):
+        
+        t0 = time()
+        dictt = base_dict_agg.copy()
+        dictt.update(**dict_changes)
+        dictt['EconomyMrkv_init'] = list(np.arange(1,AggDemandEconomy.num_experiment_periods+1)*2) + [0]*20 
+        results = AggDemandEconomy.runExperiment(**dictt, Full_Output = True)
+        t1 = time()
+        print('Calculating took ' + mystr(t1-t0) + ' seconds.') 
+        return results
     
     def Run_FullRoutine(shock_type):
         AggDemandEconomy_Routine = deepcopy(AggDemandEconomy)
@@ -238,8 +250,19 @@ if __name__ == '__main__':
             saveAsPickle(shock_type + '_results_firstRoundAD',results_firstRoundAD,figs_dir)
             saveAsPickle(shock_type + '_all_results_firstRoundAD',all_results_firstRoundAD,figs_dir)
     
-         
-
+        #Run non-recession outcomes
+        if shock_type == 'Check':
+            changes = Check_changes    
+        elif shock_type == 'UI':
+            changes = UI_changes    
+        elif shock_type == 'TaxCut':     
+            changes = TaxCut_changes
+        if shock_type=='Check' or shock_type=='UI' or shock_type=='TaxCut':   
+            print('Calculating no recession effects for shock_type: ', shock_type)
+            AggDemandEconomy_Routine.switch_shock_type(shock_type)
+            AggDemandEconomy_Routine.solve()
+            results = runExperimentsNoRecessions(changes,AggDemandEconomy_Routine)
+            saveAsPickle(shock_type + '_results',results,figs_dir)
          
         
 #%% Parallel
@@ -253,8 +276,28 @@ if __name__ == '__main__':
     if Run_TaxCut_Recession:
         Run_FullRoutine('recessionTaxCut')
         
+    if Run_Check:
+        Run_FullRoutine('Check')
+    if Run_UB_Ext:
+        Run_FullRoutine('UI') 
+    if Run_TaxCut:
+        Run_FullRoutine('TaxCut')
         
-
+if Run_Welfare:
+    base_results                      = loadPickle('base_results',figs_dir,locals())
+    check_results                     = loadPickle('check_results',figs_dir,locals())
+    UI_results                        = loadPickle('UI_results',figs_dir,locals())
+    TaxCut_results                    = loadPickle('TaxCut_results',figs_dir,locals())
+    
+    #Assumes log utility
+    base_welfare   = np.log(base_results['cLvl_all_splurge'])
+    check_welfare  = np.log(check_results['cLvl_all_splurge'])
+    UI_welfare     = np.log(UI_results['cLvl_all_splurge'])
+    TaxCut_welfare = np.log(TaxCut_results['cLvl_all_splurge'])
+    
+    (np.sum(check_welfare)-np.sum(base_welfare))/(check_results['NPV_AggIncome'][-1]-base_results['NPV_AggIncome'][-1])
+    (np.sum(UI_welfare)-np.sum(base_welfare))/(UI_results['NPV_AggIncome'][-1]-base_results['NPV_AggIncome'][-1])
+    (np.sum(TaxCut_welfare)-np.sum(base_welfare))/(TaxCut_results['NPV_AggIncome'][-1]-base_results['NPV_AggIncome'][-1])
         
     
  
