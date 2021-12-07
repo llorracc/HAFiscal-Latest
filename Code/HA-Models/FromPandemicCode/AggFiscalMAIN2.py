@@ -32,8 +32,8 @@ Run_Recession           = False
 Run_Check_Recession     = False
 Run_UB_Ext_Recession    = False
 Run_TaxCut_Recession    = False
-Run_Check               = False
-Run_UB_Ext              = False
+Run_Check               = True
+Run_UB_Ext              = True
 Run_TaxCut              = True
 
 Run_AD                  = False
@@ -43,7 +43,7 @@ Run_NonAD               = False #whether to run nonAD experiments as well
 
 Make_Plots              = False
 Plot_1stRoundAd         = False
-Run_Welfare             = True
+Run_Welfare             = False
 
 
 #%% 
