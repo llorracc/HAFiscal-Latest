@@ -33,8 +33,8 @@ Run_Check_Recession     = False
 Run_UB_Ext_Recession    = False
 Run_TaxCut_Recession    = False
 Run_Check               = True
-Run_UB_Ext              = True
-Run_TaxCut              = True
+Run_UB_Ext              = False
+Run_TaxCut              = False
 
 Run_AD                  = False
 Run_1stRoundAD          = False
@@ -285,7 +285,7 @@ if __name__ == '__main__':
         
 if Run_Welfare:
     base_results                      = loadPickle('base_results',figs_dir,locals())
-    check_results                     = loadPickle('check_results',figs_dir,locals())
+    check_results                     = loadPickle('Check_results',figs_dir,locals())
     UI_results                        = loadPickle('UI_results',figs_dir,locals())
     TaxCut_results                    = loadPickle('TaxCut_results',figs_dir,locals())
     
