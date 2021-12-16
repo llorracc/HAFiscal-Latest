@@ -43,7 +43,6 @@ Run_NonAD               = False #whether to run nonAD experiments as well
 
 Make_Plots              = False
 Plot_1stRoundAd         = False
-Run_Welfare             = False
 
 
 #%% 
@@ -282,22 +281,6 @@ if __name__ == '__main__':
         Run_FullRoutine('UI') 
     if Run_TaxCut:
         Run_FullRoutine('TaxCut')
-        
-if Run_Welfare:
-    base_results                      = loadPickle('base_results',figs_dir,locals())
-    check_results                     = loadPickle('Check_results',figs_dir,locals())
-    UI_results                        = loadPickle('UI_results',figs_dir,locals())
-    TaxCut_results                    = loadPickle('TaxCut_results',figs_dir,locals())
-    
-    #Assumes log utility
-    base_welfare   = np.log(base_results['cLvl_all_splurge'])
-    check_welfare  = np.log(check_results['cLvl_all_splurge'])
-    UI_welfare     = np.log(UI_results['cLvl_all_splurge'])
-    TaxCut_welfare = np.log(TaxCut_results['cLvl_all_splurge'])
-    
-    (np.sum(check_welfare)-np.sum(base_welfare))/(check_results['NPV_AggIncome'][-1]-base_results['NPV_AggIncome'][-1])
-    (np.sum(UI_welfare)-np.sum(base_welfare))/(UI_results['NPV_AggIncome'][-1]-base_results['NPV_AggIncome'][-1])
-    (np.sum(TaxCut_welfare)-np.sum(base_welfare))/(TaxCut_results['NPV_AggIncome'][-1]-base_results['NPV_AggIncome'][-1])
-        
+  
     
  
