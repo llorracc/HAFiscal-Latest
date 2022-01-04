@@ -157,9 +157,9 @@ TaxCut_extra_welfare_rec = np.sum((recession_TaxCut_welfare - recession_welfare)
 output  ="\\begin{tabular}{@{}lccc@{}} \n"
 output +="\\toprule \n"
 output +="                          & Check      & UI    & Tax Cut    \\\\  \\midrule \n"
-output +="$\\mathcal{G}(\\text{policy})$ & "          + mystr3(check_extra_welfare)     + "  & "+ mystr3(UI_extra_welfare)     +  "  & "+  mystr3(TaxCut_extra_welfare)  + "     \\\\ \n"
-output +="$\\mathcal{G}(Rec,\\text{policy})$ & "      + mystr3(check_extra_welfare_rec) + "  & "+ mystr3(UI_extra_welfare_rec) +  "  & "+  mystr3(TaxCut_extra_welfare_rec)  + "     \\\\ \n"
-output +="$\\mathcal{G}(Rec, AD,\\text{policy})$ & "  + mystr3(check_extra_welfare_AD)  + "  & "+ mystr3(UI_extra_welfare_AD)  +  "  & "+  mystr3(TaxCut_extra_welfare_AD)  + "     \\\\ \n"
+output +="$\\mathcal{G}3(\\text{policy})$ & "          + mystr3(check_extra_welfare)     + "  & "+ mystr3(UI_extra_welfare)     +  "  & "+  mystr3(TaxCut_extra_welfare)  + "     \\\\ \n"
+output +="$\\mathcal{G}3(Rec,\\text{policy})$ & "      + mystr3(check_extra_welfare_rec) + "  & "+ mystr3(UI_extra_welfare_rec) +  "  & "+  mystr3(TaxCut_extra_welfare_rec)  + "     \\\\ \n"
+output +="$\\mathcal{G}3(Rec, AD,\\text{policy})$ & "  + mystr3(check_extra_welfare_AD)  + "  & "+ mystr3(UI_extra_welfare_AD)  +  "  & "+  mystr3(TaxCut_extra_welfare_AD)  + "     \\\\ \n"
 output +="\\end{tabular}  \n"
 with open('Tables/welfare3.tex','w') as f:
     f.write(output)
