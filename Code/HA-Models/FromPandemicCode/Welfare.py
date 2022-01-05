@@ -164,3 +164,12 @@ output +="\\end{tabular}  \n"
 with open('Tables/welfare3.tex','w') as f:
     f.write(output)
     f.close()
+    
+#### METHOD 3
+W_c = 1/(1-SP_discount_rate)
+P_c = SP_welfare(base_results['cLvl_all_splurge'],Rfree_base) #SP_welfare is not specifically for welfare - it works as a discunted sum
+
+
+
+
+
