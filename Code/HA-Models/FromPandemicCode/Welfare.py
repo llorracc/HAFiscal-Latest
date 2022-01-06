@@ -166,10 +166,31 @@ with open('Tables/welfare3.tex','w') as f:
     f.close()
     
 #### METHOD 3
-W_c = 1/(1-SP_discount_rate)
-P_c = SP_welfare(base_results['cLvl_all_splurge'],Rfree_base) #SP_welfare is not specifically for welfare - it works as a discunted sum
+W_c = 1/(1-SP_discount_rate)*base_welfare.shape[1]
+P_c = SP_welfare(base_results['cLvl_all_splurge'],Rfree_base[0]) #SP_welfare is not specifically for welfare - it works as a discunted sum
 
+Check_consumption_welfare   = (Check_welfare_impact_recession/W_c  - NPV_AddInc_Rec_Check[-1]/P_c)   - (Check_welfare_impact/W_c  - NPV_AddInc_Check[-1]/P_c) 
+UI_consumption_welfare      = (UI_welfare_impact_recession/W_c     - NPV_AddInc_UI_Rec[-1]/P_c)      - (UI_welfare_impact/W_c     - NPV_AddInc_UI[-1]/P_c) 
+TaxCut_consumption_welfare  = (TaxCut_welfare_impact_recession/W_c - NPV_AddInc_Rec_TaxCut[-1]/P_c)  - (TaxCut_welfare_impact/W_c - NPV_AddInc_TaxCut[-1]/P_c) 
 
+Check_consumption_welfare_AD   = (Check_welfare_impact_recession_AD/W_c  - NPV_AddInc_Rec_Check[-1]/P_c)   - (Check_welfare_impact/W_c  - NPV_AddInc_Check[-1]/P_c) 
+UI_consumption_welfare_AD      = (UI_welfare_impact_recession_AD/W_c     - NPV_AddInc_UI_Rec[-1]/P_c)      - (UI_welfare_impact/W_c     - NPV_AddInc_UI[-1]/P_c) 
+TaxCut_consumption_welfare_AD  = (TaxCut_welfare_impact_recession_AD/W_c - NPV_AddInc_Rec_TaxCut[-1]/P_c)  - (TaxCut_welfare_impact/W_c - NPV_AddInc_TaxCut[-1]/P_c) 
 
-
+#format as basis points
+def mystr3bp(number):
+    if not np.isnan(number):
+        out = "{:.3f}".format(number*10000)
+    else:
+        out = ''
+    return out
+output  ="\\begin{tabular}{@{}lccc@{}} \n"
+output +="\\toprule \n"
+output +="                          & Check      & UI    & Tax Cut    \\\\  \\midrule \n"
+output +="$\\mathcal{C}(Rec,\\text{policy})$ & "      + mystr3bp(Check_consumption_welfare)     + "  & "+ mystr3bp(UI_consumption_welfare)     +  "  & "+  mystr3bp(TaxCut_consumption_welfare)  + "     \\\\ \n"
+output +="$\\mathcal{C}(Rec, AD,\\text{policy})$ & "  + mystr3bp(Check_consumption_welfare_AD)  + "  & "+ mystr3bp(UI_consumption_welfare_AD)  +  "  & "+  mystr3bp(TaxCut_consumption_welfare_AD)  + "     \\\\ \n"
+output +="\\end{tabular}  \n"
+with open('Tables/welfare4.tex','w') as f:
+    f.write(output)
+    f.close()
 
