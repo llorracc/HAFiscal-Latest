@@ -168,8 +168,6 @@ with open('Tables/welfare3.tex','w') as f:
 #### METHOD 3
 W_c = 1/(1-SP_discount_rate)*base_welfare.shape[1]
 P_c = 1/(1-SP_discount_rate)*base_results['AggCons'][0]
-print(P_c)
-
 
 Check_consumption_welfare   = (Check_welfare_impact_recession/W_c  - NPV_AddInc_Rec_Check[-1]/P_c)   - (Check_welfare_impact/W_c  - NPV_AddInc_Check[-1]/P_c) 
 UI_consumption_welfare      = (UI_welfare_impact_recession/W_c     - NPV_AddInc_UI_Rec[-1]/P_c)      - (UI_welfare_impact/W_c     - NPV_AddInc_UI[-1]/P_c) 
