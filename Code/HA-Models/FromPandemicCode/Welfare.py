@@ -167,8 +167,7 @@ with open('Tables/welfare3.tex','w') as f:
     
 #### METHOD 3
 W_c = 1/(1-SP_discount_rate)*base_welfare.shape[1]
-#?????? [0:40] added by Ivan in following line
-P_c = SP_welfare(base_results['cLvl_all_splurge'][0:40],Rfree_base[0]) #SP_welfare is not specifically for welfare - it works as a discunted sum
+P_c = 1/(1-SP_discount_rate)*base_results['AggCons'][0]
 print(P_c)
 
 
