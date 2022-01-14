@@ -167,7 +167,10 @@ with open('Tables/welfare3.tex','w') as f:
     
 #### METHOD 3
 W_c = 1/(1-SP_discount_rate)*base_welfare.shape[1]
-P_c = SP_welfare(base_results['cLvl_all_splurge'],Rfree_base[0]) #SP_welfare is not specifically for welfare - it works as a discunted sum
+#?????? [0:40] added by Ivan in following line
+P_c = SP_welfare(base_results['cLvl_all_splurge'][0:40],Rfree_base[0]) #SP_welfare is not specifically for welfare - it works as a discunted sum
+print(P_c)
+
 
 Check_consumption_welfare   = (Check_welfare_impact_recession/W_c  - NPV_AddInc_Rec_Check[-1]/P_c)   - (Check_welfare_impact/W_c  - NPV_AddInc_Check[-1]/P_c) 
 UI_consumption_welfare      = (UI_welfare_impact_recession/W_c     - NPV_AddInc_UI_Rec[-1]/P_c)      - (UI_welfare_impact/W_c     - NPV_AddInc_UI[-1]/P_c) 
