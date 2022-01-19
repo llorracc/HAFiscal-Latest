@@ -118,7 +118,6 @@ if __name__ == '__main__':
         agent.AggDemandFac = 1.0
         agent.RfreeNow = 1.0
         agent.CaggNow = 1.0
-    
     AggDemandEconomy.makeHistory()   
     AggDemandEconomy.saveState()   
     AggDemandEconomy.switchToCounterfactualMode("base")
@@ -134,8 +133,8 @@ if __name__ == '__main__':
     recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
     recession_prob_array[-1] = 1.0 - np.sum(recession_prob_array[:-1])
    
-    x = np.zeros(21)
-    for i in range(21):
+    x = np.zeros(len(AggDemandEconomy.agents))
+    for i in range(len(AggDemandEconomy.agents)):
         x[i] = AggDemandEconomy.agents[i].AgentCount
        
         

@@ -111,7 +111,7 @@ aXtraExtra = [0.002,0.003] # Additional gridpoints to "force" into the grid
 aXtraNestFac = 3        # Exponential nesting factor for aXtraGrid (how dense is grid near zero)
 PermShkCount = 7        # Number of points in equiprobable discrete approximation to permanent shock distribution
 TranShkCount = 7        # Number of points in equiprobable discrete approximation to transitory shock distribution
-
+T_age = 200             # Kill off agents who have worked for 50 years
 
 
 # Size of simulations
@@ -270,7 +270,7 @@ init_mrkv_dist_c = vecs_c[:,idx_c].real/np.sum(vecs_c[:,idx_c].real)
 init_dropout = {"cycles": 0, # 00This will be overwritten at type construction
                 "T_cycle": T_cycle,
                 'T_sim': 400, #Simhulate up to age 400
-                'T_age': None,
+                'T_age': T_age,
                 'AgentCount': 1000, #number overwritten later
                 "PermGroFacAgg": PermGroFacAgg,
                 "PopGroFac": PopGroFac,
