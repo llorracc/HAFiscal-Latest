@@ -15,54 +15,78 @@
 
 \begin{document}
 	
-\section{Update - Aug 4th 2021}
-\FloatBarrier
-
-\subsection{Experiments}
-
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{../FullRun_June7th/recession_taxcut_relrecession}
-	\caption{}
-	\label{fig:recessiontaxcutrelrecession}
-\end{figure}
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{../FullRun_June7th/recession_UI_relrecession}
-	\caption{}
-	\label{fig:recessionuirelrecession}
-\end{figure}
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{../FullRun_June7th/recession_Check_relrecession}
-	\caption{}
-	\label{fig:recessioncheckrelrecession}
-\end{figure}
-
+\section{Update - Oct 16th 2021}
 
 \FloatBarrier
-\subsection{Multipliers}
+\subsection{Long-run NPV multipliers table}
 
-We can look at three different multipliers
+The table shows $NPVM(\infty)$.
+
+\begin{table}[htb]
+	\centering
+	\begin{tabular}{@{}lllll@{}}
+		\toprule
+		Experiment  	& AD = 0.5 	  		&	 AD = 0.5 (1st round only)	\\ \midrule 
+		UI extension    & 1.64[1.56](1.74) 	&	1.41		\\
+		Payroll tax cut & 1.21[1.16](1.28)  &	1.11	   	\\
+		Check		    & 1.65[1.50](1.62) 	&	1.39 		\\ \bottomrule
+	\end{tabular}	
+	\caption{Long-run multipliers for new estimation with het. nablas [uniform nabla estimation] (old calibration)}
+\end{table}
+
+%\begin{table}[htb]
+%	\centering
+%	\begin{tabular}{@{}lllll@{}}
+%		\toprule
+%		Experiment  	& no AD effects & AD = 0.5 		& AD = 0.5 (1st round)	\\ \midrule 
+%		UI extension    & 0.93(0.98) 	& 1.56(1.74) 	& 1.37(1.51) 				\\
+%		Payroll tax cut & 0.89(1)		& 1.16(1.28)   	& 1.07(1.18)  			   	\\
+%		Check		    & 0.91(0.97)	& 1.50(1.62) 	& 1.30(1.40) 				\\ \bottomrule
+%	\end{tabular}	
+%	\caption{Long-run multipliers for new calibration (old calibration)}
+%\end{table}
+
+
+new estimation discount factors: \\
+DiscFacMeanD = 0.87509113  \\
+DiscFacMeanH = 0.96597689 \\
+DiscFacMeanC = 0.9886787 \\
+DiscFacSpreadD = 0.13891492 \\
+DiscFacSpreadH = 0.03307152 \\
+DiscFacSpreadC = 0.00772621 \\
+\\
+old estimation discount factors: \\
+DiscFacMeanD : 0.96971    Mean intertemporal discount factor for dropout types \\
+DiscFacMeanH : 0.98628   Mean intertemporal discount factor for high school ty \\
+DiscFacMeanC : 0.98764   Mean intertemporal discount factor for college types \\
+DiscFacSpread : 0.00981   Half-width of uniform distribution of discount factors \\
+\\
+Calibration discount factors: \\
+DiscFacMean     : 0.986      Mean intertemporal discount factor  \\
+DiscFacSpread   : 0.0183     Half-width of uniform distribution of discount factors\\
+\\
+Reason: The college / HS groups are large and have relatively large betas, so average MPC in the population has gone down.
+
+\FloatBarrier
+\subsection{Share of policy expenditure occuring during recession}
+
+For each recession length (1 to 20q) determine the NPV of additional income occuring during the recession (as opposed to the share occuring after the recession) \\
+Sum up those shares across all recession lengths, weighted by the probability of that recession length occuring.\\
+\\
+Result:\\
+Share of UI policy expenditure occuring during recession:  68 \% \\
+Share of Tax cut policy expenditure occuring during recession:  42 \%  \\
+Share of Check policy expenditure occuring during recession:  60 \%  \\
+
+
+\FloatBarrier
+\subsection{Three different multiplier definitions}
+
+
 
 \begin{enumerate}
-	\item Period multiplier: The ratio of additional consumption to policy expenditures at a certain point in time
-	\begin{equation}
-	PM(t) = \frac{\Delta C (t) }{\Delta G(t)}
-	\end{equation}	
-	where $\Delta X(t)$ is the difference in the variable $X$ between the no-policy and policy scenario at time $t$.
-	
-	\textit{Useful to investigate at which point in time a policy is most effective}
 		
-	\begin{figure}[h!]
-		\centering
-		\includegraphics[width=\linewidth]{../FullRun_June7th/P_multipliers}
-		\caption{}
-		\label{fig:pmultipliers}
-	\end{figure}
+
 	
 	\item Net present value multiplier: The ratio of the NPV of additional consumption to the NPV of policy expenditure up to a certain point in time.
 	\begin{equation}
@@ -73,28 +97,39 @@ We can look at three different multipliers
 	NPV(t,X) = \sum_{s=0}^{t} \left( \prod_{i=1}^{s} \frac{1}{R_i} \right) X_s
 	\end{equation}
 	
-	\textit{Useful to investigate at which horizons the policy becomes effective}
-	
-	\begin{figure}
-		\centering
-		\includegraphics[width=\linewidth]{../FullRun_June7th/NPV_multipliers}
-		\caption{Net present value multipliers at horizon 1 (impact multiplier) to 30}
-		\label{fig:npvmultipliers}
-	\end{figure}
-	
-	
 	\item Cummulative multiplier: The ratio of the NPV of additional consumption up to time $t$ to the infinite-horizon NPV of policy expenditure
 	\begin{equation}
 	CM(t) = \frac{NPV(t,\Delta C)}{NPV (\infty,\Delta G)}
 	\end{equation}
 	
-	\textit{Useful to investigate when additional consumption occurs}
+	\item Period multiplier: The ratio of additional consumption to policy expenditures at a certain point in time
+	\begin{equation}
+	PM(t) = \frac{\Delta C (t) }{\Delta G(t)}
+	\end{equation}	
+	where $\Delta X(t)$ is the difference in the variable $X$ between the no-policy and policy scenario at time $t$.	
+	
+	
+	
 	
 	\begin{figure}
 		\centering
-		\includegraphics[width=\linewidth]{../FullRun_June7th/C_multipliers}
-		\caption{}
+		\includegraphics[width=\linewidth]{../Full_Run_3Educ_Nov4th/NPV_multipliers}
+		\caption{Net present value multipliers at horizon 1 (impact multiplier) to 30}
+		\label{fig:npvmultipliers}
+	\end{figure}
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{../Full_Run_3Educ_Nov4th/C_multipliers}
+		\caption{Cummulative multiplier}
 		\label{fig:cmultipliers}
+	\end{figure}
+
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_3Educ_Nov4th/P_multipliers}
+	\caption{Period multiplier}
+	\label{fig:pmultipliers}
 	\end{figure}
 	
 \end{enumerate}
@@ -102,6 +137,27 @@ We can look at three different multipliers
 
 
 
+\FloatBarrier
+\subsection{Response of income / consumption in experiments}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_3Educ_Nov4th/recession_taxcut_relrecession}
+	\caption{}
+	\label{fig:recessiontaxcutrelrecession}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_3Educ_Nov4th/recession_UI_relrecession}
+	\caption{}
+	\label{fig:recessionuirelrecession}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{../Full_Run_3Educ_Nov4th/recession_Check_relrecession}
+	\caption{}
+	\label{fig:recessioncheckrelrecession}
+\end{figure}
 
 
 
@@ -109,6 +165,7 @@ We can look at three different multipliers
 
 	
 
+\begin{comment}
 
 \FloatBarrier
 \subsection{Long-run NPV multipliers table}
@@ -130,7 +187,6 @@ The table shows $NPVM(\infty)$.
 
 	
 
-\begin{comment}
 
 
 \section{Update - May 19th 2021}
