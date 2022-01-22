@@ -6,10 +6,11 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-#figs_dir = './Figures/Welfare_Run_3Educ_Jan10th_80q/'
-#figs_dir = './Figures/Welfare_Run_3Educ_Jan7th/'
-figs_dir = './Figures/Welfare_Run_3Educ_Jan12th_PVsame/'
-#figs_dir = './Figures/Welfare_Run_3Educ_Jan10th_80qPVsame/'
+figs_dir = './Figures/FullRun/'
+#figs_dir = './Figures/FullRun_PVsame/'
+
+
+Equalize_PVs = False
 
 try:
     os.mkdir(figs_dir)
@@ -77,12 +78,18 @@ UBspell_extended = 4         # Average duration of unemployment benefits when ex
 PolicyUBspell = 2            # Average duration that policy of extended unemployment benefits is in place
 # Tax Cut parameter
 PolicyTaxCutspell = 2        # Average duration that policy of payroll tax cuts
-TaxCutIncFactor = 1 + 0.02*946/45000       # Amount by which the payroll tax cut increases after-tax income
+if Equalize_PVs:
+    TaxCutIncFactor = 1 + 0.02*946/45000       # Amount by which the payroll tax cut increases after-tax income
+else:
+    TaxCutIncFactor = 1 + 0.02
 TaxCutPeriods = 8            # Deterministic duration of tax cut 
 TaxCutContinuationProb_Rec = 0.5   # Probability that tax cut is continued after tax cut periods run out, when recession in q8
 TaxCutContinuationProb_Bas = 0.0   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
 #Check experiment parameter
-CheckStimLvl = 1200/1000 * 946/8074 #1 = 1k, multiplication to get PVs equal
+if Equalize_PVs:
+    CheckStimLvl = 1200/1000 * 946/8074 #1 = 1k, multiplication to get PVs equal
+else:
+    CheckStimLvl = 1200/1000
 CheckStimLvl_PLvl_Cutoff_start = 100/4/1 #100 k yearly income #At this Level of permanent inc, Stimulus beings to fall linearly
 CheckStimLvl_PLvl_Cutoff_end = 150/4/1 #150k yearly income #At this Level of permanent inc, Stimulus is zero
 

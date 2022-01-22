@@ -37,13 +37,8 @@ Run_UB_Ext              = True
 Run_TaxCut              = True
 
 Run_AD                  = True
-Run_1stRoundAD          = False
+Run_1stRoundAD          = True
 Run_NonAD               = True #whether to run nonAD experiments as well
-
-
-Make_Plots              = True
-Plot_1stRoundAd         = False
-
 
 #%% 
 

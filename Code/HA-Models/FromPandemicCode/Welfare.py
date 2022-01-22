@@ -4,10 +4,12 @@ Created on Wed Dec 15 16:44:33 2021
 
 @author: edmun
 """
-from Parameters import figs_dir, Rfree_base, Rspell, max_recession_duration
+from Parameters import Rfree_base, Rspell, max_recession_duration
 from OtherFunctions import loadPickle, getSimulationDiff
 import numpy as np
 import pandas as pd
+
+figs_dir = './Figures/FullRun_PVsame/'
 
 base_results                        = loadPickle('base_results',figs_dir,locals())
 check_results                       = loadPickle('Check_results',figs_dir,locals())
