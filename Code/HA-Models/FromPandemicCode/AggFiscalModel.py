@@ -141,7 +141,7 @@ class AggFiscalType(MarkovConsumerType):
         # Shock unemployment up to ergodic unemployment level in normal or recession state
         if shock_type=="recession" or shock_type=="recessionUI" or shock_type=="recessionTaxCut" or shock_type=="recessionCheck":
             this_Urate = self.Urate_recession
-        elif shock_type=="base":
+        elif shock_type=="base" or shock_type=="UI" or shock_type=="TaxCut" or shock_type=="Check":
             this_Urate = self.Urate_normal
         
         # Draw new Markov states for each agents who are employed
@@ -155,7 +155,9 @@ class AggFiscalType(MarkovConsumerType):
         if shock_type=="base":
             MrkvNew = MrkvNew #no shock
         elif shock_type=="recession" or shock_type=="recessionUI" or shock_type=="recessionTaxCut" or shock_type=="recessionCheck": # If the recssion actually occurs,
-            MrkvNew += 2*self.num_base_MrkvStates # then put everyone into the recession 
+            MrkvNew += 3*self.num_base_MrkvStates # then put everyone into the recession ???????????????????????
+        elif shock_type==shock_type=="UI" or shock_type=="TaxCut" or shock_type=="Check": 
+            MrkvNew += 2*self.num_base_MrkvStates # then put everyone into first experiment mrkv state ???????????????????????
         # Move agents to those Markov states 
         self.MrkvNow = MrkvNew
        
@@ -179,12 +181,12 @@ class AggFiscalType(MarkovConsumerType):
         
         tax_cut_multiplier  = np.ones_like(self.history['MrkvNow'])
         CheckAmount         = np.zeros_like(self.history['MrkvNow'])
-        if shock_type=="recessionTaxCut":
-            tax_cut_states = np.logical_and(np.greater(self.history['MrkvNow'], 2*self.num_base_MrkvStates), np.less(self.history['MrkvNow'],9*2*self.num_base_MrkvStates)) #$$$$$$$$$$ assumes all markov states above 11 and below 36 are tax cut states
+        if shock_type=="recessionTaxCut" or shock_type=="TaxCut":
+            tax_cut_states = np.logical_and(np.greater(self.history['MrkvNow'], 2*self.num_base_MrkvStates-1), np.less(self.history['MrkvNow'],9*2*self.num_base_MrkvStates)) # assumes tax cut last 8 periods
             tax_cut_multiplier[tax_cut_states] *= self.TaxCutIncFactor 
-        elif shock_type=="recessionCheck":
-            CheckAmount = np.equal(self.history['MrkvNow'],3*self.num_base_MrkvStates) * self.CheckStimLvl # only if MrkvState is 3
+        elif shock_type=="recessionCheck" or shock_type=="Check":
             #This only works because check occurs in first period
+            CheckAmount[0] = self.CheckStimLvl
             CheckAmount[0] = CheckAmount[0] / self.pLvlNow        
             for agent in range(len(CheckAmount[0])):
                 # Stimulus is a function of permanent income
@@ -230,15 +232,15 @@ class AggFiscalType(MarkovConsumerType):
             self.MrkvArray = self.MrkvArray_recession
             self.IncomeDstn = self.IncomeDstn_recession
             self.CondMrkvArrays = self.CondMrkvArrays_recession
-        elif shock_type == "recessionUI":
+        elif shock_type == "recessionUI" or shock_type == "UI":
             self.MrkvArray = self.MrkvArray_recessionUI
             self.IncomeDstn = self.IncomeDstn_recessionUI
             self.CondMrkvArrays = self.CondMrkvArrays_recessionUI
-        elif shock_type == "recessionTaxCut":
+        elif shock_type == "recessionTaxCut" or shock_type == "TaxCut":
             self.MrkvArray = self.MrkvArray_recessionTaxCut
             self.IncomeDstn = self.IncomeDstn_recessionTaxCut
             self.CondMrkvArrays = self.CondMrkvArrays_recessionTaxCut
-        elif shock_type == "recessionCheck":
+        elif shock_type == "recessionCheck" or shock_type == "Check":
             self.MrkvArray = self.MrkvArray_recessionCheck
             self.IncomeDstn = self.IncomeDstn_recessionCheck
             self.CondMrkvArrays = self.CondMrkvArrays_recessionCheck
@@ -334,15 +336,15 @@ class AggFiscalType(MarkovConsumerType):
             self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell, self.num_experiment_periods)
             self.CondMrkvArrays = makeCondMrkvArrays_recession(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.num_experiment_periods)
             self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
-        elif shock_type=="recessionUI":
+        elif shock_type=="recessionUI" or shock_type=="UI":
             self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell, self.num_experiment_periods)
             self.CondMrkvArrays = makeCondMrkvArrays_recessionUI(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.num_experiment_periods,  self.UBspell_extended-self.UBspell_normal)
             self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
-        elif shock_type=="recessionTaxCut":
+        elif shock_type=="recessionTaxCut" or shock_type=="TaxCut":
             self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell, self.num_experiment_periods)
             self.CondMrkvArrays = makeCondMrkvArrays_recession(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.num_experiment_periods)
             self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
-        elif shock_type=="recessionCheck":
+        elif shock_type=="recessionCheck" or shock_type=="Check":
             self.MacroMrkvArray = makeMacroMrkvArray_recession(self.Rspell, self.num_experiment_periods)
             self.CondMrkvArrays = makeCondMrkvArrays_recession(self.Urate_normal, self.Uspell_normal, self.UBspell_normal, self.Urate_recession, self.Uspell_recession, self.num_experiment_periods)
             self.MrkvArray = makeFullMrkvArray(self.MacroMrkvArray, self.CondMrkvArrays)
@@ -774,7 +776,7 @@ class AggregateDemandEconomy(Market):
         # Get initial Markov states
         Mrkv_init = np.concatenate([ThisType.history['MrkvNow'][0,:] for ThisType in self.agents])
         
-        if Full_Output:
+        if Full_Output==True:
             return_dict = {'cNrm_all' :     cNrm_all,
                            'TranShk_all' :  TranShk_all,
                            'cLvl_all' :     cLvl_all,
@@ -784,6 +786,13 @@ class AggregateDemandEconomy(Market):
                            'mNrm_all' :     mNrm_all,
                            'aNrm_all' :     aNrm_all,
                            'cLvl_all_splurge' : cLvl_all_splurge,
+                           'NPV_AggIncome': NPV_AggIncome,
+                           'NPV_AggCons':   NPV_AggCons,
+                           'AggIncome':     AggIncome,
+                           'AggCons':       AggCons,
+                           'Cratio_hist' :  Cratio_hist}
+        elif Full_Output=='ForWelfare':
+            return_dict = {'cLvl_all_splurge' : cLvl_all_splurge,
                            'NPV_AggIncome': NPV_AggIncome,
                            'NPV_AggCons':   NPV_AggCons,
                            'AggIncome':     AggIncome,
@@ -828,11 +837,11 @@ class AggregateDemandEconomy(Market):
             self.MrkvArray = self.MrkvArray_base
         elif shock_type == "recession":
             self.MrkvArray = self.MrkvArray_recession
-        elif shock_type == "recessionUI":
+        elif shock_type == "recessionUI" or shock_type == "UI":
             self.MrkvArray = self.MrkvArray_recessionUI
-        elif shock_type == "recessionTaxCut":
+        elif shock_type == "recessionTaxCut" or shock_type == "TaxCut":
             self.MrkvArray = self.MrkvArray_recessionTaxCut
-        elif shock_type == "recessionCheck":
+        elif shock_type == "recessionCheck" or shock_type == "Check":
             self.MrkvArray = self.MrkvArray_recessionCheck
         num_mrkv_states = self.MrkvArray[0].shape[0]
         self.intercept_prev = np.ones((num_mrkv_states,num_mrkv_states ))
