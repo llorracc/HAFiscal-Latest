@@ -507,7 +507,7 @@ betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = 2, print_mode=True)
 estimates_d = [0.87509113, 0.13891492]  # Dropouts only 
 estimates_h = [0.96597689, 0.03307152]  # Highschool only
 estimates_c = [0.9886787, 0.00772621]   # College only
-betasObjFuncEduc(estimates_c[0], estimates_c[1], educ_type = 2, print_mode=True)
+betasObjFuncEduc(estimates_d[0], estimates_d[1], educ_type = 0, print_mode=True)
 
 betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \
              [estimates_d[1], estimates_h[1], estimates_c[1]], \
@@ -524,6 +524,7 @@ print('Highschool:\t ', mystr4(DiscFacDstnH.X[0]), ' to ', mystr4(DiscFacDstnH.X
 print('College:\t\t ', mystr4(DiscFacDstnC.X[0]), ' to ', mystr4(DiscFacDstnC.X[6])) 
     
 # Old estimates targeting average LW/PI: 
-estimates_c = [0.99160378, 0.00480153]  # College only
+estimates_d = [0.79602650, 0.02785033]  # Dropouts only
 estimates_h = [0.98051198, 0.01675674]  # Highschool only
-estimates_d = [0.79602650, 0.02785033]  # Dropouts only 
+estimates_c = [0.99160378, 0.00480153]  # College only
+ 
