@@ -19,15 +19,17 @@ else:
 # Targets in the estimation of the discount factor distributions for each 
 # education level. 
 # From SCF 2004: [20,40,60,80]-percentiles of the Lorenz curve for liquid wealth
-data_LorenzPts_d = [0, 0.01, 0.60, 3.58]    # \
-data_LorenzPts_h = [0.06, 0.63, 2.98, 11.6] # -> units: % 
-data_LorenzPts_c = [0.15, 0.92, 3.27, 10.3] # /
+data_LorenzPts_d = np.array([0, 0.01, 0.60, 3.58])    # \
+data_LorenzPts_h = np.array([0.06, 0.63, 2.98, 11.6]) # -> units: % 
+data_LorenzPts_c = np.array([0.15, 0.92, 3.27, 10.3]) # /
 data_LorenzPts = [data_LorenzPts_d, data_LorenzPts_h, data_LorenzPts_c]
 data_LorenzPtsAll = np.array([0.03, 0.35, 1.84, 7.42])
 # From SCF 2004: Average liquid wealth to permanent income ratio 
 data_avgLWPI = np.array([15.7, 47.7, 111])*4 # weighted average of fractions in percent
 # From SCF 2004: Total LW over total PI by education group
 data_LWoPI = np.array([28.1, 59.6, 162])*4 # units: %
+# From SCF 2004: Weighted median of liquid wealth to permanent income ratio
+data_medianLWPI = np.array([1.16, 7.55, 28.2])*4 # weighted median of fractions in percent
 
 # Population share of each type
 data_EducShares = [0.093, 0.527, 0.38] # Proportion of dropouts, HS grads, college types, SCF 2004 
@@ -36,24 +38,28 @@ data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total we
 
 # Parameters concerning the distribution of discount factors
 # Initial values for estimation, taken from pandemic paperCondMrkvArrays_base
-DiscFacMeanD = 0.9637   # Mean intertemporal discount factor for dropout types
-DiscFacMeanH = 0.9705   # Mean intertemporal discount factor for high school types
-DiscFacMeanC = 0.97557  # Mean intertemporal discount factor for college types
+# Note: not really using these anymore
+DiscFacMeanD = 0.9647   # Mean intertemporal discount factor for dropout types
+DiscFacMeanH = 0.98051  # Mean intertemporal discount factor for high school types
+DiscFacMeanC = 0.99160  # Mean intertemporal discount factor for college types
+
 DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
-DiscFacSpread = 0.0253  # Half-width of uniform distribution of discount factors
+DiscFacSpreadD = 0.025
+DiscFacSpreadH = 0.01676
+DiscFacSpreadC = 0.00480  # Half-width of uniform distribution of discount factors
 
 # Define the distribution of the discount factor for each eduation level
 DiscFacCount = 7
-DiscFacDstnD = Uniform(DiscFacMeanD-DiscFacSpread, DiscFacMeanD+DiscFacSpread).approx(DiscFacCount)
-DiscFacDstnH = Uniform(DiscFacMeanH-DiscFacSpread, DiscFacMeanH+DiscFacSpread).approx(DiscFacCount)
-DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpread, DiscFacMeanC+DiscFacSpread).approx(DiscFacCount)
+DiscFacDstnD = Uniform(DiscFacMeanD-DiscFacSpreadD, DiscFacMeanD+DiscFacSpreadD).approx(DiscFacCount)
+DiscFacDstnH = Uniform(DiscFacMeanH-DiscFacSpreadH, DiscFacMeanH+DiscFacSpreadH).approx(DiscFacCount)
+DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpreadC, DiscFacMeanC+DiscFacSpreadC).approx(DiscFacCount)
 DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
 
 # Parameters concerning Markov transition matrix
 #https://www.statista.com/statistics/232942/unemployment-rate-by-level-of-education-in-the-us/
-Urate_normal_d = 0.085        # Unemployment rate in normal times, dropouts 2004
-Urate_normal_h = 0.05         # Unemployment rate in normal times, highschoolers 2004
-Urate_normal_c = 0.04         # Unemployment rate in normal times, college 2004
+Urate_normal_d = 0.085       # Unemployment rate in normal times, dropouts 2004
+Urate_normal_h = 0.044       # Unemployment rate in normal times, highschooler+some college 2004
+Urate_normal_c = 0.027       # Unemployment rate in normal times, college 2004
 
 Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
@@ -68,10 +74,13 @@ IncUnemp = 0.3              # Unemployment benefits replacement rate (proportion
 IncUnempNoBenefits = 0.05   # Unemployment income when benefits run out (proportion of permanent income)
 
 # Parameters concerning the initial distribution of permanent income 
-pLvlInitMean_d = np.log(5.0)  # Average quarterly permanent income of "newborn" HS dropout ($1000)
-pLvlInitMean_h = np.log(7.5)  # Average quarterly permanent income of "newborn" HS graduate ($1000)
-pLvlInitMean_c = np.log(12.0) # Average quarterly permanent income of "newborn" HS  ($1000)
-pLvlInitStd = 0.4             # Standard deviation of initial log permanent income 
+# "newborn" = 25 years old in SCF 2004
+pLvlInitMean_d = np.log(6.2)   # Average quarterly permanent income of "newborn" HS dropout ($1000)
+pLvlInitMean_h = np.log(11.1)  # Average quarterly permanent income of "newborn" HS graduate ($1000)
+pLvlInitMean_c = np.log(14.5)  # Average quarterly permanent income of "newborn" HS  ($1000)
+pLvlInitStd_d  = 0.32          # Standard deviation of initial log permanent income 
+pLvlInitStd_h  = 0.42          # Standard deviation of initial log permanent income 
+pLvlInitStd_c  = 0.53          # Standard deviation of initial log permanent income 
 
 # Parameters concerning grid sizes: assets, permanent income shocks, transitory income shocks
 aXtraMin = 0.001        # Lowest non-zero end-of-period assets above minimum gridpoint
@@ -144,12 +153,12 @@ PermGroFac_base_c = [1.0 + 0.01958/4]
 # # Define the permanent and transitory shocks 
 # TranShkStd = [0.1]
 # PermShkStd = [0.05]
-#From Sticky expectations paper: 
-TranShkStd = [0.12]
-PermShkStd = [0.003]
+# Variances from Sticky expectations paper: 
+TranShkStd = [np.sqrt(0.12)]
+PermShkStd = [np.sqrt(0.003)]
 
 Rfree_base = [1.01]
-LivPrb_base = [1.0-1/240.0]
+LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
 # find intial distribution of states for each education type
 vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
 dist_d = np.abs(np.abs(vals_d) - 1.)
@@ -206,7 +215,7 @@ init_dropout = {"cycles": 0, # This will be overwritten at type construction
                 'aNrmInitMean': np.log(0.00001), # Initial assets are zero
                 'aNrmInitStd': 0.0,
                 'pLvlInitMean': pLvlInitMean_d,
-                'pLvlInitStd': pLvlInitStd,
+                'pLvlInitStd': pLvlInitStd_d,
                 "MrkvPrbsInit" : np.array(list(init_mrkv_dist_d)),
                 'Urate_normal' : Urate_normal_d,
                 'Uspell_normal' : Uspell_normal,
@@ -226,6 +235,7 @@ adj_highschool = {
     "MrkvArray" : MrkvArray_base_h, 
     "CondMrkvArrays" : CondMrkvArrays_base_h,
     'pLvlInitMean': pLvlInitMean_h,
+    'pLvlInitStd': pLvlInitStd_h,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_h)),
     'Urate_normal' : Urate_normal_h,
     'EducType' : 1}
@@ -240,6 +250,7 @@ adj_college = {
     "MrkvArray" : MrkvArray_base_c, 
     "CondMrkvArrays" : CondMrkvArrays_base_c,
     'pLvlInitMean': pLvlInitMean_c,
+    'pLvlInitStd': pLvlInitStd_c,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_c)),
     'Urate_normal' : Urate_normal_c,
     'EducType' : 2}
