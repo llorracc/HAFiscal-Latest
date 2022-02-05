@@ -413,7 +413,7 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False):
     
     Stats = calcEstimStats(TypeListAll)
     
-    sumSquares = np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
+    sumSquares = 10*np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
     lp = calcLorenzPts(TypeListNewEduc)
     sumSquares += np.sum((np.array(lp) - data_LorenzPts[educ_type])**2)
 #    sumSquares = np.sum((Stats.avgLWPI[educ_type]-data_avgLWPI[educ_type])**2)
@@ -477,7 +477,7 @@ opt_params = [0.96971, 0.98628, 0.98764, 0.009815]
 opt_params = [0.88622648, 0.98265369, 0.97298556, 0.12578517, 0.01426293, 0.0271796 ]
 betasObjFunc(opt_params[0:3], 3*[opt_params[3]], target_option = 2, print_mode=True)    
 
-# Implied discount factor distributions:
+# Implied discount factor distributions: 
 DiscFacDstnD = Uniform(opt_params[0]-opt_params[3], opt_params[0]+opt_params[3]).approx(DiscFacCount)
 DiscFacDstnH = Uniform(opt_params[1]-opt_params[3], opt_params[1]+opt_params[3]).approx(DiscFacCount)
 DiscFacDstnC = Uniform(opt_params[2]-opt_params[3], opt_params[2]+opt_params[3]).approx(DiscFacCount)
@@ -491,23 +491,24 @@ betasObjFunc(test_vals[0:3], test_vals[3:6], target_option = 2, print_mode=True)
 
 #%% Estimate discount factor distribution for one education type at a time
 
-f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=2)
-initValues = [0.988, 0.009]     # College
-#initValues = [0.963, 0.01]      # HighSchool
-#initValues = [0.88, 0.02]       # Dropouts
+f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=0)
+#initValues = [0.985, 0.012]     # College
+#initValues = [0.965, 0.02]      # HighSchool
+initValues = [0.88, 0.05]       # Dropouts
 opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
 
 print('Finished estimating. Optimal beta and spread are:')
 print(opt_params) 
-
-betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = 2, print_mode=True)
+betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = 0, print_mode=True)
 
 
 # Estimates targeting median LW/PI: 
-estimates_d = [0.87509113, 0.13891492]  # Dropouts only 
-estimates_h = [0.96597689, 0.03307152]  # Highschool only
-estimates_c = [0.9886787, 0.00772621]   # College only
+estimates_d = [0.67047188, 0.05883845]  # Dropouts only 
+estimates_h = [0.93744293, 0.06607694]  # Highschool only
+estimates_c = [0.98525333, 0.01241598] # College only
 betasObjFuncEduc(estimates_d[0], estimates_d[1], educ_type = 0, print_mode=True)
+betasObjFuncEduc(0.88, 0.1, educ_type = 0, print_mode=True)
+
 
 betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \
              [estimates_d[1], estimates_h[1], estimates_c[1]], \
@@ -523,6 +524,13 @@ print('Dropouts:\t ', mystr4(DiscFacDstnD.X[0]), ' to ', mystr4(DiscFacDstnD.X[6
 print('Highschool:\t ', mystr4(DiscFacDstnH.X[0]), ' to ', mystr4(DiscFacDstnH.X[6])) 
 print('College:\t\t ', mystr4(DiscFacDstnC.X[0]), ' to ', mystr4(DiscFacDstnC.X[6])) 
     
+
+#%% 
+# Old estimates targeting median LW/PI: 
+estimates_d = [0.87509113, 0.13891492]  # Dropouts only 
+estimates_h = [0.96597689, 0.03307152]  # Highschool only
+estimates_c = [0.9886787, 0.00772621]   # College only
+
 # Old estimates targeting average LW/PI: 
 estimates_d = [0.79602650, 0.02785033]  # Dropouts only
 estimates_h = [0.98051198, 0.01675674]  # Highschool only

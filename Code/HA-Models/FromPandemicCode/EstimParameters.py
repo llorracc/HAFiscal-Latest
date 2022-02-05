@@ -57,9 +57,9 @@ DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
 
 # Parameters concerning Markov transition matrix
 #https://www.statista.com/statistics/232942/unemployment-rate-by-level-of-education-in-the-us/
-Urate_normal_d = 0.085        # Unemployment rate in normal times, dropouts 2004
-Urate_normal_h = 0.05         # Unemployment rate in normal times, highschoolers 2004
-Urate_normal_c = 0.04         # Unemployment rate in normal times, college 2004
+Urate_normal_d = 0.085       # Unemployment rate in normal times, dropouts 2004
+Urate_normal_h = 0.044       # Unemployment rate in normal times, highschooler+some college 2004
+Urate_normal_c = 0.027       # Unemployment rate in normal times, college 2004
 
 Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
@@ -74,10 +74,13 @@ IncUnemp = 0.3              # Unemployment benefits replacement rate (proportion
 IncUnempNoBenefits = 0.05   # Unemployment income when benefits run out (proportion of permanent income)
 
 # Parameters concerning the initial distribution of permanent income 
-pLvlInitMean_d = np.log(5.0)  # Average quarterly permanent income of "newborn" HS dropout ($1000)
-pLvlInitMean_h = np.log(7.5)  # Average quarterly permanent income of "newborn" HS graduate ($1000)
-pLvlInitMean_c = np.log(12.0) # Average quarterly permanent income of "newborn" HS  ($1000)
-pLvlInitStd = 0.4             # Standard deviation of initial log permanent income 
+# "newborn" = 25 years old in SCF 2004
+pLvlInitMean_d = np.log(6.2)   # Average quarterly permanent income of "newborn" HS dropout ($1000)
+pLvlInitMean_h = np.log(11.1)  # Average quarterly permanent income of "newborn" HS graduate ($1000)
+pLvlInitMean_c = np.log(14.5)  # Average quarterly permanent income of "newborn" HS  ($1000)
+pLvlInitStd_d  = 0.32          # Standard deviation of initial log permanent income 
+pLvlInitStd_h  = 0.42          # Standard deviation of initial log permanent income 
+pLvlInitStd_c  = 0.53          # Standard deviation of initial log permanent income 
 
 # Parameters concerning grid sizes: assets, permanent income shocks, transitory income shocks
 aXtraMin = 0.001        # Lowest non-zero end-of-period assets above minimum gridpoint
@@ -150,12 +153,12 @@ PermGroFac_base_c = [1.0 + 0.01958/4]
 # # Define the permanent and transitory shocks 
 # TranShkStd = [0.1]
 # PermShkStd = [0.05]
-#From Sticky expectations paper: 
-TranShkStd = [0.12]
-PermShkStd = [0.003]
+# Variances from Sticky expectations paper: 
+TranShkStd = [np.sqrt(0.12)]
+PermShkStd = [np.sqrt(0.003)]
 
 Rfree_base = [1.01]
-LivPrb_base = [1.0-1/240.0]
+LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
 # find intial distribution of states for each education type
 vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
 dist_d = np.abs(np.abs(vals_d) - 1.)
@@ -212,7 +215,7 @@ init_dropout = {"cycles": 0, # This will be overwritten at type construction
                 'aNrmInitMean': np.log(0.00001), # Initial assets are zero
                 'aNrmInitStd': 0.0,
                 'pLvlInitMean': pLvlInitMean_d,
-                'pLvlInitStd': pLvlInitStd,
+                'pLvlInitStd': pLvlInitStd_d,
                 "MrkvPrbsInit" : np.array(list(init_mrkv_dist_d)),
                 'Urate_normal' : Urate_normal_d,
                 'Uspell_normal' : Uspell_normal,
@@ -232,6 +235,7 @@ adj_highschool = {
     "MrkvArray" : MrkvArray_base_h, 
     "CondMrkvArrays" : CondMrkvArrays_base_h,
     'pLvlInitMean': pLvlInitMean_h,
+    'pLvlInitStd': pLvlInitStd_h,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_h)),
     'Urate_normal' : Urate_normal_h,
     'EducType' : 1}
@@ -246,6 +250,7 @@ adj_college = {
     "MrkvArray" : MrkvArray_base_c, 
     "CondMrkvArrays" : CondMrkvArrays_base_c,
     'pLvlInitMean': pLvlInitMean_c,
+    'pLvlInitStd': pLvlInitStd_c,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_c)),
     'Urate_normal' : Urate_normal_c,
     'EducType' : 2}
