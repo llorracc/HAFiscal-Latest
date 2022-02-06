@@ -381,13 +381,16 @@ print('Distance for Agg MPC is', distance_Agg_MPC)
 print('Distance for MPC matrix is', distance_MPC)
 
 import matplotlib.pyplot as plt
+plt.figure()
 xAxis = np.arange(0,5)
-line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
-line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
-plt.legend(handles=[line1,line2])
-plt.title('Aggregate MPC from lottery win')
-plt.xlabel('Year')
-plt.show()
+plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,'b',linewidth=2)
+plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
+plt.legend(['Model','Data'])
+plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
+plt.xlabel('year')
+plt.ylabel('% of lottery win spent')
+plt.savefig('Figures/' +'AggMPC_LotteryWin.pdf')
+plt.show()   
 
 
 print('Model: Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80])
@@ -395,15 +398,21 @@ print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_targ
 print('Last percentile with negative assets', np.argmin(Lorenz_Data), '%')
 print('Percentile with zero cummulative assets', np.argwhere(Lorenz_Data>0)[0]-1, '%')
 
+
+
+  
+
+
+plt.figure()
 LorenzAxis = np.arange(101,dtype=float)
 lorenz_target_interp = np.interp(LorenzAxis,np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]))
-line1,=plt.plot(LorenzAxis,Lorenz_Data_Adj,'-k',linewidth=2,label='Lorenz')
-line2,=plt.plot(LorenzAxis,lorenz_target_interp,':b',linewidth=2,label='Data')
+plt.plot(LorenzAxis,Lorenz_Data_Adj,'b',linewidth=2)
+plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
 plt.xlabel('Income percentile',fontsize=12)
-plt.ylabel('Cumulative wealth share',fontsize=12)
-plt.legend(handles=[line1,line2])
+plt.ylabel('Cumulative liquid wealth share',fontsize=12)
+plt.legend(['Model','Data'])
+plt.savefig('Figures/' +'LiquWealth_Distribution.pdf')
 plt.show()   
-
 
 
 #%% Plot Surface

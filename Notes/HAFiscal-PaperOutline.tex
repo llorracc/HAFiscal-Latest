@@ -29,6 +29,47 @@
 	
 	\section{Estimation and calibration}
 	
+	\subsection{Estimation of the "splurge" factor}
+	
+	There is much evidence from analysis of micro data, that people tend to "splurge" on changes to their income. We defining splurging as the free spending of available income without concern for intertemporal maximization of utility. As we will show, a model allowing for splurging performs well at capturing the shorter and longer term response of consumption to income shocks.
+	
+	\paragraph{Lottery experiment Fagereng et al.}
+	
+	TO DO: Cite paper correctly, look up how results are presented in other papers by Chris.
+	
+
+	\paragraph{Targets} In this section we estimate the splurge factor, the mean discount rate across the population as well as its spread to match two empirical moments. 
+	
+	First, we match the steady-state distribution of liquid wealth in the model to its empirical counterpart. Due to the lack of data on the liquid wealth distribution in Norway, we resort to the corresponding data from the US - assuming that liquid wealth inequality is comparable across these countries. Specifically, we impose as targets the cummulative liquid wealth share at the 20th, 40th, 60th and 80th income percentile, which equal 0\%, 0.4\%, 2.5\% and 11.7\%. Hence, 87.3\% of the total liquid wealth is  held by the top income quintile. The data is plotted in figure \ref{fig:liquwealthdistribution}.
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{../Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/LiquWealth_Distribution}
+		\caption{Distribution of liquid wealth across income groups}
+		\label{fig:liquwealthdistribution}
+	\end{figure}
+	Second, we take from Fagereng et al. the marginal propensity to consume out of a one-period income shock. We not only target the contemporaneous respone of consumption to the income shock, but also the subsequent impact on consumption in years one to four after the income shock. The MPCs from Fagereng et al. are plotted in figure \ref{fig:aggmpclotterywin}.
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{../Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin}
+		\caption{Aggregate marginal propensity to consume in response to a lottery in year zero}
+		\label{fig:aggmpclotterywin}
+	\end{figure}
+	
+	\paragraph{Parameterization}
+	
+	To do: Look up the calibration source for each of these moments, possibly email Chris and Edmund about it
+	
+	\begin{itemize}
+		\item LivPrb, Source?
+		\item Rfree, UnemPrb from NORA
+		\item IncUnemp, Source?
+		\item PermShkStd, TransShkStd, Source?
+		\item BoroCnstArt is set to -0.8. This means the borrowing constraing amounts to 80\% of quartarly permanent income, hence 20\% of year permanent income.  Source ?		
+		\item PermGroFacAgg is set to 1.5\%, Source?
+		\item Tage, Tsim 
+	\end{itemize}
+
+	
 	\section{Fiscal policy simulations}
 	
 	We consider the following fiscal policy experiments
