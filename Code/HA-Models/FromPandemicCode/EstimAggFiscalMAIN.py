@@ -413,7 +413,7 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False):
     
     Stats = calcEstimStats(TypeListAll)
     
-    sumSquares = 10*np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
+    sumSquares = 100*np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
     lp = calcLorenzPts(TypeListNewEduc)
     sumSquares += np.sum((np.array(lp) - data_LorenzPts[educ_type])**2)
 #    sumSquares = np.sum((Stats.avgLWPI[educ_type]-data_avgLWPI[educ_type])**2)
@@ -491,23 +491,28 @@ betasObjFunc(test_vals[0:3], test_vals[3:6], target_option = 2, print_mode=True)
 
 #%% Estimate discount factor distribution for one education type at a time
 
-f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=0)
-#initValues = [0.985, 0.012]     # College
-#initValues = [0.965, 0.02]      # HighSchool
-initValues = [0.88, 0.05]       # Dropouts
+edType = 0
+f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
+if edType == 0:
+    initValues = [0.80, 0.15]       # Dropouts
+elif edType == 1:
+    initValues = [0.965, 0.02]      # HighSchool
+elif edType == 2:
+    initValues = [0.985, 0.012]     # College
+else:
+    initValues = [0.95,0.02]
 opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
-
 print('Finished estimating. Optimal beta and spread are:')
 print(opt_params) 
-betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = 0, print_mode=True)
+betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = edType, print_mode=True)
 
 
 # Estimates targeting median LW/PI: 
-estimates_d = [0.67047188, 0.05883845]  # Dropouts only 
+estimates_d = [0.79939338, 0.2279055 ]  # Dropouts only 
 estimates_h = [0.93744293, 0.06607694]  # Highschool only
 estimates_c = [0.98525333, 0.01241598] # College only
 betasObjFuncEduc(estimates_d[0], estimates_d[1], educ_type = 0, print_mode=True)
-betasObjFuncEduc(0.88, 0.1, educ_type = 0, print_mode=True)
+betasObjFuncEduc(0.80, 0.15, educ_type = 0, print_mode=True)
 
 
 betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \

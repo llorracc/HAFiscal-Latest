@@ -41,13 +41,13 @@ data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total we
 
 # Parameters concerning the distribution of discount factors
 # Initial values for estimation, taken from pandemic paperCondMrkvArrays_base
-DiscFacMeanD = 0.87509113   # Mean intertemporal discount factor for dropout types
-DiscFacMeanH = 0.96597689  # Mean intertemporal discount factor for high school types
-DiscFacMeanC = 0.9886787  # Mean intertemporal discount factor for college types
+DiscFacMeanD = 0.79939338  # Mean intertemporal discount factor for dropout types
+DiscFacMeanH = 0.93744293  # Mean intertemporal discount factor for high school types
+DiscFacMeanC = 0.98525333  # Mean intertemporal discount factor for college types
 DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
-DiscFacSpreadD = 0.13891492
-DiscFacSpreadH = 0.03307152
-DiscFacSpreadC = 0.00772621 # Half-width of uniform distribution of discount factors
+DiscFacSpreadD = 0.2279055
+DiscFacSpreadH = 0.06607694
+DiscFacSpreadC = 0.01241598 # Half-width of uniform distribution of discount factors
 
 # Define the distribution of the discount factor for each eduation level
 DiscFacCount = 7
@@ -58,9 +58,9 @@ DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
 
 # Parameters concerning Markov transition matrix
 #https://www.statista.com/statistics/232942/unemployment-rate-by-level-of-education-in-the-us/
-Urate_normal_d = 0.085        # Unemployment rate in normal times, dropouts 2004
-Urate_normal_h = 0.05         # Unemployment rate in normal times, highschoolers 2004
-Urate_normal_c = 0.04         # Unemployment rate in normal times, college 2004
+Urate_normal_d = 0.085       # Unemployment rate in normal times, dropouts 2004
+Urate_normal_h = 0.044       # Unemployment rate in normal times, highschooler+some college 2004
+Urate_normal_c = 0.027       # Unemployment rate in normal times, college 2004
 
 Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
@@ -105,10 +105,12 @@ IncUnemp = 0.3              # Unemployment benefits replacement rate (proportion
 IncUnempNoBenefits = 0.05   # Unemployment income when benefits run out (proportion of permanent income)
 
 # Parameters concerning the initial distribution of permanent income 
-pLvlInitMean_d = np.log(5.0)  # Average quarterly permanent income of "newborn" HS dropout ($5000)
-pLvlInitMean_h = np.log(7.5)  # Average quarterly permanent income of "newborn" HS graduate ($7500)
-pLvlInitMean_c = np.log(12.0) # Average quarterly permanent income of "newborn" HS  ($12000)
-pLvlInitStd = 0.4             # Standard deviation of initial log permanent income 
+pLvlInitMean_d = np.log(6.2)   # Average quarterly permanent income of "newborn" HS dropout ($1000)
+pLvlInitMean_h = np.log(11.1)  # Average quarterly permanent income of "newborn" HS graduate ($1000)
+pLvlInitMean_c = np.log(14.5)  # Average quarterly permanent income of "newborn" HS  ($1000)
+pLvlInitStd_d  = 0.32          # Standard deviation of initial log permanent income 
+pLvlInitStd_h  = 0.42          # Standard deviation of initial log permanent income 
+pLvlInitStd_c  = 0.53          # Standard deviation of initial log permanent income 
 
 # Parameters concerning grid sizes: assets, permanent income shocks, transitory income shocks
 aXtraMin = 0.001        # Lowest non-zero end-of-period assets above minimum gridpoint
@@ -249,12 +251,12 @@ PermGroFac_base_c = [1.0 + 0.01958/4]
 # # Define the permanent and transitory shocks 
 # TranShkStd = [0.1]
 # PermShkStd = [0.05]
-#From Sticky expectations paper: 
-TranShkStd = [0.12]
-PermShkStd = [0.003]
+# Variances from Sticky expectations paper: 
+TranShkStd = [np.sqrt(0.12)]
+PermShkStd = [np.sqrt(0.003)]
 
 Rfree_base = [1.01]
-LivPrb_base = [1.0-1/240.0]
+LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
 # find intial distribution of states for each education type
 vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
 dist_d = np.abs(np.abs(vals_d) - 1.)
@@ -325,7 +327,7 @@ init_dropout = {"cycles": 0, # 00This will be overwritten at type construction
                 'aNrmInitMean': np.log(0.00001), # Initial assets are zero
                 'aNrmInitStd': 0.0,
                 'pLvlInitMean': pLvlInitMean_d,
-                'pLvlInitStd': pLvlInitStd,
+                'pLvlInitStd': pLvlInitStd_d,
                 "MrkvPrbsInit" : np.array(list(init_mrkv_dist_d)),
                 'Urate_normal' : Urate_normal_d,
                 'Uspell_normal' : Uspell_normal,
@@ -368,6 +370,7 @@ adj_highschool = {
     "MrkvArray_recessionCheck" : MrkvArray_recessionCheck_h,
     "CondMrkvArrays_recessionCheck" : CondMrkvArrays_recessionCheck_h,  
     'pLvlInitMean': pLvlInitMean_h,
+    'pLvlInitStd': pLvlInitStd_h,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_h)),
     'Urate_normal' : Urate_normal_h,
     'Urate_recession' : Urate_recession_h,
@@ -391,6 +394,7 @@ adj_college = {
     "MrkvArray_recessionCheck" : MrkvArray_recessionCheck_c,
     "CondMrkvArrays_recessionCheck" : CondMrkvArrays_recessionCheck_c, 
     'pLvlInitMean': pLvlInitMean_c,
+    'pLvlInitStd': pLvlInitStd_c,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_c)),
     'Urate_normal' : Urate_normal_c,
     'Urate_recession' : Urate_recession_c,
