@@ -6,11 +6,11 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/FullRun/'
-#figs_dir = './Figures/FullRun_PVsame/'
+#figs_dir = './Figures/FullRun/'
+figs_dir = './Figures/FullRun_PVsame/'
 
 
-Equalize_PVs = False
+Equalize_PVs = True
 
 try:
     os.mkdir(figs_dir)
