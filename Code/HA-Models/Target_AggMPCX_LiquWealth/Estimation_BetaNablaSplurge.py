@@ -37,7 +37,7 @@ base_params['pLvlInitMean'] = np.log(23.72)
 base_params['T_sim']        = 800
 
 
-Parametrization = 'NOR_Final'
+Parametrization = 'NOR_new'
 if  Parametrization == 'NOR_base':
     base_params['LivPrb']       = [0.996]
     base_params['Rfree']        = 1.00496
@@ -85,8 +85,19 @@ if  Parametrization == 'NOR_Final':
     base_params['PermShkStd']   = [(0.02/4)**0.5]
     base_params['TranShkStd']   = [(0.03*4)**0.5]
     base_params['BoroCnstArt']  = -0.8
-    base_params['PermGroFacAgg']   = 1.015**0.25     
-    
+    base_params['PermGroFacAgg']= 1.015**0.25     
+if  Parametrization == 'NOR_new':    
+    base_params['LivPrb']       = [1-1/160]
+    base_params['Rfree']        = 1.02**0.25
+    base_params['Rsave']        = 1.02**0.25
+    base_params['Rboro']        = 1.137**0.25
+    base_params['pLvlInitMean'] = 0 
+    base_params['UnempPrb']     = 0.044
+    base_params['IncUnemp']     = 0.60
+    base_params['PermShkStd']   = [(0.02/4)**0.5]
+    base_params['TranShkStd']   = [(0.03*4)**0.5]
+    base_params['BoroCnstArt']  = -0.8
+    base_params['PermGroFacAgg']= 1.01**0.25     
 ###################
 ## TARGETS ########
 ###################
@@ -367,10 +378,10 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         return [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]
 
 
-#%% Run single experiment
-splurge = 0.314
-beta = 0.983
-nabla = 0.0174
+#%% Optimal from NORnew
+splurge = 0.31343558278827865
+beta = 0.9854444527194213
+nabla = 0.01805597520507994
 
 [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
 
@@ -385,7 +396,7 @@ plt.figure()
 xAxis = np.arange(0,5)
 plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,'b',linewidth=2)
 plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
-plt.legend(['Model','Data'])
+plt.legend(['Model','Fagereng, Holm and Natvik (2021)'])
 plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
 plt.xlabel('year')
 plt.ylabel('% of lottery win spent')

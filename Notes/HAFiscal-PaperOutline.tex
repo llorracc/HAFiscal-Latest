@@ -6,6 +6,8 @@
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{placeins}
+\usepackage{subcaption}
+\usepackage[round, authoryear]{natbib}
 
 % Margins
 \topmargin=-0.45in
@@ -31,43 +33,39 @@
 	
 	\subsection{Estimation of the "splurge" factor}
 	
-	There is much evidence from analysis of micro data, that people tend to "splurge" on changes to their income. We defining splurging as the free spending of available income without concern for intertemporal maximization of utility. As we will show, a model allowing for splurging performs well at capturing the shorter and longer term response of consumption to income shocks.
+	We defining splurging as the free spending of available income without concern for intertemporal maximization of utility. As we will show in this section, a model allowing for splurging performs well at capturing the shorter and longer term response of consumption to income shocks. Specifically, we use the results of	\citet{fagereng_mpc_2021} for the estimation of the splurge factor. The study provides empirical estimates for the aggregate marginal propensity to consume out of unexpected and transitory income shocks. [TO DO: Describe study further]\\
+	\\	
+	We estimate the splurge factor, the mean discount rate across the population as well as its spread to match two empirical moments. 
 	
-	\paragraph{Lottery experiment Fagereng et al.}
-	
-	TO DO: Cite paper correctly, look up how results are presented in other papers by Chris.
-	
+	First, we match the steady-state distribution of liquid wealth in the model to its empirical counterpart. Due to the lack of data on the liquid wealth distribution in Norway, we resort to the corresponding data from the US - assuming that liquid wealth inequality is comparable across these countries. Specifically, we impose as targets the cummulative liquid wealth share at the 20th, 40th, 60th and 80th income percentile, which equal 0\%, 0.4\%, 2.5\% and 11.7\%.\footnote{@Edmund, where is this data from?} Hence, 87.3\% of the total liquid wealth is  held by the top income quintile. The data is plotted in figure \ref{fig:liquwealthdistribution}.
 
-	\paragraph{Targets} In this section we estimate the splurge factor, the mean discount rate across the population as well as its spread to match two empirical moments. 
-	
-	First, we match the steady-state distribution of liquid wealth in the model to its empirical counterpart. Due to the lack of data on the liquid wealth distribution in Norway, we resort to the corresponding data from the US - assuming that liquid wealth inequality is comparable across these countries. Specifically, we impose as targets the cummulative liquid wealth share at the 20th, 40th, 60th and 80th income percentile, which equal 0\%, 0.4\%, 2.5\% and 11.7\%. Hence, 87.3\% of the total liquid wealth is  held by the top income quintile. The data is plotted in figure \ref{fig:liquwealthdistribution}.
-	\begin{figure}
+
+	Second, we take from \citet{fagereng_mpc_2021} the marginal propensity to consume out of a one-period income shock. We not only target the contemporaneous respone of consumption to the income shock, but also the subsequent impact on consumption in years one to four after the income shock. The MPCs from \citet{fagereng_mpc_2021} are plotted in figure \ref{fig:aggmpclotterywin}.
+
+
+\begin{figure}[htb]
+	\centering
+	\begin{subfigure}[b]{.5\linewidth}
 		\centering
-		\includegraphics[width=0.8\linewidth]{../Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/LiquWealth_Distribution}
-		\caption{Distribution of liquid wealth across income groups}
+		\includegraphics[width=\linewidth]{../Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/LiquWealth_Distribution}
+		\caption{Distribution of liquid wealth}
 		\label{fig:liquwealthdistribution}
-	\end{figure}
-	Second, we take from Fagereng et al. the marginal propensity to consume out of a one-period income shock. We not only target the contemporaneous respone of consumption to the income shock, but also the subsequent impact on consumption in years one to four after the income shock. The MPCs from Fagereng et al. are plotted in figure \ref{fig:aggmpclotterywin}.
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.8\linewidth]{../Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin}
-		\caption{Aggregate marginal propensity to consume in response to a lottery in year zero}
+	\end{subfigure}%
+	\begin{subfigure}[b]{.5\linewidth}
+			\centering
+		\includegraphics[width=\linewidth]{../Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin}
+		\caption{Aggregate marginal propensity to consume}
 		\label{fig:aggmpclotterywin}
-	\end{figure}
+	\end{subfigure}
+	\caption{Targets and model moments from the estimation}
+	\label{fig:splurge_estimation}
+\end{figure}
+
+
+	The model is calibrated to reflect the Norwegian economy. Specifically, we set the real interest rate to 2\% annually and the unemployment rate to 4.4\%, in line with \citet{aursland_state-dependent_2020}. The quartarly probability to survive is calibrated to $1-1/160$, reflecting an expected working life of 40 years. Aggregate productivity growth is set to 1\% annually following \citet{kravik_navigating_2019}. The unemployment net replacement rent is calibrated to 60\% following \citet{oecd_net_2020}. Finally, we set the real interest rate on liquid debt to 13.6\% and the borrowing constraint on 80\% of permanent income following data from the Norwegian debt registry \citet{gjeldsregistret_nokkeltall_2022}.\footnote{Specifically, we determine the average volume-weighted interest rate on liquid debt, which consists of consumer loans, credit and payment card debt and all other unsecured debt. To determine the borrowing limit on liquid debt we determine the ratio between total credit card limit divided by total wage income in Norway. We use data from December 2019.} The standard deviation of the permanent and transitory shock are 0.005 and 0.12, respectively. [TO DO: Explain origin of these numbers]
 	
-	\paragraph{Parameterization}
-	
-	To do: Look up the calibration source for each of these moments, possibly email Chris and Edmund about it
-	
-	\begin{itemize}
-		\item LivPrb, Source?
-		\item Rfree, UnemPrb from NORA
-		\item IncUnemp, Source?
-		\item PermShkStd, TransShkStd, Source?
-		\item BoroCnstArt is set to -0.8. This means the borrowing constraing amounts to 80\% of quartarly permanent income, hence 20\% of year permanent income.  Source ?		
-		\item PermGroFacAgg is set to 1.5\%, Source?
-		\item Tage, Tsim 
-	\end{itemize}
+	The estimation procedure minimizes the distance between targets and model moments for a splurge of 0.32, a beta of 0.986 and a nabla of 0.0174. The model is able to replicate the aggregate marginal propensity to consume from \citet{fagereng_mpc_2021} very well and the targeted distribution of liquid wealth, see figure \ref{fig:splurge_estimation}.
+
 
 	
 	\section{Fiscal policy simulations}
@@ -190,6 +188,10 @@
 	Table \ref{welfare} shows results for this method. Note that the policy expenditures of each policy have been equalized.
 	
 	\section{Conclusion}
+	
+	\let\bibfont=\small
+	\bibliographystyle{econometrica}
+	\bibliography{Literature}
 	
 	\appendix
 	\section{Appendix section example}

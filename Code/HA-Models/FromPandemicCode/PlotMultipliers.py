@@ -5,7 +5,6 @@ from OtherFunctions import getSimulationDiff, getSimulationPercentDiff, getStimu
                     saveAsPickleUnderVarName, loadPickle, namestr, saveAsPickle
 
 mystr = lambda x : '{:.2f}'.format(x)
-Plot_1stRoundAd         = True
 
 #figs_dir = './Figures/FullRun_PVsame/'
 figs_dir = './Figures/FullRun/'
@@ -40,6 +39,8 @@ recession_TaxCut_results_firstRoundAD   = loadPickle('recessionTaxCut_results_fi
 
 #%% IRFs for income and consumption for three policies
 # Tax cut        
+
+Plot_1stRoundAd         = False
 
 AddCons_Rec_TaxCut_RelRec               = getSimulationPercentDiff(recession_results,               recession_TaxCut_results,'AggCons')
 AddCons_Rec_TaxCut_AD_RelRec            = getSimulationPercentDiff(recession_results_AD,            recession_TaxCut_results_AD,'AggCons')
@@ -160,6 +161,8 @@ plt.show()
 
 
 #%% Multipliers
+
+Plot_1stRoundAd         = True
 
 NPV_AddInc_UI_Rec                       = getSimulationDiff(recession_results,recession_UI_results,'NPV_AggIncome') # Policy expenditure
 NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_results,               recession_UI_results,               NPV_AddInc_UI_Rec)
