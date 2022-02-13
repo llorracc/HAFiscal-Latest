@@ -37,7 +37,7 @@ base_params['pLvlInitMean'] = np.log(23.72)
 base_params['T_sim']        = 800
 
 
-Parametrization = 'NOR_Final'
+Parametrization = 'NOR_new'
 if  Parametrization == 'NOR_base':
     base_params['LivPrb']       = [0.996]
     base_params['Rfree']        = 1.00496
@@ -85,8 +85,19 @@ if  Parametrization == 'NOR_Final':
     base_params['PermShkStd']   = [(0.02/4)**0.5]
     base_params['TranShkStd']   = [(0.03*4)**0.5]
     base_params['BoroCnstArt']  = -0.8
-    base_params['PermGroFacAgg']   = 1.015**0.25     
-    
+    base_params['PermGroFacAgg']= 1.015**0.25     
+if  Parametrization == 'NOR_new':    
+    base_params['LivPrb']       = [1-1/160]
+    base_params['Rfree']        = 1.02**0.25
+    base_params['Rsave']        = 1.02**0.25
+    base_params['Rboro']        = 1.137**0.25
+    base_params['pLvlInitMean'] = 0 
+    base_params['UnempPrb']     = 0.044
+    base_params['IncUnemp']     = 0.60
+    base_params['PermShkStd']   = [(0.02/4)**0.5]
+    base_params['TranShkStd']   = [(0.03*4)**0.5]
+    base_params['BoroCnstArt']  = -0.8
+    base_params['PermGroFacAgg']= 1.01**0.25     
 ###################
 ## TARGETS ########
 ###################
@@ -367,10 +378,10 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         return [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]
 
 
-#%% Run single experiment
-splurge = 0.314
-beta = 0.983
-nabla = 0.0174
+#%% Optimal from NORnew
+splurge = 0.31343558278827865
+beta = 0.9854444527194213
+nabla = 0.01805597520507994
 
 [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
 
@@ -381,13 +392,16 @@ print('Distance for Agg MPC is', distance_Agg_MPC)
 print('Distance for MPC matrix is', distance_MPC)
 
 import matplotlib.pyplot as plt
+plt.figure()
 xAxis = np.arange(0,5)
-line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
-line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
-plt.legend(handles=[line1,line2])
-plt.title('Aggregate MPC from lottery win')
-plt.xlabel('Year')
-plt.show()
+plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,'b',linewidth=2)
+plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
+plt.legend(['Model','Fagereng, Holm and Natvik (2021)'])
+plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
+plt.xlabel('year')
+plt.ylabel('% of lottery win spent')
+plt.savefig('Figures/' +'AggMPC_LotteryWin.pdf')
+plt.show()   
 
 
 print('Model: Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80])
@@ -395,15 +409,21 @@ print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_targ
 print('Last percentile with negative assets', np.argmin(Lorenz_Data), '%')
 print('Percentile with zero cummulative assets', np.argwhere(Lorenz_Data>0)[0]-1, '%')
 
+
+
+  
+
+
+plt.figure()
 LorenzAxis = np.arange(101,dtype=float)
 lorenz_target_interp = np.interp(LorenzAxis,np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]))
-line1,=plt.plot(LorenzAxis,Lorenz_Data_Adj,'-k',linewidth=2,label='Lorenz')
-line2,=plt.plot(LorenzAxis,lorenz_target_interp,':b',linewidth=2,label='Data')
+plt.plot(LorenzAxis,Lorenz_Data_Adj,'b',linewidth=2)
+plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
 plt.xlabel('Income percentile',fontsize=12)
-plt.ylabel('Cumulative wealth share',fontsize=12)
-plt.legend(handles=[line1,line2])
+plt.ylabel('Cumulative liquid wealth share',fontsize=12)
+plt.legend(['Model','Data'])
+plt.savefig('Figures/' +'LiquWealth_Distribution.pdf')
 plt.show()   
-
 
 
 #%% Plot Surface

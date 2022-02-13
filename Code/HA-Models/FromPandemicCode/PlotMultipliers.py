@@ -5,7 +5,6 @@ from OtherFunctions import getSimulationDiff, getSimulationPercentDiff, getStimu
                     saveAsPickleUnderVarName, loadPickle, namestr, saveAsPickle
 
 mystr = lambda x : '{:.2f}'.format(x)
-Plot_1stRoundAd         = False
 
 #figs_dir = './Figures/FullRun_PVsame/'
 figs_dir = './Figures/FullRun/'
@@ -40,6 +39,8 @@ recession_TaxCut_results_firstRoundAD   = loadPickle('recessionTaxCut_results_fi
 
 #%% IRFs for income and consumption for three policies
 # Tax cut        
+
+Plot_1stRoundAd         = False
 
 AddCons_Rec_TaxCut_RelRec               = getSimulationPercentDiff(recession_results,               recession_TaxCut_results,'AggCons')
 AddCons_Rec_TaxCut_AD_RelRec            = getSimulationPercentDiff(recession_results_AD,            recession_TaxCut_results_AD,'AggCons')
@@ -160,6 +161,8 @@ plt.show()
 
 
 #%% Multipliers
+
+Plot_1stRoundAd         = True
 
 NPV_AddInc_UI_Rec                       = getSimulationDiff(recession_results,recession_UI_results,'NPV_AggIncome') # Policy expenditure
 NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_results,               recession_UI_results,               NPV_AddInc_UI_Rec)
@@ -397,18 +400,27 @@ def PlotsforSpecificRecLength(RecLength,Policy):
     return Multipliers
     
 
-RecLengthInspect = 21
-Multiplier21qRecession_UI = PlotsforSpecificRecLength(RecLengthInspect,'recessionUI')
-#print('NPV_Multiplier_UI_Rec for 21q recession: ',mystr(Multiplier21qRecession_UI[0]))
-print('NPV_Multiplier_UI_Rec_AD for 21q recession: ',mystr(Multiplier21qRecession_UI[1][-1]))
-  
+RecLengthInspect = 8
 Multiplier21qRecession_TaxCut = PlotsforSpecificRecLength(RecLengthInspect,'recessionTaxCut')
-#print('NPV_Multiplier_Rec_TaxCut for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[0]))
-print('NPV_Multiplier_Rec_TaxCut_AD for 21q recession: ',mystr(Multiplier21qRecession_TaxCut[1][-1]))
-  
+print('NPV_Multiplier_Rec_TaxCut_AD for ' + str(RecLengthInspect) + ' q recession: ',mystr(Multiplier21qRecession_TaxCut[1][-1]))
+Multiplier21qRecession_UI = PlotsforSpecificRecLength(RecLengthInspect,'recessionUI')
+print('NPV_Multiplier_UI_Rec_AD for ' + str(RecLengthInspect) + ' q recession: ',mystr(Multiplier21qRecession_UI[1][-1]))
 Multiplier21qRecession_Check = PlotsforSpecificRecLength(RecLengthInspect,'recessionCheck')
-#print('NPV_Multiplier_Rec_Check for 21q recession: ',mystr(Multiplier21qRecession_Check[0]))
-print('NPV_Multiplier_Rec_Check_AD for 21q recession: ',mystr(Multiplier21qRecession_Check[1][-1]))
+print('NPV_Multiplier_Rec_Check_AD for ' + str(RecLengthInspect) + ' q recession: ',mystr(Multiplier21qRecession_Check[1][-1]))
 
 
-           
+       
+    
+ 
+
+output  ="\\begin{tabular}{@{}lccc@{}} \n"
+output +="\\toprule \n"
+output +="& Tax Cut    & UI extension    & Stimulus check    \\\\  \\midrule \n"
+output +="Recession lasts 2q &" + mystr3(PlotsforSpecificRecLength(2,'recessionTaxCut')[1][-1]) + "  & " + mystr3(PlotsforSpecificRecLength(2,'recessionUI')[1][-1]) + "  & " +  mystr3(PlotsforSpecificRecLength(2,'recessionCheck')[1][-1])  + "     \\\\ \n"
+output +="Recession lasts 4q &" + mystr3(PlotsforSpecificRecLength(4,'recessionTaxCut')[1][-1]) + "  & " + mystr3(PlotsforSpecificRecLength(4,'recessionUI')[1][-1]) + "  & " +  mystr3(PlotsforSpecificRecLength(4,'recessionCheck')[1][-1])  + "     \\\\ \n"
+output +="Recession lasts 8q &" + mystr3(PlotsforSpecificRecLength(8,'recessionTaxCut')[1][-1]) + "  & " + mystr3(PlotsforSpecificRecLength(8,'recessionUI')[1][-1]) + "  & " +  mystr3(PlotsforSpecificRecLength(8,'recessionCheck')[1][-1])  + "     \\\\ \n"
+output +="\\end{tabular}  \n"
+
+with open('Tables/Multiplier_RecLengths.tex','w') as f:
+    f.write(output)
+    f.close()    
