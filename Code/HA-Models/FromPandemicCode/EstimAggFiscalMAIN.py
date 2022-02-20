@@ -342,9 +342,11 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False):
         WealthShares = calcWealthShareByEd(TypeListNew)
         print('Wealth Shares: D = ' + mystr(WealthShares[0]) + \
               ' H = ' + mystr(WealthShares[1]) + ' C = ' + mystr(WealthShares[2]))
-        MPCs = calcMPCbyEd(TypeListNew)
-        print('Average MPCs: D = ' + mystr(MPCs[0]) + ' H = ' + mystr(MPCs[1]) + \
-              ' C = ' + mystr(MPCs[2]))
+        MPCs_byEd = calcMPCbyEd(TypeListNew)
+        allMPCs = np.concatenate([ThisType.MPCnow for ThisType in TypeListNew])
+        MPCs_all = np.mean(allMPCs)
+        print('Average MPCs: D = ' + mystr(MPCs_byEd[0]) + ' H = ' + mystr(MPCs_byEd[1]) + \
+              ' C = ' + mystr(MPCs_byEd[2]) + ' All = ' + mystr(MPCs_all))
             
 
     return distance 
@@ -413,7 +415,7 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False):
     
     Stats = calcEstimStats(TypeListAll)
     
-    sumSquares = 100*np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
+    sumSquares = np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
     lp = calcLorenzPts(TypeListNewEduc)
     sumSquares += np.sum((np.array(lp) - data_LorenzPts[educ_type])**2)
 #    sumSquares = np.sum((Stats.avgLWPI[educ_type]-data_avgLWPI[educ_type])**2)
@@ -491,12 +493,12 @@ betasObjFunc(test_vals[0:3], test_vals[3:6], target_option = 2, print_mode=True)
 
 #%% Estimate discount factor distribution for one education type at a time
 
-edType = 0
+edType = 1
 f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
 if edType == 0:
     initValues = [0.80, 0.15]       # Dropouts
 elif edType == 1:
-    initValues = [0.965, 0.02]      # HighSchool
+    initValues = [0.966, 0.03]      # HighSchool
 elif edType == 2:
     initValues = [0.985, 0.012]     # College
 else:
@@ -507,7 +509,7 @@ print(opt_params)
 betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = edType, print_mode=True)
 
 
-# Estimates targeting median LW/PI: 
+# Estimates targeting median LW/PI (v3.0): 
 estimates_d = [0.79939338, 0.2279055 ]  # Dropouts only 
 estimates_h = [0.93744293, 0.06607694]  # Highschool only
 estimates_c = [0.98525333, 0.01241598] # College only
@@ -523,15 +525,21 @@ betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \
 DiscFacDstnD = Uniform(estimates_d[0]-estimates_d[1], estimates_d[0]+estimates_d[1]).approx(DiscFacCount)
 DiscFacDstnH = Uniform(estimates_h[0]-estimates_h[1], estimates_h[0]+estimates_h[1]).approx(DiscFacCount)
 DiscFacDstnC = Uniform(estimates_c[0]-estimates_c[1], estimates_c[0]+estimates_c[1]).approx(DiscFacCount)
-    
 print('Discount factor distribution end points: ')
 print('Dropouts:\t ', mystr4(DiscFacDstnD.X[0]), ' to ', mystr4(DiscFacDstnD.X[6]))    
 print('Highschool:\t ', mystr4(DiscFacDstnH.X[0]), ' to ', mystr4(DiscFacDstnH.X[6])) 
-print('College:\t\t ', mystr4(DiscFacDstnC.X[0]), ' to ', mystr4(DiscFacDstnC.X[6])) 
+print('College:\t ', mystr4(DiscFacDstnC.X[0]), ' to ', mystr4(DiscFacDstnC.X[6])) 
     
 
 #%% 
-# Old estimates targeting median LW/PI: 
+# Estimates targeting median LW/PI (v2.5): 
+#TranShkStd = [0.12]  #[np.sqrt(0.12)]
+#PermShkStd = [0.003] #[np.sqrt(0.003)]
+estimates_d = [0.87691380, 0.13952285]  # Dropouts only 
+estimates_h = [0.97097283, 0.02996364]  # Highschool only
+estimates_c = [0.99264389, 0.00596917]  # College only
+
+# Old estimates targeting median LW/PI (v2.0): 
 estimates_d = [0.87509113, 0.13891492]  # Dropouts only 
 estimates_h = [0.96597689, 0.03307152]  # Highschool only
 estimates_c = [0.9886787, 0.00772621]   # College only
