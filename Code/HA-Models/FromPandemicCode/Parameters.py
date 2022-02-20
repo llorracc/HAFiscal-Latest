@@ -7,10 +7,10 @@ from importlib import reload
 
 
 #figs_dir = './Figures/FullRun/'
-figs_dir = './Figures/FullRun_PVsame/'
+#figs_dir = './Figures/FullRun_PVsame/'
+figs_dir = './Figures/FullRun_OldUncertainty/'
 
-
-Equalize_PVs = True
+Equalize_PVs = False
 
 try:
     os.mkdir(figs_dir)
@@ -41,13 +41,24 @@ data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total we
 
 # Parameters concerning the distribution of discount factors
 # Initial values for estimation, taken from pandemic paperCondMrkvArrays_base
-DiscFacMeanD = 0.79939338  # Mean intertemporal discount factor for dropout types
-DiscFacMeanH = 0.93744293  # Mean intertemporal discount factor for high school types
-DiscFacMeanC = 0.98525333  # Mean intertemporal discount factor for college types
+# DiscFacMeanD = 0.79939338  # Mean intertemporal discount factor for dropout types
+# DiscFacMeanH = 0.93744293  # Mean intertemporal discount factor for high school types
+# DiscFacMeanC = 0.98525333  # Mean intertemporal discount factor for college types
+
+# old uncertainty XXX
+DiscFacMeanD = 0.87691380  # Mean intertemporal discount factor for dropout types
+DiscFacMeanH = 0.97097283  # Mean intertemporal discount factor for high school types
+DiscFacMeanC = 0.99264389  # Mean intertemporal discount factor for college types
+
 DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
-DiscFacSpreadD = 0.2279055
-DiscFacSpreadH = 0.06607694
-DiscFacSpreadC = 0.01241598 # Half-width of uniform distribution of discount factors
+# DiscFacSpreadD = 0.2279055
+# DiscFacSpreadH = 0.06607694
+# DiscFacSpreadC = 0.01241598 # Half-width of uniform distribution of discount factors
+
+# old uncertainty XXX
+DiscFacSpreadD = 0.13952285
+DiscFacSpreadH = 0.02996364
+DiscFacSpreadC = 0.00596917 # Half-width of uniform distribution of discount factors
 
 # Define the distribution of the discount factor for each eduation level
 DiscFacCount = 7
@@ -252,8 +263,12 @@ PermGroFac_base_c = [1.0 + 0.01958/4]
 # TranShkStd = [0.1]
 # PermShkStd = [0.05]
 # Variances from Sticky expectations paper: 
-TranShkStd = [np.sqrt(0.12)]
-PermShkStd = [np.sqrt(0.003)]
+# TranShkStd = [np.sqrt(0.12)]
+# PermShkStd = [np.sqrt(0.003)]
+
+# old uncertainty XXX
+TranShkStd = [0.12]
+PermShkStd = [0.003]
 
 Rfree_base = [1.01]
 LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
