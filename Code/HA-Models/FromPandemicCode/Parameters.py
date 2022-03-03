@@ -82,7 +82,7 @@ if Equalize_PVs:
     TaxCutIncFactor = 1 + 0.02*625/28693       # Amount by which the payroll tax cut increases after-tax income
 else:
     TaxCutIncFactor = 1 + 0.02
-TaxCutPeriods = 8            # Deterministic duration of tax cut 
+TaxCutPeriods = 8            # Deterministic duTrueration of tax cut 
 TaxCutContinuationProb_Rec = 0.5   # Probability that tax cut is continued after tax cut periods run out, when recession in q8
 TaxCutContinuationProb_Bas = 0.0   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
 #Check experiment parameter
