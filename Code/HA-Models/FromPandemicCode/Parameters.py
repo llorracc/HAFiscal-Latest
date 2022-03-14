@@ -9,9 +9,6 @@ from importlib import reload
 #figs_dir = './Figures/FullRun/'
 figs_dir = './Figures/FullRun_PVsame/'
 
-# reverse the following changes, figs_dir, checksize, and true/false in AggFiscalMain
-figs_dir = './Figures/Check5k/'
-
 Equalize_PVs = False
 
 try:
@@ -91,7 +88,7 @@ TaxCutContinuationProb_Bas = 0.0   # Probability that tax cut is continued after
 if Equalize_PVs:
     CheckStimLvl = 1200/1000 * 625/10178 #1 = 1k, multiplication to get PVs equal
 else:
-    CheckStimLvl = 5000/1000 #1200/1000
+    CheckStimLvl = 1200/1000
 CheckStimLvl_PLvl_Cutoff_start = 100/4/1 #100 k yearly income #At this Level of permanent inc, Stimulus beings to fall linearly
 CheckStimLvl_PLvl_Cutoff_end = 150/4/1 #150k yearly income #At this Level of permanent inc, Stimulus is zero
 

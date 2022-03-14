@@ -73,3 +73,30 @@ print('Additional consumption induced during recession with AD:',AddCons_relBase
 print('Multiplier during recessions with AD:',NPV_Multiplier_Rec_Check_AD5k[-1])
 
 
+
+def mystr3(number):
+    if not np.isnan(number):
+        out = "{:.3f}".format(number)
+    else:
+        out = ''
+    return out
+
+def mystr1(number):
+    if not np.isnan(number):
+        out = "{:.1f}".format(number)
+    else:
+        out = ''
+    return out
+    
+output  ="\\begin{tabular}{@{}lccc@{}} \n"
+output +="\\toprule \n"
+output +="Size of stimulus check & \$75    &  \$1200    & \$5000    \\\\  \\midrule \n"
+output +="%Add. cons. as share of baseline cons. (recession) &"      + mystr3(AddCons_relBase75[-1])             + " & " + mystr3(AddCons_relBase[-1])             + " & " + mystr3(AddCons_relBase5k[-1]) + "     \\\\ \n"
+output +="Add. cons. as share of baseline cons. (recession, AD) &"  + mystr3(AddCons_relBase_AD75[-1])          + " & " + mystr3(AddCons_relBase_AD[-1])          + " & " + mystr3(AddCons_relBase_AD5k[-1]) + "     \\\\ \n"
+output +="%Multiplier (recession) &"                                 + mystr3(NPV_Multiplier_Rec_Check75[-1])    + " & " + mystr3(NPV_Multiplier_Rec_Check[-1])    + " & " + mystr3(NPV_Multiplier_Rec_Check5k[-1]) + "     \\\\ \n"
+output +="Multiplier (recession, AD) &"                             + mystr3(NPV_Multiplier_Rec_Check_AD75[-1]) + " & " + mystr3(NPV_Multiplier_Rec_Check_AD[-1]) + " & " + mystr3(NPV_Multiplier_Rec_Check_AD5k[-1]) + "     \\\\ \n"
+output +="\\end{tabular}  \n"
+
+with open('Tables/Multiplier_DifferentCheckSizes.tex','w') as f:
+    f.write(output)
+    f.close()    
