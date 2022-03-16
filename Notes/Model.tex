@@ -1,0 +1,58 @@
+\section{Model}
+	\subsection{The Household Problem}
+	A household $i$ faces a stochastic income stream, $y_{i,t}$, and chooses to consume some of that income when it arrives (the `splurge') and then to optimize consumption with what is left over. Therefore, consumption each period for household $i$ can be written:
+	\begin{align}
+		c_{i,t} = c_{sp,i,t} + c_{opt,i,t},
+	\end{align}
+	where $c_{i,t}$ is total consumption, $c_{sp,i,t}$ is the splurge consumption and $c_{opt,i,t}$ is the household's optimal remaining consumption. Splurge consumption is simply a fraction of income:
+	\begin{align}
+	c_{sp,i,t} = \varsigma y_{i,t},
+	\end{align}
+	while the optimized portion of consumption is chosen to maximize lifetime expected consumption:
+	\begin{align}
+	\sum_{t=0}^{\infty}\beta_i^t (1-D)^t \mathbb{E}u(c_{opt,i,t})
+	\end{align}
+	subject to a no-borrowing constraint and the budget constraint given existing market resources $m_{i,t}$ and income state.
+	\paragraph{The Income Process}
+	Households face a stochastic income process with permanent and transitory shocks to income, along with unemployment shocks. In normal times, households receive unemployment benefits for two quarters before they run out. Permanent income in the model is described by the following equation:
+	\begin{align}
+	p_{i,t} = \psi_{i,t}\Gamma_{e(i)}p_{i,t-1},
+	\end{align}
+	where $\psi_{i,t}$ is the shock to permanent income and $\Gamma_{e(i)}$ is the growth rate of income for education group $e(i)$ of the household. The shock to permanent income is normally distributed with variance $\sigma_{\psi}$.
+	
+	The actual income a household receives will be subject their employment status as well as transitory shocks, $\xi_{i,t}$:
+	\begin{align}
+		y_{i,t} =   \begin{cases}
+						\xi_{i,t}p_{i,t}, & \text{if employed} \\
+						0.3 p_{i,t}, & \text{if unemployed with benefits} \\
+						0.05 p_{i,t}, & \text{if unemployed without benefits} 
+					\end{cases}
+	\end{align}
+	where $\xi_{i,t}$ is normally distributed with variance $\sigma_{\xi}$. A Markov transition matrix with four states generates the unemployment dynamics. An employed household can continue being employed, or move to being unemployed with benefits (with one remaining period of benefits). This household can then either become employed or move to being unemployed with benefits (but no remaining periods of benefits). A household in this state can then either become employed or unemployed without benefits, where they will remain until they become employed again. The probability of becoming employed is the same for each unemployed state and the probabilities of transitioning from employment to unemployment and vice-versa are chosen to match the unemployment rate for each education group (in steady state) and an average duration of unemployment of 1.5 quarters.
+	
+	\subsection{MIT Shocks}
+	We model the arrival of a recession, and the government policy response to it, as an unpredictable event---an MIT shock. We have four types of shock representing a recession and the three different policy responses we consider. The policy responses are usually modeled as in addition to the recession, but we also consider a counterfactual in which the policy response occurs without a recession in order to understand the welfare effects of the policy.
+	
+	\paragraph{Recession} At the onset of a recession, several changes occur. First, the unemployment rate for each education group doubles. Those who would have been unemployed remain so, and an additional number of households move from employment to unemployment. Second, conditional on the recession continuing, the emplyment transtion matrix is adjusted so that unemployment remains at the new high level, and the expected length of time for an unemployment spell increases from two to four quarters. Third, the end of the recession occurs as a Poisson process calibrated for an average length of recession of six quarters. Finally, at the end of a recession, the employment transition matrix switches back to its original probabilities and as a result the unemployment rate tends down over time back to its steady-state level.
+	
+	\paragraph{Stimulus Check} In this policy response, the government sends money to every household that directly increases their market resources. The checks are means-tested depending on permanent income. A fixed check amount is sent to every household with permanent income less than a threshold and this amount is then linearly reduced to zero for households about a higher permanent income threshold.
+	
+	\paragraph{Extended Unemployment Benefits} In this policy response, unemployment benefits are extended from 2 quarters to 4 quarters. That is, those who become unemployed at the start of the pandemic, or who were already unemployed, will receive unemployment benefits for up to four quarters (including quarters leading up to the recession). Those who become unemployed one quarter into the recession will receive up to three quarters of unemployment benefits. These extended unemployment benefits will occur regardless of whether the recession ends, and no further extensions are granted if the recession continues.
+	
+	\paragraph{Payroll Tax Cut} In this policy response, employee-side payroll taxes are reduced for a period of 8 quarters. During this period, which continues irrespective or whether the recession continues or ends, employed households' income is increased by the amount of the tax cut. The income of unemployed households is unchanged by this policy.
+	
+	\subsection{Aggregate Demand Effects}
+	Our baseline model is a partial equilibrium model that does not include any feedback from aggregate consumption to income. In an extension to the model, we add aggregate demand effects during the recession. With this extension, any changes in consumption away from the steady state consumption level feed back into labor income. Aggregate demand effects are evaluated as:
+	\begin{align}
+	AD(C_t) =   \begin{cases}
+				\Big(\frac{C_t}{\tilde{C}}\Big)^\kappa, & \text{if in a recession} \\
+				1, & \text{otherwise} 
+				\end{cases}
+	\end{align}
+	where $\tilde{C}$ is the level of consumption in steady state. Idiosyncratic income in the aggregate demand extension is multiplied by $AD(C_t)$:
+	\begin{align}
+	y_{AD,i,t} = AD(C_t)y_{i,t}
+	\end{align}
+	The series $y_{AD,i,t}$ is then used for each household's budget constraint.
+
+	
