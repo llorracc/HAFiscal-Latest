@@ -1,0 +1,74 @@
+% -*- mode: LaTeX; TeX-PDF-mode: t; -*- # Tell emacs the file type (for syntax)
+
+\input{./econtexRoot} % Set paths (like, \LaTeXInputs to find resources)
+\newcommand{\texname}{HAFiscal}% Keyname for the paper
+
+% Document with title page and tables of contents:
+\documentclass[titlepage, headings=optiontotocandhead]{\econtex}
+
+% Extra standardized packages for specialized content
+\usepackage{footmisc,datetime2,refcount,xr-hyper,hhline,rotating,subfigure,makecell,subfiles}
+
+% Extra custom packages 
+\usepackage{\econtexSetup} % Gets, configures often-used packages
+
+\usepackage{\LaTeXInputs/\texname}% LaTeX Shortcuts for whole paper
+
+% \usepackage{econtexSetup} sets boolean Web=true if compilation type is dvi
+\ifthenelse{\boolean{Web}}{
+  \setboolean{showPageHead}{false}}{   % 
+  \usepackage{scrlayer-scrpage} % Package for page headers if PDF
+  \usepackage{caption} % allow suppression of appendix figures in NoAppendix PDF
+}
+
+\bibliographystyle{\econtexBibStyle} % Custom author (year) bib style
+
+\begin{document}
+
+% Redefine \onlyinsubfile command defined in \texname.sty file:
+% This lets any submaterial called from here know that it is not standalone
+% If not called from here and IS standalone, can make bib (or other content)
+\renewcommand{\onlyinsubfile}[1]{}\renewcommand{\notinsubfile}[1]{#1}
+
+\subfile{HAFiscal-NoAppendix} % Main body of paper
+
+\pagebreak
+\hypertarget{Appendices}{} % Allows link to [url-of-paper]#Appendices
+\ifthenelse{\boolean{Web}}{}{% Web version has no page headers
+  \chead[Appendices]{Appendices}      % but PDF version does
+  \appendixpage % Reset formatting for appendices
+} 
+
+\appendix
+\addcontentsline{toc}{section}{Appendices} % Say "Appendices"
+
+\small
+\pagebreak\input{\LaTeXInputs/bibliography_blend}\end{document}
+
+\small
+\sloppy
+
+\endinput
+
+\end{document}
+
+% Local Variables:
+% TeX-master-file: t
+% eval: (setq TeX-command-list  (assq-delete-all (car (assoc "BibTeX" TeX-command-list)) TeX-command-list))
+% eval: (setq TeX-command-list  (assq-delete-all (car (assoc "Biber"  TeX-command-list)) TeX-command-list))
+% eval: (setq TeX-command-list  (remove '("BibTeX" "%(bibtex) %s"    TeX-run-BibTeX nil t :help "Run BibTeX") TeX-command-list))
+% eval: (setq TeX-command-list  (remove '("BibTeX"    "bibtex %s"    TeX-run-BibTeX nil (plain-tex-mode latex-mode doctex-mode ams-tex-mode texinfo-mode context-mode)  :help "Run BibTeX") TeX-command-list))
+% eval: (setq TeX-command-list  (remove '("BibTeX" "bibtex %s"    TeX-run-BibTeX nil t :help "Run BibTeX") TeX-command-list))
+% eval: (add-to-list 'TeX-command-list '("BibTeX" "bibtex %s" TeX-run-BibTeX nil t                                                                              :help "Run BibTeX") t)
+% eval:  (add-to-list 'TeX-command-list '("BibTeX" "bibtex %s" TeX-run-BibTeX nil (plain-tex-mode latex-mode doctex-mode ams-tex-mode texinfo-mode context-mode) :help "Run BibTeX") t)
+% TeX-PDF-mode: t
+% TeX-file-line-error: t
+% TeX-debug-warnings: t
+% LaTeX-command-style: (("" "%(PDF)%(latex) %(file-line-error) %(extraopts) -output-directory=. %S%(PDFout)"))
+% TeX-source-correlate-mode: t
+% TeX-parse-self: t
+% TeX-parse-all-errors: t
+% eval: (cond ((string-equal system-type "darwin") (progn (setq TeX-view-program-list '(("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline -b %n %o %b"))))))
+% eval: (cond ((string-equal system-type "gnu/linux") (progn (setq TeX-view-program-list '(("Evince" "evince --page-index=%(outpage) %o"))))))
+% eval: (cond ((string-equal system-type "gnu/linux") (progn (setq TeX-view-program-selection '((output-pdf "Evince"))))))
+% End:
