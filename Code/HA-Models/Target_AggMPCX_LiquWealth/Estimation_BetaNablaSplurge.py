@@ -29,8 +29,8 @@ base_params['LivPrb']       = [0.995]       #from stickyE paper
 base_params['Rfree']        = 1.015         #from stickyE paper
 base_params['Rsave']        = 1.015         #from stickyE paper
 base_params['Rboro']        = 1.025         #from stickyE paper
-base_params['PermShkStd']   = [0.003**0.5]  #from stickyE paper
-base_params['TranShkStd']   = [0.120**0.5]  #from stickyE paper
+base_params['PermShkStd']   = [0.001**0.5]  #from stickyE paper
+base_params['TranShkStd']   = [0.132**0.5]  #from stickyE paper
 base_params['T_age']        = 400           # Kill off agents if they manage to achieve T_kill working years
 base_params['AgentCount']   = 5000         # Number of agents per instance of IndShockConsType
 base_params['pLvlInitMean'] = np.log(23.72) 
@@ -94,8 +94,8 @@ if  Parametrization == 'NOR_new':
     base_params['pLvlInitMean'] = 0 
     base_params['UnempPrb']     = 0.044
     base_params['IncUnemp']     = 0.60
-    base_params['PermShkStd']   = [(0.02/4)**0.5]
-    base_params['TranShkStd']   = [(0.03*4)**0.5]
+    base_params['PermShkStd']   = [0.001**0.5] #from Crawley,Moll,Tretvoll
+    base_params['TranShkStd']   = [0.132**0.5]
     base_params['BoroCnstArt']  = -0.8
     base_params['PermGroFacAgg']= 1.01**0.25     
 ###################
@@ -121,7 +121,8 @@ RandomLotteryWin = True #if True, then the 5th element will be replaced with a r
 
 
 # Liquid wealth target from US
-lorenz_target = np.array([0.0, 0.004, 0.025,0.117])
+                        
+lorenz_target = np.array([0.029, 0.354, 1.84, 7.42])/100
 KY_target = 6.60
 
 #%%
@@ -378,10 +379,27 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         return [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]
 
 
-#%% Optimal from NORnew
-splurge = 0.31343558278827865
-beta = 0.9854444527194213
-nabla = 0.01805597520507994
+ 
+
+
+
+
+
+
+#%% Conduct the estimation for beta, dist and splurge
+
+guess_splurge_beta_nabla = [0.314,0.983,0.0174]
+
+f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],target='AGG_MPC_plus_Liqu_Wealth')
+opt = minimizeNelderMead(f_temp, guess_splurge_beta_nabla, verbose=True)
+print('Finished estimating')
+print('Optimal splurge is ' + str(opt[0]) )
+print('Optimal (beta,nabla) is ' + str(opt[1]) + ',' + str(opt[2]))
+
+splurge = opt[0]    #0.3147431521383819
+beta = opt[1]       #0.9891358226739646
+nabla = opt[2]      #0.01786636780239349
+
 
 [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
 
@@ -423,282 +441,176 @@ plt.xlabel('Income percentile',fontsize=12)
 plt.ylabel('Cumulative liquid wealth share',fontsize=12)
 plt.legend(['Model','Data'])
 plt.savefig('Figures/' +'LiquWealth_Distribution.pdf')
-plt.show()   
-
-
-#%% Plot Surface
-
-from mpl_toolkits import mplot3d
-
-mesh_size_beta = 20
-mesh_size_nabla = 20
-splurge = 0.30
-
-
-def z_function(x, y, fixed_splurge):
-    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(fixed_splurge,x,y,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
-    return distance
-
-beta = np.linspace(0.96, 0.99, mesh_size_beta)
-nabla = np.linspace(0.01, 0.04, mesh_size_nabla)
-
-X, Y = np.meshgrid(beta, nabla)
-Z = np.empty([mesh_size_nabla,mesh_size_beta])
-for i in range(mesh_size_beta):
-    for j in range(mesh_size_nabla):
-        if beta[i]+nabla[j]>1.01:
-            Z[j][i] = 3
-        else:
-            Z[j][i] = z_function(beta[i],nabla[j],splurge)
-
-AdjFactorfig = plt.figure()
-ax = plt.axes(projection='3d')
-ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
-                cmap='winter', edgecolor='none')
-minpoint = np.min(Z)
-indexp = np.argmin(Z)
-minbeta = np.asarray(X).reshape(-1)[indexp]
-minnabla = np.asarray(Y).reshape(-1)[indexp]
-ax.set_title(['splurge = ',splurge,', min=', minpoint, ' for beta = ', minbeta, ' and nabla = ', minnabla]);
-plt.show()
+plt.show()  
 
 
 
-#%% Conduct the estimation for beta, dist and splurge
-
-guess_splurge_beta_nabla = [0.314,0.983,0.0174]
-
-f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],target='AGG_MPC_plus_Liqu_Wealth')
-opt = minimizeNelderMead(f_temp, guess_splurge_beta_nabla, verbose=True)
-print('Finished estimating')
-print('Optimal splurge is ' + str(opt[0]) )
-print('Optimal (beta,nabla) is ' + str(opt[1]) + ',' + str(opt[2]))
-
-splurge = opt[0]
-beta = opt[1]
-nabla = opt[2]
-
-[distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
-
-print('Results for parametrization: ', Parametrization)
-print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin)#%% Plot aggregate MPC and MPCX
-print('Distance for target is', distance)
-print('Distance for Agg MPC is', distance_Agg_MPC)
-print('Distance for MPC matrix is', distance_MPC)
-
-import matplotlib.pyplot as plt
-xAxis = np.arange(0,5)
-line1,=plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,':b',linewidth=2,label='Model')
-line2,=plt.plot(xAxis,Agg_MPCX_target,'-k',linewidth=2,label='Data')
-plt.legend(handles=[line1,line2])
-plt.title('Aggregate MPC from lottery win')
-plt.xlabel('Year')
-plt.show()
 
 
-print('Model: Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80])
-print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_target)
-print('Last percentile with negative assets', np.argmin(Lorenz_Data), '%')
-print('Percentile with zero cummulative assets', np.argwhere(Lorenz_Data>0)[0]-1, '%')
 
-LorenzAxis = np.arange(101,dtype=float)
-lorenz_target_interp = np.interp(LorenzAxis,np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]))
-line1,=plt.plot(LorenzAxis,Lorenz_Data_Adj,'-k',linewidth=2,label='Lorenz')
-line2,=plt.plot(LorenzAxis,lorenz_target_interp,':b',linewidth=2,label='Data')
-plt.xlabel('Income percentile',fontsize=12)
-plt.ylabel('Cumulative wealth share',fontsize=12)
-plt.legend(handles=[line1,line2])
-plt.show() 
 
-#%% Conduct two step estimation on splurge + beta/nabla
+Old_Code = False
+if Old_Code:
+    
+    #%% Plot Surface
+    
+    from mpl_toolkits import mplot3d
+    
+    mesh_size_beta = 20
+    mesh_size_nabla = 20
+    splurge = 0.30
+    
+    
+    def z_function(x, y, fixed_splurge):
+        [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(fixed_splurge,x,y,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
+        return distance
+    
+    beta = np.linspace(0.96, 0.99, mesh_size_beta)
+    nabla = np.linspace(0.01, 0.04, mesh_size_nabla)
+    
+    X, Y = np.meshgrid(beta, nabla)
+    Z = np.empty([mesh_size_nabla,mesh_size_beta])
+    for i in range(mesh_size_beta):
+        for j in range(mesh_size_nabla):
+            if beta[i]+nabla[j]>1.01:
+                Z[j][i] = 3
+            else:
+                Z[j][i] = z_function(beta[i],nabla[j],splurge)
+    
+    AdjFactorfig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
+                    cmap='winter', edgecolor='none')
+    minpoint = np.min(Z)
+    indexp = np.argmin(Z)
+    minbeta = np.asarray(X).reshape(-1)[indexp]
+    minnabla = np.asarray(Y).reshape(-1)[indexp]
+    ax.set_title(['splurge = ',splurge,', min=', minpoint, ' for beta = ', minbeta, ' and nabla = ', minnabla]);
+    plt.show()
+    
+    
+    
+    
+    
+    
+    #%% Conduct two step estimation on splurge + beta/nabla
+            
+    start_splurge     = np.array([0.32])
+    start_beta_nabla  = np.array([0.98, 0.02])
+    
+    def f_splurge(splurge,beta,nabla):
+        print('Finding optimal beta and nabla for splurge = ', splurge)
+        f_beta_nabla    = lambda x : FagerengObjFunc(splurge,x[0],x[1],target='AGG_MPC_plus_Liqu_Wealth')
+        opt_beta_nabla  = minimizeNelderMead(f_beta_nabla, start_beta_nabla, verbose=True)  
+        print('Found optimal beta = ', opt_beta_nabla[0], ' and nabla = ', opt_beta_nabla[1], ' for splurge = ', splurge)
+        distance = FagerengObjFunc(splurge,opt_beta_nabla[0],opt_beta_nabla[1],target='AGG_MPC_plus_Liqu_Wealth')
+        return distance
         
-start_splurge     = np.array([0.32])
-start_beta_nabla  = np.array([0.98, 0.02])
-
-def f_splurge(splurge,beta,nabla):
-    print('Finding optimal beta and nabla for splurge = ', splurge)
-    f_beta_nabla    = lambda x : FagerengObjFunc(splurge,x[0],x[1],target='AGG_MPC_plus_Liqu_Wealth')
-    opt_beta_nabla  = minimizeNelderMead(f_beta_nabla, start_beta_nabla, verbose=True)  
-    print('Found optimal beta = ', opt_beta_nabla[0], ' and nabla = ', opt_beta_nabla[1], ' for splurge = ', splurge)
-    distance = FagerengObjFunc(splurge,opt_beta_nabla[0],opt_beta_nabla[1],target='AGG_MPC_plus_Liqu_Wealth')
-    return distance
+    f_temp      = lambda x : f_splurge(x,start_beta_nabla[0],start_beta_nabla[1])
+    opt_splurge = minimizeNelderMead(f_temp, start_splurge, verbose=True) 
     
-f_temp      = lambda x : f_splurge(x,start_beta_nabla[0],start_beta_nabla[1])
-opt_splurge = minimizeNelderMead(f_temp, start_splurge, verbose=True) 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%% Conduct two step estimation on fixed splurge for beta and nabla
+    
+    
+    
+    
+    #%% Conduct two step estimation on fixed splurge for beta and nabla
+            
+    splurge = 0.32
+    start_beta = 0.97
+    start_nabla = 0.02
+    
+    
+    def f_beta(splurge,beta,nabla):
+        print('Finding optimal nabla for beta = ', str(beta), ' and splurge = ', splurge)
+        f_nabla    = lambda x : FagerengObjFunc(splurge,beta,x,target='AGG_MPC_plus_Liqu_Wealth')
+        opt_nabla  = minimizeNelderMead(f_nabla, np.array([start_nabla]), verbose=True, xtol=1e-3, ftol=1e-3)  
+        print('Found optimal nabla = ', opt_nabla, ' for beta = ', beta, ' and splurge = ', splurge)
+        distance = FagerengObjFunc(splurge,beta,opt_nabla,target='AGG_MPC_plus_Liqu_Wealth')
+        return distance
         
-splurge = 0.32
-start_beta = 0.97
-start_nabla = 0.02
-
-
-def f_beta(splurge,beta,nabla):
-    print('Finding optimal nabla for beta = ', str(beta), ' and splurge = ', splurge)
-    f_nabla    = lambda x : FagerengObjFunc(splurge,beta,x,target='AGG_MPC_plus_Liqu_Wealth')
-    opt_nabla  = minimizeNelderMead(f_nabla, np.array([start_nabla]), verbose=True, xtol=1e-3, ftol=1e-3)  
-    print('Found optimal nabla = ', opt_nabla, ' for beta = ', beta, ' and splurge = ', splurge)
-    distance = FagerengObjFunc(splurge,beta,opt_nabla,target='AGG_MPC_plus_Liqu_Wealth')
-    return distance
+    f_temp      = lambda x : f_beta(splurge,x,start_nabla)
+    opt_beta = minimizeNelderMead(f_temp, np.array([start_beta]), verbose=True, xtol=1e-3,ftol=1e-3) 
     
-f_temp      = lambda x : f_beta(splurge,x,start_nabla)
-opt_beta = minimizeNelderMead(f_temp, np.array([start_beta]), verbose=True, xtol=1e-3,ftol=1e-3) 
-
-
-
-
     
-
-
-#%% Plot Surface special splurge
-
-from mpl_toolkits import mplot3d
-
-mesh_size_beta    = 8
-mesh_size_nabla   = 15
-mesh_size_splurge = 10
-
-
-def z_function(x, y, z):
-    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(z,x,y,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
-    return distance
-
-beta = np.linspace(0.96, 0.99, mesh_size_beta)
-nabla = np.linspace(0.005, 0.045, mesh_size_nabla)
-splurge = np.linspace(0.2,0.4,mesh_size_splurge)
-
-X, Y = np.meshgrid(beta, splurge)
-Z = np.empty([mesh_size_splurge,mesh_size_beta])
-for i in range(mesh_size_beta):
-    for j in range(mesh_size_splurge):
-        Z[j][i] = z_function(beta[i],0.03,splurge[j])
-
-AdjFactorfig = plt.figure()
-ax = plt.axes(projection='3d')
-ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
-                cmap='winter', edgecolor='none')
-minpoint = np.min(Z)
-indexp = np.argmin(Z)
-minbeta = np.asarray(X).reshape(-1)[indexp]
-minnabla = np.asarray(Y).reshape(-1)[indexp]
-ax.set_title(['splurge = 0.315, min=', minpoint, ' for beta = ', minbeta, ' and nabla = ', minnabla]);
-plt.show()
-
-#%% Plot Surface (special)
-
-from mpl_toolkits import mplot3d
-
-mesh_size_beta = 20
-mesh_size_nabla = 40
-
-
-def z_function(x, y, fixed_splurge):
-    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(fixed_splurge,x,y,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
-    return distance
-
-beta = np.linspace(0.96, 0.99, mesh_size_beta)
-nabla = np.linspace(0.005, 0.045, mesh_size_nabla)
-
-X, Y = np.meshgrid(beta, nabla)
-Z = np.empty([mesh_size_nabla,mesh_size_beta])
-for i in range(mesh_size_beta):
-    for j in range(mesh_size_nabla):
-        if beta[i]+nabla[j]>0.99:
-            if beta[i]+nabla[j]<1.01:
-                Z[j][i] = z_function(beta[i],nabla[j],0.315)
+    
+    
+        
+    
+    
+    #%% Plot Surface special splurge
+    
+    from mpl_toolkits import mplot3d
+    
+    mesh_size_beta    = 8
+    mesh_size_nabla   = 15
+    mesh_size_splurge = 10
+    
+    
+    def z_function(x, y, z):
+        [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(z,x,y,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
+        return distance
+    
+    beta = np.linspace(0.96, 0.99, mesh_size_beta)
+    nabla = np.linspace(0.005, 0.045, mesh_size_nabla)
+    splurge = np.linspace(0.2,0.4,mesh_size_splurge)
+    
+    X, Y = np.meshgrid(beta, splurge)
+    Z = np.empty([mesh_size_splurge,mesh_size_beta])
+    for i in range(mesh_size_beta):
+        for j in range(mesh_size_splurge):
+            Z[j][i] = z_function(beta[i],0.03,splurge[j])
+    
+    AdjFactorfig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
+                    cmap='winter', edgecolor='none')
+    minpoint = np.min(Z)
+    indexp = np.argmin(Z)
+    minbeta = np.asarray(X).reshape(-1)[indexp]
+    minnabla = np.asarray(Y).reshape(-1)[indexp]
+    ax.set_title(['splurge = 0.315, min=', minpoint, ' for beta = ', minbeta, ' and nabla = ', minnabla]);
+    plt.show()
+    
+    #%% Plot Surface (special)
+    
+    from mpl_toolkits import mplot3d
+    
+    mesh_size_beta = 20
+    mesh_size_nabla = 40
+    
+    
+    def z_function(x, y, fixed_splurge):
+        [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(fixed_splurge,x,y,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
+        return distance
+    
+    beta = np.linspace(0.96, 0.99, mesh_size_beta)
+    nabla = np.linspace(0.005, 0.045, mesh_size_nabla)
+    
+    X, Y = np.meshgrid(beta, nabla)
+    Z = np.empty([mesh_size_nabla,mesh_size_beta])
+    for i in range(mesh_size_beta):
+        for j in range(mesh_size_nabla):
+            if beta[i]+nabla[j]>0.99:
+                if beta[i]+nabla[j]<1.01:
+                    Z[j][i] = z_function(beta[i],nabla[j],0.315)
+                else:
+                    Z[j][i] = 10
+                    print('Z set to 10 for beta=',beta[i],' and nabla=',nabla[j])
             else:
                 Z[j][i] = 10
                 print('Z set to 10 for beta=',beta[i],' and nabla=',nabla[j])
-        else:
-            Z[j][i] = 10
-            print('Z set to 10 for beta=',beta[i],' and nabla=',nabla[j])
+    
 
-# Z2 = np.empty([mesh_size,mesh_size])
-# for i in range(mesh_size):
-#     for j in range(mesh_size):
-#         Z2[j][i] = z_function(beta[i],nabla[j],0.35)    
-
-
-
-# fig = plt.figure()
-# ax = plt.axes(projection="3d")
-# ax.plot_wireframe(X, Y, Z, color='green')
-# ax.set_xlabel('beta')
-# ax.set_ylabel('nabla')
-# ax.set_zlabel('z')
-
-fig = plt.figure()
-ax = plt.axes(projection='3d')
-ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
-                cmap='winter', edgecolor='none')
-minpoint = np.min(Z)
-indexp = np.argmin(Z)
-minbeta = np.asarray(X).reshape(-1)[indexp]
-minnabla = np.asarray(Y).reshape(-1)[indexp]
-ax.set_title(['splurge = 0.315, min=', minpoint, ' for beta = ', minbeta, ' and nabla = ', minnabla]);
-plt.show()
-
-# fig = plt.figure()
-# ax = plt.axes(projection='3d')
-# ax.plot_surface(X, Y, Z2, rstride=1, cstride=1,
-#                 cmap='winter', edgecolor='none')
-# minpoint = np.min(Z2)
-# indexp = np.argmin(Z2)
-# minbeta = np.asarray(X).reshape(-1)[indexp]
-# minnabla = np.asarray(Y).reshape(-1)[indexp]
-# ax.set_title(['splurge = 0.35, min=', minpoint, ' for beta = ', minbeta, ' and nabla = ', minnabla]);
-# plt.show()
-
-#%%
-# beta_reduced = beta[18:22]
-# nabla_reduced = nabla[0:22]
-# X_reduced, Y_reduced = np.meshgrid(beta_reduced, nabla_reduced)
-# Z_reduced = np.empty([22,4])
-# for i in range(4):
-#     for j in range(22):
-#         Z_reduced[j][i] = Z2[j][i+18]
-# fig = plt.figure()
-# ax = plt.axes(projection='3d')
-# ax.plot_surface(X_reduced, Y_reduced, Z_reduced, rstride=1, cstride=1,
-#                 cmap='winter', edgecolor='none')
-# ax.view_init(-140, 30)
-        
-# #%%
-# for i in range(9):
-#     print(i+16)
+    
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
+                    cmap='winter', edgecolor='none')
+    minpoint = np.min(Z)
+    indexp = np.argmin(Z)
+    minbeta = np.asarray(X).reshape(-1)[indexp]
+    minnabla = np.asarray(Y).reshape(-1)[indexp]
+    ax.set_title(['splurge = 0.315, min=', minpoint, ' for beta = ', minbeta, ' and nabla = ', minnabla]);
+    plt.show()
+    
 

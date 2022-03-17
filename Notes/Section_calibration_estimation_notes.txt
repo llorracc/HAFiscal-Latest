@@ -4,6 +4,7 @@ pLvlInitMean_h = np.log(7.5)  # Average quarterly permanent income of "newborn" 
 pLvlInitMean_c = np.log(12.0) # Average quarterly permanent income of "newborn" HS  ($1000)
 pLvlInitStd = 0.4             # Standard deviation of initial log permanent income 
 These are taken from the pandemic paper, but in that paper it is not clear where they come from. An alternative is to calibrate that to numbers for 25 year olds in each education group in the SCF 2004. 
+---Done. 
 
 
 
@@ -11,7 +12,7 @@ These are taken from the pandemic paper, but in that paper it is not clear where
 TranShkStd = [0.12]
 PermShkStd = [0.003]
 These are taken form the Sticky expectations paper. In that paper it says the calibration is explained in the online appendix, but there is no online appendix on the AEJ:Macro webpage and I couldn't see a pdf of it on GitHub. 
-
+---Done. We took numbers for variances and plugged in as standard deviations. 
 
 
 *** Unemployment numbers: 
@@ -20,6 +21,7 @@ Unemployment income w/o benefits rate = 0.05
 Average duration of unemp. spell = 1.5 quarters 
 Average duration of benefits = 2 quarters 
 These numbers are all from the pandemic paper (not sure if there is a parameter there for income w/o benefits), but that paper does say where they are from. 
+---Done. These are from special issue in JEDC (2010)? 
 
 Urate_normal_d = 0.085        # Unemployment rate in normal times, dropouts 2004
 Urate_normal_h = 0.05         # Unemployment rate in normal times, highschoolers 2004
@@ -37,4 +39,32 @@ I don't know where these are from.
 
 *** Splurge
 Splurge = 0.32 
-We have to discuss the write-up of this. 
+We have to discuss the write-up of this. Done.	
+
+
+**** Notes: 
+- Look at initial liquid wealth at 25. Done. 
+- Plug in new values for initial distribution of permanent income. Done. 
+- Unemployment numbers same as pandemic paper, may be from JEDC volume 2003,4 or 5. 2010?
+- Survival probability: typical life-span is 85 years -> change to 65. Done. 
+
+
+
+- Estimate median liquid wealth to permanent income at age 65? 
+- 
+
+
+**** Notes 17.02.2022
+- Distr of MPCs right -> consumption dynamics right (?) 
+	+ argument for ignoring life-cycle 
+- Reporting of *annual* MPCs, including the splurge 
+- Experiment: 
+	- go back to the old standard deviations, but otherwise new calibration 
+	- reestimate the beta distributions for those std.devs. Done. 
+
+
+Adam Ison ?
+Ben Moll, Laibson et al. ? 
+
+
+- NBER micro-macro: March 31. 

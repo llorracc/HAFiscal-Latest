@@ -1,0 +1,51 @@
+\documentclass[../HAFiscal]{subfiles}
+\begin{document}
+
+\section{Welfare analysis}
+
+We want to convert welfare units to consumption units. A proportional increase in every agents' consumption in the baseline by fraction $x$, in welfare, is equal to:
+\begin{align}
+x\frac{1}{N}\sum_{i=1}^{N} \sum_{t=0}^{\infty} D^t c_{it,\text{base}} u'(c_{it,\text{base}})
+\end{align}
+where $c_{it}$ is consumption (including the splurge) of agent $i$ at time $t$ and $D$ is the social planner's discount rate. $N$ is the number of agents.
+
+
+The cost of such an increase is
+\begin{align}
+x\frac{1}{N}\sum_{i=1}^{N} \sum_{t=0}^{\infty} R^{-t} c_{it,\text{base}}
+\end{align}
+Define
+\begin{align}
+\mathcal{W}^c =\frac{1}{N}\sum_{i=1}^{N} \sum_{t=0}^{\infty} D^t c_{it,\text{base}} u'(c_{it,\text{base}}) \\
+\mathcal{P}^c = \frac{1}{N}\sum_{i=1}^{N} \sum_{t=0}^{\infty} R^{-t} c_{it,\text{base}}
+\end{align}
+Aside - with log utility, $\mathcal{W}^c =\frac{1}{N}\sum_{i=1}^{N} \sum_{t=0}^{\infty} D^t = \frac{1}{1-D}$
+
+We will assume that a government expenditure of size $F$ with welfare benefit $\mathcal{W}$ will be funded by a proportional consumption tax of size $\frac{F}{\mathcal{P}^c}$ resulting in a welfare loss of $\frac{F}{\mathcal{P}^c}\mathcal{W}^c$. The overall welfare benefit will be equivalent to consumption units:
+\begin{align}
+\mathcal{C} = \frac{\mathcal{W}}{\mathcal{W}^c} - \frac{F}{\mathcal{P}^c}
+\end{align}
+There is also an `unseen' cost to the government policy exactly equal to implementing the policy in normal times.
+
+Define welfare of a policy as:
+\begin{align}
+\mathcal{W}(\text{policy},AD,Rec) = \frac{1}{N}\sum_{i=1}^{N} \sum_{t=0}^{\infty} D^t u(c_{it,\text{policy},AD,Rec})
+\end{align}
+
+So the consumption equivalent of a policy implemented in recession is:
+\begin{align}
+\mathcal{C}(\text{policy},AD,Rec) &= \bigg(\frac{\mathcal{W}(\text{policy},AD,Rec)-\mathcal{W}(AD,Rec)}{\mathcal{W}^c} - \frac{PV(\text{policy},Rec)}{\mathcal{P}^c} \bigg)\\ \nonumber
+& \qquad -
+\bigg(\frac{\mathcal{W}(\text{policy}) - \mathcal{W}(\text{base})}{\mathcal{W}^c} - \frac{PV(\text{policy})}{\mathcal{P}^c} \bigg)
+\end{align}
+
+\begin{table} 
+	\center
+	\input Code/HA-Models/FromPandemicCode/Tables/welfare4.tex
+	\caption{Consumption Equivalent Welfare Gains in Basis Points }
+	\label{welfare}
+\end{table}
+
+Table \ref{welfare} shows results for this method. Note that the policy expenditures of each policy have been equalized.
+
+\end{document}	
