@@ -39,7 +39,8 @@
 
 
 % Tiny info header at top tracks git commit
-\hfill{\tiny \jobname~\versn~\today~{at} \DTMcurrenttime, \input{\ResourcesDir/.git-source-commit}~~\input{\ResourcesDir/.git-public-commit}}
+% IF: The following line does not compile for me, so commented it out
+%\hfill{\tiny \jobname~\versn~\today~{at} \DTMcurrenttime, \input{\ResourcesDir/.git-source-commit}~~\input{\ResourcesDir/.git-public-commit}}
 
 \title{HAFiscal}
 
@@ -112,7 +113,29 @@
 \section{Introduction}\label{sec:intro}
 \setcounter{page}{0}\pagenumbering{arabic}
 
+
+
+% INCLUDE SUBFILES HERE
+
 \subfile{Subfiles/Intro}
+
+\subfile{Subfiles/Model}
+
+
+\section{Estimation and calibration}	
+\subfile{Subfiles/SplurgeEstimation}	
+\subfile{Subfiles/US_Estimation_Calibration}
+
+\subfile{Subfiles/Results}
+
+\subfile{Subfiles/Welfare}
+
+\subfile{Subfiles/Conclusion}
+
+
+
+
+
 
 
 \onlyinsubfile{\input{\LaTeXInputs/bibliography_blend}}

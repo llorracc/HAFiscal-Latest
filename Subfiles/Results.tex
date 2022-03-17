@@ -1,3 +1,6 @@
+\documentclass[../HAFiscal]{subfiles}
+\begin{document}
+
 \section{Results}
 
 We consider the following fiscal policy experiments
@@ -13,21 +16,21 @@ We consider the following fiscal policy experiments
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{../Code/HA-Models/FromPandemicCode/Figures/recession_taxcut_relrecession}
+	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_taxcut_relrecession}
 	\caption{Impulse responses of aggregate income and consumption to a pay roll tax cut during a recesssion lasting eight quarters with and without aggregate demand effects}
 	\label{fig:recessiontaxcutrelrecession}
 \end{figure}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{../Code/HA-Models/FromPandemicCode/Figures/recession_UI_relrecession}
+	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_UI_relrecession}
 	\caption{Impulse responses of aggregate income and consumption to a UI extension during a recesssion with and without aggregate demand effects}
 	\label{fig:recessionuirelrecession}
 \end{figure}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{../Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
+	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
 	\caption{Impulse responses of aggregate income and consumption to a stimulus check during a recesssion with and without aggregate demand effects}
 	\label{fig:recessioncheckrelrecession}
 \end{figure}
@@ -50,21 +53,36 @@ Definitions:
 
 \begin{table} 
 	\center
-	\input ../Code/HA-Models/FromPandemicCode/Tables/Multiplier.tex
+	\input Code/HA-Models/FromPandemicCode/Tables/Multiplier.tex
 	\caption{Multipliers as well as the share of the policy ocurring during the recession for the three policies considered}
 	\label{tab:Multiplier}
 \end{table}
 
 \begin{table} 
 	\center
-	\input ../Code/HA-Models/FromPandemicCode/Tables/Multiplier_RecLengths.tex
+	\input Code/HA-Models/FromPandemicCode/Tables/Multiplier_RecLengths.tex
 	\caption{Multipliers (with AD effects) for different recesssion lengths for the three policies considered}
 	\label{tab:Multiplier_RecLengths}
 \end{table}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{../Code/HA-Models/FromPandemicCode/Figures/Cummulative_multipliers}
+	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/Cummulative_multipliers}
 	\caption{Cummulative Multiplier as a function of the horizon in quarters for the three policies considered. Policies are implemented during a recession with AD effects active}
 	\label{fig:cummulativemultipliers}
 \end{figure}
+
+
+
+\subsection{Linearity of the check multiplier}
+
+Table \ref{multipliers_checklinearity} shows the amount of additional consumption stimulated (as \% of baseline consumption) caused by stimulus checks of different sizes as well as their multiplier (i.e. the ratio between stimulated consumption and the cost of the policy, in net present value). The table shows that the impact of the check stimulus experiment scales roughly linearly with the size of the stimulus check, leaving the multiplier largely unaffected by the size of check.
+
+\begin{table} 
+	\center
+	\input Code/HA-Models/FromPandemicCode/Tables/Multiplier_DifferentCheckSizes.tex
+	\caption{Multipliers for different sizes of the stimulus check}
+	\label{multipliers_checklinearity}
+\end{table}
+
+\end{document}	
