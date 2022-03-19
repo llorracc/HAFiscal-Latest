@@ -13,7 +13,7 @@ from HARK import multiThreadCommands, multiThreadCommandsFake
 from HARK.utilities import getPercentiles, getLorenzShares
 from HARK.estimation import minimizeNelderMead
 from EstimParameters import init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
-     DiscFacCount, AgentCountTotal, base_dict, figs_dir, UBspell_normal, \
+     DiscFacCount, Splurge, AgentCountTotal, base_dict, figs_dir, UBspell_normal, \
      data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, data_medianLWPI,\
      data_EducShares, data_WealthShares
 from EstimAggFiscalModel import AggFiscalType, AggregateDemandEconomy
@@ -39,7 +39,7 @@ def calcEstimStats(Agents):
     Stats : namedtuple("avgLWPI", "LWoPI", "LorenzPts")
     avgLWPI : [float] 
         The weighted average of LW/PI-ratio for each education type.
-    LWoPI : [flota]
+    LWoPI : [float]
         Total liquid wealth / total permanent income for each education type. 
     LorenzPts : [float]
         The 20th, 40th, 60th, and 80th percentile points of the Lorenz curve for 
@@ -149,17 +149,33 @@ def calcMPCbyEd(Agents):
 
     Returns
     -------
-    MPCs : np.array(float)
-        The average MPC for each education type. 
+    MPCs : namedtuple("MPCsQ", "MPCsA")    
+    MPCsQ : [float]
+        The average MPC for each education type - Quarterly, ignores splurge.
+    MPCsA : [float]
+        The average MPC for each education type - Annualized, taking initial 
+        splurge into account. 
     '''
-    MPCs = [0]*num_types
+    MPCsQ = [0]*(num_types+1)
+    MPCsA = [0]*(num_types+1)
     for e in range(num_types):
         MPC_byEd = []
         MPC_byEd = np.concatenate([ThisType.MPCnow for ThisType in \
                                        Agents[e*DiscFacCount:(e+1)*DiscFacCount]])
-        MPCs[e] = np.mean(MPC_byEd)
-    
-    return np.array(MPCs)
+        MPCsQ[e] = np.mean(MPC_byEd)     # Avg. quarterly MPC for each ed group
+        MPCsA[e] = Splurge + (1-Splurge)*MPCsQ[e]
+        for qq in range(3):
+            MPCsA[e] += (1-MPCsA[e])*MPCsQ[e]
+
+    MPC_all = np.concatenate([ThisType.MPCnow for ThisType in Agents])
+    MPCsQ[e+1] = np.mean(MPC_all)
+    MPCsA[e+1] = Splurge + (1-Splurge)*MPCsQ[e+1]
+    for qq in range(3):
+        MPCsA[e+1] += (1-MPCsA[e+1])*MPCsQ[e+1]
+
+    MPCs = namedtuple("MPCs", ["MPCsQ", "MPCsA"])
+
+    return MPCs(MPCsQ,MPCsA)
 # -----------------------------------------------------------------------------
 #%% 
 # Make education types
@@ -342,13 +358,12 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False):
         WealthShares = calcWealthShareByEd(TypeListNew)
         print('Wealth Shares: D = ' + mystr(WealthShares[0]) + \
               ' H = ' + mystr(WealthShares[1]) + ' C = ' + mystr(WealthShares[2]))
-        MPCs_byEd = calcMPCbyEd(TypeListNew)
-        allMPCs = np.concatenate([ThisType.MPCnow for ThisType in TypeListNew])
-        MPCs_all = np.mean(allMPCs)
-        print('Average MPCs: D = ' + mystr(MPCs_byEd[0]) + ' H = ' + mystr(MPCs_byEd[1]) + \
-              ' C = ' + mystr(MPCs_byEd[2]) + ' All = ' + mystr(MPCs_all))
+        MPCs = calcMPCbyEd(TypeListNew)
+        print('Average Quarterly MPCs: D = ' + mystr(MPCs.MPCsQ[0]) + ' H = ' + mystr(MPCs.MPCsQ[1]) + \
+              ' C = ' + mystr(MPCs.MPCsQ[2]) + ' All = ' + mystr(MPCs.MPCsQ[3]))
+        print('Average annual MPCs, incl. splurge: D = ' + mystr(MPCs.MPCsA[0]) + ' H = ' + mystr(MPCs.MPCsA[1]) + \
+              ' C = ' + mystr(MPCs.MPCsA[2]) + ' All = ' + mystr(MPCs.MPCsA[3]))
             
-
     return distance 
 # -----------------------------------------------------------------------------
 def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False):
@@ -515,7 +530,6 @@ estimates_h = [0.93744293, 0.06607694]  # Highschool only
 estimates_c = [0.98525333, 0.01241598] # College only
 betasObjFuncEduc(estimates_d[0], estimates_d[1], educ_type = 0, print_mode=True)
 betasObjFuncEduc(0.80, 0.15, educ_type = 0, print_mode=True)
-
 
 betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \
              [estimates_d[1], estimates_h[1], estimates_c[1]], \
