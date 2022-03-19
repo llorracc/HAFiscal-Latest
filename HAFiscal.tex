@@ -7,7 +7,8 @@
 \documentclass[titlepage, headings=optiontotocandhead]{\econtex}
 
 % Extra standardized packages for specialized content
-\usepackage{footmisc,datetime2,refcount,xr-hyper,hhline,rotating,subfigure,makecell,subfiles}
+%\usepackage{footmisc,datetime2,refcount,xr-hyper,hhline,rotating,subfigure,makecell,subfiles}
+\usepackage{footmisc,datetime2,refcount,xr-hyper,hhline,rotating,makecell,subfiles}
 
 % Extra custom packages 
 \usepackage{\econtexSetup} % Gets, configures often-used packages
@@ -31,8 +32,16 @@
 \usepackage{booktabs}
 \usepackage{placeins}
 \usepackage{caption}
+%\usepackage[round, authoryear]{natbib}
+\usepackage[super]{nth}
+\usepackage{dcolumn}
+\usepackage{subcaption}
+\usepackage{color} 
 
-
+%% added commands
+\newcommand{\myred}[1]{\textcolor{red}{#1}}
+\newcommand{\myblue}[1]{\textcolor{blue}{#1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
 
 \bibliographystyle{\econtexBibStyle} % Custom author (year) bib style
 
@@ -56,7 +65,8 @@
 \addcontentsline{toc}{section}{Appendices} % Say "Appendices"
 
 \small
-\pagebreak\input{\LaTeXInputs/bibliography_blend}\end{document}
+\pagebreak\input{\LaTeXInputs/bibliography_blend}
+\end{document}
 
 \small
 \sloppy
