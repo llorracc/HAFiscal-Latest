@@ -154,41 +154,69 @@ def calcMPCbyEd(Agents):
         The average MPC for each education type - Quarterly, ignores splurge.
     MPCsA : [float]
         The average MPC for each education type - Annualized, taking splurge into account. 
-    MPCsAalt : [float]
-        Alternative measure of average annual MPC: Only splurge in the first quarter.
+        (Only splurge in the first quarter.)
     '''
     MPCsQ = [0]*(num_types+1)
     MPCsA = [0]*(num_types+1)       # Annual MPCs with splurge every Q
-    MPCsAalt = [0]*(num_types+1)    # Annual MPCs with splurge in Q1 only
     for e in range(num_types):
-        MPC_byEd = []
-        MPC_byEd = np.concatenate([ThisType.MPCnow for ThisType in \
+        MPC_byEd_Q = []
+        MPC_byEd_Q = np.concatenate([ThisType.MPCnow for ThisType in \
                                        Agents[e*DiscFacCount:(e+1)*DiscFacCount]])
-        MPCsQ[e] = np.mean(MPC_byEd)     # Avg. quarterly MPC for each ed group
-        
-        MPCsA[e] = Splurge + (1-Splurge)*MPCsQ[e]
+
+        MPC_byEd_A = Splurge + (1-Splurge)*MPC_byEd_Q
         for qq in range(3):
-            MPCsA[e] += (1-MPCsA[e])*(Splurge + (1-Splurge)*MPCsQ[e])
+            MPC_byEd_A += (1-MPC_byEd_A)*MPC_byEd_Q
         
-        MPCsAalt[e] = Splurge + (1-Splurge)*MPCsQ[e]
-        for qq in range(3):
-            MPCsAalt[e] += (1-MPCsAalt[e])*MPCsQ[e]
+        MPCsQ[e] = np.mean(MPC_byEd_Q)
+        MPCsA[e] = np.mean(MPC_byEd_A)
 
-    MPC_all = np.concatenate([ThisType.MPCnow for ThisType in Agents])
-    MPCsQ[e+1] = np.mean(MPC_all)
-
-    MPCsA[e+1] = Splurge + (1-Splurge)*MPCsQ[e+1]
+    MPC_all_Q = np.concatenate([ThisType.MPCnow for ThisType in Agents])
+    MPC_all_A = Splurge + (1-Splurge)*MPC_all_Q
     for qq in range(3):
-        MPCsA[e+1] += (1-MPCsA[e+1])*(Splurge + (1-Splurge)*MPCsQ[e+1])
+        MPC_all_A += (1-MPC_all_A)*MPC_all_Q
+    
+    MPCsQ[e+1] = np.mean(MPC_all_Q)
+    MPCsA[e+1] = np.mean(MPC_all_A)
 
-    MPCsAalt[e+1] = Splurge + (1-Splurge)*MPCsQ[e+1]   # Splurge only in first Q
-    for qq in range(3):
-        MPCsAalt[e+1] += (1-MPCsAalt[e+1])*MPCsQ[e+1]
+    MPCs = namedtuple("MPCs", ["MPCsQ", "MPCsA"])
 
-    MPCs = namedtuple("MPCs", ["MPCsQ", "MPCsA", "MPCsAalt"])
+    return MPCs(MPCsQ,MPCsA)
 
-    return MPCs(MPCsQ,MPCsA,MPCsAalt)
-# -----------------------------------------------------------------------------
+
+# =============================================================================
+#     MPCsQ = [0]*(num_types+1)
+#     MPCsA = [0]*(num_types+1)       # Annual MPCs with splurge every Q
+#     MPCsAalt = [0]*(num_types+1)    # Annual MPCs with splurge in Q1 only
+#     for e in range(num_types):
+#         MPC_byEd = []
+#         MPC_byEd = np.concatenate([ThisType.MPCnow for ThisType in \
+#                                        Agents[e*DiscFacCount:(e+1)*DiscFacCount]])
+#         MPCsQ[e] = np.mean(MPC_byEd)     # Avg. quarterly MPC for each ed group
+#         
+#         MPCsA[e] = Splurge + (1-Splurge)*MPCsQ[e]
+#         for qq in range(3):
+#             MPCsA[e] += (1-MPCsA[e])*(Splurge + (1-Splurge)*MPCsQ[e])
+#         
+#         MPCsAalt[e] = Splurge + (1-Splurge)*MPCsQ[e]
+#         for qq in range(3):
+#             MPCsAalt[e] += (1-MPCsAalt[e])*MPCsQ[e]
+# 
+#     MPC_all = np.concatenate([ThisType.MPCnow for ThisType in Agents])
+#     MPCsQ[e+1] = np.mean(MPC_all)
+# 
+#     MPCsA[e+1] = Splurge + (1-Splurge)*MPCsQ[e+1]
+#     for qq in range(3):
+#         MPCsA[e+1] += (1-MPCsA[e+1])*(Splurge + (1-Splurge)*MPCsQ[e+1])
+# 
+#     MPCsAalt[e+1] = Splurge + (1-Splurge)*MPCsQ[e+1]   # Splurge only in first Q
+#     for qq in range(3):
+#         MPCsAalt[e+1] += (1-MPCsAalt[e+1])*MPCsQ[e+1]
+# 
+#     MPCs = namedtuple("MPCs", ["MPCsQ", "MPCsA", "MPCsAalt"])
+# 
+#     return MPCs(MPCsQ,MPCsA,MPCsAalt)
+# # -----------------------------------------------------------------------------
+# =============================================================================
 #%% 
 # Make education types
 num_types = 3
@@ -373,10 +401,8 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False):
         MPCs = calcMPCbyEd(TypeListNew)
         print('Average Quarterly MPCs: D = ' + mystr(MPCs.MPCsQ[0]) + ' H = ' + mystr(MPCs.MPCsQ[1]) + \
               ' C = ' + mystr(MPCs.MPCsQ[2]) + ' All = ' + mystr(MPCs.MPCsQ[3]))
-        print('Average annual MPCs, incl. splurge: D = ' + mystr(MPCs.MPCsA[0]) + ' H = ' + mystr(MPCs.MPCsA[1]) + \
+        print('Average annual MPCs, incl. splurge Q1 only: D = ' + mystr(MPCs.MPCsA[0]) + ' H = ' + mystr(MPCs.MPCsA[1]) + \
               ' C = ' + mystr(MPCs.MPCsA[2]) + ' All = ' + mystr(MPCs.MPCsA[3]))
-        print('Average annual MPCs, splurge Q1 only: D = ' + mystr(MPCs.MPCsAalt[0]) + ' H = ' + mystr(MPCs.MPCsAalt[1]) + \
-              ' C = ' + mystr(MPCs.MPCsAalt[2]) + ' All = ' + mystr(MPCs.MPCsAalt[3]))
             
     return distance 
 # -----------------------------------------------------------------------------
