@@ -1,33 +1,5 @@
-\documentclass[11pt]{article}
-\usepackage[utf8]{inputenc} 
-\usepackage[T1]{fontenc}
-\usepackage{sectsty}
-\usepackage{graphicx}
-\usepackage{amsmath}
-\usepackage{booktabs}
-\usepackage{placeins}
-\usepackage[round, authoryear]{natbib}
-\usepackage[super]{nth}
-\usepackage{dcolumn}
-\usepackage{subcaption}
-\usepackage{color} 
-
-% Margins
-\topmargin=-0.45in
-\evensidemargin=0in
-\oddsidemargin=0in
-\textwidth=6.5in
-\textheight=9.0in
-\headsep=0.25in
-
-\newcommand{\myred}[1]{\textcolor{red}{#1}}
-\newcommand{\myblue}[1]{\textcolor{blue}{#1}}
-
-\newcolumntype{d}[1]{D{.}{.}{#1}}
-
+\documentclass[../HAFiscal]{subfiles}
 \begin{document}
-	
-\textbf{NOTE}: The contents of this file was moved to the subfile Parameterization.tex on March 19, 2022. Further edits take place in that file. 
 
 \section{Parameterizing the model}
 
@@ -41,25 +13,25 @@ Second, we move on to the calibration of the full model on US data taking the sp
 We define splurging as the free spending of available income without concern for intertemporal maximization of utility. As we will show in this section, it is necessary to allow for splurging in order to capture the shorter and longer term response of consumption to income shocks. Specifically, we show that our model can account well for the results of \citet{fagereng_mpc_2021}, who study the impact of lottery winnings in Norway on consumption using millions of datapoints from the Norwegian population registry. To do so we calibrate our model to reflect the Norwegian economy and estimate the splurge factor, as well as the distribution of discount factors in the population to match two empirical moments. 
 
 First, we take from \citet{fagereng_mpc_2021} the marginal propensity to consume out of a one-period income shock. We not only target the contemporaneous response of consumption to the income shock, but also the subsequent impact on consumption in years one through four after the shock. The share of lottery winnings expended at different time horizons, as found in \citet{fagereng_mpc_2021}, are plotted in figure \ref{fig:aggmpclotterywin}.
-	
+
 Second, we match the steady-state distribution of liquid wealth in the model to its empirical counterpart. Due to the lack of data on the liquid wealth distribution in Norway, we resort to the corresponding data from the US - assuming that liquid wealth inequality is comparable across these countries.\footnote{Data from the Norwegian tax registry contains information on liquid assets, but not liquid debt. Only total debt is reported, and this is mainly mortgage debt. Therefore, we cannot construct liquid wealth as in for example \citet{kaplan2014model}. \label{foot:liqwealth}} Specifically, we impose as targets the cumulative liquid wealth share for the entire population at the 20th, 40th, 60th and 80th income percentile, which in data from the Survey of Consumer Finance in 2004 equal $0.03$ percent, $0.35$ percent, $1.84$ percent, and $7.42$ percent.\footnote{See section~\ref{sec:SCFdata} for details.} Hence, $92.6$ percent of the total liquid wealth is held by the top income quintile. The data is plotted in figure \ref{fig:liquwealthdistribution}.
 
 \begin{figure}[htb]
-	\centering
-	\begin{subfigure}[b]{.48\linewidth}
+\centering
+\begin{subfigure}[b]{.48\linewidth}
 	\centering
 	\includegraphics[width=\linewidth]{../Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin}
 	\caption{Share of lottery win spent}
 	\label{fig:aggmpclotterywin}
-	\end{subfigure}
-	\begin{subfigure}[b]{.48\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{../Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/LiquWealth_Distribution}
-		\caption{Distribution of liquid wealth}
-		\label{fig:liquwealthdistribution}
-	\end{subfigure}%
-	\caption{Targets and model moments from the estimation}
-	\label{fig:splurge_estimation}
+\end{subfigure}
+\begin{subfigure}[b]{.48\linewidth}
+	\centering
+	\includegraphics[width=\linewidth]{../Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/LiquWealth_Distribution}
+	\caption{Distribution of liquid wealth}
+	\label{fig:liquwealthdistribution}
+\end{subfigure}%
+\caption{Targets and model moments from the estimation}
+\label{fig:splurge_estimation}
 \end{figure}
 
 
@@ -90,23 +62,23 @@ With households divided into the three education groups, some parameters, presen
 
 \begin{table}[th]
 \begin{center}
-	\begin{tabular}{lcd{3}} 
-		\toprule
-		Parameter & Notation & $\text{Value}$ \\ \midrule 
-		Risk aversion & & 1.0 \\ 
-		Splurge & & 0.32 \\ 
-		Survival probability, quarterly & & 0.994 \\
-		Risk free interest rate, quarterly & & 1.01 \\ 
-		Standard deviation of transitory shock & & 0.346 \\
-		Standard deviation of permanent shock & & 0.0548 \\ 
-		Unemployment benefits replacement rate (share of PI) & & 0.3 \\ 
-		Unemployment income w/o benefits (share of PI) & & 0.05 \\ 
-		Avg. duration of unemp. spell in normal times (quarters) & & 1.5 \\
-		Avg. duration of unemp. benefits in normal times (quarters) & & 2 
-		\\ \bottomrule 
-	\end{tabular}
-	\caption{Calibrated parameters that apply to all types. ``PI'' refers to permanent income.}
-	\label{tab:calibAll}
+\begin{tabular}{lcd{3}} 
+	\toprule
+	Parameter & Notation & $\text{Value}$ \\ \midrule 
+	Risk aversion & & 1.0 \\ 
+	Splurge & & 0.32 \\ 
+	Survival probability, quarterly & & 0.994 \\
+	Risk free interest rate, quarterly & & 1.01 \\ 
+	Standard deviation of transitory shock & & 0.346 \\
+	Standard deviation of permanent shock & & 0.0548 \\ 
+	Unemployment benefits replacement rate (share of PI) & & 0.3 \\ 
+	Unemployment income w/o benefits (share of PI) & & 0.05 \\ 
+	Avg. duration of unemp. spell in normal times (quarters) & & 1.5 \\
+	Avg. duration of unemp. benefits in normal times (quarters) & & 2 
+	\\ \bottomrule 
+\end{tabular}
+\caption{Calibrated parameters that apply to all types. ``PI'' refers to permanent income.}
+\label{tab:calibAll}
 \end{center}	
 \end{table}
 
@@ -116,19 +88,19 @@ When households are born, they receive an initial level of permanent income. Thi
 
 \begin{table}[th]
 \begin{center}
-	\begin{tabular}{lccc}
-		\toprule 
-		\multicolumn{4}{l}{Parameters calibrated for each education group} \\ 
-		& Dropout & Highschool & College \\ \midrule
-		Percent of population & \phantom{0}9.3 & 52.7 & 38.0 \\ 
-		Avg. quarterly PI of ``newborn'' agent (\$1000) & \phantom{0}6.2 & 11.1 & 14.5 \\
-		Std. dev. of $\log($PI$)$ of ``newborn'' agent & 0.32 & 0.42 & 0.53 \\
-		Avg. quarterly gross growth rate of PI & 1.0036 & 1.0045 & 1.0049 \\
-		Unemployment rate in normal times (percent) & \phantom{0}8.5 & \phantom{0}4.4 & \phantom{0}2.7  			
-		\\ \bottomrule 
-	\end{tabular}
-	\caption{Parameters calibrated for each education group. ``PI'' refers to permanent income.}
-	\label{tab:calibEd}
+\begin{tabular}{lccc}
+	\toprule 
+	\multicolumn{4}{l}{Parameters calibrated for each education group} \\ 
+	& Dropout & Highschool & College \\ \midrule
+	Percent of population & \phantom{0}9.3 & 52.7 & 38.0 \\ 
+	Avg. quarterly PI of ``newborn'' agent (\$1000) & \phantom{0}6.2 & 11.1 & 14.5 \\
+	Std. dev. of $\log($PI$)$ of ``newborn'' agent & 0.32 & 0.42 & 0.53 \\
+	Avg. quarterly gross growth rate of PI & 1.0036 & 1.0045 & 1.0049 \\
+	Unemployment rate in normal times (percent) & \phantom{0}8.5 & \phantom{0}4.4 & \phantom{0}2.7  			
+	\\ \bottomrule 
+\end{tabular}
+\caption{Parameters calibrated for each education group. ``PI'' refers to permanent income.}
+\label{tab:calibEd}
 \end{center}
 \end{table}
 
@@ -155,26 +127,26 @@ The minimum values for the discount factors on the other hand, indicate that som
 		(Min, max) in approximation & (0.604, 0.995) & (0.881, 0.994) & (0.975, 0.996) \\
 		\midrule 
 	\end{tabular} \\ \\ 
-
+	
 	\begin{tabular}{lccc}
-	\multicolumn{4}{l}{Panel (B) Estimation targets} \\ \midrule
-	& Dropout & Highschool & College \\ \midrule
-	Median LW/PI (data) & 4.64 & 30.2 & 112.8 \\ 
-	Median LW/PI (model) & 4.64 & 30.2 & 112.8 \\
-	 $[20,40,60,80]$ pctiles of Lorenz curve (data) & $[0, 0.01, 0.6, 3.6]$ & $[0.06, 0.6, 3.0, 11.6]$ & $[0.2, 0.9, 3.3, 10.3]$ \\
-	$[20,40,60,80]$ pctiles of Lorenz curve (model) & $[0.0, 0.0, 0.5, 3.6]$ & $[0.04, 0.9, 3.7, 11.3]$ & $[0.3, 1.5, 4.0, \phantom{0}9.9]$
-	\\ \midrule 
+		\multicolumn{4}{l}{Panel (B) Estimation targets} \\ \midrule
+		& Dropout & Highschool & College \\ \midrule
+		Median LW/PI (data) & 4.64 & 30.2 & 112.8 \\ 
+		Median LW/PI (model) & 4.64 & 30.2 & 112.8 \\
+		$[20,40,60,80]$ pctiles of Lorenz curve (data) & $[0, 0.01, 0.6, 3.6]$ & $[0.06, 0.6, 3.0, 11.6]$ & $[0.2, 0.9, 3.3, 10.3]$ \\
+		$[20,40,60,80]$ pctiles of Lorenz curve (model) & $[0.0, 0.0, 0.5, 3.6]$ & $[0.04, 0.9, 3.7, 11.3]$ & $[0.3, 1.5, 4.0, \phantom{0}9.9]$
+		\\ \midrule 
 	\end{tabular} \\ \\ 
-
+	
 	\begin{tabular}{lcccc}
-	\multicolumn{5}{l}{Panel (C) Non-targeted moments} \\ 
-	& Dropout & Highschool & College & Population \\ \midrule
-	Percent of total wealth (data) & 0.8 & 17.9 & 81.2 & 100 \\
-	Percent of total wealth (model) & 1.6 & 21.2 & 77.3 & 100 \\
-	Average quarterly MPC (model) & 0.63 & 0.38 & 0.14 & 0.31 \\
-	Average annual MPC (model, incl. splurge) & 0.99 & 0.90 & 0.62 & 0.85
-	\\ \bottomrule 
-\end{tabular}
+		\multicolumn{5}{l}{Panel (C) Non-targeted moments} \\ 
+		& Dropout & Highschool & College & Population \\ \midrule
+		Percent of total wealth (data) & 0.8 & 17.9 & 81.2 & 100 \\
+		Percent of total wealth (model) & 1.6 & 21.2 & 77.3 & 100 \\
+		Average quarterly MPC (model) & 0.63 & 0.38 & 0.14 & 0.31 \\
+		Average annual MPC (model, incl. splurge) & 0.88 & 0.79 & 0.57 & 0.72
+		\\ \bottomrule 
+	\end{tabular}
 \end{tabular}
 \caption{Estimated discount factor distributions, estimation targets and non-targeted moments.}
 \label{tab:estimBetas}
@@ -186,17 +158,12 @@ Panel~B of Tabel~\ref{tab:estimBetas} and Figure~\ref{fig:LorenzPts} show the es
 Finally, panel~C of Table~\ref{tab:estimBetas} shows that the estimated model produces a wealth distribution across the three education groups that is fairly close to the one in the data. The panel also reports the average, quarterly and annual MPCs for each education group. The quarterly MPC results from the households' decision problem where they optimally allocate between consumption and savings. The annual MPC takes into account the initial splurge factor when an income shock is first received as well as the decisions to consume  out of additional income that remains after splurging for four quarters. 
 
 \begin{figure}[th]
-	\begin{center}
-	\includegraphics[width=.9\textwidth]{LorenzPoints.pdf}
-	\label{fig:LorenzPts}
+\begin{center}
+	\includegraphics[width=.9\textwidth]{../Figures/LorenzPoints.pdf}
 	\caption{Distributions of liquid wealth within each educational group and for the whole population from the 2004 Survey of Consumer Finance and from the estimated model.}
-	\end{center}
+	\label{fig:LorenzPts}
+\end{center}
 \end{figure}
 
-\let\bibfont=\small
-%\bibliographystyle{econometrica}
-\bibliographystyle{natbib}
-\bibliography{Section_calibration_estimation}
-%\pdfbookmark[1]{References}{references}
 
-\end{document}
+\end{document}	
