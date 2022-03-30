@@ -57,9 +57,9 @@ We have to discuss the write-up of this. Done.
 **** Notes 17.02.2022
 - Distr of MPCs right -> consumption dynamics right (?) 
 	+ argument for ignoring life-cycle 
-- Reporting of *annual* MPCs, including the splurge 
+- Reporting of *annual* MPCs, including the splurge. Done. 
 - Experiment: 
-	- go back to the old standard deviations, but otherwise new calibration 
+	- go back to the old standard deviations, but otherwise new calibration. Done. 
 	- reestimate the beta distributions for those std.devs. Done. 
 
 
