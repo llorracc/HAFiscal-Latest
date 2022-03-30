@@ -314,7 +314,6 @@ latexmkrc
 _region_.*
 
 *.dep
-*.bib
 *.4ct
 *.4tc
 
