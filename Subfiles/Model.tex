@@ -2,26 +2,35 @@
 \begin{document}
 	
 \section{Model}
-	\subsection{The Household Problem}
-	A household $i$ faces a stochastic income stream, $y_{i,t}$, and chooses to consume some of that income when it arrives (the `splurge') and then to optimize consumption with what is left over. Therefore, consumption each period for household $i$ can be written:
-	\begin{align}
-		c_{i,t} = c_{sp,i,t} + c_{opt,i,t},
-	\end{align}
-	where $c_{i,t}$ is total consumption, $c_{sp,i,t}$ is the splurge consumption and $c_{opt,i,t}$ is the household's optimal remaining consumption. Splurge consumption is simply a fraction of income:
-	\begin{align}
-	c_{sp,i,t} = \varsigma y_{i,t},
-	\end{align}
-	while the optimized portion of consumption is chosen to maximize lifetime expected consumption:
-	\begin{align}
-	\sum_{t=0}^{\infty}\beta_i^t (1-D)^t \mathbb{E}u(c_{opt,i,t})
-	\end{align}
-	subject to a no-borrowing constraint and the budget constraint given existing market resources $m_{i,t}$ and income state.
-	\paragraph{The Income Process}
-	Households face a stochastic income process with permanent and transitory shocks to income, along with unemployment shocks. In normal times, households receive unemployment benefits for two quarters before they run out. Permanent income in the model is described by the following equation:
-	\begin{align}
-	p_{i,t} = \psi_{i,t}\Gamma_{e(i)}p_{i,t-1},
-	\end{align}
-	where $\psi_{i,t}$ is the shock to permanent income and $\Gamma_{e(i)}$ is the growth rate of income for education group $e(i)$ of the household. The shock to permanent income is normally distributed with variance $\sigma_{\psi}$.
+
+In this section we describe our heterogeneous agent model featuring households that differ according to their level of education and their subjective discount factors. We first describe the problem faced by these households given the income process they face with permanent and transitory shocks as well as shocks to their employment status. Then we describe how we model the arrival of a recession and the policies that we study as potential responses. Finally, we discuss an extension of the model where we include aggregate demand effects that induce a feedback effect from aggregate consumption to income and hence, amplify the impact of a recession when it occurs. 
+
+\subsection{The Household Problem}
+A household $i$ is characterized by the level of education $e(i)$ and their subjective discount factor $\beta_i$. The household faces a stochastic income stream, $y_{i,t}$, and chooses to consume some of that income when it arrives (the `splurge') and then to optimize consumption with what is left over. Therefore, consumption each period for household $i$ can be written:
+\begin{align}
+	c_{i,t} = c_{sp,i,t} + c_{opt,i,t},
+\end{align}
+where $c_{i,t}$ is total consumption, $c_{sp,i,t}$ is the splurge consumption and $c_{opt,i,t}$ is the household's optimal choice of consumption after splurging. Splurge consumption is simply a fraction of income:
+\begin{align}
+c_{sp,i,t} = \varsigma y_{i,t},
+\end{align}
+while the optimized portion of consumption is chosen to maximize lifetime expected consumption:
+\begin{align}
+\sum_{t=0}^{\infty}\beta_i^t (1-D)^t \mathbb{E}u(c_{opt,i,t}).
+\end{align}
+The optimization is subject to the budget constraint given existing market resources $m_{i,t}$ and income state, and a no-borrowing constraint: 
+\begin{align}
+	a_{i,t} &= m_{i,t} - c_{i,t} \\ 
+	m_{i,t+1} &=  \\
+	a_{i,t} &\geq 0 
+\end{align}
+
+\paragraph{The Income Process}
+Households face a stochastic income process with permanent and transitory shocks to income, along with unemployment shocks. In normal times, households receive unemployment benefits for two quarters before they run out. Permanent income in the model is described by the following equation:
+\begin{align}
+p_{i,t} = \psi_{i,t}\Gamma_{e(i)}p_{i,t-1},
+\end{align}
+where $\psi_{i,t}$ is the shock to permanent income and $\Gamma_{e(i)}$ is the growth rate of income for education group $e(i)$ of the household. The shock to permanent income is normally distributed with variance $\sigma_{\psi}^2$.
 	
 	The actual income a household receives will be subject their employment status as well as transitory shocks, $\xi_{i,t}$:
 	\begin{align}
@@ -31,7 +40,7 @@
 						0.05 p_{i,t}, & \text{if unemployed without benefits} 
 					\end{cases}
 	\end{align}
-	where $\xi_{i,t}$ is normally distributed with variance $\sigma_{\xi}$. A Markov transition matrix with four states generates the unemployment dynamics. An employed household can continue being employed, or move to being unemployed with benefits (with one remaining period of benefits). This household can then either become employed or move to being unemployed with benefits (but no remaining periods of benefits). A household in this state can then either become employed or unemployed without benefits, where they will remain until they become employed again. The probability of becoming employed is the same for each unemployed state and the probabilities of transitioning from employment to unemployment and vice-versa are chosen to match the unemployment rate for each education group (in steady state) and an average duration of unemployment of 1.5 quarters.
+	where $\xi_{i,t}$ is normally distributed with variance $\sigma_{\xi}^2$. A Markov transition matrix with four states generates the unemployment dynamics. An employed household can continue being employed, or move to being unemployed with benefits (with one remaining period of benefits). This household can then either become employed or move to being unemployed with benefits (but no remaining periods of benefits). A household in this state can then either become employed or unemployed without benefits, where they will remain until they become employed again. The probability of becoming employed is the same for each unemployed state and the probabilities of transitioning from employment to unemployment and vice-versa are chosen to match the unemployment rate for each education group (in steady state) and an average duration of unemployment of 1.5 quarters.
 	
 	\subsection{MIT Shocks}
 	We model the arrival of a recession, and the government policy response to it, as an unpredictable event---an MIT shock. We have four types of shock representing a recession and the three different policy responses we consider. The policy responses are usually modeled as in addition to the recession, but we also consider a counterfactual in which the policy response occurs without a recession in order to understand the welfare effects of the policy.
