@@ -4,9 +4,23 @@
 \section{Results}
 
 
-
 \subsection{Impulse responses}
+In this section we present the impulse response graphs for each stimulus policy. On each graph we show four impulse responses:
+\begin{itemize}
+	\item 1) The \textbf{solid blue line} shows the difference in aggregate labor and transfer income, in the model with no aggregate demand effects, between a scenario in which the recession hits in quarter 1 and the policy is introduced and a scenario in which the recession hits in quarter 1 and no policy is introduced.
+	\item 2) The \textbf{dashed blue line} shows the same difference in income, but for the model with aggregate demand effects during the recession.
+	\item 3) The \textbf{solid red line} shows the difference in aggregate consumption, in the model with no aggregate demand effects, between a scenario in which the recession hits in quarter 1 and the policy is introduced and a scenario in which the recession hits in quarter 1 and no policy is introduced.
+	\item 3) The \textbf{dashed red line} shows the same difference in consumption, but for the model with aggregate demand effects during the recession.
+\end{itemize}
 
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
+	\caption{Impulse responses of aggregate income and consumption to a stimulus check during a recesssion with and without aggregate demand effects}
+	\label{fig:recessioncheckrelrecession}
+\end{figure}
+
+Figure \ref{fig:recessioncheckrelrecession} shows the impulse response of income and consumption when stimulus checks are issued in the first quarter of a recession. In the model without a multiplier, the stimulus checks account for over 5 percent of the first quarter's income. In the following quarters there are no further stimulus payments and income remains the same as it would have done without the stimulus check policy. Consumption is about 3 percent higher in the first quarter which includes the splurge response to the stimulus check. Consumption then drops to well below one percent above the counterfactual and the remainder of the stimulus check money is then spent over the next few years. In the model with aggregate demand effects, income in the first quarter is almost 8 percent higher than the counterfactual as the extra spending feeds into higher incomes. Consumption in this model jumps to a higher level than without aggregate demand effects and comes down more slowly as the feedback effects from consumption to income dampen the speed with which income---and hence the splurge---return to zero. After a couple of years, when the recession is most likely over and aggregate demand effects are no longer in place, income is close to where it would be without the stimulus check policy although consumption remains somewhat elevated.
 
 \begin{figure}
 	\centering
@@ -15,6 +29,8 @@
 	\label{fig:recessiontaxcutrelrecession}
 \end{figure}
 
+Figure \ref{fig:recessiontaxcutrelrecession} shows the impulse response for a payroll tax cut that persists for two years (8 quarters). In the model without aggregate demand effects, income rises by close to two percent as the take-home pay for employed consumers goes up. After the two year period, income drops back to where it would have been without the payroll tax cut. Consumption jumps close to 1.5 percent in response to the tax cut. Over the period in which the tax cut is in effect, consumption rises somewhat as the stock of precautionary savings goes up, before declining in anticipation of the drop in income at the two year mark. Following the drop in income, consumption drops due to the splurge and then decreases over time as consumers spend out the savings they built up over the period the tax cut was in effect. In the model with aggregate demand effect, income rises over three percent above the counterfactual and then declines steadily as the probability the recession remains active, and hence the aggregate demands effects in place, goes down over time. *************IVAN - I REMEMBER WE FIGURED OUT THE WEIRD PATTER IN THE FIRST FEW QUARTERS BUT NOW I FORGET ************* In response to the now declining expected path for income over the two years during which the tax cut remains in place, consumption also declines, albeit at a slightly slower pace. Following the end of the policy, the savings stock in the model with aggregate demand is high and consumption remains significantly elevated through the period shown.
+
 \begin{figure}
 	\centering
 	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_UI_relrecession}
@@ -22,12 +38,9 @@
 	\label{fig:recessionuirelrecession}
 \end{figure}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
-	\caption{Impulse responses of aggregate income and consumption to a stimulus check during a recesssion with and without aggregate demand effects}
-	\label{fig:recessioncheckrelrecession}
-\end{figure}
+The final impulse response graph, figure \ref{fig:recessionuirelrecession} shows the response to a policy that extends unemployment benefits from 6 months to 12 months for a period of a year. The path for income, in the model without aggregate demand effects, now depends on the number of consumers who receive the extended unemployment benefits. These consumers are those who have been unemployed for between 6 and 12 months. In the first quarter of the recession the newly unemployed receive unemployment benefits regardless of whether they are extended or not. Therefore, it is in the second and third quarter, when the effects of the recession on long-term unemployment start to materialize, that the extended unemployment insurance payments ramp up. *****QUESTION: why are they zero in the fourth quarter? I thought the policy lasted for one year****** By the fourth quarter, the policy is no longer in effect and income from extended unemployment goes to zero. Consumption in the first quarter jumps up by more than income, prompted both by the increase in expected income and also the reduced need for precautionary saving given the extended insurance. In the model without aggregate demand effects, consumption is only a little above the counterfactual by the time the policy is over. In the model with aggregate demand effect, there is an extra boost to income of about the same size if the first and second quarters. As this extra aggregate-demand induced income goes to employed consumers, more of it is saved and consumption remains elevated several quarters beyond the end of the policy.
+
+
 
 \FloatBarrier
 \subsection{Multipliers}
