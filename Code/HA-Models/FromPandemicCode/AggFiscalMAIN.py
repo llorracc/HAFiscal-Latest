@@ -28,13 +28,13 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 ## Which experiments to run / plots to show
 Run_Baseline            = True
-Run_Recession           = True
-Run_Check_Recession     = True
+Run_Recession           = False
+Run_Check_Recession     = False
 Run_UB_Ext_Recession    = True
-Run_TaxCut_Recession    = True
-Run_Check               = True
+Run_TaxCut_Recession    = False
+Run_Check               = False
 Run_UB_Ext              = True
-Run_TaxCut              = True
+Run_TaxCut              = False
 
 Run_AD                  = True
 Run_1stRoundAD          = True
