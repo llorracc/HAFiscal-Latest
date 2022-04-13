@@ -221,7 +221,7 @@ x_axis = np.arange(1,max_T2+1)[::nPlotDiff]
 plt.plot(x_axis,C_Multiplier_Rec_TaxCut_AD[0:max_T2][::nPlotDiff],              color='red',linestyle='-')
 plt.plot(x_axis,C_Multiplier_UI_Rec_AD[0:max_T2][::nPlotDiff],                  color='blue',linestyle='-')
 plt.plot(x_axis,C_Multiplier_Rec_Check_AD[0:max_T2][::nPlotDiff],               color='green',linestyle='-')
-plt.legend(['Payroll tax cut','UI extension','Stimulus check'])
+plt.legend(['Payroll Tax cut','Extended Unemployment Benefits','Stimulus Check'])
 plt.xticks(np.arange(min(x_axis), max(x_axis)+1, nPlotDiff))
 plt.xlabel('quarter')
 plt.savefig('Figures/' +'Cummulative_multipliers.pdf')
@@ -275,34 +275,31 @@ def ShareOfPolicyDuringRec(rec,TaxCut,UI,Check,recession_prob_array,max_T):
     # then sums it up weighing by probability of that recession length
     ShareExpDuringRecession= np.zeros(3)
          
-    for i in range(max_T):      
+    for i in range(21):      
         NPV_TaxCut              = getSimulationDiff(rec[i],TaxCut[i],'NPV_AggIncome') 
-        C_Multiplier_TaxCut_Rec = getNPVMultiplier(rec[i], TaxCut[i], NPV_TaxCut[-1])
-        ShareExpDuringRecession[0] += C_Multiplier_TaxCut_Rec[i]*recession_prob_array[i]
+        ShareExpDuringRecession[0] += NPV_TaxCut[i]/NPV_TaxCut[-1]*recession_prob_array[i]
         
         NPV_UI                  = getSimulationDiff(rec[i],UI[i],'NPV_AggIncome') 
-        C_Multiplier_UI_Rec     = getNPVMultiplier(rec[i], UI[i], NPV_UI[-1])
-        ShareExpDuringRecession[1] += C_Multiplier_UI_Rec[i]*recession_prob_array[i]
+        ShareExpDuringRecession[1] += NPV_UI[i]/NPV_UI[-1]*recession_prob_array[i]
         
         NPV_Check               = getSimulationDiff(rec[i],Check[i],'NPV_AggIncome') 
-        C_Multiplier_Check_Rec  = getNPVMultiplier(rec[i], Check[i], NPV_Check[-1])
-        ShareExpDuringRecession[2] += C_Multiplier_Check_Rec[i]*recession_prob_array[i]
+        ShareExpDuringRecession[2] += NPV_Check[i]/NPV_Check[-1]*recession_prob_array[i]
          
     return 100*ShareExpDuringRecession
     
          
-recession_all_results_AD        = loadPickle('recession_all_results_AD',folder_AD,locals())   
-recession_all_results_UI_AD     = loadPickle('recessionUI_all_results_AD',folder_AD,locals())
-recession_all_results_TaxCut_AD = loadPickle('recessionTaxCut_all_results_AD',folder_AD,locals())
-recession_all_results_Check_AD  = loadPickle('recessionCheck_all_results_AD',folder_AD,locals())
+recession_all_results        = loadPickle('recession_all_results',folder_AD,locals())   
+recession_all_results_UI     = loadPickle('recessionUI_all_results',folder_AD,locals())
+recession_all_results_TaxCut = loadPickle('recessionTaxCut_all_results',folder_AD,locals())
+recession_all_results_Check  = loadPickle('recessionCheck_all_results',folder_AD,locals())
     
-[Share_TaxCut,Share_UI,ShareCheck]=ShareOfPolicyDuringRec(recession_all_results_AD,recession_all_results_TaxCut_AD,\
-                       recession_all_results_UI_AD,recession_all_results_Check_AD,\
+[Share_TaxCut,Share_UI,ShareCheck]=ShareOfPolicyDuringRec(recession_all_results,recession_all_results_TaxCut,\
+                       recession_all_results_UI,recession_all_results_Check,\
                        recession_prob_array,max_recession_duration)
 
 print('Share of Tax cut policy expenditure occuring during recession: ', Share_TaxCut)    
 print('Share of UI policy expenditure occuring during recession: ', Share_UI)  
-print('Share of Check policy expenditure occuring during recession: ', ShareCheck)    
+print('Share of Check policy expenditure occuring during recession: ', ShareCheck)  
 
 
 def mystr3(number):
@@ -322,8 +319,8 @@ def mystr1(number):
 output  ="\\begin{tabular}{@{}lccc@{}} \n"
 output +="\\toprule \n"
 output +="& Tax Cut    & UI extension    & Stimulus check    \\\\  \\midrule \n"
-output +="Multiplier (with AD effects) &"                 + mystr3(NPV_Multiplier_Rec_TaxCut_AD[-1])             + "  & "+ mystr3(NPV_Multiplier_UI_Rec_AD[-1])               +  "  & "+  mystr3(NPV_Multiplier_Rec_Check_AD[-1])  + "     \\\\ \n"
-output +="Multiplier (with only 1st round AD effects) &"  + mystr3(NPV_Multiplier_Rec_TaxCut_firstRoundAD[-1])   + "  & "+ mystr3(NPV_Multiplier_UI_Rec_firstRoundAD[-1])     +  "  & "+  mystr3(NPV_Multiplier_Rec_Check_firstRoundAD[-1])  + "     \\\\ \n"
+output +="Long-run Multiplier (AD effect) &"                 + mystr3(NPV_Multiplier_Rec_TaxCut_AD[-1])             + "  & "+ mystr3(NPV_Multiplier_UI_Rec_AD[-1])               +  "  & "+  mystr3(NPV_Multiplier_Rec_Check_AD[-1])  + "     \\\\ \n"
+output +="Long-run Multiplier (1st round AD effect only) &"  + mystr3(NPV_Multiplier_Rec_TaxCut_firstRoundAD[-1])   + "  & "+ mystr3(NPV_Multiplier_UI_Rec_firstRoundAD[-1])     +  "  & "+  mystr3(NPV_Multiplier_Rec_Check_firstRoundAD[-1])  + "     \\\\ \n"
 output +="Share of policy expenditure during recession &" + mystr1(Share_TaxCut)   + "\%  & "+ mystr1(Share_UI)  +  "\%  & "+  mystr1(ShareCheck)  + " \%    \\\\ \n"
 output +="\\end{tabular}  \n"
 

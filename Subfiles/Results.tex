@@ -13,6 +13,8 @@ In this section we present the impulse response graphs for each stimulus policy.
 	\item 3) The \textbf{dashed red line} shows the same difference in consumption, but for the model with aggregate demand effects during the recession.
 \end{itemize}
 
+Note that all graphs show the response of income and consumption for an average recession. Specifically, we simulate recessions lasting from only one quarter up to 20 quarters. We then take the sum of the results across all recessions lengths weighted by the probability of this recession length occuring (given our assumption of an average recession length of six quaters).
+
 \begin{figure}
 	\centering
 	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
@@ -29,7 +31,7 @@ Figure \ref{fig:recessioncheckrelrecession} shows the impulse response of income
 	\label{fig:recessiontaxcutrelrecession}
 \end{figure}
 
-Figure \ref{fig:recessiontaxcutrelrecession} shows the impulse response for a payroll tax cut that persists for two years (8 quarters). In the model without aggregate demand effects, income rises by close to two percent as the take-home pay for employed consumers goes up. After the two year period, income drops back to where it would have been without the payroll tax cut. Consumption jumps close to 1.5 percent in response to the tax cut. Over the period in which the tax cut is in effect, consumption rises somewhat as the stock of precautionary savings goes up, before declining in anticipation of the drop in income at the two year mark. Following the drop in income, consumption drops due to the splurge and then decreases over time as consumers spend out the savings they built up over the period the tax cut was in effect. In the model with aggregate demand effect, income rises over three percent above the counterfactual and then declines steadily as the probability the recession remains active, and hence the aggregate demands effects in place, goes down over time. *************IVAN - I REMEMBER WE FIGURED OUT THE WEIRD PATTER IN THE FIRST FEW QUARTERS BUT NOW I FORGET ************* In response to the now declining expected path for income over the two years during which the tax cut remains in place, consumption also declines, albeit at a slightly slower pace. Following the end of the policy, the savings stock in the model with aggregate demand is high and consumption remains significantly elevated through the period shown.
+Figure \ref{fig:recessiontaxcutrelrecession} shows the impulse response for a payroll tax cut that persists for two years (8 quarters). In the model without aggregate demand effects, income rises by two percent as the take-home pay for employed consumers goes up. After the two year period, income drops back to where it would have been without the payroll tax cut. Consumption jumps close to 1.5 percent in response to the tax cut. Over the period in which the tax cut is in effect, consumption rises somewhat as the stock of precautionary savings goes up, before declining in anticipation of the drop in income at the two year mark. Following the drop in income, consumption drops due to the splurge and then decreases over time as consumers spend out the savings they built up over the period the tax cut was in effect. In the model with aggregate demand effect, income rises over three percent above the counterfactual and then declines steadily as the probability the recession remains active, and hence the aggregate demands effects in place, goes down over time.\footnote{Again, consumption tends to first rise due to the build-up of precautionary savings, before falling again as the probability of the recession still in place declines. This hump-shaped pattern feeds through to income, explaining the upward trend in income during the first two quarters.} In response to the now declining expected path for income over the two years during which the tax cut remains in place, consumption also declines, albeit at a slightly slower pace. Following the end of the policy, the savings stock in the model with aggregate demand is high and consumption remains significantly elevated through the period shown.
 
 \begin{figure}
 	\centering
@@ -45,51 +47,36 @@ The final impulse response graph, figure \ref{fig:recessionuirelrecession} shows
 \FloatBarrier
 \subsection{Multipliers}
 
-Definitions:
-\begin{itemize}
-	\item The \textit{net present value (NPV)} of a variable X at horizon t is given by
-	\begin{equation}
-	NPV(t,X) = \sum_{s=0}^{t} \left( \prod_{i=1}^{s} \frac{1}{R_i} \right) X_s
-	\end{equation}
-	\item The \textit{cummulative multiplier (CM)} of a policy is given by
-	\begin{equation}
-	CM(t) = \frac{NPV(t,\Delta C)}{NPV (T_{max},\Delta G)}
-	\end{equation}
-	where $\Delta C$ is the additional aggregate consumption spending in the policy scenario relative to the baseline and $\Delta G$ is the government expenditures caused by the policy.
-\end{itemize}
+In this section we compare the fiscal multipliers across the three stimulus policies. 
 
-\begin{table} 
+Specifically, we employ the cummulative multiplier, which captures the ratio between the net present value (NPV) of stimulated consumption up to horizon $t$ and the full-horizon NPV of the cost of the policy:
+\begin{equation*}
+M(t) = \frac{NPV(t,\Delta C)}{NPV (\infty,\Delta G)}
+\end{equation*}
+where $\Delta C$ is the additional aggregate consumption spending up to time $t$ in the policy scenario relative to the baseline and $\Delta G$ is the total government expenditure caused by the policy. The net present value of a variable $X_t$ is given by 
+$NPV(t,X) = \sum_{s=0}^{t} \left( \prod_{i=1}^{s} \frac{1}{R_i} \right) X_s$. 
+
+Figure \ref{fig:cummulativemultipliers} plots the cummulative multipliers at different horizons. The stimulus check, which is paid out in quarter one, exhibits the largest multiplier on impact. About 70\% of the total policy expenditure is immediately spent by consumers. After one year and due to the aggregate demand effect, consumption has increased cummulatively by more than the cost of the stimlus check. Over time, the policy reaches a total multiplier of 1.85, see table \ref{tab:Multiplier}.
+The multiplier is very similar for the UI extension policy. However, since policy spending here is spread out over four quarters (and peaks in quarter two to three), the mulitplier in the first quarter is considerably lower than in the case of the stimulus check. 
+The UI extension policy is very targeted in the sense that it provides additional income to only those consumers, who due to unemployment, have large MPCs. However, some of the spending occurs at later quarters, when the recession might have ended. Overall, around 84\% of the policy expenditure are expected to occur during the recession. In contrast, the check stimulus is paid out fully during the first quarter during which the recession occurs with certainty by construction, such that the AD effect is particularly potent for this policy. Hence while being less targeted and providing stimulus also to agents with low MPCs, the stimulus checks ends up with a relatively high overall mulitiplier due to concentration of spending during the recession.
+The paroll tax cut has the lowest multiplier irrespective of the considered horizon. A multiplier of 1 is reached only after around 8 quarters. The total multiplier over the whole simulated period is at approx. 1.3. These relatively small numbers reflect that policy spending lasts long and is thus more likely to occur after the recession has ended. Moreover, only employed consumers with lower MPCs benefit directly from the payroll tax cut. 
+
+Table \ref{tab:Multiplier} contains an additional row (middle) that shows the long-run multiplier for a special case. The aggregate demand effect works through several rounds. First, consumers increase spending due to the stimulus by the policy, which increases income, which in turn boosts consumption. However, this boost in consumption triggers another round of aggregate demand effects, with each round being subsequently smaller in magnitude. In the middle row of the table we show the multipliers that materialize if we only consider the first-round AD effect. (*******Needs more text, why is this interesting to look at?*******)
+
+\begin{table}[h]
 	\center
 	\input Code/HA-Models/FromPandemicCode/Tables/Multiplier.tex
-	\caption{Multipliers as well as the share of the policy ocurring during the recession for the three policies considered}
+	\caption{Long-run cummulative multipliers as well as the share of the policy ocurring during the recession}
 	\label{tab:Multiplier}
-\end{table}
-
-\begin{table} 
-	\center
-	\input Code/HA-Models/FromPandemicCode/Tables/Multiplier_RecLengths.tex
-	\caption{Multipliers (with AD effects) for different recesssion lengths for the three policies considered}
-	\label{tab:Multiplier_RecLengths}
 \end{table}
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/Cummulative_multipliers}
-	\caption{Cummulative Multiplier as a function of the horizon in quarters for the three policies considered. Policies are implemented during a recession with AD effects active}
+	\caption{Cummulative Multiplier as a function of the horizon for the three policies. Policies are implemented during a recession with AD effect active.}
 	\label{fig:cummulativemultipliers}
 \end{figure}
 
 
-
-\subsection{Linearity of the check multiplier}
-
-Table \ref{multipliers_checklinearity} shows the amount of additional consumption stimulated (as \% of baseline consumption) caused by stimulus checks of different sizes as well as their multiplier (i.e. the ratio between stimulated consumption and the cost of the policy, in net present value). The table shows that the impact of the check stimulus experiment scales roughly linearly with the size of the stimulus check, leaving the multiplier largely unaffected by the size of check.
-
-\begin{table} 
-	\center
-	\input Code/HA-Models/FromPandemicCode/Tables/Multiplier_DifferentCheckSizes.tex
-	\caption{Multipliers for different sizes of the stimulus check}
-	\label{multipliers_checklinearity}
-\end{table}
 
 \end{document}	
