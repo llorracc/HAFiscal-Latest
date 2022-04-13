@@ -33,11 +33,11 @@ Run_Check_Recession     = False
 Run_UB_Ext_Recession    = True
 Run_TaxCut_Recession    = False
 Run_Check               = False
-Run_UB_Ext              = True
+Run_UB_Ext              = False
 Run_TaxCut              = False
 
-Run_AD                  = True
-Run_1stRoundAD          = True
+Run_AD                  = False
+Run_1stRoundAD          = False
 Run_NonAD               = True #whether to run nonAD experiments as well
 
 #%% 
