@@ -6,7 +6,7 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-#figs_dir = './Figures/FullRun/'
+figs_dir = './Figures/FullRun/'
 #figs_dir = './Figures/FullRun_PVsame/'
 
 Equalize_PVs = False
