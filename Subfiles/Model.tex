@@ -3,14 +3,14 @@
 	
 \section{Model}
 
-In this section we describe our heterogeneous agent model featuring households that differ according to their level of education and their subjective discount factors. We first describe the problem faced by these households given the income process they face with permanent and transitory shocks as well as shocks to their employment status. Then we describe how we model the arrival of a recession and the policies that we study as potential responses. Finally, we discuss an extension of the model where we include aggregate demand effects that induce a feedback effect from aggregate consumption to income and hence, amplify the impact of a recession when it occurs. 
+In this section we describe our heterogeneous agent model featuring consumers that differ according to their level of education and their subjective discount factors. We first describe the problem faced by these consumers given the income process they face with permanent and transitory shocks as well as shocks to their employment status. Then we describe how we model the arrival of a recession and the policies that we study as potential responses. Finally, we discuss an extension of the model where we include aggregate demand effects that induce a feedback effect from aggregate consumption to income and hence, amplify the impact of a recession when it occurs. 
 
-\subsection{The Household Problem}
-A household $i$ is characterized by the level of education $e(i)$ and their subjective discount factor $\beta_i$. The household faces a stochastic income stream, $y_{i,t}$, and chooses to consume some of that income when it arrives (the `splurge') and then to optimize consumption with what is left over. Therefore, consumption each period for household $i$ can be written:
+\subsection{The Consumer Problem}
+A consumer $i$ is characterized by the level of education $e(i)$ and their subjective discount factor $\beta_i$. The consumer faces a stochastic income stream, $y_{i,t}$, and chooses to consume some of that income when it arrives (the `splurge') and then to optimize consumption with what is left over. Therefore, consumption each period for consumer $i$ can be written:
 \begin{align}
 	c_{i,t} = c_{sp,i,t} + c_{opt,i,t},
 \end{align}
-where $c_{i,t}$ is total consumption, $c_{sp,i,t}$ is the splurge consumption and $c_{opt,i,t}$ is the household's optimal choice of consumption after splurging. Splurge consumption is simply a fraction of income:
+where $c_{i,t}$ is total consumption, $c_{sp,i,t}$ is the splurge consumption and $c_{opt,i,t}$ is the consumer's optimal choice of consumption after splurging. Splurge consumption is simply a fraction of income:
 \begin{align}
 c_{sp,i,t} = \varsigma y_{i,t},
 \end{align}
@@ -26,13 +26,13 @@ The optimization is subject to the budget constraint given existing market resou
 \end{align}
 
 \paragraph{The Income Process}
-Households face a stochastic income process with permanent and transitory shocks to income, along with unemployment shocks. In normal times, households receive unemployment benefits for two quarters before they run out. Permanent income in the model is described by the following equation:
+Consumers face a stochastic income process with permanent and transitory shocks to income, along with unemployment shocks. In normal times, consumers receive unemployment benefits for two quarters before they run out. Permanent income in the model is described by the following equation:
 \begin{align}
 p_{i,t} = \psi_{i,t}\Gamma_{e(i)}p_{i,t-1},
 \end{align}
-where $\psi_{i,t}$ is the shock to permanent income and $\Gamma_{e(i)}$ is the growth rate of income for education group $e(i)$ of the household.\footnote{We model the rate of growth for permanent income for each education group and keep this rate unchanged during periods of unemployment. There is evidence, e.g. in \cite{davis_recessions_2011}, that unemployment, especially in a recession, leads to permanent income loss. This could be added to the model---see ****CITATION FOR PANDEMIC PAPER***for an example---but is not material to the evaluation of stimulus payments here so we have chosen to keep the model simple.  } The shock to permanent income is normally distributed with variance $\sigma_{\psi}^2$.
+where $\psi_{i,t}$ is the shock to permanent income and $\Gamma_{e(i)}$ is the growth rate of income for education group $e(i)$ of the consumer.\footnote{We model the rate of growth for permanent income for each education group and keep this rate unchanged during periods of unemployment. There is evidence, e.g. in \cite{davis_recessions_2011}, that unemployment, especially in a recession, leads to permanent income loss. This could be added to the model---see ****CITATION FOR PANDEMIC PAPER***for an example---but is not material to the evaluation of stimulus payments here so we have chosen to keep the model simple.  } The shock to permanent income is normally distributed with variance $\sigma_{\psi}^2$.
 	
-	The actual income a household receives will be subject their employment status as well as transitory shocks, $\xi_{i,t}$:
+	The actual income a consumer receives will be subject their employment status as well as transitory shocks, $\xi_{i,t}$:
 	\begin{align}
 		y_{i,t} =   \begin{cases}
 						\xi_{i,t}p_{i,t}, & \text{if employed} \\
@@ -40,19 +40,19 @@ where $\psi_{i,t}$ is the shock to permanent income and $\Gamma_{e(i)}$ is the g
 						0.05 p_{i,t}, & \text{if unemployed without benefits} 
 					\end{cases}
 	\end{align}
-	where $\xi_{i,t}$ is normally distributed with variance $\sigma_{\xi}^2$. A Markov transition matrix with four states generates the unemployment dynamics. An employed household can continue being employed, or move to being unemployed with benefits (with one remaining period of benefits). This household can then either become employed or move to being unemployed with benefits (but no remaining periods of benefits). A household in this state can then either become employed or unemployed without benefits, where they will remain until they become employed again. The probability of becoming employed is the same for each unemployed state and the probabilities of transitioning from employment to unemployment and vice-versa are chosen to match the unemployment rate for each education group (in steady state) and an average duration of unemployment of 1.5 quarters.
+	where $\xi_{i,t}$ is normally distributed with variance $\sigma_{\xi}^2$. A Markov transition matrix with four states generates the unemployment dynamics. An employed consumer can continue being employed, or move to being unemployed with benefits (with one remaining period of benefits). This consumer can then either become employed or move to being unemployed with benefits (but no remaining periods of benefits). A consumer in this state can then either become employed or unemployed without benefits, where they will remain until they become employed again. The probability of becoming employed is the same for each unemployed state and the probabilities of transitioning from employment to unemployment and vice-versa are chosen to match the unemployment rate for each education group (in steady state) and an average duration of unemployment of 1.5 quarters.
 	
 	\subsection{MIT Shocks}
 	We model the arrival of a recession, and the government policy response to it, as an unpredictable event---an MIT shock. We have four types of shock representing a recession and the three different policy responses we consider. The policy responses are usually modeled as in addition to the recession, but we also consider a counterfactual in which the policy response occurs without a recession in order to understand the welfare effects of the policy.
 	
-	\paragraph{Recession} At the onset of a recession, several changes occur. First, the unemployment rate for each education group doubles. Those who would have been unemployed remain so, and an additional number of households move from employment to unemployment. Second, conditional on the recession continuing, the emplyment transtion matrix is adjusted so that unemployment remains at the new high level, and the expected length of time for an unemployment spell increases from two to four quarters. Third, the end of the recession occurs as a Poisson process calibrated for an average length of recession of six quarters. Finally, at the end of a recession, the employment transition matrix switches back to its original probabilities and as a result the unemployment rate tends down over time back to its steady-state level.
+	\paragraph{Recession} At the onset of a recession, several changes occur. First, the unemployment rate for each education group doubles. Those who would have been unemployed remain so, and an additional number of consumers move from employment to unemployment. Second, conditional on the recession continuing, the employment transition matrix is adjusted so that unemployment remains at the new high level, and the expected length of time for an unemployment spell increases from two to four quarters. Third, the end of the recession occurs as a Bernoulli process calibrated for an average length of recession of six quarters. Finally, at the end of a recession, the employment transition matrix switches back to its original probabilities and as a result the unemployment rate tends down over time back to its steady-state level.
 	
-	\paragraph{Stimulus Check} In this policy response, the government sends money to every household that directly increases their market resources. The checks are means-tested depending on permanent income. A fixed check amount is sent to every household with permanent income less than a threshold and this amount is then linearly reduced to zero for households about a higher permanent income threshold.[IF: Do we want to provide the actual numbers? \$ 1200; The check is only paid out fully to individuals with a permanent yearly income smaller than \$ 100,000. Individuals with a permanent income greater than \$150,000 receive no check.]
+	\paragraph{Stimulus Check} In this policy response, the government sends money to every consumer that directly increases their market resources. The checks are means-tested depending on permanent income. A check for \$1,200 is sent to every consumer with permanent income less than \$100,000 and this amount is then linearly reduced to zero for consumers with a permanent income greater than \$150,000.
 	
 	\paragraph{Extended Unemployment Benefits} In this policy response, unemployment benefits are extended from 2 quarters to 4 quarters. That is, those who become unemployed at the start of the pandemic, or who were already unemployed, will receive unemployment benefits for up to four quarters (including quarters leading up to the recession). Those who become unemployed one quarter into the recession will receive up to three quarters of unemployment benefits. These extended unemployment benefits will occur regardless of whether the recession ends, and no further extensions are granted if the recession continues.
 	
-	\paragraph{Payroll Tax Cut} In this policy response, employee-side payroll taxes are reduced for a period of 8 quarters. During this period, which continues irrespective or whether the recession continues or ends, employed households' income is increased by the amount of the tax cut. The income of unemployed households is unchanged by this policy.[IF: Again, do we want to provide the size of the tax cut here (2\%)? Also note that there is a 50\% chance, that the policy is extended by another 8 quarters if the recession is still ongoing in the 8th quarter of the payroll tax cut (although this add-on does not really affect the results in any significant way.)]
-	
+	\paragraph{Payroll Tax Cut} In this policy response, employee-side payroll taxes are reduced for a period of 8 quarters. During this period, which continues irrespective or whether the recession continues or ends, employed consumers' income is increased by 2 percent. The income of unemployed consumers is unchanged by this policy. Consumers also believe there is a fifty-fifty chance that the tax cut will be extended by another two years if the recession has not ended when the first tax cut expires.\footnote{The belief that the payroll tax cut may be extended makes little difference to the results.}
+
 	\subsection{Aggregate Demand Effects}
 	Our baseline model is a partial equilibrium model that does not include any feedback from aggregate consumption to income. In an extension to the model, we add aggregate demand effects during the recession. With this extension, any changes in consumption away from the steady state consumption level feed back into labor income. Aggregate demand effects are evaluated as:
 	\begin{align}
@@ -65,6 +65,6 @@ where $\psi_{i,t}$ is the shock to permanent income and $\Gamma_{e(i)}$ is the g
 	\begin{align}
 	y_{AD,i,t} = AD(C_t)y_{i,t}
 	\end{align}
-	The series $y_{AD,i,t}$ is then used for each household's budget constraint.
+	The series $y_{AD,i,t}$ is then used for each consumers's budget constraint.
 
 \end{document}	
