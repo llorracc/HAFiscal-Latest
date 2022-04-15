@@ -6,10 +6,10 @@ from HARK.distribution import Uniform
 from importlib import reload
 
 
-figs_dir = './Figures/FullRun/'
-#figs_dir = './Figures/FullRun_PVsame/'
+#figs_dir = './Figures/FullRun/'
+figs_dir = './Figures/FullRun_PVsame/'
 
-Equalize_PVs = False
+Equalize_PVs = True
 
 try:
     os.mkdir(figs_dir)
@@ -73,12 +73,12 @@ Uspell_recession = 4         # Average duration of unemployment spell in recessi
 Rspell = 6                   # Expected length of recession, in quarters. If R_shared = True, must be an integer
 R_shared = False             # Indicator for whether the recession shared (True) or idiosyncratic (False)
 # UI extension
-UBspell_extended = 4         # Average duration of unemployment benefits when extended and assuming policy remains in place, in quarters
+UBspell_extended = 5         # Average duration of unemployment benefits when extended and assuming policy remains in place, in quarters
 PolicyUBspell = 2            # Average duration that policy of extended unemployment benefits is in place
 # Tax Cut parameter
 PolicyTaxCutspell = 2        # Average duration that policy of payroll tax cuts
 if Equalize_PVs:
-    TaxCutIncFactor = 1 + 0.02*625/28693       # Amount by which the payroll tax cut increases after-tax income
+    TaxCutIncFactor = 1 + 0.02*838/28693       # Amount by which the payroll tax cut increases after-tax income
 else:
     TaxCutIncFactor = 1 + 0.02
 TaxCutPeriods = 8            # Deterministic duTrueration of tax cut 
@@ -86,7 +86,7 @@ TaxCutContinuationProb_Rec = 0.5   # Probability that tax cut is continued after
 TaxCutContinuationProb_Bas = 0.0   # Probability that tax cut is continued after tax cut periods run out, when baseline in q8
 #Check experiment parameter
 if Equalize_PVs:
-    CheckStimLvl = 1200/1000 * 625/10178 #1 = 1k, multiplication to get PVs equal
+    CheckStimLvl = 1200/1000 * 838/10178 #1 = 1k, multiplication to get PVs equal
 else:
     CheckStimLvl = 1200/1000
 CheckStimLvl_PLvl_Cutoff_start = 100/4/1 #100 k yearly income #At this Level of permanent inc, Stimulus beings to fall linearly
@@ -234,9 +234,9 @@ MrkvArray_recessionTaxCut_h = makeFullMrkvArray(MacroMrkvArray_recessionTaxCut, 
 MrkvArray_recessionTaxCut_c = makeFullMrkvArray(MacroMrkvArray_recessionTaxCut, CondMrkvArrays_recessionTaxCut_c)
 
 MacroMrkvArray_recessionUI = MacroMrkvArray_recession
-CondMrkvArrays_recessionUI_d = makeCondMrkvArrays_recessionUI(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession_d, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal+1) #+1 CHANGE
-CondMrkvArrays_recessionUI_h = makeCondMrkvArrays_recessionUI(Urate_normal_h, Uspell_normal, UBspell_normal, Urate_recession_h, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal+1)
-CondMrkvArrays_recessionUI_c = makeCondMrkvArrays_recessionUI(Urate_normal_c, Uspell_normal, UBspell_normal, Urate_recession_c, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal+1)
+CondMrkvArrays_recessionUI_d = makeCondMrkvArrays_recessionUI(Urate_normal_d, Uspell_normal, UBspell_normal, Urate_recession_d, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
+CondMrkvArrays_recessionUI_h = makeCondMrkvArrays_recessionUI(Urate_normal_h, Uspell_normal, UBspell_normal, Urate_recession_h, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
+CondMrkvArrays_recessionUI_c = makeCondMrkvArrays_recessionUI(Urate_normal_c, Uspell_normal, UBspell_normal, Urate_recession_c, Uspell_recession, num_experiment_periods, UBspell_extended-UBspell_normal)
 MrkvArray_recessionUI_d    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_d)
 MrkvArray_recessionUI_h    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_h)
 MrkvArray_recessionUI_c    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_c)
