@@ -207,7 +207,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     ThisType.thorn = (ThisType.Rfree*ThisType.DiscFac*ThisType.LivPrb[0])**(1/ThisType.CRRA)   
     ThisType.GPFInd = ThisType.thorn/(ThisType.PermGroFacAgg*ThisType.PermGroFac[0]*ThisType.InvEPermShkInv)  # [url]/#GICI
     ThisType.GPFInd = EstTypeList[7].GPFInd - 0.0025 #manual adj. for max age
-    print('EstTypeList[7].GPFInd = ', EstTypeList[7].GPFInd)
+    #print('EstTypeList[7].GPFInd = ', EstTypeList[7].GPFInd)
         
         
     N_Quarter_Sim = 20; # Needs to be dividable by four
@@ -390,10 +390,11 @@ def find_Opt_splurge_beta_nabla():
 
 #%%
     
-CRRA_values = {1,2,3}
+CRRA_values = [1,2,3]
 
-for el in CRRA_values:
-    base_params['CRRA'] = 1
+for el in range(0,len(CRRA_values)):
+    print('Running CRRA = ', CRRA_values[el])
+    base_params['CRRA'] = CRRA_values[el]
 
     # Make several consumer types to be used during estimation
     BaseType = KinkedRconsumerType(**base_params)
@@ -407,7 +408,7 @@ for el in CRRA_values:
 
 
     with open('Result_CRRA_'+str(base_params['CRRA'])+'.txt', 'w') as f:
-        str1 = repr(test)
+        str1 = repr(res)
         f.write(str1)
         f.close
     
