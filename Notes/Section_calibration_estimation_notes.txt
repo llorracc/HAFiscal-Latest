@@ -51,7 +51,10 @@ We have to discuss the write-up of this. Done.
 
 
 - Estimate median liquid wealth to permanent income at age 65? 
-- 
+											dropouts		highschool 		college
+median liquid wealth to PI						1.16			 7.55			28.2
+median liquid wealth to PI at age 62			1.80			45.5		   182.1
+ 
 
 
 **** Notes 17.02.2022

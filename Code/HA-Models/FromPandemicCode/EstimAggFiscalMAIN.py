@@ -13,7 +13,7 @@ from HARK import multiThreadCommands, multiThreadCommandsFake
 from HARK.utilities import getPercentiles, getLorenzShares
 from HARK.estimation import minimizeNelderMead
 from EstimParameters import init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
-     DiscFacCount, Splurge, AgentCountTotal, base_dict, figs_dir, UBspell_normal, \
+     DiscFacCount, CRRA, Splurge, AgentCountTotal, base_dict, figs_dir, UBspell_normal, \
      data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, data_medianLWPI,\
      data_EducShares, data_WealthShares
 from EstimAggFiscalModel import AggFiscalType, AggregateDemandEconomy
@@ -497,9 +497,96 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False):
         
     return distance 
 # -----------------------------------------------------------------------------
+#%% Estimate discount factor distributions separately for each education type
+
+for edType in range(3):
+    f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
+    if edType == 0:
+        initValues = [0.80, 0.23]       # Dropouts
+    elif edType == 1:
+        initValues = [0.94, 0.066]      # HighSchool
+    elif edType == 2:
+        initValues = [0.985, 0.012]     # College
+    else:
+        initValues = [0.95,0.02]
+        
+    opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
+    print('Finished estimating for education type = '+edType+'. Optimal beta and spread are:')
+    print(opt_params) 
+    betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = edType, print_mode=True)
+
+    if edType == 0:
+        mode = 'w'      # Overwrite old file...
+    else:
+        mode = 'a'      # ...but append all results in same file 
+    with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', mode) as f:
+        outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : opt_params[1]})
+        f.write(outStr)
+        f.write('\n')
+        f.close()
+        
+
+
+#%% Estimates targeting median LW/PI (v3.0): 
+estimates_d = [0.79939338, 0.2279055 ]  # Dropouts only 
+estimates_h = [0.93744293, 0.06607694]  # Highschool only
+estimates_c = [0.98525333, 0.01241598] # College only
+betasObjFuncEduc(estimates_d[0], estimates_d[1], educ_type = 0, print_mode=True)
+betasObjFuncEduc(0.80, 0.15, educ_type = 0, print_mode=True)
+
+betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \
+             [estimates_d[1], estimates_h[1], estimates_c[1]], \
+             target_option = 1, print_mode=True)
+
+# Implied discount factor distributions:
+DiscFacDstnD = Uniform(estimates_d[0]-estimates_d[1], estimates_d[0]+estimates_d[1]).approx(DiscFacCount)
+DiscFacDstnH = Uniform(estimates_h[0]-estimates_h[1], estimates_h[0]+estimates_h[1]).approx(DiscFacCount)
+DiscFacDstnC = Uniform(estimates_c[0]-estimates_c[1], estimates_c[0]+estimates_c[1]).approx(DiscFacCount)
+print('Discount factor distribution end points: ')
+print('Dropouts:\t ', mystr4(DiscFacDstnD.X[0]), ' to ', mystr4(DiscFacDstnD.X[6]))    
+print('Highschool:\t ', mystr4(DiscFacDstnH.X[0]), ' to ', mystr4(DiscFacDstnH.X[6])) 
+print('College:\t ', mystr4(DiscFacDstnC.X[0]), ' to ', mystr4(DiscFacDstnC.X[6])) 
+   
+
+#%% 
+# Estimates targeting median LW/PI (v2.5): 
+#TranShkStd = [0.12]  #[np.sqrt(0.12)]
+#PermShkStd = [0.003] #[np.sqrt(0.003)]
+estimates_d = [0.87691380, 0.13952285]  # Dropouts only 
+estimates_h = [0.97097283, 0.02996364]  # Highschool only
+estimates_c = [0.99264389, 0.00596917]  # College only
+
+# Old estimates targeting median LW/PI (v2.0): 
+estimates_d = [0.87509113, 0.13891492]  # Dropouts only 
+estimates_h = [0.96597689, 0.03307152]  # Highschool only
+estimates_c = [0.9886787, 0.00772621]   # College only
+
+# Old estimates targeting average LW/PI: 
+estimates_d = [0.79602650, 0.02785033]  # Dropouts only
+estimates_h = [0.98051198, 0.01675674]  # Highschool only
+estimates_c = [0.99160378, 0.00480153]  # College only
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #%%
 # Estimate discount factor distributions with one spread
-
 f_temp = lambda x : betasObjFunc(x[0:3],3*[x[3]], target_option=1)
 initValues = [0.88, 0.963, 0.988, 0.01]
 opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
@@ -542,64 +629,3 @@ print([DiscFacDstnD.X[0], DiscFacDstnD.X[6]])
 print([DiscFacDstnH.X[0], DiscFacDstnH.X[6]])
 print([DiscFacDstnC.X[0], DiscFacDstnC.X[6]])
 
-#%% A test: 
-test_vals = [0.88622648, 0.98265369, 0.98764, 0.12578517, 0.01426293, 0.00981 ]
-betasObjFunc(test_vals[0:3], test_vals[3:6], target_option = 2, print_mode=True)
-
-#%% Estimate discount factor distribution for one education type at a time
-
-edType = 1
-f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
-if edType == 0:
-    initValues = [0.80, 0.15]       # Dropouts
-elif edType == 1:
-    initValues = [0.966, 0.03]      # HighSchool
-elif edType == 2:
-    initValues = [0.985, 0.012]     # College
-else:
-    initValues = [0.95,0.02]
-opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
-print('Finished estimating. Optimal beta and spread are:')
-print(opt_params) 
-betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = edType, print_mode=True)
-
-
-# Estimates targeting median LW/PI (v3.0): 
-estimates_d = [0.79939338, 0.2279055 ]  # Dropouts only 
-estimates_h = [0.93744293, 0.06607694]  # Highschool only
-estimates_c = [0.98525333, 0.01241598] # College only
-betasObjFuncEduc(estimates_d[0], estimates_d[1], educ_type = 0, print_mode=True)
-betasObjFuncEduc(0.80, 0.15, educ_type = 0, print_mode=True)
-
-betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \
-             [estimates_d[1], estimates_h[1], estimates_c[1]], \
-             target_option = 1, print_mode=True)
-
-# Implied discount factor distributions:
-DiscFacDstnD = Uniform(estimates_d[0]-estimates_d[1], estimates_d[0]+estimates_d[1]).approx(DiscFacCount)
-DiscFacDstnH = Uniform(estimates_h[0]-estimates_h[1], estimates_h[0]+estimates_h[1]).approx(DiscFacCount)
-DiscFacDstnC = Uniform(estimates_c[0]-estimates_c[1], estimates_c[0]+estimates_c[1]).approx(DiscFacCount)
-print('Discount factor distribution end points: ')
-print('Dropouts:\t ', mystr4(DiscFacDstnD.X[0]), ' to ', mystr4(DiscFacDstnD.X[6]))    
-print('Highschool:\t ', mystr4(DiscFacDstnH.X[0]), ' to ', mystr4(DiscFacDstnH.X[6])) 
-print('College:\t ', mystr4(DiscFacDstnC.X[0]), ' to ', mystr4(DiscFacDstnC.X[6])) 
-    
-
-#%% 
-# Estimates targeting median LW/PI (v2.5): 
-#TranShkStd = [0.12]  #[np.sqrt(0.12)]
-#PermShkStd = [0.003] #[np.sqrt(0.003)]
-estimates_d = [0.87691380, 0.13952285]  # Dropouts only 
-estimates_h = [0.97097283, 0.02996364]  # Highschool only
-estimates_c = [0.99264389, 0.00596917]  # College only
-
-# Old estimates targeting median LW/PI (v2.0): 
-estimates_d = [0.87509113, 0.13891492]  # Dropouts only 
-estimates_h = [0.96597689, 0.03307152]  # Highschool only
-estimates_c = [0.9886787, 0.00772621]   # College only
-
-# Old estimates targeting average LW/PI: 
-estimates_d = [0.79602650, 0.02785033]  # Dropouts only
-estimates_h = [0.98051198, 0.01675674]  # Highschool only
-estimates_c = [0.99160378, 0.00480153]  # College only
- 
