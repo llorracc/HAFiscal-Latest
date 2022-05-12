@@ -65,16 +65,18 @@ Uspell_normal = 1.5          # Average duration of unemployment spell in normal 
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
-CRRA = 2.0                   # Coefficient of relative risk aversion (1, 2 or 3)
+CRRA = 1.0                   # Coefficient of relative risk aversion (1, 2 or 3)
 # Read in estimated Splurge --> depends on CRRA: 
 f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
 dictload = eval(f.read())
 Splurge = dictload['splurge'] 
+# Splurge = 0.31 
 
 PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
 IncUnemp = 0.3              # Unemployment benefits replacement rate (proportion of permanent income)
 IncUnempNoBenefits = 0.05   # Unemployment income when benefits run out (proportion of permanent income)
+#IncUnempNoBenefits = 0.15   # Unemployment income when benefits run out (proportion of permanent income)
 
 # Parameters concerning the initial distribution of permanent income 
 # "newborn" = 25 years old in SCF 2004

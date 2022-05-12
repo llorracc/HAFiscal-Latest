@@ -470,7 +470,7 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False):
     
     Stats = calcEstimStats(TypeListAll)
     
-    sumSquares = np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
+    sumSquares = 10*np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
     lp = calcLorenzPts(TypeListNewEduc)
     sumSquares += np.sum((np.array(lp) - data_LorenzPts[educ_type])**2)
 #    sumSquares = np.sum((Stats.avgLWPI[educ_type]-data_avgLWPI[educ_type])**2)
@@ -499,32 +499,69 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False):
 # -----------------------------------------------------------------------------
 #%% Estimate discount factor distributions separately for each education type
 
-for edType in range(3):
+for edType in [0]:
     f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
+    # fixedNabla  = 0.35
+    # f_temp = lambda x : betasObjFuncEduc(x[0],fixedNabla, educ_type=edType)
     if edType == 0:
-        initValues = [0.80, 0.23]       # Dropouts
+        initValues = [0.5, 0.20]       # Dropouts
+      # initValues = [0.35]       # Dropouts
     elif edType == 1:
-        initValues = [0.94, 0.066]      # HighSchool
+        initValues = [0.75, 0.1]      # HighSchool
     elif edType == 2:
-        initValues = [0.985, 0.012]     # College
+        initValues = [0.96, 0.02]     # College
     else:
         initValues = [0.95,0.02]
         
     opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
-    print('Finished estimating for education type = '+edType+'. Optimal beta and spread are:')
+    print('Finished estimating for education type = '+str(edType)+'. Optimal beta and spread are:')
     print(opt_params) 
     betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = edType, print_mode=True)
+    # betasObjFuncEduc(opt_params[0], fixedNabla, educ_type = edType, print_mode=True)
 
-    if edType == 0:
+    if edType == 2:
         mode = 'w'      # Overwrite old file...
     else:
         mode = 'a'      # ...but append all results in same file 
     with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', mode) as f:
         outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : opt_params[1]})
-        f.write(outStr)
-        f.write('\n')
+        # outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : fixedNabla})
+        f.write(outStr+'\n')
         f.close()
+
+#%% Calculate population values using estimated parameter values:
+myEstim = [[],[],[]]
+f = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
+readStr = f.readline().strip()
+while readStr != '' :
+    dictload = eval(readStr)
+    edType = dictload['EducationGroup']
+    beta = dictload['beta']
+    nabla = dictload['nabla']
+    myEstim[edType] = [beta,nabla]
+    readStr = f.readline().strip()
+f.close()
+
+betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
+             [myEstim[0][1], myEstim[1][1], myEstim[2][1]], \
+             target_option = 1, print_mode=True)
+
+
+#%% Test values:
+edType = 0
+testVals = [0.34976074, 0.3]
+betasObjFuncEduc(testVals[0], testVals[1], educ_type = edType, print_mode=True)
+
         
+#%% Temp test code to try different parameters
+estimates_d = [0.6, 0.2 ]  # Dropouts only 
+estimates_h = [0.6, 0.15]  # Highschool only
+estimates_c = [0.98525333, 0.01241598] # College only
+
+betasObjFuncEduc(estimates_h[0], estimates_h[1], educ_type = 1, print_mode=True)
+betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \
+             [estimates_d[1], estimates_h[1], estimates_c[1]], \
+             target_option = 1, print_mode=True)
 
 
 #%% Estimates targeting median LW/PI (v3.0): 
