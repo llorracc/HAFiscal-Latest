@@ -407,7 +407,7 @@ for el in range(0,len(CRRA_values)):
     res = find_Opt_splurge_beta_nabla()
 
 
-    with open('Result_CRRA_'+str(base_params['CRRA'])+'.txt', 'w') as f:
+    with open('Result_CRRA_'+str(base_params['CRRA'])+'.0.txt', 'w') as f:
         str1 = repr(res)
         f.write(str1)
         f.close

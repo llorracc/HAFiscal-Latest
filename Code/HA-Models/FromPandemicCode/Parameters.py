@@ -1,6 +1,21 @@
 import numpy as np
 from HARK.distribution import Uniform
 
+RobustnessRunCRRA = True
+if RobustnessRunCRRA:
+    CRRA = 2.0
+    myEstim = [[],[],[]]
+    f = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
+    readStr = f.readline().strip()
+    while readStr != '' :
+        dictload = eval(readStr)
+        edType = dictload['EducationGroup']
+        beta = dictload['beta']
+        nabla = dictload['nabla']
+        myEstim[edType] = [beta,nabla]
+        readStr = f.readline().strip()
+    f.close()
+
 
 # Targets in the estimation of the discount factor distributions for each 
 # education level. 
@@ -31,6 +46,15 @@ DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
 DiscFacSpreadD = 0.2279055
 DiscFacSpreadH = 0.06607694
 DiscFacSpreadC = 0.01241598 # Half-width of uniform distribution of discount factors
+
+if RobustnessRunCRRA:
+    DiscFacMeanD = myEstim[0][0]  # Mean intertemporal discount factor for dropout types
+    DiscFacMeanH = myEstim[1][0]  # Mean intertemporal discount factor for high school types
+    DiscFacMeanC = myEstim[2][0]  # Mean intertemporal discount factor for college types
+    DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
+    DiscFacSpreadD = myEstim[0][1]
+    DiscFacSpreadH = myEstim[1][1]
+    DiscFacSpreadC = myEstim[2][1] 
 
 # Define the distribution of the discount factor for each eduation level
 DiscFacCount = 7
@@ -73,9 +97,13 @@ CheckStimLvl_PLvl_Cutoff_end = 150/4/1 #150k yearly income #At this Level of per
 
 UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
 Splurge = 0.32      # amount of income that is splurged
+if RobustnessRunCRRA:
+    Splurge = 0.3067109441016833
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
 CRRA = 1.0              # Coefficient of relative risk aversion
+if RobustnessRunCRRA:
+    CRRA = 2
 PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
 IncUnemp = 0.3              # Unemployment benefits replacement rate (proportion of permanent income)
