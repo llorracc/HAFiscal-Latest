@@ -279,7 +279,7 @@ output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
 
 #%% 
 # -----------------------------------------------------------------------------
-def betasObjFunc(betas, spreads, target_option=1, print_mode=False):
+def betasObjFunc(betas, spreads, target_option=1, print_mode=False, print_file=False, filename='DefaultResultsFile.txt'):
     '''
     Objective function for the estimation of discount factor distributions for the 
     three education groups. The groups can differ in the centering of their discount 
@@ -299,6 +299,10 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False):
         = 2: Target avgLWPI and LorenzPts_d, _h and _c
     print_mode : boolean, optional
         If true, statistics for each education level are printed. The default is False.
+    print_file : boolean, optional
+        If true, statistics are appended to the file filename. The default is False. 
+    filename : str
+        Filename for printing calculated statistics. The default is DefaultResultsFile.txt.
     
     Returns
     -------
@@ -373,6 +377,10 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False):
     
     distance = np.sqrt(sumSquares)
 
+    if print_mode or print_file:
+        WealthShares = calcWealthShareByEd(TypeListNew)
+        MPCs = calcMPCbyEd(TypeListNew)
+
     # If not estimating, print stats by education level
     if print_mode:
         print('Dropouts: beta = ', mystr(beta_d), ' spread = ', mystr(spread_d))
@@ -395,18 +403,25 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False):
               + ' C = ' + mystr(Stats.avgLWPI[2])) 
         print('Total LW/Total PI: D = ' + mystr(Stats.LWoPI[0]) + ' H = ' + mystr(Stats.LWoPI[1]) \
               + ' C = ' + mystr(Stats.LWoPI[2]))
-        WealthShares = calcWealthShareByEd(TypeListNew)
         print('Wealth Shares: D = ' + mystr(WealthShares[0]) + \
               ' H = ' + mystr(WealthShares[1]) + ' C = ' + mystr(WealthShares[2]))
-        MPCs = calcMPCbyEd(TypeListNew)
         print('Average Quarterly MPCs: D = ' + mystr(MPCs.MPCsQ[0]) + ' H = ' + mystr(MPCs.MPCsQ[1]) + \
               ' C = ' + mystr(MPCs.MPCsQ[2]) + ' All = ' + mystr(MPCs.MPCsQ[3]))
         print('Average annual MPCs, incl. splurge Q1 only: D = ' + mystr(MPCs.MPCsA[0]) + ' H = ' + mystr(MPCs.MPCsA[1]) + \
               ' C = ' + mystr(MPCs.MPCsA[2]) + ' All = ' + mystr(MPCs.MPCsA[3]))
-            
+    
+    if print_file:
+        with open(filename, 'a') as resFile: 
+            resFile.write('Population calculations\n')
+            resFile.write('\tMedian LW/PI-ratios = ['+mystr(Stats.medianLWPI[0][0])+', '+ 
+                          mystr(Stats.medianLWPI[1][0])+', '+mystr(Stats.medianLWPI[2][0])+']\n')
+            resFile.write('\tLorenz Points = '+str(Stats.LorenzPts)+'\n')
+            resFile.write('\tWealth shares = '+str(WealthShares)+'\n')
+            resFile.write('\tAverage MPCs (incl. splurge) = '+str(MPCs.MPCsA)+'\n')
+        
     return distance 
 # -----------------------------------------------------------------------------
-def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False):
+def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=False, filename='DefaultResultsFile.txt'):
     '''
     Objective function for the estimation of a discount factor distribution for
     a single education group.
@@ -422,6 +437,10 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False):
         Targets are avgLWPI[educ_type] and LorenzPts[educ_type]
     print_mode : boolean, optional
         If true, statistics are printed. The default is False.
+    print_file : boolean, optional
+        If true, statistics are appended to the file filename. The default is False. 
+    filename : str
+        Filename for printing calculated statistics. The default is DefaultResultsFile.txt.
     
     Returns
     -------
@@ -494,6 +513,13 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False):
               + mystr(Stats.avgLWPI[educ_type]))
         print('Lorenz shares - all:')
         print(Stats.LorenzPts)
+    
+    if print_file:
+        with open(filename, 'a') as resFile: 
+            resFile.write('Education group = '+mystr(educ_type)+': beta = '+mystr4(beta)+
+                          ', splurge = '+mystr4(spread)+'\n')
+            resFile.write('\tMedian LW/PI-ratio = '+mystr(Stats.medianLWPI[educ_type][0])+'\n')
+            resFile.write('\tLorenz Points = '+str(lp)+'\n\n')
         
     return distance 
 # -----------------------------------------------------------------------------
@@ -529,6 +555,29 @@ for edType in [0]:
         f.write(outStr+'\n')
         f.close()
 
+#%% Read in estimates and calculate all results:
+resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'.txt'
+with open(resFileStr, 'w') as resFile: 
+    resFile.write('Results for CRRA = '+str(CRRA)+' and splurge = '+str(round(Splurge,5))+'\n\n')
+    
+myEstim = [[],[],[]]
+betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
+readStr = betFile.readline().strip()
+while readStr != '' :
+    dictload = eval(readStr)
+    edType = dictload['EducationGroup']
+    beta = dictload['beta']
+    nabla = dictload['nabla']
+    myEstim[edType] = [beta,nabla]
+    readStr = betFile.readline().strip()
+    betasObjFuncEduc(beta, nabla, educ_type = edType, print_mode=True, print_file=True, filename=resFileStr)
+betFile.close()
+
+betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
+             [myEstim[0][1], myEstim[1][1], myEstim[2][1]], \
+             target_option = 1, print_mode=True, print_file=True, filename=resFileStr)
+
+    
 #%% Calculate population values using estimated parameter values:
 myEstim = [[],[],[]]
 f = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
@@ -540,16 +589,26 @@ while readStr != '' :
     nabla = dictload['nabla']
     myEstim[edType] = [beta,nabla]
     readStr = f.readline().strip()
+    
 f.close()
+
+# TODO: Update with calculation of results for each ed group and printing to a file
 
 betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
              [myEstim[0][1], myEstim[1][1], myEstim[2][1]], \
              target_option = 1, print_mode=True)
 
+    
+    
+    
+    
+    
+    
+    
 
 #%% Test values:
-edType = 0
-testVals = [0.34976074, 0.3]
+edType = 2
+testVals = [0.91715597, 0.087492]
 betasObjFuncEduc(testVals[0], testVals[1], educ_type = edType, print_mode=True)
 
         
