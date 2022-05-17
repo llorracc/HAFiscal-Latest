@@ -8,6 +8,7 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 #figs_dir = './Figures/FullRun_PVsame/'
 figs_dir = './Figures/FullRun/'
+figs_dir = './Figures/CRRA2.0_Robustnes/'
         
 max_T = 16
 x_axis = np.arange(1,max_T+1)
@@ -162,7 +163,7 @@ plt.show()
 
 #%% Multipliers
 
-Plot_1stRoundAd         = True
+Plot_1stRoundAd         = False
 
 NPV_AddInc_UI_Rec                       = getSimulationDiff(recession_results,recession_UI_results,'NPV_AggIncome') # Policy expenditure
 NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_results,               recession_UI_results,               NPV_AddInc_UI_Rec)

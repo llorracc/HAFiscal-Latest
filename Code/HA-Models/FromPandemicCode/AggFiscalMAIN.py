@@ -103,6 +103,51 @@ if Run_CRRA_robustness:
     figs_dir = './Figures/CRRA2.0_Robustnes/'
     
     Simulate(Run_Dict,init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
+         DiscFacCount, AgentCountTotal,NPV_AddInc_TaxCut base_dict, figs_dir, num_max_iterations_solvingAD,\
+         convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
+         data_EducShares, max_recession_duration, num_experiment_periods,\
+         recession_changes, UI_changes, recession_UI_changes,\
+         TaxCut_changes, recession_TaxCut_changes, Check_changes, recession_Check_changes )
+        
+#%% Execute robustness run, PV same
+        
+if Run_CRRA_robustness:
+
+    Run_Dict = dict()
+    Run_Dict['Run_Baseline']            = True
+    Run_Dict['Run_Recession ']          = True
+    Run_Dict['Run_Check_Recession']     = True
+    Run_Dict['Run_UB_Ext_Recession']    = True
+    Run_Dict['Run_TaxCut_Recession']    = True
+    Run_Dict['Run_Check']               = True
+    Run_Dict['Run_UB_Ext']              = True
+    Run_Dict['Run_TaxCut']              = True
+    Run_Dict['Run_AD ']                 = True
+    Run_Dict['Run_1stRoundAD']          = False
+    Run_Dict['Run_NonAD']               = True
+    
+    figs_dir = './Figures/CRRA2.0_Robustnes_PVSame/'
+    
+    from OtherFunctions import loadPickle, getSimulationDiff
+    figs_dir_load = './Figures/CRRA2.0_Robustnes/'
+    base_results                    = loadPickle('base_results',figs_dir_load,locals())
+    check_results                   = loadPickle('Check_results',figs_dir_load,locals())
+    UI_results                      = loadPickle('UI_results',figs_dir_load,locals())
+    TaxCut_results                  = loadPickle('TaxCut_results',figs_dir_load,locals())
+    NPV_AddInc_Check                = getSimulationDiff(base_results,check_results,'NPV_AggIncome') 
+    NPV_AddInc_UI                   = getSimulationDiff(base_results,UI_results,'NPV_AggIncome') # Policy expenditure
+    NPV_AddInc_TaxCut               = getSimulationDiff(base_results,TaxCut_results,'NPV_AggIncome')
+        
+    init_dropout['TaxCutIncFactor']     = 1 + 0.02*NPV_AddInc_UI[-1]/NPV_AddInc_TaxCut[-1];
+    init_highschool['TaxCutIncFactor']  = 1 + 0.02*NPV_AddInc_UI[-1]/NPV_AddInc_TaxCut[-1];
+    init_college['TaxCutIncFactor']     = 1 + 0.02*NPV_AddInc_UI[-1]/NPV_AddInc_TaxCut[-1];
+    
+    init_dropout['CheckStimLvl']    = 1200/1000 * NPV_AddInc_UI[-1]/NPV_AddInc_Check[-1]
+    init_highschool['CheckStimLvl'] = 1200/1000 * NPV_AddInc_UI[-1]/NPV_AddInc_Check[-1]
+    init_college['CheckStimLvl']    = 1200/1000 * NPV_AddInc_UI[-1]/NPV_AddInc_Check[-1] 
+    
+    
+    Simulate(Run_Dict,init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
          DiscFacCount, AgentCountTotal, base_dict, figs_dir, num_max_iterations_solvingAD,\
          convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
          data_EducShares, max_recession_duration, num_experiment_periods,\
