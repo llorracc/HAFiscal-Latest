@@ -1,9 +1,4 @@
-def Simulate(Run_Dict,init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
-     DiscFacCount, AgentCountTotal, base_dict, figs_dir, num_max_iterations_solvingAD,\
-     convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
-     data_EducShares, max_recession_duration, num_experiment_periods,\
-     recession_changes, UI_changes, recession_UI_changes,\
-     TaxCut_changes, recession_TaxCut_changes, Check_changes, recession_Check_changes):
+def Simulate(Run_Dict,figs_dir,Parametrization='Baseline'):
     
     
     from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
@@ -13,6 +8,15 @@ def Simulate(Run_Dict,init_dropout, init_highschool, init_college, init_ADEconom
     from copy import deepcopy
     from OtherFunctions import saveAsPickleUnderVarName,  saveAsPickle
     import os
+    
+    from Parameters import returnParameters 
+    
+    [init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
+    DiscFacCount, AgentCountTotal, base_dict, num_max_iterations_solvingAD,\
+    convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
+    data_EducShares, max_recession_duration, num_experiment_periods,\
+    recession_changes, UI_changes, recession_UI_changes,\
+    TaxCut_changes, recession_TaxCut_changes, Check_changes, recession_Check_changes] = returnParameters(Parametrization='Baseline',OutputFor='_Main.py')
               
     
     mystr = lambda x : '{:.2f}'.format(x)

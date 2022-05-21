@@ -11,10 +11,12 @@ from HARK.interpolation import LinearInterp, BilinearInterp, VariableLowerBoundF
                                 LinearInterpOnInterp1D, LowerEnvelope2D, UpperEnvelope, ConstantFunction
 from HARK import Market
 from HARK.core import distanceMetric, HARKobject
-from Parameters import makeMacroMrkvArray_recession, makeCondMrkvArrays_recession, makeFullMrkvArray, T_sim, \
-                                                     makeCondMrkvArrays_base, makeCondMrkvArrays_recessionUI
+
 from copy import copy, deepcopy
 import matplotlib.pyplot as plt
+
+from Parameters import returnParameters
+[makeMacroMrkvArray_recession, makeCondMrkvArrays_recession, makeFullMrkvArray, T_sim, makeCondMrkvArrays_base, makeCondMrkvArrays_recessionUI] = returnParameters(OutputFor='_Model.py')
 
 # Define a modified MarkovConsumerType
 class AggFiscalType(MarkovConsumerType):

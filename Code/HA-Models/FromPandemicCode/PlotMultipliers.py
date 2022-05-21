@@ -1,8 +1,10 @@
-from Parameters import max_recession_duration
+
+from Parameters import returnParameters
+[max_recession_duration,Rspell] = returnParameters(Parametrization='Baseline',OutputFor='_PlotMultipliers.py')
+
 import numpy as np
 import matplotlib.pyplot as plt
-from OtherFunctions import getSimulationDiff, getSimulationPercentDiff, getStimulus, getNPVMultiplier, \
-                    saveAsPickleUnderVarName, loadPickle, namestr, saveAsPickle
+from OtherFunctions import getSimulationDiff, getSimulationPercentDiff, getNPVMultiplier, loadPickle
 
 mystr = lambda x : '{:.2f}'.format(x)
 
@@ -216,8 +218,8 @@ print('')
 
 
 # Multiplier plots for AD case
-max_T2 = 40
-nPlotDiff = 3
+max_T2 = 15
+nPlotDiff = 2
 
 #Cumulative
 C_Multiplier_UI_Rec_AD                = getNPVMultiplier(recession_results_AD,            recession_UI_results_AD,            NPV_AddInc_UI_Rec[-1])
@@ -271,7 +273,6 @@ plt.show()
 
 
 # Share of policy expenditure during recession
-from Parameters import Rspell
 R_persist = 1.-1./Rspell        
 recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
 recession_prob_array[-1] = 1.0 - np.sum(recession_prob_array[:-1])
