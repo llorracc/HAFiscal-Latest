@@ -103,7 +103,7 @@ if Run_CRRA_robustness:
     figs_dir = './Figures/CRRA2.0_Robustnes/'
     
     Simulate(Run_Dict,init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
-         DiscFacCount, AgentCountTotal,NPV_AddInc_TaxCut base_dict, figs_dir, num_max_iterations_solvingAD,\
+         DiscFacCount, AgentCountTotal, base_dict, figs_dir, num_max_iterations_solvingAD,\
          convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
          data_EducShares, max_recession_duration, num_experiment_periods,\
          recession_changes, UI_changes, recession_UI_changes,\

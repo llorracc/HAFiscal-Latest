@@ -8,7 +8,13 @@ mystr = lambda x : '{:.2f}'.format(x)
 
 #figs_dir = './Figures/FullRun_PVsame/'
 figs_dir = './Figures/FullRun/'
-figs_dir = './Figures/CRRA2.0_Robustnes/'
+plot_folder = 'Figures/'
+
+#figs_dir = './Figures/CRRA2.0_Robustnes/'
+#plot_folder = 'Figures/Robustness_Figs/CRRA2/'
+
+Plot_1stRoundAd         = False
+Mltp_1stRoundAd         = True
         
 max_T = 16
 x_axis = np.arange(1,max_T+1)
@@ -41,7 +47,6 @@ recession_TaxCut_results_firstRoundAD   = loadPickle('recessionTaxCut_results_fi
 #%% IRFs for income and consumption for three policies
 # Tax cut        
 
-Plot_1stRoundAd         = False
 
 AddCons_Rec_TaxCut_RelRec               = getSimulationPercentDiff(recession_results,               recession_TaxCut_results,'AggCons')
 AddCons_Rec_TaxCut_AD_RelRec            = getSimulationPercentDiff(recession_results_AD,            recession_TaxCut_results_AD,'AggCons')
@@ -74,7 +79,7 @@ if Plot_1stRoundAd:
 plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
 plt.xlabel('quarter')
 plt.ylabel('% difference relative to recession')
-plt.savefig('Figures/' +'recession_taxcut_relrecession.pdf')
+plt.savefig(plot_folder +'recession_taxcut_relrecession.pdf')
 plt.show()   
 
 
@@ -110,7 +115,7 @@ if Plot_1stRoundAd:
 plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
 plt.xlabel('quarter')
 plt.ylabel('% difference relative to recession')
-plt.savefig('Figures/' +'recession_UI_relrecession.pdf')
+plt.savefig(plot_folder +'recession_UI_relrecession.pdf')
 plt.show() 
 
 
@@ -146,7 +151,7 @@ if Plot_1stRoundAd:
 plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
 plt.xlabel('quarter')
 plt.ylabel('% difference relative to recession')
-plt.savefig('Figures/' +'recession_Check_relrecession.pdf')
+plt.savefig(plot_folder +'recession_Check_relrecession.pdf')
 plt.show()        
 
 
@@ -163,12 +168,12 @@ plt.show()
 
 #%% Multipliers
 
-Plot_1stRoundAd         = False
+
 
 NPV_AddInc_UI_Rec                       = getSimulationDiff(recession_results,recession_UI_results,'NPV_AggIncome') # Policy expenditure
 NPV_Multiplier_UI_Rec                   = getNPVMultiplier(recession_results,               recession_UI_results,               NPV_AddInc_UI_Rec)
 NPV_Multiplier_UI_Rec_AD                = getNPVMultiplier(recession_results_AD,            recession_UI_results_AD,            NPV_AddInc_UI_Rec)
-if Plot_1stRoundAd:
+if Mltp_1stRoundAd:
     NPV_Multiplier_UI_Rec_firstRoundAD  = getNPVMultiplier(recession_results_firstRoundAD,  recession_UI_results_firstRoundAD,  NPV_AddInc_UI_Rec)
 else:
     NPV_Multiplier_UI_Rec_firstRoundAD = np.zeros_like(NPV_Multiplier_UI_Rec)
@@ -177,7 +182,7 @@ else:
 NPV_AddInc_Rec_TaxCut                   = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggIncome')
 NPV_Multiplier_Rec_TaxCut               = getNPVMultiplier(recession_results,               recession_TaxCut_results,               NPV_AddInc_Rec_TaxCut)
 NPV_Multiplier_Rec_TaxCut_AD            = getNPVMultiplier(recession_results_AD,            recession_TaxCut_results_AD,            NPV_AddInc_Rec_TaxCut)
-if Plot_1stRoundAd:
+if Mltp_1stRoundAd:
     NPV_Multiplier_Rec_TaxCut_firstRoundAD  = getNPVMultiplier(recession_results_firstRoundAD,  recession_TaxCut_results_firstRoundAD,  NPV_AddInc_Rec_TaxCut)
 else:
     NPV_Multiplier_Rec_TaxCut_firstRoundAD = np.zeros_like(NPV_Multiplier_Rec_TaxCut)
@@ -185,23 +190,23 @@ else:
 NPV_AddInc_Rec_Check                    = getSimulationDiff(recession_results,recession_Check_results,'NPV_AggIncome') 
 NPV_Multiplier_Rec_Check                = getNPVMultiplier(recession_results,               recession_Check_results,               NPV_AddInc_Rec_Check)
 NPV_Multiplier_Rec_Check_AD             = getNPVMultiplier(recession_results_AD,            recession_Check_results_AD,            NPV_AddInc_Rec_Check)
-if Plot_1stRoundAd:
+if Mltp_1stRoundAd:
     NPV_Multiplier_Rec_Check_firstRoundAD   = getNPVMultiplier(recession_results_firstRoundAD,  recession_Check_results_firstRoundAD,  NPV_AddInc_Rec_Check)
 else:
     NPV_Multiplier_Rec_Check_firstRoundAD = np.zeros_like(NPV_Multiplier_Rec_Check)
 
         
-print('NPV Multiplier UI recession no AD: \t\t',mystr(NPV_Multiplier_UI_Rec[-1]))
+#print('NPV Multiplier UI recession no AD: \t\t',mystr(NPV_Multiplier_UI_Rec[-1]))
 print('NPV Multiplier UI recession with AD: \t\t',mystr(NPV_Multiplier_UI_Rec_AD[-1]))
 print('NPV Multiplier UI recession 1st round AD: \t',mystr(NPV_Multiplier_UI_Rec_firstRoundAD[-1]))
 print('')
 
-print('NPV Multiplier tax cut recession no AD: \t',mystr(NPV_Multiplier_Rec_TaxCut[-1]))
+#print('NPV Multiplier tax cut recession no AD: \t',mystr(NPV_Multiplier_Rec_TaxCut[-1]))
 print('NPV Multiplier tax cut recession with AD: \t',mystr(NPV_Multiplier_Rec_TaxCut_AD[-1]))
 print('NPV Multiplier tax cut recession 1st round AD:  ',mystr(NPV_Multiplier_Rec_TaxCut_firstRoundAD[-1]))
 print('')
 
-print('NPV Multiplier check recession no AD: \t\t',mystr(NPV_Multiplier_Rec_Check[-1]))
+#print('NPV Multiplier check recession no AD: \t\t',mystr(NPV_Multiplier_Rec_Check[-1]))
 print('NPV Multiplier check recession with AD: \t',mystr(NPV_Multiplier_Rec_Check_AD[-1]))
 print('NPV Multiplier check recession 1st round AD: \t',mystr(NPV_Multiplier_Rec_Check_firstRoundAD[-1]))
 print('')
@@ -225,7 +230,7 @@ plt.plot(x_axis,C_Multiplier_Rec_Check_AD[0:max_T2][::nPlotDiff],               
 plt.legend(['Payroll Tax cut','Extended Unemployment Benefits','Stimulus Check'])
 plt.xticks(np.arange(min(x_axis), max(x_axis)+1, nPlotDiff))
 plt.xlabel('quarter')
-plt.savefig('Figures/' +'Cummulative_multipliers.pdf')
+plt.savefig(plot_folder +'Cummulative_multipliers.pdf')
 plt.show()
     
 
@@ -298,9 +303,9 @@ recession_all_results_Check  = loadPickle('recessionCheck_all_results',folder_AD
                        recession_all_results_UI,recession_all_results_Check,\
                        recession_prob_array,max_recession_duration)
 
-print('Share of Tax cut policy expenditure occuring during recession: ', Share_TaxCut)    
-print('Share of UI policy expenditure occuring during recession: ', Share_UI)  
-print('Share of Check policy expenditure occuring during recession: ', ShareCheck)  
+print('Share of Tax cut policy expenditure occuring during recession: ', mystr(Share_TaxCut)    )
+print('Share of UI policy expenditure occuring during recession: ', mystr(Share_UI) ) 
+print('Share of Check policy expenditure occuring during recession: ', mystr(ShareCheck) ) 
 
 
 def mystr3(number):
@@ -351,19 +356,19 @@ def PlotsforSpecificRecLength(RecLength,Policy):
     
     recession_all_results               = loadPickle('recession_all_results',folder_noAD,locals())
     recession_all_results_AD            = loadPickle('recession_all_results_AD',folder_AD,locals())
-    if Plot_1stRoundAd:
+    if Mltp_1stRoundAd:
         recession_all_results_firstRoundAD  = loadPickle('recession_all_results_firstRoundAD',folder_firstroundAD,locals())
     
     recession_all_policy_results        = loadPickle( Policy + '_all_results',folder_noAD,locals())       
     recession_all_policy_results_AD     = loadPickle(Policy + '_all_results_AD',folder_AD,locals())
-    if Plot_1stRoundAd:
+    if Mltp_1stRoundAd:
         recession_all_policy_results_firstRoundAD= loadPickle(Policy + '_all_results_firstRoundAD',folder_firstroundAD,locals())
     
     
     NPV_AddInc                  = getSimulationDiff(recession_all_results[RecLength-1],recession_all_policy_results[RecLength-1],'NPV_AggIncome') # Policy expenditure
     NPV_Multiplier              = getNPVMultiplier(recession_all_results[RecLength-1],               recession_all_policy_results[RecLength-1],               NPV_AddInc)
     NPV_Multiplier_AD           = getNPVMultiplier(recession_all_results_AD[RecLength-1],            recession_all_policy_results_AD[RecLength-1],            NPV_AddInc)
-    if Plot_1stRoundAd:
+    if Mltp_1stRoundAd:
         NPV_Multiplier_firstRoundAD = getNPVMultiplier(recession_all_results_firstRoundAD[RecLength-1],  recession_all_policy_results_firstRoundAD[RecLength-1],  NPV_AddInc)
     else:
         NPV_Multiplier_firstRoundAD = np.zeros_like(NPV_Multiplier_AD)

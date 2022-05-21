@@ -11,6 +11,7 @@ import pandas as pd
 
 
 figs_dir = './Figures/FullRun_PVsame/'
+#figs_dir = './Figures/CRRA2.0_Robustnes_PVSame/'
 
 base_results                        = loadPickle('base_results',figs_dir,locals())
 check_results                       = loadPickle('Check_results',figs_dir,locals())
