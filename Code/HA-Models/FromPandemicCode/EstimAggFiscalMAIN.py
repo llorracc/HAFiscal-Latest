@@ -15,7 +15,7 @@ from HARK.estimation import minimizeNelderMead
 from EstimParameters import init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
      DiscFacCount, CRRA, Splurge, AgentCountTotal, base_dict, figs_dir, UBspell_normal, \
      data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, data_medianLWPI,\
-     data_EducShares, data_WealthShares
+     data_EducShares, data_WealthShares, Rfree_base
 from EstimAggFiscalModel import AggFiscalType, AggregateDemandEconomy
 mystr = lambda x : '{:.2f}'.format(x)
 mystr4 = lambda x : '{:.4f}'.format(x)
@@ -517,7 +517,7 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
     if print_file:
         with open(filename, 'a') as resFile: 
             resFile.write('Education group = '+mystr(educ_type)+': beta = '+mystr4(beta)+
-                          ', splurge = '+mystr4(spread)+'\n')
+                          ', nabla = '+mystr4(spread)+'\n')
             resFile.write('\tMedian LW/PI-ratio = '+mystr(Stats.medianLWPI[educ_type][0])+'\n')
             resFile.write('\tLorenz Points = '+str(lp)+'\n\n')
         
@@ -525,17 +525,17 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
 # -----------------------------------------------------------------------------
 #%% Estimate discount factor distributions separately for each education type
 
-for edType in [0]:
+for edType in [0,1,2]:
     f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
-    # fixedNabla  = 0.35
+    # fixedNabla  = 0.4
     # f_temp = lambda x : betasObjFuncEduc(x[0],fixedNabla, educ_type=edType)
     if edType == 0:
-        initValues = [0.5, 0.20]       # Dropouts
-      # initValues = [0.35]       # Dropouts
+        initValues = [0.8, 0.23]       # Dropouts
+       # initValues = [0.45]       # Dropouts
     elif edType == 1:
-        initValues = [0.75, 0.1]      # HighSchool
+        initValues = [0.94, 0.06]      # HighSchool
     elif edType == 2:
-        initValues = [0.96, 0.02]     # College
+        initValues = [0.986, 0.011]     # College
     else:
         initValues = [0.95,0.02]
         
@@ -545,23 +545,28 @@ for edType in [0]:
     betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = edType, print_mode=True)
     # betasObjFuncEduc(opt_params[0], fixedNabla, educ_type = edType, print_mode=True)
 
-    if edType == 2:
+    if edType == 0:
         mode = 'w'      # Overwrite old file...
     else:
         mode = 'a'      # ...but append all results in same file 
-    with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', mode) as f:
+    # with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', mode) as f:
+    with open('../Results/DiscFacEstim_Rfree_'+str(Rfree_base[0])+'_incNB_15.txt', mode) as f:        
         outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : opt_params[1]})
         # outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : fixedNabla})
         f.write(outStr+'\n')
         f.close()
 
 #%% Read in estimates and calculate all results:
-resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'.txt'
+#resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'.txt'
+# resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'_incNB_15.txt'
+resFileStr = '../Results/AllResults_R_'+str(Rfree_base[0])+'_incNB_15.txt'
 with open(resFileStr, 'w') as resFile: 
     resFile.write('Results for CRRA = '+str(CRRA)+' and splurge = '+str(round(Splurge,5))+'\n\n')
     
 myEstim = [[],[],[]]
-betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
+#betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
+# betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_incNB_15.txt', 'r')
+betFile = open('../Results/DiscFacEstim_Rfree_'+str(Rfree_base[0])+'_incNB_15.txt', 'r')
 readStr = betFile.readline().strip()
 while readStr != '' :
     dictload = eval(readStr)
@@ -577,38 +582,10 @@ betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
              [myEstim[0][1], myEstim[1][1], myEstim[2][1]], \
              target_option = 1, print_mode=True, print_file=True, filename=resFileStr)
 
-    
-#%% Calculate population values using estimated parameter values:
-myEstim = [[],[],[]]
-f = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
-readStr = f.readline().strip()
-while readStr != '' :
-    dictload = eval(readStr)
-    edType = dictload['EducationGroup']
-    beta = dictload['beta']
-    nabla = dictload['nabla']
-    myEstim[edType] = [beta,nabla]
-    readStr = f.readline().strip()
-    
-f.close()
-
-# TODO: Update with calculation of results for each ed group and printing to a file
-
-betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
-             [myEstim[0][1], myEstim[1][1], myEstim[2][1]], \
-             target_option = 1, print_mode=True)
-
-    
-    
-    
-    
-    
-    
-    
 
 #%% Test values:
-edType = 2
-testVals = [0.91715597, 0.087492]
+edType = 0
+testVals = [0.5, 0.5]
 betasObjFuncEduc(testVals[0], testVals[1], educ_type = edType, print_mode=True)
 
         
