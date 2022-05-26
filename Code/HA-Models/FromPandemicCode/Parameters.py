@@ -4,51 +4,33 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     from HARK.distribution import Uniform
     from OtherFunctions import loadPickle, getSimulationDiff
     
-    #Baseline, Baseline_PVSame
-    #CRRA2, CRRA2_PVSame
-    
-    
-    if Parametrization == 'Baseline_PVSame':
-        figs_dir_load = './Figures/FullRun/'
-        base_results                    = loadPickle('base_results',figs_dir_load,locals())
-        check_results                   = loadPickle('Check_results',figs_dir_load,locals())
-        UI_results                      = loadPickle('UI_results',figs_dir_load,locals())
-        TaxCut_results                  = loadPickle('TaxCut_results',figs_dir_load,locals())
-        NPV_AddInc_Check                = getSimulationDiff(base_results,check_results,'NPV_AggIncome') 
-        NPV_AddInc_UI                   = getSimulationDiff(base_results,UI_results,'NPV_AggIncome') # Policy expenditure
-        NPV_AddInc_TaxCut               = getSimulationDiff(base_results,TaxCut_results,'NPV_AggIncome')        
-        
-        TaxCutAdjFactor = NPV_AddInc_UI[-1]/NPV_AddInc_TaxCut[-1]
-        CheckAdjFactor =  NPV_AddInc_UI[-1]/NPV_AddInc_Check[-1]
-        
-        
-    elif Parametrization == 'CRRA2_PVSame':
-        figs_dir_load = './Figures/CRRA2.0_Robustnes/'
-        base_results                    = loadPickle('base_results',figs_dir_load,locals())
-        check_results                   = loadPickle('Check_results',figs_dir_load,locals())
-        UI_results                      = loadPickle('UI_results',figs_dir_load,locals())
-        TaxCut_results                  = loadPickle('TaxCut_results',figs_dir_load,locals())
-        NPV_AddInc_Check                = getSimulationDiff(base_results,check_results,'NPV_AggIncome') 
-        NPV_AddInc_UI                   = getSimulationDiff(base_results,UI_results,'NPV_AggIncome') # Policy expenditure
-        NPV_AddInc_TaxCut               = getSimulationDiff(base_results,TaxCut_results,'NPV_AggIncome')
-        
-        TaxCutAdjFactor = NPV_AddInc_UI[-1]/NPV_AddInc_TaxCut[-1]
-        CheckAdjFactor =  NPV_AddInc_UI[-1]/NPV_AddInc_Check[-1]
-        
-    else:
-        TaxCutAdjFactor = 1
-        CheckAdjFactor = 1
-         
-    
-    if Parametrization == 'Baseline' or Parametrization == 'Baseline_PVSame':
-        CRRA = 1.0
-    elif Parametrization == 'CRRA2' or Parametrization == 'CRRA2_PVSame':
-        CRRA = 2.0
 
-        
+    CRRA = 1.0
+    Rfree_base = [1.01]
+    Rspell = 6            # Expected length of recession, in quarters. If R_shared = True, must be an integer
+    betas_txt_location = '../Results/DiscFacEstim_CRRA_1.0_incNB_15.txt' 
+    Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_1.0.txt'    
+    
+    # make changes according to robustness run
+    if Parametrization == 'CRRA2' or Parametrization == 'CRRA2_PVSame':
+        CRRA = 2.0
+        betas_txt_location = '../Results/DiscFacEstim_CRRA_2.0_incNB_15.txt' 
+        Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_2.0.txt'  
+    elif Parametrization == 'CRRA3' or Parametrization == 'CRRA3_PVSame':
+        CRRA = 3.0
+        betas_txt_location = '../Results/DiscFacEstim_CRRA_3.0_incNB_15.txt'
+        Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_2.0.txt'  
+    elif Parametrization == 'Rfree_1005' or Parametrization == 'Rfree_1005_PVSame':
+        Rfree_base = [1.005]
+        betas_txt_location = '../Results/DiscFacEstim_Rfree_1.005_incNB_15.txt'  
+    elif Parametrization == 'Rfree_1015' or Parametrization == 'Rfree_1015_PVSame':
+        Rfree_base = [1.015]
+        betas_txt_location = '../Results/DiscFacEstim_Rfree_1.015_incNB_15.txt'
+    elif Parametrization == 'Rspell_4' or Parametrization == 'Rspell_4_PVSame':
+        Rspell = 4
     
     myEstim = [[],[],[]]
-    f = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_incNB_15.txt', 'r')
+    f = open(betas_txt_location, 'r')
     readStr = f.readline().strip()
     while readStr != '' :
         dictload = eval(readStr)
@@ -58,7 +40,54 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         myEstim[edType] = [beta,nabla]
         readStr = f.readline().strip()
     f.close()
-     
+    
+    
+    f = open(Splurge_txt_location, 'r')
+    if f.mode=='r':
+        contents= f.read()
+    dictload= eval(contents)
+    Splurge = dictload['splurge']
+    
+    
+    if Parametrization == 'Baseline_PVSame':
+        figs_dir_FullRun = './Figures/FullRun/'           
+    elif Parametrization == 'CRRA2_PVSame':
+        figs_dir_FullRun = './Figures/CRRA2.0_Robustnes/'
+    elif Parametrization == 'CRRA3_PVSame':
+        figs_dir_FullRun = './Figures/CRRA3.0_Robustnes/'
+    elif Parametrization == 'Rfree_1005_PVSame':
+        figs_dir_FullRun = './Figures/Rfree_1005_Robustnes/'
+    elif Parametrization == 'Rfree_1015_PVSame':
+        figs_dir_FullRun = './Figures/Rfree_1015_Robustnes/'
+    elif Parametrization == 'Rspell_4_PVSame':
+        figs_dir_FullRun = './Figures/Rspell_4_Robustnes/'
+
+        
+    if Parametrization.find('PVSame')>0:
+        base_results                    = loadPickle('base_results',figs_dir_FullRun,locals())
+        check_results                   = loadPickle('Check_results',figs_dir_FullRun,locals())
+        UI_results                      = loadPickle('UI_results',figs_dir_FullRun,locals())
+        TaxCut_results                  = loadPickle('TaxCut_results',figs_dir_FullRun,locals())
+        NPV_AddInc_Check                = getSimulationDiff(base_results,check_results,'NPV_AggIncome') 
+        NPV_AddInc_UI                   = getSimulationDiff(base_results,UI_results,'NPV_AggIncome') # Policy expenditure
+        NPV_AddInc_TaxCut               = getSimulationDiff(base_results,TaxCut_results,'NPV_AggIncome')
+        
+        TaxCutAdjFactor = NPV_AddInc_UI[-1]/NPV_AddInc_TaxCut[-1]
+        CheckAdjFactor =  NPV_AddInc_UI[-1]/NPV_AddInc_Check[-1]
+    else:
+        TaxCutAdjFactor = 1
+        CheckAdjFactor = 1
+        
+    print('CRRA = ',CRRA)
+    print('Rfree_base = ',Rfree_base)
+    print('Rspell = ',Rspell)
+    
+    print('Splurge = ',Splurge)
+    print('beta/nablas = ',myEstim)
+    
+    print('TaxCutAdjFactor = ',TaxCutAdjFactor)
+    print('CheckAdjFactor = ',CheckAdjFactor)
+       
     # # Targets in the estimation of the discount factor distributions for each 
     # # education level. 
     # # From SCF 2004: [20,40,60,80]-percentiles of the Lorenz curve for liquid wealth
@@ -110,7 +139,6 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     Urate_recession_c = 2 * Urate_normal_c
     
     Uspell_recession = 4         # Average duration of unemployment spell in recession, in quarters
-    Rspell = 6                   # Expected length of recession, in quarters. If R_shared = True, must be an integer
     R_shared = False             # Indicator for whether the recession shared (True) or idiosyncratic (False)
     # UI extension
     UBspell_extended = 5         # Average duration of unemployment benefits when extended and assuming policy remains in place, in quarters
@@ -128,11 +156,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     
     
     # UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
-    f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
-    if f.mode=='r':
-        contents= f.read()
-    dictload= eval(contents)
-    Splurge = dictload['splurge']
+ 
 
     
     # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
@@ -292,7 +316,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     TranShkStd = [np.sqrt(0.12)]
     PermShkStd = [np.sqrt(0.003)]
     
-    Rfree_base = [1.01]
+    
     LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
     # find intial distribution of states for each education type
     vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
@@ -523,6 +547,6 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         return [makeMacroMrkvArray_recession, makeCondMrkvArrays_recession, makeFullMrkvArray, T_sim, \
                  makeCondMrkvArrays_base, makeCondMrkvArrays_recessionUI]            
             
-    elif OutputFor=='_PlotMultipliers.py':
+    elif OutputFor=='_Output_Results.py':
 
-        return [max_recession_duration, Rspell] 
+        return [max_recession_duration, Rspell, Rfree_base] 
