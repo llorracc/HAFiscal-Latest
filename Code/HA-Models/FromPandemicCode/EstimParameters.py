@@ -39,6 +39,7 @@ data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total we
 # Parameters concerning the distribution of discount factors
 # Initial values for estimation, taken from pandemic paperCondMrkvArrays_base
 # Note: not really using these anymore
+num_types = 3
 DiscFacMeanD = 0.9647   # Mean intertemporal discount factor for dropout types
 DiscFacMeanH = 0.98051  # Mean intertemporal discount factor for high school types
 DiscFacMeanC = 0.99160  # Mean intertemporal discount factor for college types
@@ -74,9 +75,8 @@ Splurge = dictload['splurge']
 
 PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
-IncUnemp = 0.3              # Unemployment benefits replacement rate (proportion of permanent income)
-#IncUnempNoBenefits = 0.05   # Unemployment income when benefits run out (proportion of permanent income)
-IncUnempNoBenefits = 0.15   # Unemployment income when benefits run out (proportion of permanent income)
+IncUnemp = 0.7              # Unemployment benefits replacement rate (proportion of permanent income)
+IncUnempNoBenefits = 0.5    # Unemployment income when benefits run out (proportion of permanent income)
 
 # Parameters concerning the initial distribution of permanent income 
 # "newborn" = 25 years old in SCF 2004
@@ -164,6 +164,15 @@ PermShkStd = [np.sqrt(0.003)]
 
 Rfree_base = [1.01]        #[1.01]#Baseline
 LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
+
+# Calculate max beta values for each education group where GIC holds with equality: 
+GICmaxBetas = [(PermGroFac_base_d[0]**CRRA)/Rfree_base[0], (PermGroFac_base_h[0]**CRRA)/Rfree_base[0], 
+                   (PermGroFac_base_c[0]**CRRA)/Rfree_base[0]]
+
+for e in range(num_types):
+    if GICmaxBetas[e] >= DiscFacDstns[e].X[DiscFacCount-1]:
+        DiscFacDstns[e].X[DiscFacCount-1] = GICmaxBetas[e]*0.999
+
 # find intial distribution of states for each education type
 vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
 dist_d = np.abs(np.abs(vals_d) - 1.)
