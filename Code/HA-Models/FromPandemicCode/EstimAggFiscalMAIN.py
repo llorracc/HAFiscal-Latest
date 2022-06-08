@@ -376,8 +376,9 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False, print_file=F
 
     # Check GIC for each type:
     for e in range(num_types):
-        if GICmaxBetas[e] >= dfs[e].X[DiscFacCount-1]:
-            dfs[e].X[DiscFacCount-1] = GICmaxBetas[e]*0.999
+        for thedf in range(DiscFacCount):
+            if dfs[e].X[thedf] >= GICmaxBetas[e]: 
+                dfs[e].X[thedf] = GICmaxBetas[e]*0.999
 
     # Make a new list of types with updated discount factors 
     TypeListNew = []
@@ -507,8 +508,9 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
     dfs = Uniform(beta-spread, beta+spread).approx(DiscFacCount)
     
     # Check GIC:
-    if GICmaxBetas[educ_type] >= dfs.X[DiscFacCount-1]:
-        dfs.X[DiscFacCount-1] = GICmaxBetas[educ_type]*0.999
+    for thedf in range(DiscFacCount):
+        if dfs.X[thedf] >= GICmaxBetas[educ_type]:
+            dfs.X[thedf] = GICmaxBetas[educ_type]*0.999
 
     # Make a new list of types with updated discount factors for the given educ type
     TypeListNewEduc = []
@@ -589,12 +591,12 @@ for edType in [1]:
     # fixedNabla  = 0.4
     # f_temp = lambda x : betasObjFuncEduc(x[0],fixedNabla, educ_type=edType)
     if edType == 0:
-        initValues = [0.85317, 0.16522]       # Dropouts
+        initValues = [0.82, 0.2]       # Dropouts
        # initValues = [0.45]       # Dropouts
     elif edType == 1:
-        initValues = [0.95634, 0.04431]      # HighSchool
+        initValues = [0.90, 0.06]      # HighSchool
     elif edType == 2:
-        initValues = [0.98913, 0.00786]     # College
+        initValues = [0.95, 0.01]     # College
     else:
         initValues = [0.95,0.02]
         
@@ -608,8 +610,8 @@ for edType in [1]:
         mode = 'w'      # Overwrite old file...
     else:
         mode = 'a'      # ...but append all results in same file 
-    with open('../Results/DiscFacEstim_baseline.txt', mode) as f:
-    # with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', mode) as f:
+    # with open('../Results/DiscFacEstim_baseline.txt', mode) as f:
+    with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', mode) as f:
     # with open('../Results/DiscFacEstim_Rfree_'+str(Rfree_base[0])+'_incNB_15.txt', mode) as f:        
         outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : opt_params[1]})
         # outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : fixedNabla})
@@ -617,16 +619,16 @@ for edType in [1]:
         f.close()
 
 #%% Read in estimates and calculate all results:
-resFileStr = '../Results/AllResults_baseline.txt'
-#resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'.txt'
-# resFileStr = '../Results/AllResults_R_'+str(Rfree_base[0])+'_incNB_15.txt'
+resFileStr = '../Results/AllResults_baseline_test.txt'
+# resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'.txt'
+# resFileStr = '../Results/AllResults_R_'+str(Rfree_base[0])+'.txt'
 with open(resFileStr, 'w') as resFile: 
     resFile.write('Results for CRRA = '+str(CRRA)+' and R = '+str(round(Rfree_base[0],3))+'\n\n')
     
 myEstim = [[],[],[]]
 betFile = open('../Results/DiscFacEstim_baseline.txt', 'r')
-#betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
-# betFile = open('../Results/DiscFacEstim_Rfree_'+str(Rfree_base[0])+'.txt', 'r')
+# betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
+# betFile = open('../Results/DiscFacEstim_R_'+str(Rfree_base[0])+'.txt', 'r')
 readStr = betFile.readline().strip()
 while readStr != '' :
     dictload = eval(readStr)
@@ -647,14 +649,14 @@ betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
 
 #%% Test values:
 edType = 1
-testVals = [0.9563397610487372, 0.04430628414544795]
+testVals = [0.95628814068235, 0.04467869672522787]
 betasObjFuncEduc(testVals[0], testVals[1], educ_type = edType, print_mode=True)
 
         
 #%% Temp test code to try different parameters
 estimates_d = [0.6, 0.2 ]  # Dropouts only 
 estimates_h = [0.6, 0.15]  # Highschool only
-estimates_c = [0.98525333, 0.01241598] # College only
+estimates_c = [0.98525333, 0.04467869672522787] # College only
 
 betasObjFuncEduc(estimates_h[0], estimates_h[1], educ_type = 1, print_mode=True)
 betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \

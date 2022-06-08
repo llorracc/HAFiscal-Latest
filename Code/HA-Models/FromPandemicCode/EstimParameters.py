@@ -170,8 +170,9 @@ GICmaxBetas = [(PermGroFac_base_d[0]**CRRA)/Rfree_base[0], (PermGroFac_base_h[0]
                    (PermGroFac_base_c[0]**CRRA)/Rfree_base[0]]
 
 for e in range(num_types):
-    if GICmaxBetas[e] >= DiscFacDstns[e].X[DiscFacCount-1]:
-        DiscFacDstns[e].X[DiscFacCount-1] = GICmaxBetas[e]*0.999
+    for thedf in range(DiscFacCount):
+        if DiscFacDstns[e].X[thedf] >= GICmaxBetas[e]: 
+            DiscFacDstns[e].X[thedf] = GICmaxBetas[e]*0.999
 
 # find intial distribution of states for each education type
 vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
