@@ -66,7 +66,7 @@ Uspell_normal = 1.5          # Average duration of unemployment spell in normal 
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
-CRRA = 1.0                   # Coefficient of relative risk aversion (1, 2 or 3)
+CRRA = 2.0                   # Coefficient of relative risk aversion (1, 2 or 3)
 # Read in estimated Splurge --> depends on CRRA: 
 f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
 dictload = eval(f.read())
