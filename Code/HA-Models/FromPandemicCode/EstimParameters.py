@@ -66,12 +66,14 @@ Uspell_normal = 1.5          # Average duration of unemployment spell in normal 
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
-CRRA = 2.0                   # Coefficient of relative risk aversion (1, 2 or 3)
-# Read in estimated Splurge --> depends on CRRA: 
-f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
-dictload = eval(f.read())
-Splurge = dictload['splurge'] 
+CRRA = 2.00                 # Coefficient of relative risk aversion (1, 2 or 3)
+# # Read in estimated Splurge --> depends on CRRA: 
+# f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
+# dictload = eval(f.read())
+# Splurge = dictload['splurge'] 
 # Splurge = 0.31 
+# Splurge = 0.3138321699039471 # CRRA=1
+Splurge = 0.3067109441016833 # CRRA=2
 
 PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
@@ -108,6 +110,7 @@ T_cycle = 1
 CgridBase = np.array([0.8, 1.0, 1.2])  
 
 num_base_MrkvStates = 2 + UBspell_normal #employed, unemployed with 2 quarters benefits, unemployed with 1 quarter benefit, unemployed no benefits
+num_experiment_periods = 20
 
 def small_MrkvArray(e,u,ub,transition_ub=True):
     small_MrkvArray = np.zeros((ub+2, ub+2))
@@ -172,7 +175,7 @@ GICmaxBetas = [(PermGroFac_base_d[0]**CRRA)/Rfree_base[0], (PermGroFac_base_h[0]
 for e in range(num_types):
     for thedf in range(DiscFacCount):
         if DiscFacDstns[e].X[thedf] >= GICmaxBetas[e]: 
-            DiscFacDstns[e].X[thedf] = GICmaxBetas[e]*0.999
+            DiscFacDstns[e].X[thedf] = GICmaxBetas[e]*0.9999
 
 # find intial distribution of states for each education type
 vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
@@ -236,6 +239,7 @@ init_dropout = {"cycles": 0, # This will be overwritten at type construction
                 'Uspell_normal' : Uspell_normal,
                 'UBspell_normal' : UBspell_normal,
                 'num_base_MrkvStates' : num_base_MrkvStates,
+                'num_experiment_periods' : num_experiment_periods,
                 'UpdatePrb' : 1.0,
                 'Splurge' : Splurge,
                 'track_vars' : [],
