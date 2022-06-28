@@ -15,7 +15,7 @@ from HARK.estimation import minimizeNelderMead
 from EstimParameters import init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
      DiscFacCount, CRRA, Splurge, AgentCountTotal, base_dict, figs_dir, UBspell_normal, \
      data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, data_medianLWPI,\
-     data_EducShares, data_WealthShares, Rfree_base, GICmaxBetas
+     data_EducShares, data_WealthShares, Rfree_base, GICmaxBetas, GICfactor
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 mystr = lambda x : '{:.2f}'.format(x)
 mystr4 = lambda x : '{:.4f}'.format(x)
@@ -256,14 +256,14 @@ def checkDiscFacDistribution(beta, nabla, educ_type, print_mode=False, print_fil
         print('Approximation to beta distribution: betaMin = '+str(round(betaMin,5))
                           +', betaMax = '+str(round(betaMax,5))+'\n')
         print('GIC satisfied = '+str(GICsatisfied)+'\n')
-        print('Imposed GIC consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*0.999,5))+'\n\n')
+        print('Imposed GIC consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*GICfactor,5))+'\n\n')
         
     if print_file:
         with open(filename, 'a') as resFile: 
             resFile.write('\tApproximation to beta distribution: betaMin = '+str(round(betaMin,5))
                           +', betaMax = '+str(round(betaMax,5))+'\n')
             resFile.write('\tGIC satisfied = '+str(GICsatisfied)+'\n')
-            resFile.write('\tImposed GIC-consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*0.999,5))+'\n\n')
+            resFile.write('\tImposed GIC-consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*GICfactor,5))+'\n\n')
     
     dfCheck = namedtuple("dfCheck", ["betaMin", "betaMax", "GICsatisfied"])
     return dfCheck(betaMin, betaMax, GICsatisfied)    
@@ -378,7 +378,7 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False, print_file=F
     for e in range(num_types):
         for thedf in range(DiscFacCount):
             if dfs[e].X[thedf] >= GICmaxBetas[e]: 
-                dfs[e].X[thedf] = GICmaxBetas[e]*0.9999
+                dfs[e].X[thedf] = GICmaxBetas[e]*GICfactor
 
     # Make a new list of types with updated discount factors 
     TypeListNew = []
@@ -510,7 +510,7 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
     # Check GIC:
     for thedf in range(DiscFacCount):
         if dfs.X[thedf] >= GICmaxBetas[educ_type]:
-            dfs.X[thedf] = GICmaxBetas[educ_type]*0.9999
+            dfs.X[thedf] = GICmaxBetas[educ_type]*GICfactor
 
     # Make a new list of types with updated discount factors for the given educ type
     TypeListNewEduc = []
@@ -586,15 +586,13 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
 #%% Estimate discount factor distributions separately for each education type
 
 print('Estimating for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_base[0],3))+':\n')
-for edType in [1]:
+for edType in [0,1]:
     f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
-    # fixedNabla  = 0.4
-    # f_temp = lambda x : betasObjFuncEduc(x[0],fixedNabla, educ_type=edType)
     if edType == 0:
-        initValues = [0.73, 0.51]       # Dropouts
+        initValues = [0.7, 0.5]       # Dropouts
        # initValues = [0.45]       # Dropouts
     elif edType == 1:
-        initValues = [0.9050, 0.1]      # HighSchool
+        initValues = [0.905, 0.1]      # HighSchool
     elif edType == 2:
         initValues = [0.978, 0.019]     # College
     else:
@@ -604,31 +602,24 @@ for edType in [1]:
     print('Finished estimating for education type = '+str(edType)+'. Optimal beta and spread are:')
     print(opt_params) 
     betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = edType, print_mode=True)
-    # betasObjFuncEduc(opt_params[0], fixedNabla, educ_type = edType, print_mode=True)
 
     if edType == 0:
         mode = 'a'      # Overwrite old file...
     else:
-        mode = 'w'      # ...but append all results in same file 
-    # with open('../Results/DiscFacEstim_baseline.txt', mode) as f:
-    with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', mode) as f:
-    # with open('../Results/DiscFacEstim_Rfree_'+str(Rfree_base[0])+'_incNB_15.txt', mode) as f:        
+        mode = 'a'      # ...but append all results in same file 
+    # with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', mode) as f:
+    with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt', mode) as f:        
         outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : opt_params[1]})
-        # outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : fixedNabla})
         f.write(outStr+'\n')
         f.close()
 
 #%% Read in estimates and calculate all results:
-# resFileStr = '../Results/AllResults_baseline.txt'
-resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'_2.txt'
-# resFileStr = '../Results/AllResults_R_'+str(Rfree_base[0])+'.txt'
+resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
 with open(resFileStr, 'w') as resFile: 
     resFile.write('Results for CRRA = '+str(CRRA)+' and R = '+str(round(Rfree_base[0],3))+'\n\n')
     
 myEstim = [[],[],[]]
-# betFile = open('../Results/DiscFacEstim_baseline.txt', 'r')
-betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
-# betFile = open('../Results/DiscFacEstim_R_'+str(Rfree_base[0])+'.txt', 'r')
+betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt', 'r')
 readStr = betFile.readline().strip()
 while readStr != '' :
     dictload = eval(readStr)
@@ -648,9 +639,9 @@ betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
 
 
 #%% Test values:
-edType = 1
-# testVals = [0.65755279, 0.54372472]
-testVals = [0.905016827453673, 0.0995185043216371] # Estimates for edType=1, when CRRA=2.0
+edType = 0
+testVals = [0.682090364076123, 0.507363392641599] # Estimates for edType=0, when CRRA=1.0
+# testVals = [0.905016827453673, 0.0995185043216371] # Estimates for edType=1, when CRRA=2.0
 # testVals = [0.73, 0.54372472]
 
 checkDiscFacDistribution(testVals[0], testVals[1], edType, print_mode=True)
@@ -659,7 +650,7 @@ betasObjFuncEduc(testVals[0], testVals[1], educ_type = edType, print_mode=True)
 
 #%% Read in estimates and save resulting discount factor distributions:
 myEstim = [[],[],[]]
-betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_9999.txt', 'r')
+betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt', 'r')
 readStr = betFile.readline().strip()
 while readStr != '' :
     dictload = eval(readStr)
@@ -670,7 +661,7 @@ while readStr != '' :
     readStr = betFile.readline().strip()
 betFile.close()
 
-outFileStr = '../Results/DiscFacDistributions_CRRA_'+str(CRRA)+'_9999.txt'
+outFileStr = '../Results/DiscFacDistributions_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
 outFile = open(outFileStr, 'w')
 
 for e in [0,1,2]:
@@ -679,7 +670,7 @@ for e in [0,1,2]:
     # Check GIC:
     for thedf in range(DiscFacCount):
         if dfs.X[thedf] >= GICmaxBetas[e]:
-            dfs.X[thedf] = GICmaxBetas[e]*0.999
+            dfs.X[thedf] = GICmaxBetas[e]*GICfactor
     theDFs = np.round(dfs.X,4)
     outStr = repr({'EducationGroup' : e, 'betaDistr' : theDFs.tolist()})
     outFile.write(outStr+'\n')

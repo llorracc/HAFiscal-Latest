@@ -66,14 +66,14 @@ Uspell_normal = 1.5          # Average duration of unemployment spell in normal 
 UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
-CRRA = 2.00                 # Coefficient of relative risk aversion (1, 2 or 3)
-# # Read in estimated Splurge --> depends on CRRA: 
-# f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
-# dictload = eval(f.read())
-# Splurge = dictload['splurge'] 
+CRRA = 2.0                 # Coefficient of relative risk aversion (1, 2 or 3)
+# Read in estimated Splurge --> depends on CRRA: 
+f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
+dictload = eval(f.read())
+Splurge = dictload['splurge'] 
 # Splurge = 0.31 
 # Splurge = 0.3138321699039471 # CRRA=1
-Splurge = 0.3067109441016833 # CRRA=2
+# Splurge = 0.3067109441016833 # CRRA=2
 
 PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
@@ -165,17 +165,18 @@ PermGroFac_base_c = [1.0 + 0.01958/4]
 TranShkStd = [np.sqrt(0.12)]
 PermShkStd = [np.sqrt(0.003)]
 
-Rfree_base = [1.01]        #[1.01]#Baseline
+Rfree_base = [1.015]        #[1.01]#Baseline
 LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
 
 # Calculate max beta values for each education group where GIC holds with equality: 
 GICmaxBetas = [(PermGroFac_base_d[0]**CRRA)/Rfree_base[0], (PermGroFac_base_h[0]**CRRA)/Rfree_base[0], 
                    (PermGroFac_base_c[0]**CRRA)/Rfree_base[0]]
+GICfactor = 0.9999
 
 for e in range(num_types):
     for thedf in range(DiscFacCount):
         if DiscFacDstns[e].X[thedf] >= GICmaxBetas[e]: 
-            DiscFacDstns[e].X[thedf] = GICmaxBetas[e]*0.9999
+            DiscFacDstns[e].X[thedf] = GICmaxBetas[e]*GICfactor
 
 # find intial distribution of states for each education type
 vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
