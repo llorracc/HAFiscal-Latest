@@ -1,12 +1,5 @@
 Results for CRRA = 2.0 and R = 1.005
 
-Education group = 2.00: beta = 0.9833, nabla = 0.0139
-	Median LW/PI-ratio = 112.80
-	Lorenz Points = [0.3366, 1.5285, 4.0468, 9.8034]
-	Approximation to beta distribution: betaMin = 0.9714, betaMax = 0.99519
-	GIC satisfied = True
-	Imposed GIC-consistent maximum beta = 1.00379
-
 Education group = 0.00: beta = 0.6996, nabla = 0.5247
 	Median LW/PI-ratio = 4.64
 	Lorenz Points = [0.0, 0.0, 0.0323, 2.2824]
@@ -20,6 +13,13 @@ Education group = 1.00: beta = 0.9088, nabla = 0.0991
 	Approximation to beta distribution: betaMin = 0.82386, betaMax = 0.99377
 	GIC satisfied = True
 	Imposed GIC-consistent maximum beta = 1.00306
+
+Education group = 2.00: beta = 0.9833, nabla = 0.0139
+	Median LW/PI-ratio = 112.80
+	Lorenz Points = [0.3366, 1.5285, 4.0468, 9.8034]
+	Approximation to beta distribution: betaMin = 0.9714, betaMax = 0.99519
+	GIC satisfied = True
+	Imposed GIC-consistent maximum beta = 1.00379
 
 Population calculations:
 	Median LW/PI-ratios = [4.64, 30.05, 113.55]
