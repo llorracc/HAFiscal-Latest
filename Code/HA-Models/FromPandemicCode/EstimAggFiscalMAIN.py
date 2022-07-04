@@ -377,7 +377,7 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False, print_file=F
     # Check GIC for each type:
     for e in range(num_types):
         for thedf in range(DiscFacCount):
-            if dfs[e].X[thedf] >= GICmaxBetas[e]: 
+            if dfs[e].X[thedf] > GICmaxBetas[e]*GICfactor: 
                 dfs[e].X[thedf] = GICmaxBetas[e]*GICfactor
             elif dfs[e].X[thedf] < minBeta:
                 dfs[e].X[thedf] = minBeta
@@ -511,7 +511,7 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
     
     # Check GIC:
     for thedf in range(DiscFacCount):
-        if dfs.X[thedf] >= GICmaxBetas[educ_type]:
+        if dfs.X[thedf] > GICmaxBetas[educ_type]*GICfactor:
             dfs.X[thedf] = GICmaxBetas[educ_type]*GICfactor
         elif dfs.X[thedf] < minBeta:
             dfs.X[thedf] = minBeta
@@ -593,11 +593,11 @@ print('Estimating for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_
 for edType in [0,1,2]:
     f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
     if edType == 0:
-        initValues = [0.7, 0.52]       # Dropouts
+        initValues = [0.56, 0.75]       # Dropouts
     elif edType == 1:
-        initValues = [0.9, 0.1]      # HighSchool
+        initValues = [0.84, 0.16]      # HighSchool
     elif edType == 2:
-        initValues = [0.978, 0.015]     # College
+        initValues = [0.96, 0.03]     # College
     else:
         initValues = [0.95,0.02]
         
@@ -642,8 +642,7 @@ betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
 
 #%% Test values:
 edType = 1
-testVals = [0.905016827453673, 0.0995185043216371] # Estimates for edType=1, when CRRA=2.0
-# testVals = [0.6228535914421085, 0.6508742034435258] # Estimates for edType=0, when CRRA=2.5
+testVals = [0.9041911231898487, 0.09910798026727206] # Estimates for edType=1, when CRRA=2.0
 
 checkDiscFacDistribution(testVals[0], testVals[1], edType, print_mode=True)
 betasObjFuncEduc(testVals[0], testVals[1], educ_type = edType, print_mode=True)
@@ -670,7 +669,7 @@ for e in [0,1,2]:
     
     # Check GIC:
     for thedf in range(DiscFacCount):
-        if dfs.X[thedf] >= GICmaxBetas[e]:
+        if dfs.X[thedf] > GICmaxBetas[e]*GICfactor:
             dfs.X[thedf] = GICmaxBetas[e]*GICfactor
         elif dfs.X[thedf] < minBeta:
             dfs.X[thedf] = minBeta

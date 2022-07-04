@@ -176,7 +176,7 @@ minBeta = 0.01
 
 for e in range(num_types):
     for thedf in range(DiscFacCount):
-        if DiscFacDstns[e].X[thedf] >= GICmaxBetas[e]: 
+        if DiscFacDstns[e].X[thedf] > GICmaxBetas[e]*GICfactor: 
             DiscFacDstns[e].X[thedf] = GICmaxBetas[e]*GICfactor
         elif DiscFacDstns[e].X[thedf] < minBeta:
             DiscFacDstns[e].X[thedf] = minBeta
