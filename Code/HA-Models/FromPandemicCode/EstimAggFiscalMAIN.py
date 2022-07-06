@@ -593,7 +593,7 @@ print('Estimating for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_
 for edType in [0,1,2]:
     f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
     if edType == 0:
-        initValues = [0.56, 0.75]       # Dropouts
+        initValues = [0.7, 0.52]       # Dropouts
     elif edType == 1:
         initValues = [0.84, 0.16]      # HighSchool
     elif edType == 2:
