@@ -60,7 +60,7 @@ With our sample selection criteria we are left with a sample representing about 
 
 With households divided into the three education groups, some parameters, presented in Panel~A of table~\ref{tab:calibration}, are calibrated equally across all groups, while other parameters, presented in Panel~B of table~\ref{tab:calibration}, are education-specific.  Households are also assumed to be ex-ante heterogeneous in their subjective discount factors in addition to their level of education. For completeness, Panel~C of table~\ref{tab:calibration} summarizes the parameters describing how we model a recession and the three policies we consider as potential responses to a recession. 
 
-All households are assumed to have log preferences over consumption, so the coefficient of relative risk aversion is set to $\gamma=1$. We also assume that all households have the same propensity to splurge out of transitory income gains and set $\varsigma=0.314$, the value estimated in section~\ref{sec:splurge}. However, each education group is divided into types that differ in their subjective discount factors. The distributions of discount factors for each education group are estimated to fit the distribution of liquid wealth within that group, and this is described in detail in section~\ref{sec:estimBetas}. Regardless of type, households face a constant survival probability each quarter. This is set to $1-1/160$, reflecting an expected working life of 40 years. The real interest rate on households' savings is set to $1$ percent per quarter. 
+All households are assumed to have a coefficient of relative risk aversion equal to $\gamma=2$. We also assume that all households have the same propensity to splurge out of transitory income gains and set $\varsigma=0.314$, the value estimated in section~\ref{sec:splurge}. However, each education group is divided into types that differ in their subjective discount factors. The distributions of discount factors for each education group are estimated to fit the distribution of liquid wealth within that group, and this is described in detail in section~\ref{sec:estimBetas}. Regardless of type, households face a constant survival probability each quarter. This is set to $1-1/160$, reflecting an expected working life of 40 years. The real interest rate on households' savings is set to $1$ percent per quarter. 
 
 \begin{table}[p]
 \begin{center}
@@ -69,7 +69,7 @@ All households are assumed to have log preferences over consumption, so the coef
 	\toprule
 	\multicolumn{3}{l}{Panel (A) Parameters that apply to all types} \\ \midrule
 	Parameter & Notation & \text{Value} \\ \midrule 
-	Risk aversion & $\gamma$ & 1.0 \\ 
+	Risk aversion & $\gamma$ & 2.0 \\ 
 	Splurge & $\varsigma$ & 0.314 \\ 
 	Survival probability, quarterly & $1-D$ & 0.994 \\
 	Risk free interest rate, quarterly (gross) & $R$ & 1.01 \\ 
@@ -80,7 +80,7 @@ All households are assumed to have log preferences over consumption, so the coef
 	Avg. duration of unemp. benefits in normal times (quarters) & & 2 \\
 	Avg. duration of unemp. spell in normal times (quarters) & & 1.5 \\
 	Probability of leaving unemployment & $\pi_{ue}$ & 0.667 \\ 
-	Consumption elasticity of aggregate demand effect & $\kappa$ & 0.5 
+	Consumption elasticity of aggregate demand effect & $\kappa$ & 0.3 
 	\\ \bottomrule 
 \end{tabular} \\ \\
 
@@ -168,18 +168,15 @@ Consumers also face the risk of becoming unemployed, and will then have access t
 
 The probability of transitioning out of unemployment is the same for all households, and is set to $\pi_{ue}=2/3$. This implies that the average duration of an unemployment spell in normal times is 1.5 quarters which is also the value used in \cite{carroll2020modeling}. However, the different education groups do differ in the probability of transitioning into unemployment in the first place. These probabilities are set to match the average US unemployment rate by education group in 2004.\footnote{Source: Statista.com.} This average was 8.5 percent for the ``Dropout'' group, 4.4 percent for the ``Highschool'' group, and 2.7 percent for the ``College'' group. This implies that the probability of transitioning into unemployment in normal times are $\pi_{eu}^d=6.2$ percent, $\pi_{eu}^h=3.1$ percent and $\pi_{eu}^c=1.8$ percent. 
 
-Finally, the strength of the aggregate demand effect in recessions is determined by the consumption elasticity of productivity. This is set to $\kappa=0.5$ 
-
+Finally, the strength of the aggregate demand effect in recessions is determined by the consumption elasticity of productivity. We follow \cite{kmpHandbook2016} and set this to $\kappa=0.3$. 
 
 
 \subsection{Estimating the discount factor distributions} 
 \label{sec:estimBetas}
 
-Discount factor distributions are estimated separately for each education group to match the distribution of liquid wealth for households in that group. To do so, we let each education group consist of different types that differ in their subjective discount factor,~$\beta$. The discount factors within each group $e\in \{d, h, c\}$ are assumed to be uniformly distributed in the range $[\beta_e-\nabla_e, \beta_e+\nabla_e]$. The parameters $\beta_e$ and $\nabla_e$ are chosen for each group separately to match the median liquid wealth to permanent income ratio and the $\nth{20}$, $\nth{40}$, $\nth{60}$, and $\nth{80}$ percentile points of the Lorenz curve for liquid wealth for that group. We approximate the uniform distribution of discount factors with a discrete approximation and let each education group consist of $7$ different types.
+Discount factor distributions are estimated separately for each education group to match the distribution of liquid wealth for households in that group. To do so, we let each education group consist of types that differ in their subjective discount factor,~$\beta$. The discount factors within each group $e\in \{d, h, c\}$ are assumed to be uniformly distributed in the range $[\beta_e-\nabla_e, \beta_e+\nabla_e]$. The parameters $\beta_e$ and $\nabla_e$ are chosen for each group separately to match the median liquid wealth to permanent income ratio and the $\nth{20}$, $\nth{40}$, $\nth{60}$, and $\nth{80}$ percentile points of the Lorenz curve for liquid wealth for that group. We approximate the uniform distribution of discount factors with a discrete approximation and let each education group consist of $7$ different types.
 
-Panel~A of Table~\ref{tab:estimBetas} shows the estimated values of $(\beta_e, \nabla_e)$ for each education group. The panel also shows the minimum and maximum values of the discount factors we actually use in the model when we use a discrete approximation with $7$ values to the uniform distribution of discount factors.  As is clear from the maximum values, all types in the model have a discount factor below $1$.\footnote{This is not actually the relevant constraint on the maximum discount factors. Instead we ensure that the Growth Impatience Condition (GIC) discussed in \cite{carroll2022theoretical}, is always satisfied. We do so by replacing the highest value of $\beta$ for each education group with $0.999\cdot\beta^{*}$, where $\beta^{*}$ is the discount factor where the GIC would hold with equality.}
-
-The minimum values for the discount factors on the other hand, indicate that some of the household types in the model are very impatient, particularly in the Dropout group. This reflects that liquid wealth is very concentrated within that education group with the top quintile holding $96.4$ percent of within-group liquid wealth. Such low estimates for discount factors are in line with those obtained in the literature on payday lending.\footnote{See for example \cite{skiba2008payday} who estimate two-week discount rates of $21$ percent and \cite{allcott2021high} who estimate an initial period discount factor between $0.74$ and $0.83$ in a model where a period is eight weeks long. Both of these papers use quasi-hyperbolic preferences, so the estimates are not directly comparable to parameters in our model. Nevertheless, they support the point that very high discount rates are necessary to model the part of the population that takes out payday loans at very high interest rates.} 
+Panel~A of Table~\ref{tab:estimBetas} shows the estimated values of $(\beta_e, \nabla_e)$ for each education group. The panel also shows the minimum and maximum values of the discount factors we actually use in the model when we use a discrete approximation with $7$ values to the uniform distribution of discount factors. Panel~B of Table~\ref{tab:estimBetas} shows that with these estimated distributions we can match the median liquid wealth to permanent income ratios for each education group exactly. Figure~\ref{fig:LorenzPts} shows that with the estimated distributions, the model quite closely matches the distribution of liquid wealth within each education group as well as for the population as a whole. 
 
 \begin{table}[th]
 \begin{center}
@@ -187,8 +184,8 @@ The minimum values for the discount factors on the other hand, indicate that som
 	\begin{tabular}{lccc}
 		\multicolumn{4}{l}{Panel (A) Estimated discount factor distributions} \\ 
 		& Dropout & Highschool & College \\ \midrule
-		$(\beta_e, \nabla_e)$ & (0.853, 0.165) & (0.956, 0.045) & (0.989,0.008) \\
-		(Min, max) in approximation & (0.712, 0.993) & (0.918, 0.994) & (0.982, 0.994) \\
+		$(\beta_e, \nabla_e)$ & (0.694, 0.542) & (0.904, 0.099) & (0.978,0.015) \\
+		(Min, max) in approximation & (0.230, 0.995) & (0.819, 0.989) & (0.965, 0.991) \\
 		\midrule 
 	\end{tabular} \\ \\ 
 	
@@ -196,7 +193,7 @@ The minimum values for the discount factors on the other hand, indicate that som
 		\multicolumn{4}{l}{Panel (B) Estimation targets} \\ \midrule
 		& Dropout & Highschool & College \\ \midrule
 		Median LW/PI (data) & 4.64 & 30.2 & 112.8 \\ 
-		Median LW/PI (model) & 4.64 & 30.2 & 113.5 %\\
+		Median LW/PI (model) & 4.64 & 30.2 & 112.8 %\\
 %		$[20,40,60,80]$ pctiles of Lorenz curve (data) & $[0, 0.01, 0.6, 3.6]$ & $[0.06, 0.6, 3.0, 11.6]$ & $[0.2, 0.9, 3.3, 10.3]$ \\
 %		$[20,40,60,80]$ pctiles of Lorenz curve (model) & $[0.0, 0.0, 0.5, 3.6]$ & $[0.04, 0.9, 3.7, 11.3]$ & $[0.3, 1.5, 4.0, \phantom{0}9.9]$
 		\\ \midrule 
@@ -206,8 +203,8 @@ The minimum values for the discount factors on the other hand, indicate that som
 		\multicolumn{5}{l}{Panel (C) Non-targeted moments} \\ 
 		& Dropout & Highschool & College & Population \\ \midrule
 		Percent of total wealth (data) & 0.8 & 17.9 & 81.2 & 100 \\
-		Percent of total wealth (model) & 1.4 & 23.8 & 74.9 & 100 \\
-		Avg. annual MPC (model, incl. splurge) & 0.87 & 0.77 & 0.54 & 0.69
+		Percent of total wealth (model) & 12.4 & 18.6 & 69.0 & 100 \\
+		Avg. annual MPC (model, incl. splurge) & 0.79 & 0.78 & 0.54 & 0.69
 		\\ \bottomrule 
 	\end{tabular}
 \end{tabular}
@@ -216,56 +213,7 @@ The minimum values for the discount factors on the other hand, indicate that som
 \end{center}
 \end{table}
 
-%\begin{table}[th]
-%\begin{subtable}[h]{0.9\textwidth}
-%	\centering
-%	\begin{tabular}{lccc}
-%		\multicolumn{4}{l}{Panel (A) Estimated discount factor distributions} \\ 
-%		& Dropout & Highschool & College \\ \midrule
-%		$(\beta_e, \nabla_e)$ & (0.799, 0.228) & (0.937, 0.066) & (0.985,0.012) \\
-%		(Min, max) in approximation & (0.604, 0.995) & (0.881, 0.994) & (0.975, 0.996) \\
-%		\midrule 
-%	\end{tabular} 
-%	\caption{Estimated discount factor distributions for each education group and the minimum and maximum values in the discrete approximation to each of the distributions}
-%	\label{tab:estimBetas_A}
-%\end{subtable}
-%\hfill
-%\begin{subtable}[h]{0.9\textwidth}
-%	\centering	
-%	\begin{tabular}{lccc}
-%		\multicolumn{4}{l}{Panel (B) Estimation targets} \\ \midrule
-%		& Dropout & Highschool & College \\ \midrule
-%		Median LW/PI (data) & 4.64 & 30.2 & 112.8 \\ 
-%		Median LW/PI (model) & 4.64 & 30.2 & 112.8 %\\
-%		%		$[20,40,60,80]$ pctiles of Lorenz curve (data) & $[0, 0.01, 0.6, 3.6]$ & $[0.06, 0.6, 3.0, 11.6]$ & $[0.2, 0.9, 3.3, 10.3]$ \\
-%		%		$[20,40,60,80]$ pctiles of Lorenz curve (model) & $[0.0, 0.0, 0.5, 3.6]$ & $[0.04, 0.9, 3.7, 11.3]$ & $[0.3, 1.5, 4.0, \phantom{0}9.9]$
-%		\\ \midrule 
-%	\end{tabular}
-%	\caption{Targets used in the estimation in addition to the Lorenz points of the liquid wealth distributions shown in Figure~\ref{fig:LorenzPts}}
-%	\label{tab:estimBetas_B}
-%\end{subtable}
-%\hfill
-%\begin{subtable}[h]{0.9\textwidth}
-%	\centering
-%	\begin{tabular}{lcccc}
-%		\multicolumn{5}{l}{Panel (C) Non-targeted moments} \\ 
-%		& Dropout & Highschool & College & Population \\ \midrule
-%		Percent of total wealth (data) & 0.8 & 17.9 & 81.2 & 100 \\
-%		Percent of total wealth (model) & 1.6 & 21.2 & 77.3 & 100 \\
-%		%		Average quarterly MPC (model) & 0.63 & 0.38 & 0.14 & 0.31 \\
-%		Average annual MPC (model, incl. splurge) & 0.88 & 0.79 & 0.57 & 0.72
-%		\\ \bottomrule 
-%	\end{tabular}
-%	\caption{Model implication for moments not targeted in the estimation}
-%	\label{tab:estimBetas_C}
-%\end{subtable}
-%\caption{Estimated discount factor distributions, estimation targets and non-targeted moments.}
-%\label{tab:estimBetas}
-%\end{table}
-
-Panel~B of Tabel~\ref{tab:estimBetas} and Figure~\ref{fig:LorenzPts} show the estimation targets and how well the model manages to fit them. The bottom-right quadrant of Figure~\ref{fig:LorenzPts} also shows how well the model fits the liquid wealth distribution for the population as a whole. The fit is quite close, but the model does produce a population where liquid wealth is slightly more concentrated than in the data. 
-
-Finally, panel~C of Table~\ref{tab:estimBetas} shows that the estimated model produces a wealth distribution across the three education groups that is fairly close to the one in the data. The panel also reports the average marginal propensity to consume within a year after an income shock for each education group. This measure of the annual MPC takes into account the initial splurge factor when an income shock is first received as well as the decisions to consume out of additional income over four quarters after the shock. The average annual MPC for the population as a whole is $0.69$ in the model which is slightly higher than the $0.63$ estimated for Norway by \cite{fagereng_mpc_2021}. 
+There are a few points to note regarding the estimated discount factor distribution for the Dropout group, however. Panel~B of Table~\ref{tab:estimBetas} reports that the median liquid wealth to permanent income ratio for this group is quite low at $4.64$, and the top left quadrant of Figure~\ref{fig:LorenzPts} shows that liquid wealth is very concentrated within this education group, as the bottom 80 percent only hold $3.6$ percent of the wealth within the Dropout group. Hence, the estimated discount factor distribution is centered at a very low value with $\beta_d=0.694$ to get little saving in this group on average, and the distribution is very wide with $\nabla_d=0.542$ to get a distribution where wealth is very concentrated. 
 
 \begin{figure}[th]
 \begin{center}
@@ -274,6 +222,14 @@ Finally, panel~C of Table~\ref{tab:estimBetas} shows that the estimated model pr
 	\label{fig:LorenzPts}
 \end{center}
 \end{figure}
+
+At the upper end of the discount factor distribution for the Dropout group, these estimates would imply a discount factor far above $1$. However, this is not actually the relevant constraint on the maximum discount factors. Instead, the maximum value reported in Panel~A of Table~\ref{tab:estimBetas} is imposed to ensure that the Growth Impatience Condition (GIC) discussed in \cite{carroll2022theoretical}, is always satisfied. This constraint is imposed in the estimation for each education group, but it is only binding for the Dropout group. Thus the estimation can select a large value of $\nabla_d$ without violating the constraint.\footnote{The constraint is imposed by calculating a value of $\beta$ where the GIC holds with equality and setting the upper bound for admissible discount factors to $0.9975 \times$ that value.}
+
+The result is that several of the types in the Dropout group have very low discount factors and are very impatient. In this way, the model fits the feature of the data for the Dropout group that the bottom quintiles do not save at all and do not accumulate any liquid wealth. Very low estimates for discount factors are in line with those obtained in the literature on payday lending.\footnote{See for example \cite{skiba2008payday} who estimate two-week discount rates of $21$ percent and \cite{allcott2021high} who estimate an initial period discount factor between $0.74$ and $0.83$ in a model where a period is eight weeks long. Both of these papers use quasi-hyperbolic preferences, so the estimates are not directly comparable to parameters in our model. Nevertheless, they support the point that very high discount rates are necessary to model the part of the population that takes out payday loans at very high interest rates.} 
+
+Finally, Panel~C of Table~\ref{tab:estimBetas} shows the wealth distribution across the three education groups in the data and in the model. The most patient types in the Dropout group that have discount factors imposed by the GIC-constraint, accumulate a larger share of wealth in the model than they do in the data. Thus, the model overestimates the share of wealth of the Dropout group as a whole in order to produce a liquid wealth distribution within that group that matches the data. The panel also reports the average marginal propensity to consume within a year after an income shock for each education group. This measure of the annual MPC takes into account the initial splurge factor when an income shock is first received as well as the decisions to consume out of additional income over four quarters after the shock. The average annual MPC for the population as a whole is $0.69$ in the model which is slightly higher than the $0.63$ estimated for Norway by \cite{fagereng_mpc_2021}. 
+
+
 
 
 \end{document}	
