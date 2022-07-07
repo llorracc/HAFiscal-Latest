@@ -15,8 +15,8 @@ from HARK.estimation import minimizeNelderMead
 from EstimParameters import init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
      DiscFacCount, CRRA, Splurge, AgentCountTotal, base_dict, figs_dir, UBspell_normal, \
      data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, data_medianLWPI,\
-     data_EducShares, data_WealthShares, Rfree_base
-from EstimAggFiscalModel import AggFiscalType, AggregateDemandEconomy
+     data_EducShares, data_WealthShares, Rfree_base, GICmaxBetas, GICfactor, minBeta
+from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 mystr = lambda x : '{:.2f}'.format(x)
 mystr4 = lambda x : '{:.4f}'.format(x)
 
@@ -182,7 +182,6 @@ def calcMPCbyEd(Agents):
 
     return MPCs(MPCsQ,MPCsA)
 
-
 # =============================================================================
 #     MPCsQ = [0]*(num_types+1)
 #     MPCsA = [0]*(num_types+1)       # Annual MPCs with splurge every Q
@@ -216,6 +215,59 @@ def calcMPCbyEd(Agents):
 # 
 #     return MPCs(MPCsQ,MPCsA,MPCsAalt)
 # # -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+def checkDiscFacDistribution(beta, nabla, educ_type, print_mode=False, print_file=False, filename='DefaultResultsFile.txt'):
+    '''
+    Calculate max and min discount factors in discrete approximation to uniform 
+    distribution of discount factors. Also report if most patient agents satisfies 
+    the growth impatience condition. 
+    
+    Parameters
+    ----------
+    beta : float
+        Central value of the discount factor distribution for this education group.
+    nabla : float
+        Half the width of the discount factor distribution.
+    educ_type : int 
+        Denotes the education type (either 0, 1 or 2). 
+    print_mode : boolean, optional
+        If true, results are printed to the screen. The default is False.
+    print_file : boolean, optional
+        If true, statistics are appended to the file filename. The default is False. 
+    filename : str
+        Filename for printing calculated statistics. The default is DefaultResultsFile.txt.
+    
+    Returns
+    -------
+    dfCheck : namedtuple("betaMin", "betaMax", "GICsatisfied")    
+    betaMin : float
+        Minimum value in discrete approximation to discount factor distribution.
+    betaMax : float
+        Maximum value in discrete approximation to discount factor distribution.
+    GICsatisfied : boolean
+        True if betaMax satisfies the GIC for this education group. 
+    '''
+    DiscFacDstn = Uniform(beta-nabla, beta+nabla).approx(DiscFacCount)
+    betaMin = DiscFacDstn.X[0]
+    betaMax = DiscFacDstn.X[DiscFacCount-1]
+    GICsatisfied = (betaMax < GICmaxBetas[educ_type])
+
+    if print_mode:
+        print('Approximation to beta distribution: betaMin = '+str(round(betaMin,5))
+                          +', betaMax = '+str(round(betaMax,5))+'\n')
+        print('GIC satisfied = '+str(GICsatisfied)+'\n')
+        print('Imposed GIC consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*GICfactor,5))+'\n\n')
+        
+    if print_file:
+        with open(filename, 'a') as resFile: 
+            resFile.write('\tApproximation to beta distribution: betaMin = '+str(round(betaMin,5))
+                          +', betaMax = '+str(round(betaMax,5))+'\n')
+            resFile.write('\tGIC satisfied = '+str(GICsatisfied)+'\n')
+            resFile.write('\tImposed GIC-consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*GICfactor,5))+'\n\n')
+    
+    dfCheck = namedtuple("dfCheck", ["betaMin", "betaMax", "GICsatisfied"])
+    return dfCheck(betaMin, betaMax, GICsatisfied)    
+
 # =============================================================================
 #%% 
 # Make education types
@@ -277,7 +329,7 @@ AggDemandEconomy.saveState()
 output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
 
 
-#%% 
+#%% Objective functions
 # -----------------------------------------------------------------------------
 def betasObjFunc(betas, spreads, target_option=1, print_mode=False, print_file=False, filename='DefaultResultsFile.txt'):
     '''
@@ -322,11 +374,13 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False, print_file=F
     dfs_c = Uniform(beta_c-spread_c, beta_c+spread_c).approx(DiscFacCount)
     dfs = [dfs_d, dfs_h, dfs_c]
 
-    # # Update discount factors of all agents 
-    # for e in range(num_types):
-    #     for b in range(DiscFacCount):
-    #         TypeList[b+e*DiscFacCount].DiscFac = DiscFacDstns[e].X[b]
-    #         TypeList[b+e*DiscFacCount].seed = n
+    # Check GIC for each type:
+    for e in range(num_types):
+        for thedf in range(DiscFacCount):
+            if dfs[e].X[thedf] > GICmaxBetas[e]*GICfactor: 
+                dfs[e].X[thedf] = GICmaxBetas[e]*GICfactor
+            elif dfs[e].X[thedf] < minBeta:
+                dfs[e].X[thedf] = minBeta
 
     # Make a new list of types with updated discount factors 
     TypeListNew = []
@@ -412,10 +466,12 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False, print_file=F
     
     if print_file:
         with open(filename, 'a') as resFile: 
-            resFile.write('Population calculations\n')
+            resFile.write('Population calculations:\n')
             resFile.write('\tMedian LW/PI-ratios = ['+mystr(Stats.medianLWPI[0][0])+', '+ 
                           mystr(Stats.medianLWPI[1][0])+', '+mystr(Stats.medianLWPI[2][0])+']\n')
-            resFile.write('\tLorenz Points = '+str(Stats.LorenzPts)+'\n')
+            resFile.write('\tLorenz Points = ['+str(round(Stats.LorenzPts[0],4))+', '
+                          +str(round(Stats.LorenzPts[1],4))+', '+str(round(Stats.LorenzPts[2],4))+', '
+                          +str(round(Stats.LorenzPts[3],4))+']\n')
             resFile.write('\tWealth shares = '+str(WealthShares)+'\n')
             resFile.write('\tAverage MPCs (incl. splurge) = '+str(MPCs.MPCsA)+'\n')
         
@@ -452,6 +508,13 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
     # random.seed(1234)
 
     dfs = Uniform(beta-spread, beta+spread).approx(DiscFacCount)
+    
+    # Check GIC:
+    for thedf in range(DiscFacCount):
+        if dfs.X[thedf] > GICmaxBetas[educ_type]*GICfactor:
+            dfs.X[thedf] = GICmaxBetas[educ_type]*GICfactor
+        elif dfs.X[thedf] < minBeta:
+            dfs.X[thedf] = minBeta
 
     # Make a new list of types with updated discount factors for the given educ type
     TypeListNewEduc = []
@@ -489,7 +552,7 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
     
     Stats = calcEstimStats(TypeListAll)
     
-    sumSquares = 10*np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
+    sumSquares = 25*np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
     lp = calcLorenzPts(TypeListNewEduc)
     sumSquares += np.sum((np.array(lp) - data_LorenzPts[educ_type])**2)
 #    sumSquares = np.sum((Stats.avgLWPI[educ_type]-data_avgLWPI[educ_type])**2)
@@ -519,23 +582,22 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
             resFile.write('Education group = '+mystr(educ_type)+': beta = '+mystr4(beta)+
                           ', nabla = '+mystr4(spread)+'\n')
             resFile.write('\tMedian LW/PI-ratio = '+mystr(Stats.medianLWPI[educ_type][0])+'\n')
-            resFile.write('\tLorenz Points = '+str(lp)+'\n\n')
+            resFile.write('\tLorenz Points = ['+str(round(lp[0],4))+', '+str(round(lp[1],4))+', '
+                          +str(round(lp[2],4))+', '+str(round(lp[3],4))+']\n')
         
     return distance 
 # -----------------------------------------------------------------------------
 #%% Estimate discount factor distributions separately for each education type
 
+print('Estimating for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_base[0],3))+':\n')
 for edType in [0,1,2]:
     f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
-    # fixedNabla  = 0.4
-    # f_temp = lambda x : betasObjFuncEduc(x[0],fixedNabla, educ_type=edType)
     if edType == 0:
-        initValues = [0.8, 0.23]       # Dropouts
-       # initValues = [0.45]       # Dropouts
+        initValues = [0.7, 0.52]       # Dropouts
     elif edType == 1:
-        initValues = [0.94, 0.06]      # HighSchool
+        initValues = [0.84, 0.16]      # HighSchool
     elif edType == 2:
-        initValues = [0.986, 0.011]     # College
+        initValues = [0.96, 0.03]     # College
     else:
         initValues = [0.95,0.02]
         
@@ -543,30 +605,24 @@ for edType in [0,1,2]:
     print('Finished estimating for education type = '+str(edType)+'. Optimal beta and spread are:')
     print(opt_params) 
     betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = edType, print_mode=True)
-    # betasObjFuncEduc(opt_params[0], fixedNabla, educ_type = edType, print_mode=True)
 
     if edType == 0:
         mode = 'w'      # Overwrite old file...
     else:
         mode = 'a'      # ...but append all results in same file 
-    # with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', mode) as f:
-    with open('../Results/DiscFacEstim_Rfree_'+str(Rfree_base[0])+'_incNB_15.txt', mode) as f:        
+    with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt', mode) as f:        
         outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : opt_params[1]})
-        # outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : fixedNabla})
         f.write(outStr+'\n')
         f.close()
 
 #%% Read in estimates and calculate all results:
-#resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'.txt'
-# resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'_incNB_15.txt'
-resFileStr = '../Results/AllResults_R_'+str(Rfree_base[0])+'_incNB_15.txt'
+print('Calculating for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_base[0],3))+':\n')
+resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
 with open(resFileStr, 'w') as resFile: 
-    resFile.write('Results for CRRA = '+str(CRRA)+' and splurge = '+str(round(Splurge,5))+'\n\n')
+    resFile.write('Results for CRRA = '+str(CRRA)+' and R = '+str(round(Rfree_base[0],3))+'\n\n')
     
 myEstim = [[],[],[]]
-#betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'.txt', 'r')
-# betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_incNB_15.txt', 'r')
-betFile = open('../Results/DiscFacEstim_Rfree_'+str(Rfree_base[0])+'_incNB_15.txt', 'r')
+betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt', 'r')
 readStr = betFile.readline().strip()
 while readStr != '' :
     dictload = eval(readStr)
@@ -574,8 +630,9 @@ while readStr != '' :
     beta = dictload['beta']
     nabla = dictload['nabla']
     myEstim[edType] = [beta,nabla]
-    readStr = betFile.readline().strip()
     betasObjFuncEduc(beta, nabla, educ_type = edType, print_mode=True, print_file=True, filename=resFileStr)
+    checkDiscFacDistribution(beta, nabla, edType, print_mode=True, print_file=True, filename=resFileStr)
+    readStr = betFile.readline().strip()
 betFile.close()
 
 betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
@@ -584,15 +641,57 @@ betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
 
 
 #%% Test values:
-edType = 0
-testVals = [0.5, 0.5]
+edType = 1
+testVals = [0.9041911231898487, 0.09910798026727206] # Estimates for edType=1, when CRRA=2.0
+
+checkDiscFacDistribution(testVals[0], testVals[1], edType, print_mode=True)
 betasObjFuncEduc(testVals[0], testVals[1], educ_type = edType, print_mode=True)
 
-        
+
+#%% Read in estimates and save resulting discount factor distributions:
+myEstim = [[],[],[]]
+betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt', 'r')
+readStr = betFile.readline().strip()
+while readStr != '' :
+    dictload = eval(readStr)
+    edType = dictload['EducationGroup']
+    beta = dictload['beta']
+    nabla = dictload['nabla']
+    myEstim[edType] = [beta,nabla]
+    readStr = betFile.readline().strip()
+betFile.close()
+
+outFileStr = '../Results/DiscFacDistributions_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
+outFile = open(outFileStr, 'w')
+
+for e in [0,1,2]:
+    dfs = Uniform(myEstim[e][0]-myEstim[e][1], myEstim[e][0]+myEstim[e][1]).approx(DiscFacCount)
+    
+    # Check GIC:
+    for thedf in range(DiscFacCount):
+        if dfs.X[thedf] > GICmaxBetas[e]*GICfactor:
+            dfs.X[thedf] = GICmaxBetas[e]*GICfactor
+        elif dfs.X[thedf] < minBeta:
+            dfs.X[thedf] = minBeta
+    theDFs = np.round(dfs.X,4)
+    outStr = repr({'EducationGroup' : e, 'betaDistr' : theDFs.tolist()})
+    outFile.write(outStr+'\n')
+outFile.close()
+
+
+
+
+
+
+
+
+
+
+      
 #%% Temp test code to try different parameters
 estimates_d = [0.6, 0.2 ]  # Dropouts only 
 estimates_h = [0.6, 0.15]  # Highschool only
-estimates_c = [0.98525333, 0.01241598] # College only
+estimates_c = [0.98525333, 0.04467869672522787] # College only
 
 betasObjFuncEduc(estimates_h[0], estimates_h[1], educ_type = 1, print_mode=True)
 betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \

@@ -1,3 +1,0 @@
-{'EducationGroup': 2, 'beta': 0.9171559736601564, 'nabla': 0.08749229646020577}
-{'EducationGroup': 1, 'beta': 0.6713603156858141, 'nabla': 0.36368823234835834}
-{'EducationGroup': 0, 'beta': 0.3497607421875, 'nabla': 0.35}
