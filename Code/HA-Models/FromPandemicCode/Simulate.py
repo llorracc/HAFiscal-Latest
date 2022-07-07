@@ -16,7 +16,7 @@ def Simulate(Run_Dict,figs_dir,Parametrization='Baseline'):
     convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
     data_EducShares, max_recession_duration, num_experiment_periods,\
     recession_changes, UI_changes, recession_UI_changes,\
-    TaxCut_changes, recession_TaxCut_changes, Check_changes, recession_Check_changes] = returnParameters(Parametrization='Baseline',OutputFor='_Main.py')
+    TaxCut_changes, recession_TaxCut_changes, Check_changes, recession_Check_changes] = returnParameters(Parametrization=Parametrization,OutputFor='_Main.py')
               
     
     mystr = lambda x : '{:.2f}'.format(x)

@@ -4,10 +4,22 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     from HARK.distribution import Uniform
     from OtherFunctions import loadPickle, getSimulationDiff
     
+<<<<<<< HEAD
+=======
+    
+    from EstimParameters import data_EducShares, Urate_normal_d, Urate_normal_h, Urate_normal_c,\
+    Uspell_normal, UBspell_normal, PopGroFac, PermGroFacAgg, IncUnemp,\
+    pLvlInitMean_d, pLvlInitMean_h, pLvlInitMean_c,\
+    pLvlInitStd_d, pLvlInitStd_h, pLvlInitStd_c,\
+    PermGroFac_base_d, PermGroFac_base_h, PermGroFac_base_c,\
+    TranShkStd, PermShkStd, LivPrb_base
+    
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
 
     CRRA = 1.0
     Rfree_base = [1.01]
     Rspell = 6            # Expected length of recession, in quarters. If R_shared = True, must be an integer
+<<<<<<< HEAD
     betas_txt_location = '../Results/DiscFacEstim_CRRA_1.0_incNB_15.txt' 
     Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_1.0.txt'    
     
@@ -15,6 +27,19 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     if Parametrization == 'CRRA2' or Parametrization == 'CRRA2_PVSame':
         CRRA = 2.0
         betas_txt_location = '../Results/DiscFacEstim_CRRA_2.0_incNB_15.txt' 
+=======
+    betas_txt_location = '../Results/DiscFacEstim_baseline.txt' 
+    Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_1.0.txt'
+    IncUnempNoBenefits = 0.5   # Unemployment income when benefits run out (proportion of permanent income)
+    ADelasticity = 0.3      
+    
+    # make changes according to robustness run
+    if Parametrization == 'ADElas' or Parametrization == 'ADElas_PVSame':
+        ADelasticity = 0.3
+    if Parametrization == 'CRRA2' or Parametrization == 'CRRA2_PVSame':
+        CRRA = 2.0
+        betas_txt_location = '../Results/DiscFacEstim_CRRA_2.0.txt' 
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
         Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_2.0.txt'  
     elif Parametrization == 'CRRA3' or Parametrization == 'CRRA3_PVSame':
         CRRA = 3.0
@@ -28,6 +53,11 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         betas_txt_location = '../Results/DiscFacEstim_Rfree_1.015_incNB_15.txt'
     elif Parametrization == 'Rspell_4' or Parametrization == 'Rspell_4_PVSame':
         Rspell = 4
+<<<<<<< HEAD
+=======
+    elif Parametrization == 'LowerUBnoB' or Parametrization == 'LowerUBnoB_PVSame':
+        IncUnempNoBenefits = 0.30
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
     
     myEstim = [[],[],[]]
     f = open(betas_txt_location, 'r')
@@ -50,17 +80,34 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     
     
     if Parametrization == 'Baseline_PVSame':
+<<<<<<< HEAD
         figs_dir_FullRun = './Figures/FullRun/'           
+=======
+        figs_dir_FullRun = './Figures/FullRun/'
+    if Parametrization == 'ADElas_PVSame':
+        figs_dir_FullRun = './Figures/ADElas/'           
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
     elif Parametrization == 'CRRA2_PVSame':
         figs_dir_FullRun = './Figures/CRRA2.0_Robustnes/'
     elif Parametrization == 'CRRA3_PVSame':
         figs_dir_FullRun = './Figures/CRRA3.0_Robustnes/'
     elif Parametrization == 'Rfree_1005_PVSame':
+<<<<<<< HEAD
         figs_dir_FullRun = './Figures/Rfree_1005_Robustnes/'
     elif Parametrization == 'Rfree_1015_PVSame':
         figs_dir_FullRun = './Figures/Rfree_1015_Robustnes/'
     elif Parametrization == 'Rspell_4_PVSame':
         figs_dir_FullRun = './Figures/Rspell_4_Robustnes/'
+=======
+        figs_dir_FullRun = './Figures/Rfree_1005/'
+    elif Parametrization == 'Rfree_1015_PVSame':
+        figs_dir_FullRun = './Figures/Rfree_1015/'
+    elif Parametrization == 'Rspell_4_PVSame':
+        figs_dir_FullRun = './Figures/Rspell_4/'
+    elif Parametrization == 'LowerUBnoB_PVSame':
+        figs_dir_FullRun = './Figures/LowerUBnoB/'
+
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
 
         
     if Parametrization.find('PVSame')>0:
@@ -77,6 +124,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     else:
         TaxCutAdjFactor = 1
         CheckAdjFactor = 1
+<<<<<<< HEAD
         
     print('CRRA = ',CRRA)
     print('Rfree_base = ',Rfree_base)
@@ -87,6 +135,22 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     
     print('TaxCutAdjFactor = ',TaxCutAdjFactor)
     print('CheckAdjFactor = ',CheckAdjFactor)
+=======
+    
+    if not OutputFor == '_Model.py':
+        print('CRRA = ',CRRA)
+        print('Rfree_base = ',Rfree_base)
+        print('Rspell = ',Rspell)
+        
+        print('Splurge = ',Splurge)
+        print('beta/nablas = ',myEstim)
+        
+        print('TaxCutAdjFactor = ',TaxCutAdjFactor)
+        print('CheckAdjFactor = ',CheckAdjFactor)
+        
+        print('IncUnempNoBenefits = ', IncUnempNoBenefits)
+        print('ADelasticity = ', ADelasticity)
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
        
     # # Targets in the estimation of the discount factor distributions for each 
     # # education level. 
@@ -103,11 +167,10 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     # # From SCF 2004: Weighted median of liquid wealth to permanent income ratio
     # data_medianLWPI = np.array([1.16, 7.55, 28.2])*4 # weighted median of fractions in percent
     
-    # # Population share of each type
-    data_EducShares = [0.093, 0.527, 0.38] # Proportion of dropouts, HS grads, college types, SCF 2004 
-    # # Wealth share of each type 
-    # data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total wealth of dropouts, HS grads, college types, SCF 2004 
     
+
+    
+
     # Parameters concerning the distribution of discount factors
     DiscFacMeanD = myEstim[0][0]  # Mean intertemporal discount factor for dropout types
     DiscFacMeanH = myEstim[1][0]  # Mean intertemporal discount factor for high school types
@@ -124,15 +187,9 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpreadC, DiscFacMeanC+DiscFacSpreadC).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
     
-    # Parameters concerning Markov transition matrix
-    #https://www.statista.com/statistics/232942/unemployment-rate-by-level-of-education-in-the-us/
-    Urate_normal_d = 0.085       # Unemployment rate in normal times, dropouts 2004
-    Urate_normal_h = 0.044       # Unemployment rate in normal times, highschooler+some college 2004
-    Urate_normal_c = 0.027       # Unemployment rate in normal times, college 2004
     
-    Uspell_normal = 1.5          # Average duration of unemployment spell in normal times, in quarters
-    UBspell_normal = 2           # Average duration of unemployment benefits in normal times, in quarters
-    
+
+  
     # Recession
     Urate_recession_d = 2 * Urate_normal_d # Unemployment rate in recession
     Urate_recession_h = 2 * Urate_normal_h 
@@ -157,22 +214,14 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     
     # UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
  
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
 
     
-    # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
-    PopGroFac = 1.0         #1.01**0.25  # Population growth factor
-    PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
-    IncUnemp = 0.3              # Unemployment benefits replacement rate (proportion of permanent income)
-    IncUnempNoBenefits = 0.15   # Unemployment income when benefits run out (proportion of permanent income)
-    
-    # Parameters concerning the initial distribution of permanent income 
-    pLvlInitMean_d = np.log(6.2)   # Average quarterly permanent income of "newborn" HS dropout ($1000)
-    pLvlInitMean_h = np.log(11.1)  # Average quarterly permanent income of "newborn" HS graduate ($1000)
-    pLvlInitMean_c = np.log(14.5)  # Average quarterly permanent income of "newborn" HS  ($1000)
-    pLvlInitStd_d  = 0.32          # Standard deviation of initial log permanent income 
-    pLvlInitStd_h  = 0.42          # Standard deviation of initial log permanent income 
-    pLvlInitStd_c  = 0.53          # Standard deviation of initial log permanent income 
-    
+
     # Parameters concerning grid sizes: assets, permanent income shocks, transitory income shocks
     aXtraMin = 0.001        # Lowest non-zero end-of-period assets above minimum gridpoint
     aXtraMax = 40           # Highest non-zero end-of-period assets above minimum gridpoint
@@ -303,21 +352,18 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     MrkvArray_recessionUI_h    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_h)
     MrkvArray_recessionUI_c    = makeFullMrkvArray(MacroMrkvArray_recessionUI, CondMrkvArrays_recessionUI_c)
     
-    # Define permanent income growth rates
-    # PermGroFac_base =   [1.0]
-    PermGroFac_base_d = [1.0 + 0.01421/4]  # From Pandemic paper: avg growth rates during 
-    PermGroFac_base_h = [1.0 + 0.01812/4]  # working life for each education group 
-    PermGroFac_base_c = [1.0 + 0.01958/4]
     
-    # # Define the permanent and transitory shocks 
-    # TranShkStd = [0.1]
-    # PermShkStd = [0.05]
-    # Variances from Sticky expectations paper: 
-    TranShkStd = [np.sqrt(0.12)]
-    PermShkStd = [np.sqrt(0.003)]
     
+<<<<<<< HEAD
     
     LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
+=======
+
+    
+
+    
+    
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
     # find intial distribution of states for each education type
     vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
     dist_d = np.abs(np.abs(vals_d) - 1.)
@@ -506,7 +552,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     # Parameters for AggregateDemandEconomy economy
     intercept_prev = np.ones((num_base_MrkvStates,num_base_MrkvStates ))    # Intercept of aggregate savings function
     slope_prev = np.zeros((num_base_MrkvStates,num_base_MrkvStates ))       # Slope of aggregate savings function
-    ADelasticity = 0.5                                                      # Elasticity of productivity to consumption
+                                                    # Elasticity of productivity to consumption
     
     num_max_iterations_solvingAD = 15
     convergence_tol_solvingAD = 1E-4

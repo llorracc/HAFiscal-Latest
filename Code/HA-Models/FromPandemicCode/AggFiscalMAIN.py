@@ -10,11 +10,21 @@ from Output_Results import Output_Results
 #%%
 
 
+<<<<<<< HEAD
 Run_Main            = False
 Run_EqualPVs        = True
 Run_CRRA_robustness = False
 Run_Rfree_robustness= False
 Run_Rspell_robustness=False
+=======
+Run_Main                = False
+Run_EqualPVs            = False
+Run_ADElas_robustness   = False
+Run_CRRA_robustness     = True
+Run_Rfree_robustness    = False
+Run_Rspell_robustness   = False
+Run_LowerUBnoB          = False
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
 
 
 Run_Dict = dict()
@@ -36,11 +46,14 @@ if Run_Main:
 
     figs_dir = './Figures/FullRun/'    
     Simulate(Run_Dict,figs_dir,Parametrization='Baseline')
+<<<<<<< HEAD
     
     Output_Results('./Figures/FullRun/','./Figures/','./Tables/',Parametrization='Baseline')
 
+=======
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
     
-#%% Execute PV Same run
+    Output_Results('./Figures/FullRun/','./Figures/','./Tables/',Parametrization='Baseline')
     
 if Run_EqualPVs:
         
@@ -49,7 +62,24 @@ if Run_EqualPVs:
     figs_dir = './Figures/FullRun_PVSame/'
     Simulate(Run_Dict,figs_dir,Parametrization='Baseline_PVSame')
     Output_Results('./Figures/FullRun_PVSame/','./Figures/FullRun_PVSame/','./Tables/',Parametrization='Baseline_PVSame')
+<<<<<<< HEAD
+=======
 
+#%% 
+if Run_ADElas_robustness:
+    
+    Run_Dict['Run_1stRoundAD']          = False
+
+    figs_dir = './Figures/ADElas/'
+    Simulate(Run_Dict,figs_dir,Parametrization='ADElas')
+    Output_Results('./Figures/ADElas/','./Figures/Robustness_Figs/ADElas/','./Tables/ADElas/',Parametrization='ADElas')
+     
+    figs_dir = './Figures/ADElas_PVSame/'
+    Simulate(Run_Dict,figs_dir,Parametrization='ADElas_PVSame')
+    Output_Results('./Figures/ADElas_PVSame/','./Figures/Robustness_Figs/ADElas_PVSame/','./Tables/ADElas_PVSame/',Parametrization='ADElas_PVSame')
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
+
+    
     
 #%% Execute robustness run
         
@@ -65,6 +95,7 @@ if Run_CRRA_robustness:
     Simulate(Run_Dict,figs_dir,Parametrization='CRRA2_PVSame')
     Output_Results('./Figures/CRRA2.0_Robustnes_PVSame/','./Figures/Robustness_Figs/CRRA2_PVsame/','./Tables/CRRA2_PVsame/',Parametrization='CRRA2_PVSame')
 
+<<<<<<< HEAD
     figs_dir = './Figures/CRRA3.0_Robustnes/'
     Simulate(Run_Dict,figs_dir,Parametrization='CRRA3')
     Output_Results('./Figures/CRRA3.0_Robustnes/','./Figures/Robustness_Figs/CRRA3/','./Tables/CRRA3/',Parametrization='CRRA3')
@@ -72,6 +103,15 @@ if Run_CRRA_robustness:
     figs_dir = './Figures/CRRA3.0_Robustnes_PVSame/'
     Simulate(Run_Dict,figs_dir,Parametrization='CRRA3_PVSame')
     Output_Results('./Figures/CRRA3.0_Robustnes_PVSame/','./Figures/Robustness_Figs/CRRA3_PVsame/','./Tables/CRRA3_PVsame/',Parametrization='CRRA3_PVSame')
+=======
+    #figs_dir = './Figures/CRRA3.0_Robustnes/'
+    #imulate(Run_Dict,figs_dir,Parametrization='CRRA3')
+    #Output_Results('./Figures/CRRA3.0_Robustnes/','./Figures/Robustness_Figs/CRRA3/','./Tables/CRRA3/',Parametrization='CRRA3')
+     
+    #figs_dir = './Figures/CRRA3.0_Robustnes_PVSame/'
+    #Simulate(Run_Dict,figs_dir,Parametrization='CRRA3_PVSame')
+    #Output_Results('./Figures/CRRA3.0_Robustnes_PVSame/','./Figures/Robustness_Figs/CRRA3_PVsame/','./Tables/CRRA3_PVsame/',Parametrization='CRRA3_PVSame')
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
 
     
 if Run_Rfree_robustness:
@@ -94,6 +134,21 @@ if Run_Rfree_robustness:
     Simulate(Run_Dict,figs_dir,Parametrization='Rfree_1015_PVSame')
     Output_Results('./Figures/Rfree_1015_PVSame/','./Figures/Robustness_Figs/Rfree_1015_PVSame/','./Tables/Rfree_1015_PVSame/',Parametrization='Rfree_1015_PVSame')
 
+<<<<<<< HEAD
+
+if Run_Rspell_robustness:
+    
+    Run_Dict['Run_1stRoundAD']          = False
+
+    figs_dir = './Figures/Rspell_4/'
+    Simulate(Run_Dict,figs_dir,Parametrization='Rspell_4')
+    Output_Results('./Figures/Rspell_4/','./Figures/Robustness_Figs/Rspell_4/','./Tables/Rspell_4/',Parametrization='Rspell_4')
+     
+    figs_dir = './Figures/Rspell_4_PVSame/'
+    Simulate(Run_Dict,figs_dir,Parametrization='Rspell_4_PVSame')
+    Output_Results('./Figures/Rspell_4_PVSame/','./Figures/Robustness_Figs/Rspell_4_PVSame/','./Tables/Rspell_4_PVSame/',Parametrization='Rspell_4_PVSame')
+=======
+>>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
 
 if Run_Rspell_robustness:
     
@@ -107,4 +162,12 @@ if Run_Rspell_robustness:
     Simulate(Run_Dict,figs_dir,Parametrization='Rspell_4_PVSame')
     Output_Results('./Figures/Rspell_4_PVSame/','./Figures/Robustness_Figs/Rspell_4_PVSame/','./Tables/Rspell_4_PVSame/',Parametrization='Rspell_4_PVSame')
 
-    
+
+if Run_LowerUBnoB:
+
+    Run_Dict['Run_1stRoundAD']          = False
+
+    figs_dir = './Figures/LowerUBnoB/'
+    Simulate(Run_Dict,figs_dir,Parametrization='LowerUBnoB')
+    Output_Results('./Figures/LowerUBnoB/','./Figures/Robustness_Figs/LowerUBnoB/','./Tables/LowerUBnoB/',Parametrization='LowerUBnoB')
+   
