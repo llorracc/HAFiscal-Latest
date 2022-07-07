@@ -6,7 +6,6 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     # Make folders for output   
     try:
         os.mkdir(fig_dir)
-        os.mkdir(table_dir)
     except OSError:
         print ("Creation of the directory %s failed" % fig_dir)
     else:

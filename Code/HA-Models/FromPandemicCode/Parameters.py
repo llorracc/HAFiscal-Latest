@@ -4,47 +4,35 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     from HARK.distribution import Uniform
     from OtherFunctions import loadPickle, getSimulationDiff
     
-<<<<<<< HEAD
-=======
+
     
     from EstimParameters import data_EducShares, Urate_normal_d, Urate_normal_h, Urate_normal_c,\
     Uspell_normal, UBspell_normal, PopGroFac, PermGroFacAgg, IncUnemp,\
     pLvlInitMean_d, pLvlInitMean_h, pLvlInitMean_c,\
     pLvlInitStd_d, pLvlInitStd_h, pLvlInitStd_c,\
     PermGroFac_base_d, PermGroFac_base_h, PermGroFac_base_c,\
-    TranShkStd, PermShkStd, LivPrb_base
+    TranShkStd, PermShkStd, LivPrb_base, num_types
     
->>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
 
-    CRRA = 1.0
+    CRRA = 2.0
     Rfree_base = [1.01]
     Rspell = 6            # Expected length of recession, in quarters. If R_shared = True, must be an integer
-<<<<<<< HEAD
-    betas_txt_location = '../Results/DiscFacEstim_CRRA_1.0_incNB_15.txt' 
-    Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_1.0.txt'    
-    
-    # make changes according to robustness run
-    if Parametrization == 'CRRA2' or Parametrization == 'CRRA2_PVSame':
-        CRRA = 2.0
-        betas_txt_location = '../Results/DiscFacEstim_CRRA_2.0_incNB_15.txt' 
-=======
-    betas_txt_location = '../Results/DiscFacEstim_baseline.txt' 
-    Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_1.0.txt'
+    betas_txt_location = '../Results/DiscFacEstim_CRRA_2.0_R_1.01.txt' 
+    Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_2.0.txt'
     IncUnempNoBenefits = 0.5   # Unemployment income when benefits run out (proportion of permanent income)
     ADelasticity = 0.3      
     
     # make changes according to robustness run
     if Parametrization == 'ADElas' or Parametrization == 'ADElas_PVSame':
         ADelasticity = 0.3
-    if Parametrization == 'CRRA2' or Parametrization == 'CRRA2_PVSame':
+    if Parametrization == 'CRRA1' or Parametrization == 'CRRA1_PVSame':
         CRRA = 2.0
         betas_txt_location = '../Results/DiscFacEstim_CRRA_2.0.txt' 
->>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
-        Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_2.0.txt'  
+        Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_1.0.txt'  
     elif Parametrization == 'CRRA3' or Parametrization == 'CRRA3_PVSame':
         CRRA = 3.0
         betas_txt_location = '../Results/DiscFacEstim_CRRA_3.0_incNB_15.txt'
-        Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_2.0.txt'  
+        Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_3.0.txt'  
     elif Parametrization == 'Rfree_1005' or Parametrization == 'Rfree_1005_PVSame':
         Rfree_base = [1.005]
         betas_txt_location = '../Results/DiscFacEstim_Rfree_1.005_incNB_15.txt'  
@@ -53,11 +41,8 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         betas_txt_location = '../Results/DiscFacEstim_Rfree_1.015_incNB_15.txt'
     elif Parametrization == 'Rspell_4' or Parametrization == 'Rspell_4_PVSame':
         Rspell = 4
-<<<<<<< HEAD
-=======
     elif Parametrization == 'LowerUBnoB' or Parametrization == 'LowerUBnoB_PVSame':
         IncUnempNoBenefits = 0.30
->>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
     
     myEstim = [[],[],[]]
     f = open(betas_txt_location, 'r')
@@ -79,26 +64,15 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     Splurge = dictload['splurge']
     
     
-    if Parametrization == 'Baseline_PVSame':
-<<<<<<< HEAD
-        figs_dir_FullRun = './Figures/FullRun/'           
-=======
-        figs_dir_FullRun = './Figures/FullRun/'
+    if Parametrization == 'CRRA2_PVSame':
+        figs_dir_FullRun = './Figures/CRRA2/'
     if Parametrization == 'ADElas_PVSame':
         figs_dir_FullRun = './Figures/ADElas/'           
->>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
     elif Parametrization == 'CRRA2_PVSame':
         figs_dir_FullRun = './Figures/CRRA2.0_Robustnes/'
     elif Parametrization == 'CRRA3_PVSame':
         figs_dir_FullRun = './Figures/CRRA3.0_Robustnes/'
     elif Parametrization == 'Rfree_1005_PVSame':
-<<<<<<< HEAD
-        figs_dir_FullRun = './Figures/Rfree_1005_Robustnes/'
-    elif Parametrization == 'Rfree_1015_PVSame':
-        figs_dir_FullRun = './Figures/Rfree_1015_Robustnes/'
-    elif Parametrization == 'Rspell_4_PVSame':
-        figs_dir_FullRun = './Figures/Rspell_4_Robustnes/'
-=======
         figs_dir_FullRun = './Figures/Rfree_1005/'
     elif Parametrization == 'Rfree_1015_PVSame':
         figs_dir_FullRun = './Figures/Rfree_1015/'
@@ -107,7 +81,6 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     elif Parametrization == 'LowerUBnoB_PVSame':
         figs_dir_FullRun = './Figures/LowerUBnoB/'
 
->>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
 
         
     if Parametrization.find('PVSame')>0:
@@ -124,18 +97,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     else:
         TaxCutAdjFactor = 1
         CheckAdjFactor = 1
-<<<<<<< HEAD
-        
-    print('CRRA = ',CRRA)
-    print('Rfree_base = ',Rfree_base)
-    print('Rspell = ',Rspell)
-    
-    print('Splurge = ',Splurge)
-    print('beta/nablas = ',myEstim)
-    
-    print('TaxCutAdjFactor = ',TaxCutAdjFactor)
-    print('CheckAdjFactor = ',CheckAdjFactor)
-=======
+
     
     if not OutputFor == '_Model.py':
         print('CRRA = ',CRRA)
@@ -150,7 +112,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         
         print('IncUnempNoBenefits = ', IncUnempNoBenefits)
         print('ADelasticity = ', ADelasticity)
->>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
+
        
     # # Targets in the estimation of the discount factor distributions for each 
     # # education level. 
@@ -187,7 +149,18 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpreadC, DiscFacMeanC+DiscFacSpreadC).approx(DiscFacCount)
     DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
     
+    # Calculate max beta values for each education group where GIC holds with equality: 
+    GICmaxBetas = [(PermGroFac_base_d[0]**CRRA)/Rfree_base[0], (PermGroFac_base_h[0]**CRRA)/Rfree_base[0], 
+                       (PermGroFac_base_c[0]**CRRA)/Rfree_base[0]]
+    GICfactor = 0.9975
+    minBeta = 0.01
     
+    for e in range(num_types):
+        for thedf in range(DiscFacCount):
+            if DiscFacDstns[e].X[thedf] > GICmaxBetas[e]*GICfactor: 
+                DiscFacDstns[e].X[thedf] = GICmaxBetas[e]*GICfactor
+            elif DiscFacDstns[e].X[thedf] < minBeta:
+                DiscFacDstns[e].X[thedf] = minBeta
 
   
     # Recession
@@ -214,13 +187,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     
     # UpdatePrb = 0.25    # probability of updating macro state (when sticky expectations is on)
  
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
-
-    
+  
 
     # Parameters concerning grid sizes: assets, permanent income shocks, transitory income shocks
     aXtraMin = 0.001        # Lowest non-zero end-of-period assets above minimum gridpoint
@@ -354,16 +321,9 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     
     
     
-<<<<<<< HEAD
-    
-    LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
-=======
+  
 
-    
 
-    
-    
->>>>>>> 6837eb2d4b994634dfb39ed3ccce08c57c788efb
     # find intial distribution of states for each education type
     vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
     dist_d = np.abs(np.abs(vals_d) - 1.)
