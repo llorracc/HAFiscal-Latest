@@ -5,17 +5,52 @@
 \section{Robustness}
 \label{sec:robustness}
 
-In this section we analyze how sensitive our results are to some of the parameters in the model. In particular, we focus on the degree of risk aversion and the interest rate. These parameters respectively influence the incentive to save through the strength of a precautionary saving motive and through the returns obtained on saving. The aim is to alter these incentives while maintaining the requirement that the distributions of liquid wealth in each education group matches the distribution in the data. Our procedure is therefore to alter the parameter of interest and to repeat the estimation of the degree of `splurge' spending in consumption and the distributions of discount factors within each education group. We then compute new results using these updated estimates. 
+In this section we analyze how sensitive our results are to some of the parameters in the model. In particular, we focus on parameters that heavily influence consumers' incentives to save. These parameters are the interest rate that affects the returns on saving, and the degree of risk aversion and the replacement rates when unemployed with or without benefits that affect the strength of a precautionary saving motive. The aim is to alter these incentives while maintaining the requirement that the distributions of liquid wealth in each education group matches the distributions in the data. Hence, in each case, we reestimate the distributions of discount factors in each education group (and, if necessary, the degree of `splurge' spending in consumption). The aim is thus to compute new results for a model with different parameters that also fits data on the distribution of liquid wealth. 
 
-\subsection{Increasing risk aversion} 
+\subsection{Changing the interest rate}
+\label{sec:robust_R} 
+In our baseline calibration, the interest rate is set to $1$ percent per quarter. Here we consider the impact on our results of increasing or decreasing this value. Changes to the U.S. interest rate do not affect the estimation of the splurge-parameter $\varsigma$. However, before we can calculate updated results for a different interest rate, the distribution of discount factors within each education group must be reestimated for the model to continue to match the liquid wealth distributions. 
+
+\subsubsection{Discount factor distributions with different interest rates}
+\label{sec:robust_R_estim}
+
+Table~\ref{tab:robustness_R} shows the values we obtain for the discount factor distributions when we change the quarterly interest rate by either decreasing it to $0.5$ percent or increasing it to $1.5$ percent. In both cases, the estimation can match the median liquid wealth to permanent income ratios for each education group reported in Panel~B of Table~\ref{tab:estimBetas} exactly. 
+
+\begin{table}[t]
+\begin{center}
+	\begin{tabular}{lc|cccccc} 
+		\toprule
+		& & \multicolumn{2}{c}{Dropout} & \multicolumn{2}{c}{Highschool} & \multicolumn{2}{c}{College} \\ \midrule 
+		& Splurge & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ \\ \midrule 
+		$R = 1.005$ & 0.307 & 0.701 & 0.520 & 0.909 & 0.099 & 0.983 & 0.014 \\
+		$R = 1.01$ (baseline) & 0.307 & 0.694 & 0.542 & 0.904 & 0.099 & 0.978 & 0.015 \\ 
+		$R = 1.015$ & 0.307 & 0.691 & 0.542 & 0.899 & 0.099 & 0.973 & 0.016 
+		\\ \bottomrule 
+	\end{tabular}
+\end{center}
+\caption{Estimates of the Splurge and $(\beta,\nabla)$ for each education group for different values of the interest rate $R$.}
+\label{tab:robustness_R}
+\end{table}
+
+The first row of Table~\ref{tab:robustness_R} shows the estimated $\beta_e$ and $\nabla_e$ for the lower interest rate of $0.5$ percent per quarter. With a lower interest rate and an unchanged discount factor distribution, consumers would tend to substitute away from saving and towards current consumption. They would therefore accumulate less wealth leading to a lower median liquid wealth to permanent income ratio. In all education groups we therefore see that the estimated discount factor distributions are centered around higher values of $\beta$ to ensure that the model still matches the median liquid wealth to permanent income ratio in the data. An increase in patience cancels out the effect of the lower interest rate on median saving. Similarly, in the third row, we see the opposite effect when the interest rate is increased to $1.5$ percent.  
+
+Figure~\ref{fig:LorenzPts_robustness_R} in Appendix~\ref{app:DF_R} shows that the reestimated model also matches the liquid wealth distributions for each of these values of the interest rate. From Table~\ref{tab:robustness_R} we see that the values of $\nabla_e$ for the three education groups do not need to change much for this to be the case. 
+
+\subsubsection{Results for different interest rates}
+\label{sec:robust_R_results}
+
+[Ivan: fill out these results]
+
+
+\subsection{Changing risk aversion} 
 \label{sec:robust_gamma} 
 
-In our baseline calibration consumers are have log-preferences over consumption and hence have a risk aversion of $\gamma=1$. It is quite common in macroeconomic models to use higher degrees of risk aversion, so here we investigate how alternative values of $\gamma$ would influence our results. The first thing to note is that, in our model, consumers are ex-ante heterogeneous in that they belong to different education groups and have different discount factors. Heterogeneity in discount factors is thus the only device we use to obtain a model where the distribution of liquid wealth can match the data. Thus, when we change risk aversion, the change applies equally to all different types. For the model to continue to match liquid wealth, the distribution of discount factors within each education group must be reestimated. 
+In our baseline calibration consumers have a risk aversion of $\gamma=2$ which is quite common in macroeconomic models. Here we investigate how alternative values of $\gamma$ would influence our results. Again, we reestimate the distribution of discount factors within each education group, but in this case we also reestimate the degree of `splurge' spending in consumption. 
 
-\subsubsection{Estimating discount factor distributions with higher risk aversion}
+\subsubsection{Discount factor distributions with different risk aversion}
 \label{sec:robust_gamma_estim}
 
-Table~\ref{tab:robustness_gamma} displays the values we obtain for the splurge and the discount factor distributions when we increase $\gamma$ to $2$ and $3$. The first result is that the splurge is not very sensitive to the degree of risk aversion. The splurge controls the degree of spending that consumers do before considering the trade-off involved in optimally allocating spending over time. Thus a parameter that affects that trade-off does not have a big influence on that parameter. 
+Table~\ref{tab:robustness_gamma} displays the values we obtain for the splurge and the discount factor distributions when we change $\gamma$ to $1$ and $3$. The table shows that the splurge is not very sensitive to the degree of risk aversion. The splurge controls the degree of spending that consumers do before considering the trade-off involved in optimally allocating spending over time and across different future states of the world. Risk aversion affects that trade-off, but does not have a big influence on a parameter that controls spending that is independent of that problem. 
 
 \begin{table}[t]
 \begin{center}
@@ -23,9 +58,9 @@ Table~\ref{tab:robustness_gamma} displays the values we obtain for the splurge a
 	\toprule
 	& & \multicolumn{2}{c}{Dropout} & \multicolumn{2}{c}{Highschool} & \multicolumn{2}{c}{College} \\ \midrule 
 	& Splurge & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ \\ \midrule 
-	$\gamma = 1.0$ (baseline) & 0.314 & 0.799 & 0.228 & 0.937 & 0.066 & 0.985 & 0.012 \\ 
-	$\gamma = 2.0$ & 0.307 & 0.551 & $0.5^*$ & 0.834 & 0.181 & 0.963 & 0.036 \\
-	$\gamma = 3.0$ & 0.304 & 0.350 & $0.35^*$ & 0.671 & 0.364 & 0.917 & 0.087 
+	$\gamma = 1.0$ & 0.314 & 0.671 & 0.464 & 0.948 & 0.121 & 0.992 & 0.017 \\ 
+	$\gamma = 2.0$ (baseline) & 0.307 & 0.694 & 0.542 & 0.904 & 0.099 & 0.978 & 0.015 \\
+	$\gamma = 3.0$ & 0.304 & 0.565 & 0.749 & 0.843 & 0.163 & 0.964 & 0.027 
 	\\ \bottomrule 
 \end{tabular}
 \end{center}
@@ -33,29 +68,77 @@ Table~\ref{tab:robustness_gamma} displays the values we obtain for the splurge a
 \label{tab:robustness_gamma}
 \end{table}
 
-Furthermore, the last four columns show results for the Highschool and College groups that are quite intuitive. Increasing risk aversion for all types within an education group makes the precautionary saving motive stronger for all consumers in that group. Ceteris paribus consumers would then increase the amount of liquid wealth they accumulate, and the median liquid wealth to permanent income ratio for the education group would increase. As the higher risk aversion applies equally to all types within the education group this would also decrease the concentration of liquid wealth within the group. Hence, when we reestimate the discount factor distributions for the Highschool and College groups to fit the same liquid wealth distribution as before, we obtain distributions centered on lower values of beta that are more spread out. Thus the updated discount factor distribution counteracts these two effects. The top right and bottom left panels of Figure~\ref{fig:LorenzPts_robustness} show that with the reestimated discount factor distributions the model continues to match the distribution of liquid wealth as well as in the baseline calibration.\footnote{The median liquid wealth to permanent income ratios in Panel~B of Table~\ref{tab:estimBetas} are also matched in these estimations.} 
+Rows two and three of Table~\ref{tab:robustness_gamma} show results when we increase risk aversion from $\gamma=2.0$ to $\gamma=3.0$. Increasing risk aversion for all types within an education group makes the precautionary saving motive stronger for all consumers in that group. Ceteris paribus these consumers would then increase the amount of liquid wealth they accumulate, and the median liquid wealth to permanent income ratio for the education group would increase. For all the education groups the discount factor distributions are therefore centered around lower values of $\beta$ when risk aversion is increased to $3.0$. As for the increase in the interest rate in section~\ref{sec:robust_R_estim}, the decrease in patience counteracts the stronger incentive to save from the higher risk aversion. The reductions in $\beta$ when increasing risk aversion from $2.0$ to $3.0$ are much larger than when increasing the interest rate from $1$ to $1.5$ percent, however. 
 
-For the Dropout group the results are different however. For that group the median liquid wealth to permanent income ratio is very low at only $4.64$, and the liquid wealth distribution is very concentrated. The highest 20 percent of consumers in this group hold $96.4$ percent of the liquid wealth in the Dropout education group. With increased risk aversion for all types within the group, the model cannot match this wealth distribution. The reason is that to fit such a low value of median liquid wealth to permanent income when the strength of the precautionary saving motive increases, we need a discount factor distribution centered around a very low value. But this value places an upper bound on how spread out the discount factor distribution can be, since we can not allow any types in the model to have a negative discount factor. Hence, when the distribution is centered on a low value of $\beta$ it cannot be dispersed enough to match the high concentration of liquid wealth in the Dropout group in the data. 
+The effects on $\nabla$ and the concentration of the liquid wealth distribution may be less intuitive. However, if the only changes were to increase risk aversion and to decrease $\beta$ while keeping $\nabla$ fixed at the value for $\gamma=2.0$, then the result would be a liquid wealth distribution that was much less concentrated than in the data. If all consumers in an education group are less patient, the reduction in saving is larger for the wealthier consumers. Thus, to maintain the concentrated wealth distribution $\nabla$ increases substantially. The results are distributions of discount factors within each education group that are centered around lower values, but that are much more dispersed. The effect is that the discount factor for the most patient type within each education group is not changed very much, but the lowest discount factor is much lower than when $\gamma=2.0$, and the liquid wealth distributions remain as concentrated as they are in the data also in the model where risk aversion is increased.\footnote{Note that as in the baseline case, the discount factor for the most patient type in the Dropout group is constrained by the GIC. When $\gamma=3.0$ a constraint is also binding for the least patient type. The large value of $\nabla$ relative to $\beta$ would imply a negative discount factor, and to prevent this we constrain the lowest discount factor to be $0.01$.}
 
-We deal with this issue by focusing on matching the median liquid wealth to permanent income ratio. Our approach is to fix the value of the spread of the discount factor distribution, $\nabla$, and then estimate the center of the distribution, $\beta$ to match this ratio. The aim is to fix a value of $\nabla$ as high as possible without running into negative values for the discount factor of the least patient type. We end up fixing values of $\nabla=0.5$ when $\gamma=2$ and $\nabla=0.35$ when $\gamma=3$. The columns for the Dropout group in Table~\ref{tab:robustness_gamma} then show that we obtain values for $\beta$ in line with the intuition discussed above: higher risk aversion and a stronger precautionary saving motive leads to discount factor distributions centered around lower values of $\beta$ in order to continue matching the median liquid wealth to permanent income ratio. The upper left panel of Figure~\ref{fig:LorenzPts_robustness} shows that we then cannot obtain distributions of liquid wealth that are as concentrated as in the data. This follows since we cannot allow negative values for the discount factor of any type, and the increased incentive to save affects all the types in the Dropout group making the liquid wealth distribution less concentrated. 
+When we decrease risk aversion to $\gamma=1.0$ we run into problems when estimating the discount factor distribution, however. Row~1 of Table~\ref{tab:robustness_R} shows estimated parameters that give the model the best fit for the median liquid wealth permanent income ratios and the liquid wealth distributions for each education group. The results for the $\beta$ parameters reverse the intuition that we discussed for the case $\gamma=3.0$. In this case, reducing risk aversion and the strength of the precautionary saving motive is counteracted by centering the discount factor distributions around higher values. To obtain the same amount of saving on average, consumers need to be more patient if they are less risk averse.  
 
-TODO: add discussion of potentially allowing heterogeneity in risk aversions? 
+\begin{table}{th}
+\begin{center}
+\begin{tabular}{lccc}
+	\multicolumn{4}{l}{Median liquid wealth to permanent income ratios} \\ \midrule
+	& Dropout & Highschool & College \\ \midrule
+	Median LW/PI (data) & 4.64 & 30.2 & 112.8 \\ 
+	Median LW/PI (model, $\gamma = 1.0$) & 0.00 & 30.1 & 112.8 \\	
+	Median LW/PI (model, $\gamma = 2.0$) & 4.64 & 30.2 & 112.8 \\
+	Median LW/PI (model, $\gamma = 3.0$) & 4.64 & 30.2 & 112.8 \\ \bottomrule
+\end{tabular}
+\end{center}	
+\end{table}
+
+Table~\ref{tab:robustness_gamma} shows that for $\gamma=1.0$, while the model can match the median liquid wealth to permanent income ratios for the Highschool and College groups, it does not do that for the Dropout group. Figure~\ref{fig:LorenzPts_robustness_CRRA} on the other hand shows the opposite results for matching the liquid wealth distribution within each education group: The model matches the distribution for the Dropout group, but not for the Highschool and College groups. 
 
 \begin{figure}[th]
-\begin{center}
-	\includegraphics[width=.9\textwidth]{../Figures/LorenzPoints_robustness.pdf}
-	\caption{Distributions of liquid wealth within each educational group and for the whole population from the 2004 Survey of Consumer Finance and from the estimated model for different values of risk aversion, $\gamma$.}
-	\label{fig:LorenzPts_robustness}
-\end{center}
+	\begin{center}
+		\includegraphics[width=.9\textwidth]{../Figures/LorenzPoints_robustness_CRRA.pdf}
+		\caption{Distributions of liquid wealth within each educational group and for the whole population from the 2004 Survey of Consumer Finance and from the estimated model for different values of risk aversion, $\gamma$.}
+		\label{fig:LorenzPts_robustness_CRRA}
+	\end{center}
 \end{figure}
 
-\subsubsection{Results with higher risk aversion}
+The issue is that with a lower value of risk aversion and a weaker precautionary saving motive, the model requires consumers who are much more patient to obtain the same level and distribution of saving as in the baseline case with $\gamma=2.0$. In each education group the most patient types are then constrained by the Growth Impatience Condition. When several types are constrained, then varying the estimated parameter values further may not improve on the fit of the model. Hence, the estimation terminates when hitting only one of the two targets. 
+
+The strength of the precautionary saving motive is not only determined by risk aversion, however. The risks that households face also drive the strength of this motive for saving, and in our model, a key risk is unemployment risk. Therefore, the replacement rates that households face when they are unemployed with or without benefits play an important role. In Section~\ref{sec:robust_benefits} we consider an alternative calibration of these values. 
+
+\subsubsection{Results with different risk aversion}
 \label{sec:robust_gamma_results}
 
-
-\subsection{Altering the interest rate}
-\label{sec:robust_R} 
+[Ivan: fill out these results]
 
 
+\subsection{Changing benefits} 
+\label{sec:robust_benefits} 
+
+In our baseline calibration we follow \cite{rothstein2017scraping} and calibrat the replacement rates to $\rho_b=0.7$ with unemployment benefits and $\rho_{nb}=0.5$ without benefits. Here we consider replacement rates that are considerably less generous and more in line with values used in the previous macro literature with unemployment in models with heterogeneous agents. The alternative values we consider are a replacement rate of $\rho_{b}=0.3$ when unemployed with benefits as in \cite{carroll2020modeling}, and a replacement rate of $\rho_{nb}=0.15$ when unemployed without benefits. This latter value is the same as the replacement rate used in \cite{den2010computational}.\footnote{In \cite{den2010computational}, there is only one unemployment state and, hence, no sense in which benefits expire after a while. Therefore, this replacement rate applies for long-term unemployed as it does in our model, but in this paper there is also an intermediate state in which benefits are higher until they expire.} With these replacement rates, being unemployed is more serious for consumers than in our baseline calibration and the precautionary saving motive is stronger. 
+
+\subsubsection{Discount factor distributions with different benefits}
+\label{sec:robust_benefits_estim}
+
+Table~\ref{tab:robustness_benefits} shows that when benefits are less generous and the precautionary motive is stronger, then the estimated discount factor distributions are centered on lower values of $\beta$ and the dispersion in the distributions increase as $\nabla$ is considerably higher. The intuition is similar to the case when increasing risk aversion from $\gamma=2.0$ to $\gamma=3.0$ discussed in section~\ref{sec:robust_gamma_estim}: A stronger precautionary motive for saving must be counteracted by a lower average discount factor to match the same average level of saving as before. The distributions must also be more dispersed to match the same concentration of liquid wealth. In fact, the estimated discount factor distributions for the alternative calibration of the replacement rates are very similar to those reported for $\gamma=3.0$ in row~3 of Table~\ref{tab:robustness_gamma}. 
+
+\begin{table}[t]
+\begin{center}
+	\begin{tabular}{llc|cccccc} 
+		\toprule
+		& & & \multicolumn{2}{c}{Dropout} & \multicolumn{2}{c}{Highschool} & \multicolumn{2}{c}{College} \\ \midrule 
+		& & Splurge & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ \\ \midrule 
+		Baseline & ($\rho_{b}=0.7$ and $\rho_{nb}=0.5$) & 0.307 & 0.694 & 0.542 & 0.904 & 0.099 & 0.978 & 0.015 \\ 
+		Alternative & ($\rho_{b}=0.3$ and $\rho_{nb}=0.15$) & 0.307 & 0.599 & 0.687 & 0.852 & 0.159 & 0.968 & 0.028
+		\\ \bottomrule 
+	\end{tabular}
+\end{center}
+\caption{Estimates of the Splurge and $(\beta,\nabla)$ for each education group for the baseline replacements rates $\rho_{b}$ and $\rho_{nb}$ and an alternative calibration.}
+\label{tab:robustness_benefits}
+\end{table}
+
+
+\subsubsection{Results with different benefits}
+\label{sec:robust_benefits_results}
+
+[Ivan: fill out these results]
+
+\subsection{Summary of robustness exercises}
+\label{sec:robust_summary}
 
 \end{document}	
