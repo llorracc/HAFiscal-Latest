@@ -24,21 +24,21 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     
     # make changes according to robustness run
     if Parametrization == 'ADElas' or Parametrization == 'ADElas_PVSame':
-        ADelasticity = 0.3
-    if Parametrization == 'CRRA1' or Parametrization == 'CRRA1_PVSame':
-        CRRA = 2.0
-        betas_txt_location = '../Results/DiscFacEstim_CRRA_2.0.txt' 
+        ADelasticity = 0.5
+    elif Parametrization == 'CRRA1' or Parametrization == 'CRRA1_PVSame':
+        CRRA = 1.0
+        betas_txt_location = '../Results/DiscFacEstim_CRRA_1.0_R_1.01.txt' 
         Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_1.0.txt'  
     elif Parametrization == 'CRRA3' or Parametrization == 'CRRA3_PVSame':
         CRRA = 3.0
-        betas_txt_location = '../Results/DiscFacEstim_CRRA_3.0_incNB_15.txt'
+        betas_txt_location = '../Results/DiscFacEstim_CRRA_3.0_R_1.01.txt'
         Splurge_txt_location = '../Target_AggMPCX_LiquWealth/Result_CRRA_3.0.txt'  
     elif Parametrization == 'Rfree_1005' or Parametrization == 'Rfree_1005_PVSame':
         Rfree_base = [1.005]
-        betas_txt_location = '../Results/DiscFacEstim_Rfree_1.005_incNB_15.txt'  
+        betas_txt_location = '../Results/DiscFacEstim_CRRA_2.0_R_1.005.txt'  
     elif Parametrization == 'Rfree_1015' or Parametrization == 'Rfree_1015_PVSame':
         Rfree_base = [1.015]
-        betas_txt_location = '../Results/DiscFacEstim_Rfree_1.015_incNB_15.txt'
+        betas_txt_location = '../Results/DiscFacEstim_CRRA_2.0_R_1.015.txt'
     elif Parametrization == 'Rspell_4' or Parametrization == 'Rspell_4_PVSame':
         Rspell = 4
     elif Parametrization == 'LowerUBnoB' or Parametrization == 'LowerUBnoB_PVSame':
@@ -66,12 +66,12 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     
     if Parametrization == 'CRRA2_PVSame':
         figs_dir_FullRun = './Figures/CRRA2/'
-    if Parametrization == 'ADElas_PVSame':
+    elif Parametrization == 'ADElas_PVSame':
         figs_dir_FullRun = './Figures/ADElas/'           
-    elif Parametrization == 'CRRA2_PVSame':
-        figs_dir_FullRun = './Figures/CRRA2.0_Robustnes/'
+    elif Parametrization == 'CRRA1_PVSame':
+        figs_dir_FullRun = './Figures/CRRA1/'
     elif Parametrization == 'CRRA3_PVSame':
-        figs_dir_FullRun = './Figures/CRRA3.0_Robustnes/'
+        figs_dir_FullRun = './Figures/CRRA3/'
     elif Parametrization == 'Rfree_1005_PVSame':
         figs_dir_FullRun = './Figures/Rfree_1005/'
     elif Parametrization == 'Rfree_1015_PVSame':
