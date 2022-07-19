@@ -42,7 +42,9 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     elif Parametrization == 'Rspell_4' or Parametrization == 'Rspell_4_PVSame':
         Rspell = 4
     elif Parametrization == 'LowerUBnoB' or Parametrization == 'LowerUBnoB_PVSame':
-        IncUnempNoBenefits = 0.30
+        betas_txt_location = '../Results/DiscFacDistributions_CRRA_2.0_R_1.01_altBenefits.txt'
+        IncUnempNoBenefits = 0.15
+        IncUnemp = 0.3
     
     myEstim = [[],[],[]]
     f = open(betas_txt_location, 'r')
@@ -111,6 +113,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         print('CheckAdjFactor = ',CheckAdjFactor)
         
         print('IncUnempNoBenefits = ', IncUnempNoBenefits)
+        print('IncUnemp = ', IncUnemp)
         print('ADelasticity = ', ADelasticity)
 
        

@@ -5,7 +5,7 @@
 \section{Robustness}
 \label{sec:robustness}
 
-In this section we analyze how sensitive our results are to some of the parameters in the model. In particular, we focus on parameters that heavily influence consumers' incentives to save. These parameters are the interest rate that affects the returns on saving, and the degree of risk aversion and the replacement rates when unemployed with or without benefits that affect the strength of a precautionary saving motive. The aim is to alter these incentives while maintaining the requirement that the distributions of liquid wealth in each education group matches the distributions in the data. Hence, in each case, we reestimate the distributions of discount factors in each education group (and, if necessary, the degree of `splurge' spending in consumption). The aim is thus to compute new results for a model with different parameters that also fits data on the distribution of liquid wealth. 
+In this section we analyze how sensitive our results are to some of the parameters in the model. In particular, we focus on parameters that heavily influence consumers' incentives to save. These parameters are the interest rate that affects the returns on saving, and the degree of risk aversion and the replacement rates when unemployed with or without benefits that affect the strength of a precautionary saving motive. The aim is to alter these incentives while maintaining the requirement that the distributions of liquid wealth in each education group matches the distributions in the data. Hence, in each case, we reestimate the distributions of discount factors in each education group (and, if necessary, the degree of `splurge' spending in consumption). The aim is thus to compute new results for a model with different parameters that also fits data on the distribution of liquid wealth. At the end of the section we also consider how chaning the properties of the recession affect our main results. 
 
 \subsection{Changing the interest rate}
 \label{sec:robust_R} 
@@ -36,12 +36,36 @@ The first row of Table~\ref{tab:robustness_R} shows the estimated $\beta_e$ and 
 
 Figure~\ref{fig:LorenzPts_robustness_R} in Appendix~\ref{app:DF_R} shows that the reestimated model also matches the liquid wealth distributions for each of these values of the interest rate. From Table~\ref{tab:robustness_R} we see that the values of $\nabla_e$ for the three education groups do not need to change much for this to be the case. 
 
+\FloatBarrier
 \subsubsection{Results for different interest rates}
 \label{sec:robust_R_results}
 
-[Ivan: fill out these results]
+In this section we repeat the welfare analysis conducted in section \ref{sec:welfare} for different values of the interest rate. As in that section the stimulus check and payroll tax cut policy have been adjusted to be of the same fiscal size as the unemployment insurance extension. All three policies are implemented during a recession. We determine welfare results both for the policies implemented with and without AD effects.
+
+As can be seen in table \ref{tab:robustness_R_results}, a higher interest rate increases the welfare benefits of all policies uniformly. This is despite multipliers changing only very little with different interest rates.\footnote{The long-run multiplier of the policies increases by about 1-1.5\% moving from an interest rate of 1.01 (the baseline as reported in table \ref{tab:Multiplier}) to 1.015.} 
+
+\textit{Comment IF: We should provide an explanation for why welfare effects are larger with a higher R. Given that multipliers are not larger with a higher R, I suspect it is the way we calculate welfare benefits that is sensitive to the interest rate. I have not figured out why. Maybe, we can discuss in our next meeting.}
 
 
+\begin{table}[]
+	\begin{center}
+		\begin{tabular}{@{}lllll@{}}
+			\toprule
+			&                    & Stimulus check & UI extension & Tax cut \\ \cmidrule(l){1-5} 
+			\multirow{2}{*}{$R = 1.005$}            	& no AD effects & 0.005        & 0.283       & 0.001\\
+														& AD effects    & 0.086        & 0.630       & 0.033  \\
+			\multirow{2}{*}{$R = 1.01$ (baseline)} 		& no AD effects & 0.011        & 0.580       & 0.002   \\
+														& AD effects    & 0.171        & 1.266       & 0.065   \\
+			\multirow{2}{*}{$R = 1.015$}            	& no AD effects & 0.016        & 0.888       & 0.002   \\
+														& AD effects    & 0.254        & 1.905       & 0.098    \\ \cmidrule(l){1-5} 
+		\end{tabular}
+		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different values of the interest rate $R$.}
+		\label{tab:robustness_R_results}
+	\end{center}
+\end{table}
+
+
+\FloatBarrier
 \subsection{Changing risk aversion} 
 \label{sec:robust_gamma} 
 
@@ -104,7 +128,26 @@ The strength of the precautionary saving motive is not only determined by risk a
 \subsubsection{Results with different risk aversion}
 \label{sec:robust_gamma_results}
 
-[Ivan: fill out these results]
+In this section we conduct the welfare analysis for different values of risk aversion. The risk aversion parameter may affect our welfare results for different reasons. A higher risk aversion (ceteris paribus) induces agents to hold a higher buffer stock of savings, making them less sensitive to adverse economic shocks in terms of their consumption response. At the same time a higher risk aversion also implies a greater welfare loss associated with the same drop in consumption. Ex-ante it is thus not clear how our welfare results are affected by changes in this parameter. Table \ref{tab:robustness_gamma_results} shows, that the results are fairly robust to the risk aversion value. This is particularly true for the stimulus check and the tax cut policy, for which results are virtually unchanged. Risk aversion matters more, however, for the UI extension policy. Lower risk aversion implies somewhat higher welfare benefits associated with this policy. This is likely due to the fact that the UI extension is most beneficial to those with low buffer stock savings.\footnote{Mirroring the welfare results, the long-run mulitpliers of the policies  for the alternative risk aversion values are very close to those for the baseline calibration. The largest difference amounts to only a 3\% increase in the multiplier for the UI extension policy in the $\gamma = 1$ case relative to the baseline.}
+
+
+
+\begin{table}[]
+	\begin{center}
+		\begin{tabular}{@{}lllll@{}}
+			\toprule
+			&                    & Stimulus check & UI extension & Tax cut \\ \cmidrule(l){1-5} 
+			\multirow{2}{*}{$\gamma = 1.0$}            	& no AD effects & 0.011          & 0.694        & 0.001   \\
+			& AD effects    & 0.182          & 1.378        & 0.067   \\
+			\multirow{2}{*}{$\gamma = 2.0$ (baseline)} 	& no AD effects & 0.011          & 0.580        & 0.002   \\
+			& AD effects    & 0.171          & 1.266        & 0.065   \\
+			\multirow{2}{*}{$\gamma = 3.0$}            	& no AD effects & 0.011          & 0.577        & 0.002   \\
+			& AD effects    & 0.172          & 1.273        & 0.066   \\ \cmidrule(l){1-5} 
+		\end{tabular}
+		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different values of risk aversion, $\gamma$.}
+		\label{tab:robustness_gamma_results}
+	\end{center}
+\end{table}
 
 
 \subsection{Changing benefits} 
@@ -136,9 +179,71 @@ Table~\ref{tab:robustness_benefits} shows that when benefits are less generous a
 \subsubsection{Results with different benefits}
 \label{sec:robust_benefits_results}
 
-[Ivan: fill out these results]
+In this section we perform the welfare analysis for different benefit replacement rates. Lower replacement rates, ceteris paribus, induce agents to hold higher buffer stocks of savings since in the event of unemployment less income will 
 
+Table \ref{tab:robustness_benefit_results} shows, that 
+
+
+
+\begin{table}[]
+	\begin{center}
+		\begin{tabular}{@{}lllll@{}}
+			\toprule
+			&                    & Stimulus check & UI extension & Tax cut \\ \cmidrule(l){1-5} 
+			\multirow{2}{*}{Baseline  ($\rho_{b}=0.7$ and $\rho_{nb}=0.5$)} 	& no AD effects & 0.011          & 0.580        & 0.002   \\
+			& AD effects    & 0.171          & 1.266        & 0.065   \\
+			\multirow{2}{*}{Alternative  ($\rho_{b}=0.3$ and $\rho_{nb}=0.15$)} & no AD effects &           &        &    \\
+			& AD effects    &           &         &    \\ \cmidrule(l){1-5} 
+		\end{tabular}
+		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different unemployment benefit rates.}
+		\label{tab:robustness_benefit_results}
+	\end{center}
+\end{table}
+
+
+
+
+\FloatBarrier
+\subsection{Changing the properties of the recession}
+
+In this section we alter two properties of the recesssion and study the impact of those changes (one at a time) on our main results. First, we lower the average length of a recession from six quarters in the baseline to four quarters. Second, we increase the consumption elasticity of the aggregate demand effect, $\kappa$, from 0.3 in the baseline to 0.5. In either case, the parameter changes do not require a reestimation of the discount factor distribution, since the baseline saving behavior is unaffected by properties of the recession, which arrives as an MIT shock. 
+%ADD sentence to intro of robustness section which alludes to this subsection
+
+Table \ref{tab:robustness_recession_property_results} presents the welfare results for different properties of the recession. In case of a shorter average recession length of 4 quarters as opposed to 6 quarters in the baseline, we observe lower welfare impacts of the policies. As argued earlier this is because the policies are particularly effective during recessions. Hence the additional spending induced by the policies is now less likely to occur while the recession is ongoing. This can also be seen by investigating the long-run multipliers of the policies, which fall slightly for all three policies considered: from 1.339 in the baseline to 1.314 in case of the shorter recession length for the stimulus check, from 1.275 to 1.255 for the UI extension and from 1.079 to 1.042 for the tax cut.
+
+A higher value for $\kappa$, and hence stronger aggregate demand effects, considerably increases the welfare effects of each policy. Of course, this is only the case when AD effects are switched on. In their absence, there is no change of the welfare results relative to the baseline calibration of the model. The larger $\kappa$ implies a larger boost to aggregate income in response to the demand effects of the policies. This larger boost translates to a larger increase in consumption and thus a stronger welfare impact. Under stronger AD effects, the policies have also considerably larger long-run multipliers. The stimulus check exhibits a multiplier of 1.811 (baseline: 1.339), the UI extension of 1.633 (1.275) and the tax cut of 1.271 (1.079).
+
+
+\begin{table}[]
+	\begin{center}
+		\begin{tabular}{@{}lllll@{}}
+			\toprule
+			&                    											& Stimulus check & UI extension & Tax cut 	\\ \cmidrule(l){1-5}
+			\multirow{2}{*}{Baseline} 						& no AD effects & 0.011          & 0.580        & 0.002   	\\
+			& AD effects    & 0.171          & 1.266        & 0.065   	\\ 
+			\multirow{2}{*}{Shorter average recession, 4q}  & no AD effects & 0.010          & 0.488        & 0.001  	\\
+			& AD effects    & 0.161          & 1.074        & 0.053   	\\
+			\multirow{2}{*}{Stronger AD effects, 0.5}       & no AD effects & 0.011          & 0.580        & 0.002   	\\
+			& AD effects    & 0.346          & 1.990        & 0.133   	\\ \cmidrule(l){1-5} 
+		\end{tabular}
+		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different properties of the recession.}
+		\label{tab:robustness_recession_property_results}
+	\end{center}
+\end{table}
+
+
+
+
+\FloatBarrier
 \subsection{Summary of robustness exercises}
 \label{sec:robust_summary}
+
+\textit{IF: Draft in bullet points. Please feel free to extend.}
+\begin{itemize}
+	\item The robustness checks show that our main results are fairly robust to a wide range of alternative parameter choices
+	\item Fitting the model to data on the distribution and median of liquid wealth seem to pin down the impact of the considered policies in terms of stimulating consumption.
+	\item Characteristics of the recession, do, however matter for our results. Shorter recessions or more shallow ones (i.e. with lower aggregate demand effects) reduce the effectiveness of policies. Conversely, more severe recessions will render the policies even more efficient than our baseline results suggest.
+	\item Interestingly, none of our robustness checks alter the ranking of the policies in terms of their effectiveness. 
+\end{itemize}
 
 \end{document}	

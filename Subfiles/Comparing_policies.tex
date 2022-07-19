@@ -72,18 +72,18 @@ $NPV(t,X) = \sum_{s=0}^{t} \left( \prod_{i=1}^{s} \frac{1}{R_i} \right) X_s$.
 	\label{fig:cumulativemultipliers}
 \end{figure}
 
-Figure \ref{fig:cumulativemultipliers} plots the cumulative multipliers at different horizons, and Table~\ref{tab:Multiplier} shows the long-run multiplier for each policy. The stimulus check, which is paid out in quarter one, exhibits the largest multiplier on impact. About 70 percent of the total policy expenditure is immediately spent by consumers. After one year and due to the aggregate demand effects, consumption has increased cumulatively by more than the cost of the stimulus check. Over time, the policy reaches a total multiplier of 1.85.
+Figure \ref{fig:cumulativemultipliers} plots the cumulative multipliers at different horizons, and Table~\ref{tab:Multiplier} shows the long-run multiplier for each policy. The stimulus check, which is paid out in quarter one, exhibits the largest multiplier on impact. About 60 percent of the total policy expenditure is immediately spent by consumers. After one year and due to the aggregate demand effects, consumption has increased cumulatively by more than the cost of the stimulus check. Over time, the policy reaches a total multiplier of 1.343.
 
-The multiplier is very similar for the UI extension policy. However, since policy spending here is spread out over four quarters (and peaks in quarter two to three), the multiplier in the first quarter is considerably lower than in the case of the stimulus check. The UI extension policy is very targeted in the sense that it provides additional income to only those consumers, who due to unemployment, have large MPCs. However, some of the spending occurs at later quarters, when the recession might have ended. Overall, around 80 percent of the policy expenditure occurs during the recession. In contrast, the stimulus check is paid out fully during the first quarter when, by construction, the recession occurs with certainty. Therefore, the aggregate demand effects are particularly potent for this policy. Hence, while being less targeted and providing stimulus also to agents with low MPCs, the stimulus check ends up with a relatively high overall multiplier due to concentration of spending during the recession.
+The multiplier is very similar for the UI extension policy. However, since policy spending here is spread out over four quarters (and peaks in quarter two to three), the multiplier in the first quarter is considerably lower than in the case of the stimulus check. The UI extension policy is very targeted in the sense that it provides additional income to only those consumers, who due to unemployment, have large MPCs. However, some of the spending occurs at later quarters, when the recession might have ended. Overall, around 80\% of the policy expenditure occurs during the recession. In contrast, the stimulus check is paid out fully during the first quarter when, by construction, the recession occurs with certainty. Therefore, the aggregate demand effects are particularly potent for this policy. Hence, while being less targeted and providing stimulus also to agents with low MPCs, the stimulus check ends up with a relatively high overall multiplier due to concentration of spending during the recession.
 
 \begin{table}[t]
 	\center
-	\input Code/HA-Models/FromPandemicCode/Tables/Multiplier.tex
+	\input Code/HA-Models/FromPandemicCode/Tables/CRRA2_PVSame/Multiplier.tex
 	\caption{Long-run cumulative multipliers as well as the share of the policy ocurring during the recession}
 	\label{tab:Multiplier}
 \end{table}
 
-The payroll tax cut has the lowest multiplier irrespective of the considered horizon. A multiplier of 1 is reached only after around 8 quarters. The total multiplier over the whole simulated period is at approximately 1.3. These relatively small numbers reflect that policy spending lasts for a long time and is thus more likely to occur after the recession has ended. Moreover, only employed consumers with often relatively low MPCs benefit directly from the payroll tax cut. Therefore, the policy is poorly targeted if the goal is to provide short-term stimulus. 
+The payroll tax cut has the lowest multiplier irrespective of the considered horizon. A multiplier of 1 is reached only after around 15 quarters. The total multiplier over the whole simulated period is at approximately 1.079. These relatively small numbers reflect that policy spending lasts for a long time and is thus more likely to occur after the recession has ended. Moreover, only employed consumers with often relatively low MPCs benefit directly from the payroll tax cut. Therefore, the policy is poorly targeted if the goal is to provide short-term stimulus. 
 
 Table \ref{tab:Multiplier} contains an additional (middle) row that shows the long-run multiplier for a special case. The aggregate demand effect works through several rounds. First, consumers increase spending due to the stimulus by the policy, which increases income, which in turn boosts consumption. However, this boost in consumption triggers another round of aggregate demand effects, with each round being subsequently smaller in magnitude. The middle row of the table shows the multipliers that result in the special case where we only consider the first-round AD effect. In the case of the tax cut, approximately half of the total stimulus effect occurs in the first round, with that value being somewhat larger for the other two policies. This reflects that the stimulus impact of the tax cut hinges to a larger extent on spillovers from the direct beneficiaries of the policy to those indirectly affected by the aggregate demand effect than is the case for the stimulus check or the UI extension, which directly target high MPC households.
 
@@ -127,7 +127,7 @@ The second row of the table shows the welfare benefits in the version of the mod
 
 \begin{table}[ht] 
 	\center
-	\input Code/HA-Models/FromPandemicCode/Tables/welfare4.tex
+	\input Code/HA-Models/FromPandemicCode/Tables/CRRA2_PVSame/welfare4.tex
 	\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects}
 	\label{welfare}
 \end{table}
