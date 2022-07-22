@@ -7,7 +7,8 @@ dirs_to_delete = ['./Figures/CRRA1/','./Figures/CRRA1_PVSame/',
                   './Figures/Rfree_1005/','./Figures/Rfree_1005_PVSame/',
                   './Figures/Rfree_1015/','./Figures/Rfree_1015_PVSame/',
                   './Figures/Rspell_4/','./Figures/Rspell_4_PVSame/',
-                  './Figures/ADElas/','./Figures/ADElas_PVSame/']
+                  './Figures/ADElas/','./Figures/ADElas_PVSame/',
+                  './Figures/LowerUBnoB/','./Figures/LowerUBnoB_PVSame/']
 
 for dir_to_delete in dirs_to_delete:
     print('To delete: ', dir_to_delete)

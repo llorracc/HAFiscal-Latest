@@ -42,7 +42,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     elif Parametrization == 'Rspell_4' or Parametrization == 'Rspell_4_PVSame':
         Rspell = 4
     elif Parametrization == 'LowerUBnoB' or Parametrization == 'LowerUBnoB_PVSame':
-        betas_txt_location = '../Results/DiscFacDistributions_CRRA_2.0_R_1.01_altBenefits.txt'
+        betas_txt_location = '../Results/DiscFacEstim_CRRA_2.0_R_1.01_altBenefits.txt'
         IncUnempNoBenefits = 0.15
         IncUnemp = 0.3
     
