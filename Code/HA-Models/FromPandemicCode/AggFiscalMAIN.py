@@ -17,7 +17,7 @@ Run_CRRA1_robustness    = False #DONE
 Run_CRRA3_robustness    = False #DONE
 Run_Rfree_robustness    = False #DONE
 Run_Rspell_robustness   = False #DONE
-Run_LowerUBnoB          = True
+Run_LowerUBnoB          = True #DONE
 
 
 Run_Dict = dict()
