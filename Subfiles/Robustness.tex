@@ -50,12 +50,12 @@ As can be seen in table \ref{tab:robustness_R_results}, a higher interest rate i
 		\begin{tabular}{@{}lllll@{}}
 			\toprule
 			&                    & Stimulus check & UI extension & Tax cut \\ \cmidrule(l){1-5} 
-			\multirow{2}{*}{$R = 1.005$}            	& no AD effects & 0.005        & 0.283       & 0.001\\
-														& AD effects    & 0.086        & 0.630       & 0.033  \\
-			\multirow{2}{*}{$R = 1.01$ (baseline)} 		& no AD effects & 0.011        & 0.580       & 0.002   \\
-														& AD effects    & 0.171        & 1.266       & 0.065   \\
-			\multirow{2}{*}{$R = 1.015$}            	& no AD effects & 0.016        & 0.888       & 0.002   \\
-														& AD effects    & 0.254        & 1.905       & 0.098    \\ \cmidrule(l){1-5} 
+			\multirow{3}{*}{no AD effects}            	& $R = 1.005$ 			& 0.005        & 0.283       & 0.001	\\
+			& $R = 1.01$ (baseline) & 0.011        & 0.580       & 0.002   	\\
+			& $R = 1.015$ 			& 0.016        & 0.888       & 0.002   	\\ \cmidrule(l){1-5}
+			\multirow{3}{*}{AD effects}					& $R = 1.005$    		& 0.086        & 0.630       & 0.033  	\\		
+			& $R = 1.01$ (baseline) & 0.171        & 1.266       & 0.065   	\\
+			& $R = 1.015$    		& 0.254        & 1.905       & 0.098    \\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different values of the interest rate $R$.}
 		\label{tab:robustness_R_results}
@@ -128,8 +128,13 @@ The strength of the precautionary saving motive is not only determined by risk a
 \subsubsection{Results with different risk aversion}
 \label{sec:robust_gamma_results}
 
-In this section we conduct the welfare analysis for different values of risk aversion. The risk aversion parameter may affect our welfare results for different reasons. A higher risk aversion (ceteris paribus) induces agents to hold a higher buffer stock of savings, making them less sensitive to adverse economic shocks in terms of their consumption response. At the same time a higher risk aversion also implies a greater welfare loss associated with the same drop in consumption. Ex-ante it is thus not clear how our welfare results are affected by changes in this parameter. Table \ref{tab:robustness_gamma_results} shows, that the results are fairly robust to the risk aversion value. This is particularly true for the stimulus check and the tax cut policy, for which results are virtually unchanged. Risk aversion matters more, however, for the UI extension policy. Lower risk aversion implies somewhat higher welfare benefits associated with this policy. This is likely due to the fact that the UI extension is most beneficial to those with low buffer stock savings.\footnote{Mirroring the welfare results, the long-run mulitpliers of the policies  for the alternative risk aversion values are very close to those for the baseline calibration. The largest difference amounts to only a 3\% increase in the multiplier for the UI extension policy in the $\gamma = 1$ case relative to the baseline.}
+In this section we conduct the welfare analysis for different values of risk aversion. The risk aversion parameter may affect our welfare results for different reasons. A higher risk aversion (ceteris paribus) induces agents to hold a higher buffer stock of savings, making them less sensitive to adverse economic shocks in terms of their consumption response. Since we target the empirical wealth to income ratios, this effect is, however, largely calibrated away. A higher risk aversion also implies a greater welfare loss associated with the same drop in consumption. Ex-ante we thus expect that the welfare impacts are larger with higher risk aversion.
 
+Table \ref{tab:robustness_gamma_results} shows the welfare results for different risk aversion parameters. The values for $\gamma = 1$ are difficult to interpret given our difficulties in matching the wealth distribution exactly, as described in the previous section. Nevertheless, it is quite clear that despite the resulting imprecision our ranking of the three policies is upheld also for a lower $\gamma$.
+
+For a higher risk aversion and with AD effects switched on we obtain slightly higher welfare impacts than in the baseline, in line with our intuition described above. The policies help to reduce the consumption loss due to the recession, which is valued more in terms of utility with a higher risk aversion parameter. The effect is, however, quite small in magnitude.\footnote{Mirroring the welfare results, the long-run mulitpliers of the policies  for the alternative risk aversion values are very close to those for the baseline calibration. The largest difference amounts to only a 3\% increase in the multiplier for the UI extension policy in the $\gamma = 1$ case relative to the baseline.} 
+
+When AD effects effects are switched off, there is no welfare increase across the three policies, but a slight loss in welfare for the UI extension policy. (???)
 
 
 \begin{table}[]
@@ -137,17 +142,18 @@ In this section we conduct the welfare analysis for different values of risk ave
 		\begin{tabular}{@{}lllll@{}}
 			\toprule
 			&                    & Stimulus check & UI extension & Tax cut \\ \cmidrule(l){1-5} 
-			\multirow{2}{*}{$\gamma = 1.0$}            	& no AD effects & 0.011          & 0.694        & 0.001   \\
-			& AD effects    & 0.182          & 1.378        & 0.067   \\
-			\multirow{2}{*}{$\gamma = 2.0$ (baseline)} 	& no AD effects & 0.011          & 0.580        & 0.002   \\
-			& AD effects    & 0.171          & 1.266        & 0.065   \\
-			\multirow{2}{*}{$\gamma = 3.0$}            	& no AD effects & 0.011          & 0.577        & 0.002   \\
-			& AD effects    & 0.172          & 1.273        & 0.066   \\ \cmidrule(l){1-5} 
+			\multirow{3}{*}{no AD effects}            	& $\gamma = 1.0$ 			& 0.011          & 0.694        & 0.001   \\
+			& $\gamma = 2.0$ (baseline) & 0.011          & 0.580        & 0.002   \\
+			& $\gamma = 3.0$ 			& 0.011          & 0.577        & 0.002   \\ \cmidrule(l){1-5} 
+			\multirow{3}{*}{AD effects}					& $\gamma = 1.0$   	 		& 0.182          & 1.378        & 0.067   \\
+			& $\gamma = 2.0$ (baseline) & 0.171          & 1.266        & 0.065   \\
+			& $\gamma = 3.0$    		& 0.172          & 1.273        & 0.066   \\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different values of risk aversion, $\gamma$.}
 		\label{tab:robustness_gamma_results}
 	\end{center}
 \end{table}
+
 
 
 \subsection{Changing benefits} 
@@ -166,8 +172,8 @@ Table~\ref{tab:robustness_benefits} shows that when benefits are less generous a
 		\toprule
 		& & & \multicolumn{2}{c}{Dropout} & \multicolumn{2}{c}{Highschool} & \multicolumn{2}{c}{College} \\ \midrule 
 		& & Splurge & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ \\ \midrule 
-		Baseline & ($\rho_{b}=0.7$ and $\rho_{nb}=0.5$) & 0.307 & 0.694 & 0.542 & 0.904 & 0.099 & 0.978 & 0.015 \\ 
-		Alternative & ($\rho_{b}=0.3$ and $\rho_{nb}=0.15$) & 0.307 & 0.599 & 0.687 & 0.852 & 0.159 & 0.968 & 0.028
+		Baseline & ($\rho_{b}=0.7$, $\rho_{nb}=0.5$) & 0.307 & 0.694 & 0.542 & 0.904 & 0.099 & 0.978 & 0.015 \\ 
+		Altern. & ($\rho_{b}=0.3$,  $\rho_{nb}=0.15$) & 0.307 & 0.599 & 0.687 & 0.852 & 0.159 & 0.968 & 0.028
 		\\ \bottomrule 
 	\end{tabular}
 \end{center}
@@ -180,9 +186,7 @@ Table~\ref{tab:robustness_benefits} shows that when benefits are less generous a
 \subsubsection{Results with different benefits}
 \label{sec:robust_benefits_results}
 
-In this section we perform the welfare analysis for different benefit replacement rates. Table \ref{tab:robustness_benefit_results} shows, that the alternative parametrization of the unemployment replacement rates yield considerably higher welfare benefits for the UI extension policy. In particular, the lower the replacement rate under the no benefit regime, the more harmful is the expiration of eligibility to the unemployment insurance. The UI extension is thus particularly powerful if $\rho_{nb}$ is small. This is mirrored by the long-run multiplier of the UI extension policy. It increases from 1.275 in the baseline calibration to 1.416 under the lower replacement rates.
-
-By contrast, multipliers and welfare impacts of the other two policies do not change dramatically under the alternative calibration. 
+In this section we perform the welfare analysis for different benefit replacement rates. Table \ref{tab:robustness_benefit_results} shows, that the alternative parametrization of the unemployment replacement rates yield considerably higher welfare benefits for the UI extension policy. In particular, the lower the replacement rate under the no benefit regime, the more harmful is the expiration of eligibility to the unemployment insurance. The UI extension is thus particularly powerful if $\rho_{nb}$ is small. This is mirrored by the long-run multiplier of the UI extension policy. It increases from 1.275 in the baseline calibration to 1.416 under the lower replacement rates. In contrast, multipliers and welfare impacts of the other two policies do not change dramatically under the alternative calibration. Again, our ranking of the three policies remains the same.
 
 
 \begin{table}[]
@@ -190,10 +194,10 @@ By contrast, multipliers and welfare impacts of the other two policies do not ch
 		\begin{tabular}{@{}lllll@{}}
 			\toprule
 			&                    & Stimulus check & UI extension & Tax cut \\ \cmidrule(l){1-5} 
-			\multirow{2}{*}{Baseline  ($\rho_{b}=0.7$ and $\rho_{nb}=0.5$)} 	& no AD effects & 0.011          & 0.580        & 0.002   \\
-																				& AD effects    & 0.171          & 1.266        & 0.065   \\
-			\multirow{2}{*}{Alternative  ($\rho_{b}=0.3$ and $\rho_{nb}=0.15$)} & no AD effects & 0.043          & 1.913        & 0.003   \\
-																				& AD effects    & 0.169          & 2.620        & 0.052   \\ \cmidrule(l){1-5} 
+			\multirow{2}{*}{no AD effects} 	& Baseline  ($\rho_{b}=0.7$, $\rho_{nb}=0.5$) 		& 0.011          & 0.580        & 0.002   \\
+			& Altern.  ($\rho_{b}=0.3$, $\rho_{nb}=0.15$) 	& 0.043          & 1.913        & 0.003   \\ \cmidrule(l){1-5} 
+			\multirow{2}{*}{AD effects}		& Baseline  ($\rho_{b}=0.7$, $\rho_{nb}=0.5$)    	& 0.171          & 1.266        & 0.065   \\
+			& Altern.  ($\rho_{b}=0.3$, $\rho_{nb}=0.15$)    & 0.169          & 2.620        & 0.052   \\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different unemployment benefit rates.}
 		\label{tab:robustness_benefit_results}
@@ -219,12 +223,12 @@ A higher value for $\kappa$, and hence stronger aggregate demand effects, consid
 		\begin{tabular}{@{}lllll@{}}
 			\toprule
 			&                    											& Stimulus check & UI extension & Tax cut 	\\ \cmidrule(l){1-5}
-			\multirow{2}{*}{Baseline} 						& no AD effects & 0.011          & 0.580        & 0.002   	\\
-			& AD effects    & 0.171          & 1.266        & 0.065   	\\ 
-			\multirow{2}{*}{Shorter average recession, 4q}  & no AD effects & 0.010          & 0.488        & 0.001  	\\
-			& AD effects    & 0.161          & 1.074        & 0.053   	\\
-			\multirow{2}{*}{Stronger AD effects, 0.5}       & no AD effects & 0.011          & 0.580        & 0.002   	\\
-			& AD effects    & 0.346          & 1.990        & 0.133   	\\ \cmidrule(l){1-5} 
+			\multirow{2}{*}{no AD effects} 					& Baseline 						& 0.011          & 0.580        & 0.002   	\\ 
+			& Shorter average recession, 4q & 0.010          & 0.488        & 0.001  	\\
+			& Stronger AD effects, 0.5 		& 0.011          & 0.580        & 0.002   	\\ \cmidrule(l){1-5}
+			\multirow{2}{*}{AD effects}						& Baseline    					& 0.171          & 1.266        & 0.065   	\\
+			& Shorter average recession, 4q & 0.161          & 1.074        & 0.053   	\\
+			& Stronger AD effects, 0.5    	& 0.346          & 1.990        & 0.133   	\\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different properties of the recession.}
 		\label{tab:robustness_recession_property_results}

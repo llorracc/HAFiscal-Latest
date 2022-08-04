@@ -98,7 +98,7 @@ if  Parametrization == 'NOR_new':
     base_params['TranShkStd']   = [0.132**0.5]
     base_params['BoroCnstArt']  = -0.8
     base_params['PermGroFacAgg']= 1.01**0.25     
-    base_params['CRRA']         = 1
+    base_params['CRRA']         = 2.0
 ###################
 ## TARGETS ########
 ###################
@@ -425,7 +425,7 @@ for el in range(0,len(CRRA_values)):
 
 #%% Conduct the estimation for beta, dist and splurge
 
-f = open('Result_CRRA_1.txt', 'r')
+f = open('Result_CRRA_2.0.txt', 'r')
 if f.mode=='r':
     contents= f.read()
 dictload= eval(contents)
