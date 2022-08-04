@@ -42,9 +42,16 @@ Figure~\ref{fig:LorenzPts_robustness_R} in Appendix~\ref{app:DF_R} shows that th
 
 In this section we repeat the welfare analysis conducted in section \ref{sec:welfare} for different values of the interest rate. As in that section the stimulus check and payroll tax cut policy have been adjusted to be of the same fiscal size as the unemployment insurance extension. All three policies are implemented during a recession. We determine welfare results both for the policies implemented with and without AD effects.
 
-As can be seen in table \ref{tab:robustness_R_results}, a higher interest rate increases the welfare benefits of all policies uniformly. This is despite multipliers changing only very little with different interest rates.\footnote{The long-run multiplier of the policies increases by about 1-1.5\% moving from an interest rate of 1.01 (the baseline as reported in table \ref{tab:Multiplier}) to 1.015.} 
+As can be seen in table \ref{tab:robustness_R_results}, a higher interest rate increases the welfare benefits of all policies unformly. In particular, the higher interest rate increases welfare effects by about 50\%, while the lower interest rate reduces them by 50\%. The change in welfare impacts is not due to changes in multipliers, which differ only very little across different interest rates.\footnote{The long-run multiplier of the policies increases by about 1-1.5\% moving from an interest rate of 1.01 to 1.015.} 
 
-\textit{Comment IF: We should provide an explanation for why welfare effects are larger with a higher R. Given that multipliers are not larger with a higher R, I suspect it is the way we calculate welfare benefits that is sensitive to the interest rate. I have not figured out why. Maybe, we can discuss in our next meeting.}
+Instead, welfare impacts increase with higher interest rates, because the present value of a permanent increase in consumption by one basis point falls more with the interest rate than does the present value of the cost of the policies. This is because policy costs accrue immediately while the imputed consumption gains are spread out over the full life-cycle of agents. 
+
+Most importantly, this effect does not alter
+
+
+Rewrite Rfree discussion. Reason is in PV and Pc. PV falls less with higher R and Pc. So PV relative to Pc falls with higher interst rate. Hence the cost of the policies fall for higher interest rates. Most importantly however, the increase in welfare from one to the next interest rate is uniform across policies. Also the ordering is not affected
+
+
 
 
 \begin{table}[]
@@ -52,12 +59,12 @@ As can be seen in table \ref{tab:robustness_R_results}, a higher interest rate i
 		\begin{tabular}{@{}lllll@{}}
 			\toprule
 			&                    & Stimulus check & UI extension & Tax cut \\ \cmidrule(l){1-5} 
-			\multirow{2}{*}{$R = 1.005$}            	& no AD effects & 0.005        & 0.283       & 0.001\\
-														& AD effects    & 0.086        & 0.630       & 0.033  \\
-			\multirow{2}{*}{$R = 1.01$ (baseline)} 		& no AD effects & 0.011        & 0.580       & 0.002   \\
-														& AD effects    & 0.171        & 1.266       & 0.065   \\
-			\multirow{2}{*}{$R = 1.015$}            	& no AD effects & 0.016        & 0.888       & 0.002   \\
-														& AD effects    & 0.254        & 1.905       & 0.098    \\ \cmidrule(l){1-5} 
+			\multirow{3}{*}{no AD effects}            	& $R = 1.005$ 			& 0.005        & 0.283       & 0.001	\\
+			 											& $R = 1.01$ (baseline) & 0.011        & 0.580       & 0.002   	\\
+			            								& $R = 1.015$ 			& 0.016        & 0.888       & 0.002   	\\ \cmidrule(l){1-5}
+			\multirow{3}{*}{AD effects}					& $R = 1.005$    		& 0.086        & 0.630       & 0.033  	\\		
+														& $R = 1.01$ (baseline) & 0.171        & 1.266       & 0.065   	\\
+														& $R = 1.015$    		& 0.254        & 1.905       & 0.098    \\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different values of the interest rate $R$.}
 		\label{tab:robustness_R_results}
@@ -137,12 +144,12 @@ In this section we conduct the welfare analysis for different values of risk ave
 		\begin{tabular}{@{}lllll@{}}
 			\toprule
 			&                    & Stimulus check & UI extension & Tax cut \\ \cmidrule(l){1-5} 
-			\multirow{2}{*}{$\gamma = 1.0$}            	& no AD effects & 0.011          & 0.694        & 0.001   \\
-			& AD effects    & 0.182          & 1.378        & 0.067   \\
-			\multirow{2}{*}{$\gamma = 2.0$ (baseline)} 	& no AD effects & 0.011          & 0.580        & 0.002   \\
-			& AD effects    & 0.171          & 1.266        & 0.065   \\
-			\multirow{2}{*}{$\gamma = 3.0$}            	& no AD effects & 0.011          & 0.577        & 0.002   \\
-			& AD effects    & 0.172          & 1.273        & 0.066   \\ \cmidrule(l){1-5} 
+			\multirow{3}{*}{no AD effects}            	& $\gamma = 1.0$ 			& 0.011          & 0.694        & 0.001   \\
+												 		& $\gamma = 2.0$ (baseline) & 0.011          & 0.580        & 0.002   \\
+			          									& $\gamma = 3.0$ 			& 0.011          & 0.577        & 0.002   \\ \cmidrule(l){1-5} 
+			\multirow{3}{*}{AD effects}					& $\gamma = 1.0$   	 		& 0.182          & 1.378        & 0.067   \\
+														& $\gamma = 2.0$ (baseline) & 0.171          & 1.266        & 0.065   \\
+														& $\gamma = 3.0$    		& 0.172          & 1.273        & 0.066   \\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different values of risk aversion, $\gamma$.}
 		\label{tab:robustness_gamma_results}
@@ -190,10 +197,10 @@ In contrast, multipliers and welfare impacts of the other two policies do not ch
 		\begin{tabular}{@{}lllll@{}}
 			\toprule
 			&                    & Stimulus check & UI extension & Tax cut \\ \cmidrule(l){1-5} 
-			\multirow{2}{*}{Baseline  ($\rho_{b}=0.7$ and $\rho_{nb}=0.5$)} 	& no AD effects & 0.011          & 0.580        & 0.002   \\
-																				& AD effects    & 0.171          & 1.266        & 0.065   \\
-			\multirow{2}{*}{Alternative  ($\rho_{b}=0.3$ and $\rho_{nb}=0.15$)} & no AD effects & 0.043          & 1.913        & 0.003   \\
-																				& AD effects    & 0.169          & 2.620        & 0.052   \\ \cmidrule(l){1-5} 
+			\multirow{2}{*}{no AD effects} 	& Baseline  ($\rho_{b}=0.7$, $\rho_{nb}=0.5$) 		& 0.011          & 0.580        & 0.002   \\
+											& Altern.  ($\rho_{b}=0.3$, $\rho_{nb}=0.15$) 	& 0.043          & 1.913        & 0.003   \\ \cmidrule(l){1-5} 
+			\multirow{2}{*}{AD effects}		& Baseline  ($\rho_{b}=0.7$, $\rho_{nb}=0.5$)    	& 0.171          & 1.266        & 0.065   \\
+											& Altern.  ($\rho_{b}=0.3$, $\rho_{nb}=0.15$)    & 0.169          & 2.620        & 0.052   \\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different unemployment benefit rates.}
 		\label{tab:robustness_benefit_results}
@@ -219,12 +226,12 @@ A higher value for $\kappa$, and hence stronger aggregate demand effects, consid
 		\begin{tabular}{@{}lllll@{}}
 			\toprule
 			&                    											& Stimulus check & UI extension & Tax cut 	\\ \cmidrule(l){1-5}
-			\multirow{2}{*}{Baseline} 						& no AD effects & 0.011          & 0.580        & 0.002   	\\
-			& AD effects    & 0.171          & 1.266        & 0.065   	\\ 
-			\multirow{2}{*}{Shorter average recession, 4q}  & no AD effects & 0.010          & 0.488        & 0.001  	\\
-			& AD effects    & 0.161          & 1.074        & 0.053   	\\
-			\multirow{2}{*}{Stronger AD effects, 0.5}       & no AD effects & 0.011          & 0.580        & 0.002   	\\
-			& AD effects    & 0.346          & 1.990        & 0.133   	\\ \cmidrule(l){1-5} 
+			\multirow{2}{*}{no AD effects} 					& Baseline 						& 0.011          & 0.580        & 0.002   	\\ 
+							 								& Shorter average recession, 4q & 0.010          & 0.488        & 0.001  	\\
+															& Stronger AD effects, 0.5 		& 0.011          & 0.580        & 0.002   	\\ \cmidrule(l){1-5}
+			\multirow{2}{*}{AD effects}						& Baseline    					& 0.171          & 1.266        & 0.065   	\\
+															& Shorter average recession, 4q & 0.161          & 1.074        & 0.053   	\\
+															& Stronger AD effects, 0.5    	& 0.346          & 1.990        & 0.133   	\\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different properties of the recession.}
 		\label{tab:robustness_recession_property_results}
