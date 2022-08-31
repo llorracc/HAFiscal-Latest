@@ -6,9 +6,14 @@
 % Document with title page and tables of contents:
 \documentclass[titlepage, headings=optiontotocandhead]{\econtex}
 
+\provideboolean{CDCEdits}\setboolean{CDCEdits}{true}
+\setboolean{CDCEdits}{false}
+\setboolean{CDCEdits}{true}
+\providecommand{\ifCDC}{\ifthenelse{\boolean{CDCEdits}}}
+
 % Extra standardized packages for specialized content
 %\usepackage{footmisc,datetime2,refcount,xr-hyper,hhline,rotating,subfigure,makecell,subfiles}
-\usepackage{footmisc,datetime2,refcount,xr-hyper,hhline,rotating,makecell,subfiles}
+\usepackage{footmisc,datetime2,refcount,xr-hyper,hhline,rotating,makecell,subfiles,econark}
 
 % Extra custom packages 
 \usepackage{\econtexSetup} % Gets, configures often-used packages

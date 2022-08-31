@@ -42,7 +42,11 @@
 % IF: The following line does not compile for me, so commented it out
 %\hfill{\tiny \jobname~\versn~\today~{at} \DTMcurrenttime, \input{\ResourcesDir/.git-source-commit}~~\input{\ResourcesDir/.git-public-commit}}
 
-\title{[Working title:] Three Stimulus Policies Evaluated}
+\ifCDC{
+  \title{Welfare and Spending Effects \\ of Consumption Stimulus Policies}
+}{
+  \title{[Working title:] Three Stimulus Policies Evaluated}
+  }
 
 \author{Christopher D. Carroll\authNum \and Edmund Crawley\authNum \and Ivan Frankovic\authNum \and H{\aa}kon Tretvoll\authNum}
 
@@ -53,7 +57,7 @@
 }
 
 % \date{\today}
-\renewcommand{\forcedate}{August 10, 2022}\date{\forcedate}
+\renewcommand{\forcedate}{August 30, 2022}\date{\forcedate}
 
 \maketitle
 \hypertarget{abstract}{}
@@ -100,9 +104,9 @@
   \titlepagefinish\pagebreak
   \let\LaTeXStandardContentsName\contentsname
   \renewcommand{\contentsname}{}
-%  \tableofcontents
-%  \pagebreak
-%
+ \tableofcontents
+ \pagebreak
+
 %  \medskip\medskip
 %  \begin{minipage}{0.9\textwidth}
 %    \listoffigures 

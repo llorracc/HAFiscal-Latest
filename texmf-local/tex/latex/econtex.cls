@@ -27,7 +27,7 @@
 %%%     \jelclass can be used to show JEL classifications below the abstract
 %%%     \thanks{text of the thank-you footnote} produces a footnote at the bottom of the page containing the text
 
-\ProvidesClass{./Resources/texmf-local/tex/latex/econtex}[2017/08/01 LaTeX class for economics papers, handouts, and exam questions written by Christopher Carroll]
+\ProvidesClass{econtex}[2017/08/01 LaTeX class for economics papers, handouts, and exam questions written by Christopher Carroll]
 \NeedsTeXFormat{LaTeX2e}
 % \RequirePackage{rotating}
 \RequirePackage{snapshot} % Creates list of external files used by a LaTeX document
@@ -50,7 +50,7 @@
 % pass any options on to the scrartcl class and load this class with some options
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrartcl}}
 \ProcessOptions\relax
-\LoadClass[fontsize=12pt,english,numbers=noenddot,captions=tableheading,captions=nooneline]{scrartcl}
+\LoadClass[fontsize=12pt,english,numbers=noenddot,captions=tableheading,captions=nooneline,headings=optiontocandhead]{scrartcl}
 % pointlessnumbers = do not add final dot after ordinary section numbers
 % tablecaptionabove = use \captionabove for captions above rather than below tables
 % noonelinecaption = do not treat one-line captions differently
