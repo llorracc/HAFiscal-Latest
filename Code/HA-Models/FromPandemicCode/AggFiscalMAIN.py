@@ -42,8 +42,7 @@ if Run_Main:
     Output_Results('./Figures/CRRA2/','./Figures/','./Tables/CRRA2/',Parametrization='Baseline')
     
 if Run_EqualPVs:
-        
-    Run_Dict['Run_1stRoundAD']          = False   
+           
     figs_dir = './Figures/CRRA2_PVSame/'
     Simulate(Run_Dict,figs_dir,Parametrization='CRRA2_PVSame')
     Output_Results('./Figures/CRRA2_PVSame/','./Figures/CRRA2_PVSame/','./Tables/CRRA2_PVSame/',Parametrization='CRRA2_PVSame')
