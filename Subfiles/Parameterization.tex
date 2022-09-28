@@ -32,8 +32,8 @@ Second, we match the steady-state distribution of liquid wealth in the model to 
 \end{subfigure}%
 \caption{Targets and model moments from the estimation}
 \label{fig:splurge_estimation}
+\parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Panel (a) shows the fit of the model to the dynamic consumption response estimated in \citet{fagereng_mpc_2021}, see their figure~A5. Panel (b) shows the fit of the model to the distribution of liquid wealth (see Section~\ref{sec:SCFdata} for the definition) from the 2004 SCF.\normalsize}
 \end{figure}
-
 
 For this estimation exercise, the remaining model parameters are calibrated to reflect the Norwegian economy. Specifically, we set the real interest rate to $2$ percent annually and the unemployment rate to $4.4$ percent, in line with \citet{aursland_state-dependent_2020}. The quarterly probability to survive is calibrated to $1-1/160$, reflecting an expected working life of 40 years. Aggregate productivity growth is set to $1$ percent annually following \citet{kravik_navigating_2019}. The unemployment net replacement rate is calibrated to $60$ percent following \citet{oecd_net_2020}. Finally, we set the real interest rate on liquid debt to $13.6$ percent and the borrowing constraint to $80$ percent of permanent income following data from the Norwegian debt registry \citet{gjeldsregistret_nokkeltall_2022}.\footnote{Specifically, we determine the average volume-weighted interest rate on liquid debt, which consists of consumer loans, credit and payment card debt and all other unsecured debt. To determine the borrowing limit on liquid debt we determine the ratio between total credit card limit divided by total wage income in Norway. We use data from December 2019. Note that although these data let us pin down aggregate quantities, they do not solve the issue referred to in footnote~\ref{foot:liqwealth}, since we cannot link them to the tax registry at the individual level.}
 
@@ -62,6 +62,8 @@ With households divided into the three education groups, some parameters, presen
 
 All households are assumed to have a coefficient of relative risk aversion equal to $\gamma=2$. We also assume that all households have the same propensity to splurge out of transitory income gains and set $\varsigma=0.314$, the value estimated in section~\ref{sec:splurge}. However, each education group is divided into types that differ in their subjective discount factors. The distributions of discount factors for each education group are estimated to fit the distribution of liquid wealth within that group, and this is described in detail in section~\ref{sec:estimBetas}. Regardless of type, households face a constant survival probability each quarter. This is set to $1-1/160$, reflecting an expected working life of 40 years. The real interest rate on households' savings is set to $1$ percent per quarter. 
 
+\afterpage{
+\thispagestyle{empty}
 \begin{table}[p]
 \begin{center}
 \begin{tabular}{l}
@@ -93,9 +95,11 @@ All households are assumed to have a coefficient of relative risk aversion equal
 	Std. dev. of $\log($PI$)$ of ``newborn'' agent & 0.32 & 0.42 & 0.53 \\
 	Avg. quarterly gross growth rate of PI ($\Gamma_e$) & 1.0036 & 1.0045 & 1.0049 \\
 	Unemployment rate in normal times (percent) & \phantom{0}8.5 & \phantom{0}4.4 & \phantom{0}2.7 \\ 
-	Probability of entering unemployment ($\pi_{eu}^{e}$, percent) & 6.2 & 3.1 & 1.8 
+	Probability of entering unemployment ($\pi_{eu}^{e}$, percent) & \phantom{0}6.2 & \phantom{0}3.1 & \phantom{0}1.8 
 	\\ \bottomrule 
-\end{tabular} \\ \\
+\end{tabular} \\
+\parbox{16cm}{\small \vspace{.25cm} \textbf{Note}: The first three rows show numbers from the 2004 SCF. The fourth row are averages of growth rates from \cite{carroll2020modeling}. The fifth row are numbers for 2004 from statista.com, and the sixth row are calculated from these unemployment rates.\normalsize}
+\\ \\
 
 \begin{tabular}{lc}
 	\toprule 
@@ -119,6 +123,8 @@ All households are assumed to have a coefficient of relative risk aversion equal
 \caption{Panel (A) shows parameters calibrated the same for all types. Panel (B) shows parameters calibrated for each education group. Panel (C) shows the numbers describing how we model a recession and the three policies we consider. ``PI'' refers to permanent income.}
 \label{tab:calibration}
 \end{table}
+\clearpage
+}
 
 %\begin{table}[th]
 %\begin{center}
@@ -178,7 +184,7 @@ Discount factor distributions are estimated separately for each education group 
 
 Panel~A of Table~\ref{tab:estimBetas} shows the estimated values of $(\beta_e, \nabla_e)$ for each education group. The panel also shows the minimum and maximum values of the discount factors we actually use in the model when we use a discrete approximation with $7$ values to the uniform distribution of discount factors. Panel~B of Table~\ref{tab:estimBetas} shows that with these estimated distributions we can match the median liquid wealth to permanent income ratios for each education group exactly. Figure~\ref{fig:LorenzPts} shows that with the estimated distributions, the model quite closely matches the distribution of liquid wealth within each education group as well as for the population as a whole. Our model does not suffer from the `missing middle' problem, identified in \cite{kaplanMPC2022}, in which the middle of the wealth distribution has too little wealth.  Our model avoids this problem for two reasons: i) the `splurge' pushes up MPCs relative to wealth; ii) we calibrate to liquid wealth rather than total wealth.
 
-\begin{table}[th]
+\begin{table}[tp]
 \begin{center}
 \begin{tabular}{l}
 	\begin{tabular}{lccc}
@@ -210,6 +216,7 @@ Panel~A of Table~\ref{tab:estimBetas} shows the estimated values of $(\beta_e, \
 \end{tabular}
 \caption{Estimated discount factor distributions, estimation targets and non-targeted moments.}
 \label{tab:estimBetas}
+\parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Panel (A) shows the estimated parameters of the discount distributions for each education group. It also shows the minimum and maximum values we use in our discrete approximation to the uniform distribution of discount factors for each group. Panel (B) shows the weighted median rato of liquid wealth to permanent income from the 2004 SCF and in the model. In the annual data from the SCF, the annual PI is divided by 4 to obtain a quarterly number. Panel (C) shows percent of total wealth held by each education group in the 2004 SCF and in the model. It also shows the average annual MPCs calculated for each individual from the splurge and the quarterly MPCs, and then averaged by education group.\normalsize}
 \end{center}
 \end{table}
 
