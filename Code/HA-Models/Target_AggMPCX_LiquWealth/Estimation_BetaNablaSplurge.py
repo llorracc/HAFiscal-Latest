@@ -4,6 +4,7 @@ import os
 import numpy as np
 import random
 from copy import deepcopy
+import pandas as pd
 
 # Import needed tools from HARK
 from HARK.distribution import Uniform
@@ -477,16 +478,19 @@ plt.show()
 
 
 
+# Output to Excel:
+x = np.vstack(( xAxis, simulated_MPC_mean_add_Lottery_Bin, Agg_MPCX_target) )
+df = pd.DataFrame(x.T,columns=['Year','Model','Fagereng'])
+df.to_excel('Data_AggMPC_LotteryWin.xlsx')
 
 
+x = np.vstack(( LorenzAxis, Lorenz_Data_Adj ) )
+df = pd.DataFrame(x.T,columns=['Percentile','Model'])
+df.to_excel('LiquWealth_Distribution_a.xlsx')
 
-
-
-
-
-
-
-
+x = np.vstack(( np.array([20,40,60,80,100]), np.hstack([lorenz_target,1]) ) )
+df = pd.DataFrame(x.T,columns=['Percentile','Data'])
+df.to_excel('LiquWealth_Distribution_b.xlsx')
 
 
 
