@@ -1,5 +1,15 @@
 \documentclass[../HAFiscal]{subfiles}
+\onlyinsubfile{\externaldocument{HAFiscal}} % Get xrefs -- esp to apndx -- from main file; only works if main file has already been compiled
+
 \begin{document}
+
+\addcontentsline{toc}{section}{Appendices} % label the section "Appendices"
+
+\hypertarget{Appendices}{} % Allows link to [url-of-paper]#Appendices
+\ifthenelse{\boolean{Web}}{}{% Web version has no page headers
+  \chead[Appendices]{Appendices}      % but PDF version does
+  \appendixpage % Reset formatting for appendices
+} 
 
 \section{Estimating discount factor distributions for different interest rates}
 \label{app:DF_R}

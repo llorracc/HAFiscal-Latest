@@ -1,0 +1,18 @@
+% -*- mode: LaTeX; TeX-PDF-mode: t; -*-
+% Shorter version of doc without apps or table of contents
+
+% This document will only compile correctly if HAFiscal
+% has already been successfully compiled
+
+\input{./econtexRoot}\documentclass[HAFiscal]{subfiles}
+\externaldocument{HAFiscal}
+
+\begin{document}
+% Let subfiles called know they are not being compiled standalone
+\input{\LaTeXInputs/econtex_notinsubfile} % but instead part of a larger document
+
+\input{Subfiles.texinput}
+
+\input{HAFiscal.bbl}
+
+\end{document}

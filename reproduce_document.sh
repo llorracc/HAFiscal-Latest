@@ -12,7 +12,7 @@ output_directory='LaTeX'
 pwd
 
 # Compile LaTeX files in root directory
-for file in "$texname" "$texname"-NoAppendix "$texname"-Slides; do
+for file in "$texname" "$texname"-NoAppendix-NoTOC "$texname"-Slides; do
     if [[ -e "$file.tex" ]]; then
 	echo '' ; echo "Compiling $file" ; echo ''
 	#    dep="pwd ; texliveonfly $file"

@@ -1,90 +1,45 @@
 % -*- mode: LaTeX; TeX-PDF-mode: t; -*- # Tell emacs the file type (for syntax)
 
-\input{./econtexRoot} % Set paths (like, \LaTeXInputs to find resources)
-\newcommand{\texname}{HAFiscal}% Keyname for the paper
+\input{./econtexRoot} % Set paths (like, \LaTeXInputs) to find resources
 
-% Document with title page and tables of contents:
+% Document has title page and table of contents and header:
 \documentclass[titlepage, headings=optiontotocandhead]{\econtex}
 
-\provideboolean{CDCEdits}\setboolean{CDCEdits}{true}
-\setboolean{CDCEdits}{false}
-\setboolean{CDCEdits}{true}
-\providecommand{\ifCDC}{\ifthenelse{\boolean{CDCEdits}}}
-%\renewcommand{\ifCDC}{}
-% Extra standardized packages for specialized content
-%\usepackage{footmisc,datetime2,refcount,xr-hyper,hhline,rotating,subfigure,makecell,subfiles}
-\usepackage{footmisc,datetime2,refcount,xr-hyper,hhline,rotating,makecell,subfiles,econark}
+% Set keyname for paper 
+\newcommand{\texname}{HAFiscal}
 
-% Extra custom packages 
+% Can compile either as pdf or web document
+\providecommand{\versn}{pdf} % Version; like, web or pdf or journal submission
+
+% Standard useful packages for economics
 \usepackage{\econtexSetup} % Gets, configures often-used packages
 
-\usepackage{\LaTeXInputs/\texname}% LaTeX Shortcuts for whole paper
-
-% \usepackage{econtexSetup} sets boolean Web=true if compilation type is dvi
-\ifthenelse{\boolean{Web}}{
-  \setboolean{showPageHead}{false}}{   % 
-  \usepackage{scrlayer-scrpage} % Package for page headers if PDF
-  \usepackage{caption} % allow suppression of appendix figures in NoAppendix PDF
-}
-
-%% added packages
-\usepackage[utf8]{inputenc} 
-\usepackage[T1]{fontenc}
-\usepackage{sectsty}
-\usepackage{graphicx}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{booktabs}
-\usepackage{placeins}
-\usepackage[font=small,format=plain,labelfont=bf,textfont=normal,justification=justified,singlelinecheck=false]{caption}
-%\usepackage[round, authoryear]{natbib}
-\usepackage[super]{nth}
-\usepackage{dcolumn}
-\usepackage{subcaption}
-\usepackage{color} 
-\usepackage{afterpage}
-
-%% added commands
-\newcommand{\myred}[1]{\textcolor{red}{#1}}
-\newcommand{\myblue}[1]{\textcolor{blue}{#1}}
-\newcolumntype{d}[1]{D{.}{.}{#1}}
+% Definitions unique to this paper 
+\usepackage{\LaTeXInputs/\texname} % processes \texname.sty
 
 \bibliographystyle{\econtexBibStyle} % Custom author (year) bib style
 
 \begin{document}
 
-% Redefine \onlyinsubfile command defined in \texname.sty file:
-% This lets any submaterial called from here know that it is not standalone
-% If not called from here and IS standalone, can make bib (or other content)
-\renewcommand{\onlyinsubfile}[1]{}\renewcommand{\notinsubfile}[1]{#1}
+% Let subfiles know they are not being compiled standalone
+\input{\LaTeXInputs/econtex_notinsubfile} % but instead part of a larger document
 
-\subfile{HAFiscal-NoAppendix} % Main body of paper
+\subfile{HAFiscal-titlepage}\pagebreak
+\input{HAFiscal-contents.texinput}\pagebreak
+\input{Subfiles.texinput}
 
 \pagebreak
-\hypertarget{Appendices}{} % Allows link to [url-of-paper]#Appendices
-\ifthenelse{\boolean{Web}}{}{% Web version has no page headers
-  \chead[Appendices]{Appendices}      % but PDF version does
-  \appendixpage % Reset formatting for appendices
-} 
-
 \appendix
-\addcontentsline{toc}{section}{Appendices} % Say "Appendices"
 
 \subfile{Subfiles/Appendix}
 
-\small
-\pagebreak
-\bibliography{Add-Refs}
-%\input{\LaTeXInputs/bibliography_blend}
-\end{document}
-
-\small
-\sloppy
-
-\endinput
+% Make the bibliography
+\input{\LaTeXInputs/bibliography_blend}
 
 \end{document}
 
+% Lines below help configure AucTeX if that is your editor
+% 
 % Local Variables:
 % TeX-master-file: t
 % eval: (setq TeX-command-list  (assq-delete-all (car (assoc "BibTeX" TeX-command-list)) TeX-command-list))
