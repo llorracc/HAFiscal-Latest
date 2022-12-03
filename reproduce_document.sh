@@ -7,17 +7,18 @@ scriptDir="$(dirname "$0")"
 [[ "$(which ~/.tlpkg)" == "" ]] && tlmgr init-usertree
 
 texname=HAFiscal
-output_directory='LaTeX'
+output_directory='.'
 
 pwd
 
 # Compile LaTeX files in root directory
-for file in "$texname" "$texname"-NoAppendix-NoTOC "$texname"-Slides; do
+#for file in "$texname" "$texname"-NoAppendix-NoTOC "$texname"-Slides; do
+for file in "$texname"; do
     if [[ -e "$file.tex" ]]; then
 	echo '' ; echo "Compiling $file" ; echo ''
-	#    dep="pwd ; texliveonfly $file"
-	#    echo dep="$dep"
-	#    eval "$dep"
+	dep="pwd ; texliveonfly $file"
+	echo dep="$dep"
+	eval "$dep"
 	cmd="pdflatex -halt-on-error -output-directory=$output_directory $file"
 	echo "$cmd"
 	eval "$cmd"
@@ -27,7 +28,9 @@ for file in "$texname" "$texname"-NoAppendix-NoTOC "$texname"-Slides; do
 	eval "$cmd > /dev/null" 
 	echo '' ; echo "Compiled $file" ; echo ''
     fi
+    latexmk -c
 done
+exit
 
 # # Compile All-Figures and All-Tables
 # for type in Figures Tables; do
