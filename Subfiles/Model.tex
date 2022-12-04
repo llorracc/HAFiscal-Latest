@@ -4,7 +4,7 @@
 \begin{document}
 	
 \section{Model}
-\label{sec:model}
+\notinsubfile{\label{sec:model}}
 
 In this section, we describe our heterogeneous agent model featuring consumers who differ according to their level of education and their subjective discount factors. We first describe the problem faced by these consumers, given the income process they face with permanent and transitory shocks as well as shocks to their employment status. Then we describe how we model the arrival of a recession and the policies that we study as potential responses. Finally, we discuss an extension of the model where we include aggregate demand effects that induce a feedback effect from aggregate consumption to income and, hence, amplify the effect of a recession when it occurs. 
 
@@ -49,7 +49,7 @@ where $\psi_{i,t+1}$ is the shock to permanent income and $\Gamma_{e(i)}$ is the
 	A Markov transition matrix $\Pi$ generates the unemployment dynamics where the number of states is given by $2$ plus the number of periods that unemployment benefits last. An employed consumer can continue being employed or move to being unemployed with benefits.\footnote{That is, as long as we assume that there is at least one period of unemployment benefits.} The first row of $\Pi$ is thus given by $[1-\pi_{eu}^{e(i)}, \pi_{eu}^{e(i)}, \mathbf{0}]$, where $\pi_{eu}^{e(i)}$ indicates the probability of becoming unemployed from an employed state and $\mathbf{0}$ is a vector of zeros of the appropriate length. Note that we allow this probability to depend on the education group of consumer $i$ and will calibrate this parameter to match the average unemployment rate for each education group. Upon becoming unemployed, all consumers face a probability $\pi_{ue}$ of transitioning back into employment and a probability $1-\pi_{ue}$ of remaining unemployed with one less period of remaining benefits. After transitioning into the unemployment state where the consumer is no longer eligible for benefits, the consumer will remain in this state until becoming employed again. The probability of becoming employed is thus the same for each of the unemployment states and education groups. 	
 
 	\subsection{Recessions and policies}
-	\label{sec:recessions}
+	\notinsubfile{\label{sec:recessions}}
 	We model the arrival of a recession, and the government policy response to it, as an unpredictable event---an MIT shock. We have four types of shocks: one representing a recession and one for each of the three different policy responses we consider. The policy responses are usually modeled as in addition to the recession, but we also consider a counterfactual in which the policy response occurs without a recession in order to understand the welfare effects of the policy.
 	
 	\paragraph{Recession.} At the onset of a recession, several changes occur. First, the unemployment rate for each education group doubles: Those who would have been unemployed in the absence of a recession are still unemployed, and an additional number of consumers move from employment to unemployment. Second, conditional on the recession continuing, the employment transition matrix is adjusted so that unemployment remains at the new high level and the expected length of time for an unemployment spell increases. In our baseline calibration, discussed in detail in section~\ref{sec:calib}, we set the expected length of an unemployment spell to one and a half quarters in normal times, and this length increases to four quarters in a recession. Third, the end of the recession occurs as a Bernoulli process calibrated for an average length of recession of six quarters. Finally, at the end of a recession, the employment transition matrix switches back to its original probabilities, and, as a result, the unemployment rate trends down over time, back to its steady-state level.
@@ -66,7 +66,7 @@ where $\psi_{i,t+1}$ is the shock to permanent income and $\Gamma_{e(i)}$ is the
 
 
 	\subsection{Aggregate demand effects}
-	\label{sec:ADeffects}
+	\notinsubfile{\label{sec:ADeffects}}
 	
 	Our baseline model is a partial equilibrium model that does not include any feedback from aggregate consumption to income. In an extension to the model, we add aggregate demand effects during the recession. With this extension, any changes in consumption away from the steady-state consumption level feed back into labor income. Aggregate demand effects are evaluated as
 	\begin{align}
