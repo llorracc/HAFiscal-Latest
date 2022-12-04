@@ -3,7 +3,7 @@
 scriptDir="$(dirname "$0")"
 
 # Make sure tlmgr (texlive manager) is installed and initialized
-[[ "$(which tlmgr)" == "" ]] && echo 'tlmgr is not available; insall texlive and rerun'
+[[ "$(which tlmgr)" == "" ]] && echo 'tlmgr is not available; install texlive and rerun'
 [[ "$(which ~/.tlpkg)" == "" ]] && tlmgr init-usertree
 
 texname=HAFiscal
@@ -16,9 +16,9 @@ pwd
 for file in "$texname"; do
     if [[ -e "$file.tex" ]]; then
 	echo '' ; echo "Compiling $file" ; echo ''
-	dep="pwd ; texliveonfly $file"
-	echo dep="$dep"
-	eval "$dep"
+	# dep="pwd ; texliveonfly $file"
+	# echo dep="$dep"
+	# eval "$dep"
 	cmd="pdflatex -halt-on-error -output-directory=$output_directory $file"
 	echo "$cmd"
 	eval "$cmd"
