@@ -1,4 +1,5 @@
-\documentclass[../HAFiscal]{subfiles}
+\input{./econtexRoot.texinput}
+\documentclass[\econtexRoot/HAFiscal]{subfiles}
 \onlyinsubfile{\externaldocument{HAFiscal}} % Get xrefs -- esp to apndx -- from main file; only works if main file has already been compiled
 
 \begin{document}
@@ -31,7 +32,7 @@ Figure~\ref{fig:LorenzPts_robustness_R} shows the fit of the liquid wealth distr
 
 \begin{figure}[th]
 	\begin{center}
-		\includegraphics[width=.9\textwidth]{../Figures/LorenzPoints_robustness_R.pdf}
+		\includegraphics[width=.9\textwidth]{\econtexRoot/Figures/LorenzPoints_robustness_R.pdf}
 		\caption{Distributions of liquid wealth within each educational group and for the whole population from the 2004 Survey of Consumer Finance and from the estimated model for different values of the interest rate, $R$.}
 		\label{fig:LorenzPts_robustness_R}
 	\end{center}

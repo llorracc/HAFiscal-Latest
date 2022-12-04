@@ -4,7 +4,7 @@
 % This document will only compile correctly if HAFiscal
 % has already been successfully compiled
 
-\input{./econtexRoot}\documentclass[HAFiscal]{subfiles}
+\input{./econtexRoot.texinput}\documentclass[HAFiscal]{subfiles}
 \externaldocument{HAFiscal}
 
 \begin{document}
@@ -13,6 +13,8 @@
 
 \input{Subfiles.texinput}
 
+% The bbl file will only exist if HAFiscal has been successfully compiled
+% (with bibtex then latex)
 \input{HAFiscal.bbl}
 
 \end{document}

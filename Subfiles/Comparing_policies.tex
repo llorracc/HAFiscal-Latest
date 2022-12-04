@@ -1,5 +1,6 @@
-\documentclass[../HAFiscal]{subfiles}
-\onlyinsubfile{\externaldocument{../HAFiscal}} % Get xrefs -- esp to apndx -- from main file; only works if main file has already been compiled
+\input{./econtexRoot.texinput}
+\documentclass[\econtexRoot/HAFiscal]{subfiles}
+\onlyinsubfile{\externaldocument{\econtexRoot/HAFiscal}} % Get xrefs -- esp to apndx -- from main file; only works if main file has already been compiled
 
 \begin{document}
 	
@@ -28,7 +29,7 @@ Note that all graphs show the average response of income and consumption for rec
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
+	\includegraphics[width=0.8\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
 	\caption{Impulse responses of aggregate income and consumption to a \textbf{stimulus check} during recessions with and without aggregate demand effects}
 	\label{fig:recessioncheckrelrecession}
 \end{figure}
@@ -80,7 +81,7 @@ The multiplier is slightly lower for the UI extension policy than the stimulus c
 
 \begin{table}[t]
 	\center
-	\input Code/HA-Models/FromPandemicCode/Tables/CRRA2/Multiplier.tex
+	\input{\econtexRoot/Code/HA-Models/FromPandemicCode/Tables/CRRA2/Multiplier.tex}
 	\caption{Long-run cumulative multipliers as well as the share of the policy occurring during the recession}
 	\label{tab:Multiplier}
 \end{table}
@@ -131,7 +132,7 @@ The welfare effects for the UI extension are largest compared with other stimulu
 
 \begin{table}[ht] 
 	\center
-	\input Code/HA-Models/FromPandemicCode/Tables/CRRA2_PVSame/welfare4.tex
+	\input{\econtexRoot/Code/HA-Models/FromPandemicCode/Tables/CRRA2_PVSame/welfare4.tex}
 	\caption{Consumption-equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects}
 	\label{welfare}
 \end{table}
