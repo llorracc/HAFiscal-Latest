@@ -1,3 +1,4 @@
+# -*- mode: sh; sh-shell: bash; -*-
 # Google 'latexmk' for explanation of this config file
 # or see https://mg.readthedocs.io/latexmk.html
 # latexmk at unix command line will compile the paper
