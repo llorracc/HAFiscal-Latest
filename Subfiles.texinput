@@ -1,3 +1,4 @@
+% -*- mode: LaTeX; TeX-PDF-mode: t; -*- 
 \subfile{Subfiles/Intro}
 \subfile{Subfiles/Model}
 \subfile{Subfiles/Parameterization} 	
