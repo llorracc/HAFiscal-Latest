@@ -1,6 +1,6 @@
 % -*- mode: LaTeX; TeX-PDF-mode: t; -*-
 \input{./econtexRoot.texinput}\documentclass[HAFiscal]{subfiles}
-\externaldocument{HAFiscal}
+\externaldocument{\econtexRoot/HAFiscal}
 
 \begin{document}
 
@@ -33,7 +33,11 @@
 
 \maketitle
 \hypertarget{abstract}{}
-\subfile{Subfiles/Abstract}
+\begin{verbatimwrite}{\econtexRoot/Subfiles/Abstract.texinput}
+  Using a heterogeneous agent model calibrated to match measured spending dynamics over four years following an income shock (\cite{fagereng_mpc_2021}), we assess the effectiveness of three fiscal stimulus policies employed during recent recessions.  Unemployment insurance (UI) extensions are the clear ``bang for the buck'' winner, especially when effectiveness is measured in utility terms.  Stimulus checks are second best and have the advantage (over UI) of being scalable to any desired size.  A temporary (two-year) cut in the rate of wage taxation is considerably less effective than the other policies and has negligible effects in the version of our model without a multiplier.
+\end{verbatimwrite}
+\input{\econtexRoot/Subfiles/Abstract.texinput}
+
 % Various resources
 \hypertarget{links}{}
 
@@ -89,7 +93,7 @@
 % \end{minipage}
 } % {Web}
 
-\input{\LaTeXInputs/bibliography_blend}
+%\input{\LaTeXInputs/bibliography_blend}
 % Do not include appendix figures and tables in ToC unless for Web version
 \ifthenelse{\boolean{Web}}{}{
   \onlyinsubfile{\captionsetup[figure]{list=no}}
@@ -98,6 +102,8 @@
 
 % \bibliography{Add-Refs,economics}
 % \input{\LaTeXInputs/bibliography_blend}
+
+\onlyinsubfile{\input{\LaTeXInputs/bibliography_blend}}
 
 \end{document}
 
