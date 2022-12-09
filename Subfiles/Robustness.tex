@@ -1,18 +1,21 @@
-\documentclass[../HAFiscal]{subfiles}
+\input{./econtexRoot.texinput}
+\documentclass[\econtexRoot/HAFiscal]{subfiles}
+\onlyinsubfile{\externaldocument{\econtexRoot/HAFiscal}} % Get xrefs -- esp to apndx -- from main file; only works if main file has already been compiled
+
 \begin{document}
 
 \FloatBarrier
 \section{Robustness}
-\label{sec:robustness}
+\notinsubfile{\label{sec:robustness}}
 
 In this section, we analyze how sensitive our results are to some of the parameters in the model. In particular, we focus on parameters that heavily influence consumers' incentives to save. These parameters are (1) the interest rate that affects the returns on saving and (2) the degree of risk aversion and the replacement rates when unemployed with or without benefits that affect the strength of a precautionary saving motive. The aim is to alter these incentives while maintaining the requirement that the distributions of liquid wealth in each education group match the distributions in the data. Hence, in each case, we re-estimate the distributions of discount factors in each education group (and, if necessary, the degree of splurge spending in consumption). The aim is thus to compute new results for a model with different parameters that also fits data on the distribution of liquid wealth. At the end of the section, we also consider how changing the properties of the recession affects our main results. 
 
 \subsection{Changing the interest rate}
-\label{sec:robust_R} 
+\notinsubfile{\label{sec:robust_R}} 
 In our baseline calibration, the interest rate is set to $1$ percent per quarter. Here, we consider the effect on our results of increasing or decreasing this value. Changes to the U.S. interest rate do not affect the estimation of the splurge parameter $\varsigma$. However, before we can calculate updated results for a different interest rate, the distribution of discount factors within each education group must be re-estimated for the model to continue to match the liquid wealth distributions. 
 
 \subsubsection{Discount factor distributions with different interest rates}
-\label{sec:robust_R_estim}
+\notinsubfile{\label{sec:robust_R_estim}}
 
 Table~\ref{tab:robustness_R} shows the values we obtain for the discount factor distributions when we change the quarterly interest rate by either decreasing it to $0.5$ percent or increasing it to $1.5$ percent. In both cases, the estimation can exactly match the median liquid-wealth-to-permanent-income ratios for each education group reported in panel~B of table~\ref{tab:estimBetas}. 
 
@@ -28,7 +31,7 @@ Table~\ref{tab:robustness_R} shows the values we obtain for the discount factor 
 		\\ \bottomrule 
 	\end{tabular}
 \caption{Estimates of the splurge and $(\beta,\nabla)$ for each education group for different values of the interest rate $R$}
-\label{tab:robustness_R}
+\notinsubfile{\label{tab:robustness_R}}
 \end{center}
 \end{table}
 
@@ -38,7 +41,7 @@ Figure~\ref{fig:LorenzPts_robustness_R} in Appendix~\ref{app:DF_R} shows that th
 
 \FloatBarrier
 \subsubsection{Results with different interest rates}
-\label{sec:robust_R_results}
+\notinsubfile{\label{sec:robust_R_results}}
 
 In this section, we repeat the welfare analysis conducted in section \ref{sec:welfare} for different values of the interest rate. As in that section, the stimulus check and payroll tax cut policy have been adjusted to be of the same fiscal size as the UI extension. All three policies are implemented during a recession. We determine welfare results for the policies implemented both with and without aggregate demand effects.
 
@@ -58,19 +61,19 @@ As can be seen in table \ref{tab:robustness_R_results}, a higher interest rate i
 			& $R = 1.015$    		& 0.254        & 1.905       & 0.098    \\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption-equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different values of the interest rate $R$}
-		\label{tab:robustness_R_results}
+		\notinsubfile{\label{tab:robustness_R_results}}
 	\end{center}
 \end{table}
 
 
 \FloatBarrier
 \subsection{Changing risk aversion} 
-\label{sec:robust_gamma} 
+\notinsubfile{\label{sec:robust_gamma}} 
 
 In our baseline calibration, consumers have a risk aversion of $\gamma=2$, which is quite common in macroeconomic models. Here, we investigate how alternative values of $\gamma$ would influence our results. Again, we re-estimate the distribution of discount factors within each education group, but in this case, we also re-estimate the degree of splurge spending in consumption. 
 
 \subsubsection{Discount factor distributions with different risk aversion}
-\label{sec:robust_gamma_estim}
+\notinsubfile{\label{sec:robust_gamma_estim}}
 
 Table~\ref{tab:robustness_gamma} displays the values we obtain for the splurge and the discount factor distributions when we change $\gamma$ to $1$ and $3$. The table shows that the splurge is not very sensitive to the degree of risk aversion. The splurge controls the degree of spending that consumers do before considering the trade off involved in optimally allocating spending over time and across different future states of the world. Risk aversion affects that trade off but does not have a big influence on a parameter that controls spending that is independent of that problem. 
 
@@ -86,7 +89,7 @@ Table~\ref{tab:robustness_gamma} displays the values we obtain for the splurge a
 	\\ \bottomrule 
 \end{tabular}
 \caption{Estimates of the splurge and $(\beta,\nabla)$ for each education group for different values of risk aversion, $\gamma$}
-\label{tab:robustness_gamma}
+\notinsubfile{\label{tab:robustness_gamma}}
 \end{center}
 \end{table}
 
@@ -107,7 +110,7 @@ When we decrease risk aversion to $\gamma=1.0$, however, we run into problems wh
 	Median LW/PI (model, $\gamma = 3.0$, percent) & 4.64 & 30.2 & 112.8 \\ \bottomrule
 \end{tabular}
 \caption{Median liquid-wealth-to-permanent-income ratios}
-\label{tab:robustness_gamma_mlwpi}	
+\notinsubfile{\label{tab:robustness_gamma_mlwpi}}	
 \parbox{15cm}{\small \vspace{.05cm} \textbf{Note}: The table shows the weighted median ratio of liquid-wealth-topermanent-income from the 2004 SCF and in versions of the model with different risk aversion. In the annual data from the SCF, the annual PI is divided by 4 to obtain a quarterly number.\normalsize}
 \end{center}
 \end{table}
@@ -118,7 +121,7 @@ Table~\ref{tab:robustness_gamma_mlwpi} shows that for $\gamma=1.0$, while the mo
 	\begin{center}
 		\includegraphics[width=.9\textwidth]{../Figures/LorenzPoints_robustness_CRRA.pdf}
 		\caption{Distributions of liquid wealth within each educational group and for the whole population from the 2004 Survey of Consumer Finances and from the estimated model for different values of risk aversion, $\gamma$}
-		\label{fig:LorenzPts_robustness_CRRA}
+		\notinsubfile{\label{fig:LorenzPts_robustness_CRRA}}
 	\end{center}
 \end{figure}
 
@@ -127,7 +130,7 @@ The issue is that with a lower value of risk aversion and a weaker precautionary
 The strength of the precautionary saving motive, however, is determined by more than just risk aversion. The risks that households face also drive the strength of this motive for saving, and in our model, a key risk is unemployment risk. Therefore, the replacement rates that households face when they are unemployed with or without benefits play an important role. In section~\ref{sec:robust_benefits}, we consider an alternative calibration of these values. 
 
 \subsubsection{Results with different risk aversion}
-\label{sec:robust_gamma_results}
+\notinsubfile{\label{sec:robust_gamma_results}}
 
 In this section, we conduct the welfare analysis for different values of risk aversion. A higher risk aversion implies a greater welfare loss associated with the same drop in consumption, and thus, a greater welfare gain for policies that reduce the consumption drop. However, changing the risk-aversion parameter has a number of other ramifications for our welfare measure that are difficult to assess without simulation. A higher risk aversion (ceteris paribus) induces agents to hold a higher buffer stock of savings, making them less sensitive to adverse economic shocks in terms of their consumption response. As argued earlier, and since we target the empirical wealth-to-income ratios, we increase impatience to counteract this larger incentive to save. These changes then affect the consumption response of agents to the recession and to the policies implemented. 
 
@@ -149,19 +152,19 @@ For $\gamma=3$ and AD effects switched on, we obtain slightly higher welfare eff
 			& $\gamma = 3.0$    		& 0.172          & 1.273        & 0.066   \\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption-equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different values of risk aversion, $\gamma$}
-		\label{tab:robustness_gamma_results}
+		\notinsubfile{\label{tab:robustness_gamma_results}}
 	\end{center}
 \end{table}
 
 
 
 \subsection{Changing benefits} 
-\label{sec:robust_benefits} 
+\notinsubfile{\label{sec:robust_benefits}} 
 
 In our baseline calibration, we follow \cite{rothstein2017scraping} and calibrate the replacement rates to $\rho_b=0.7$ with unemployment benefits and $\rho_{nb}=0.5$ without benefits. Here, we consider replacement rates that are considerably less generous and more in line with values used in the previous macro literature with unemployment in models with heterogeneous agents. The alternative values we consider are a replacement rate of $\rho_{b}=0.3$ when unemployed with benefits, as in \cite{carroll2020modeling}, and a replacement rate of $\rho_{nb}=0.15$ when unemployed without benefits. This latter value is the same as the replacement rate used in \cite{den2010computational}.\footnote{In \cite{den2010computational}, there is only one unemployment state and, hence, no sense in which benefits expire after a while. Therefore, this replacement rate applies for long-term unemployed, as it does in our model, but in this paper there is also an intermediate state in which benefits are higher until they expire.} With these replacement rates, being unemployed is more serious for consumers than in our baseline calibration, and the precautionary saving motive is stronger. 
 
 \subsubsection{Discount factor distributions with different benefits}
-\label{sec:robust_benefits_estim}
+\notinsubfile{\label{sec:robust_benefits_estim}}
 
 Table~\ref{tab:robustness_benefits} shows that when benefits are less generous and the precautionary motive is stronger, the estimated discount factor distributions are centered on lower values of $\beta$, and the dispersion in the distributions increases, as $\nabla$ is considerably higher. The intuition is similar to the case when increasing risk aversion from $\gamma=2.0$ to $\gamma=3.0$, discussed in section~\ref{sec:robust_gamma_estim}: A stronger precautionary motive for saving must be counteracted by a lower average discount factor to match the same average level of saving as before. The distributions must also be more dispersed to match the same concentration of liquid wealth. In fact, the estimated discount factor distributions for the alternative calibration of the replacement rates are very similar to those reported for $\gamma=3.0$ in row~3 of table~\ref{tab:robustness_gamma}. 
 
@@ -177,13 +180,13 @@ Table~\ref{tab:robustness_benefits} shows that when benefits are less generous a
 	\end{tabular}
 \end{center}
 \caption{Estimates of the Splurge and $(\beta,\nabla)$ for each education group for the baseline replacement rates $\rho_{b}$ and $\rho_{nb}$ and an alternative calibration}
-\label{tab:robustness_benefits}
+\notinsubfile{\label{tab:robustness_benefits}}
 \end{table}
 
 
 \FloatBarrier
 \subsubsection{Results with different benefits}
-\label{sec:robust_benefits_results}
+\notinsubfile{\label{sec:robust_benefits_results}}
 
 In this section, we perform the welfare analysis for different benefit replacement rates. Table \ref{tab:robustness_benefit_results} shows that the alternative parameterization of the unemployment replacement rates yields considerably higher welfare benefits for the UI extension policy. In particular, the lower the replacement rate under the no-benefit regime, the more harmful is the expiration of eligibility to the UI. The UI extension is thus particularly powerful if $\rho_{nb}$ is small, which is mirrored by the long-run multiplier of the UI extension policy. It increases from 1.275 in the baseline calibration to 1.416 under the lower replacement rates. In contrast, multipliers and welfare effects of the other two policies do not change dramatically under the alternative calibration. Again, our ranking of the three policies remains the same.
 
@@ -199,7 +202,7 @@ In this section, we perform the welfare analysis for different benefit replaceme
 			& Altern.  ($\rho_{b}=0.3$, $\rho_{nb}=0.15$)    & 0.169          & 2.620        & 0.052   \\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumptionequivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different unemployment benefit rates}
-		\label{tab:robustness_benefit_results}
+		\notinsubfile{\label{tab:robustness_benefit_results}}
 	\end{center}
 \end{table}
 
@@ -229,7 +232,7 @@ A higher value for $\kappa$---and hence stronger aggregate demand effects---cons
 			& Stronger AD effects, 0.5    	& 0.346          & 1.990        & 0.133   	\\ \cmidrule(l){1-5} 
 		\end{tabular}
 		\caption{Consumption-equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different properties of the recession}
-		\label{tab:robustness_recession_property_results}
+		\notinsubfile{\label{tab:robustness_recession_property_results}}
 	\end{center}
 \end{table}
 
@@ -238,7 +241,7 @@ A higher value for $\kappa$---and hence stronger aggregate demand effects---cons
 
 \FloatBarrier
 \subsection{Summary of robustness exercises}
-\label{sec:robust_summary}
+\notinsubfile{\label{sec:robust_summary}}
 
 The robustness checks in this section show that our main results are fairly robust to a wide range of alternative parameter choices. We have shown that the ex-ante discount rates can be adjusted so that the distribution of liquid wealth is well approximated in the model. Furthermore, the distribution of liquid wealth appears to more or less pin down the aggregate consumption properties for the model, regardless of the other parameters. Importantly, none of the robustness checks alter the ranking of policies in terms of their effectiveness and therefore the overall conclusions of this paper.
 
