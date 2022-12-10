@@ -12,9 +12,13 @@ bib
 bst
 
 ./bibtex/bib:
+auto
 economics.bib
 economics.bib~
 global.bib
+
+./bibtex/bib/auto:
+economics.el
 
 ./bibtex/bst:
 econtex.bst

@@ -1,11 +1,10 @@
 % -*- mode: LaTeX; TeX-PDF-mode: t; -*-     # Tell emacs the file type
-
 \input{./econtexRoot.texinput} % Set paths (like, \LaTeXInputs) to find resources
 
 % Document has title page and table of contents and header:
 \documentclass[titlepage, headings=optiontotocandhead]{\econtex} % \econtex: see econtexRoot
 
-% Set keyname for paper 
+% Keyname for paper 
 \newcommand{\texname}{HAFiscal}
 
 % Can compile either as pdf or web document
@@ -17,16 +16,17 @@
 % Definitions unique to this paper 
 \usepackage{\LaTeXInputs/\texname} % processes \texname.sty
 
-\bibliographystyle{\econtexBibStyle} % Custom author (year) bib style
+% Custom author (year) bib style
+\bibliographystyle{\econtexBibStyle} 
 
 \begin{document}
 
-% Let subfiles know they are not being compiled standalone
-\input{\LaTeXInputs/econtex_notinsubfile} % but instead part of a larger document
+% Tell subfiles they are not being compiled as standalone files
+\input{\LaTeXInputs/econtex_notinsubfile} % instead are part of a larger document
 
 \subfile{HAFiscal-titlepage}\pagebreak
-\input{HAFiscal-contents.texinput}\pagebreak
-\input{Subfiles.texinput}
+\input{HAFiscal-contents.texinput}\pagebreak % Table of contents
+\input{Subfiles.texinput} % Paper composed of these subfiles
 
 \pagebreak
 \appendix
