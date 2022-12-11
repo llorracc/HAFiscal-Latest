@@ -52,6 +52,7 @@ makePostHandoutsStart.tex
 pdfsuppressruntime.sty
 printvrb.sty
 snapshot.sty
+subfiles.4ht
 tex4ht
 tex4htMakeCFG.sh
 titlesec.sty
