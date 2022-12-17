@@ -8,7 +8,7 @@
 % Change {true} to {false} to exclude 
 \provideboolean{Appendix}\setboolean{Appendix}{true}
 \provideboolean{TOC}\setboolean{TOC}{true}
-\usepackage[destlabel=true]{hyperref}
+
 % Keyname for paper (optional)
 \newcommand{\texname}{HAFiscal}
 
@@ -20,6 +20,8 @@
 
 % Definitions unique to this paper 
 \usepackage{\LaTeXInputs/\texname} % processes \texname.sty
+
+\ifthenelse{\boolean{Web}}{\usepackage[destlabel=true]{hyperref}}{}
 
 % Custom author (year) bib style
 \bibliographystyle{\econtexBibStyle} 
