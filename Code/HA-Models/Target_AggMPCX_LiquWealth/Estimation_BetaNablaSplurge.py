@@ -8,7 +8,7 @@ import pandas as pd
 
 # Import needed tools from HARK
 from HARK.distribution import Uniform
-from HARK.utilities import getPercentiles, getLorenzShares
+from HARK.utilities import getPercentiles, getLorenzShares, make_figs
 from HARK.parallel import multiThreadCommands
 from HARK.estimation import minimizeNelderMead
 from HARK.ConsumptionSaving.ConsIndShockModel import *
@@ -400,7 +400,7 @@ def find_Opt_splurge_beta_nabla():
 
 #%%
     
-CRRA_values = [1,2] #[1,2,3]
+CRRA_values = [1,2,3]
 
 for el in range(0,len(CRRA_values)):
     print('Running CRRA = ', CRRA_values[el])
@@ -450,7 +450,7 @@ print('Distance for target is', distance)
 print('Distance for Agg MPC is', distance_Agg_MPC)
 print('Distance for MPC matrix is', distance_MPC)
 
-import matplotlib.pyplot as plt
+
 plt.figure()
 xAxis = np.arange(0,5)
 plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,'b',linewidth=2)
@@ -459,9 +459,9 @@ plt.legend(['Model','Fagereng, Holm and Natvik (2021)'])
 plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
 plt.xlabel('year')
 plt.ylabel('% of lottery win spent')
-plt.savefig(Abs_Path+'/Figures/' +'AggMPC_LotteryWin.pdf')
-plt.show()   
-
+#plt.savefig(Abs_Path+'/Figures/' +'AggMPC_LotteryWin.pdf')
+make_figs('AggMPC_LotteryWin', True , False, target_dir=Abs_Path+'/Figures/')
+plt.show()  
 
 print('Model: Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80])
 print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_target)
@@ -479,7 +479,8 @@ plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', 
 plt.xlabel('Income percentile',fontsize=12)
 plt.ylabel('Cumulative liquid wealth share',fontsize=12)
 plt.legend(['Model','Data'])
-plt.savefig(Abs_Path+'/Figures/' +'LiquWealth_Distribution.pdf')
+#plt.savefig(Abs_Path+'/Figures/' +'LiquWealth_Distribution.pdf')
+make_figs('LiquWealth_Distribution', True , False, target_dir=Abs_Path+'/Figures/')
 plt.show()  
 
 
