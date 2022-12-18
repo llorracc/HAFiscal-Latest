@@ -4,12 +4,13 @@
 
 \begin{document}
 
-\section{Model}
+\hypertarget{model}{}\section{Model}
 \notinsubfile{\label{sec:model}}
 
 Consumers differ by their level of education and, within education group, by subjective discount factors (calibrated to match the within-group distribution of wealth). We first describe each kind of consumer's problem, given an income process with permanent and transitory shocks calibrated to their type, as well as type-specific shocks to employment. The next step describes the arrival of a recession and the policies we study as potential fiscal policy responses. The last section discusses an extension incorporating aggregate demand effects that induce feedback from aggregate consumption to income and (via the marginal propensity to consume) back to consumption, amplifying the effect of a recession when it occurs. 
 
-\subsection{The consumer problem}
+\hypertarget{the-consumer-problem}{}\subsection{The consumer problem}
+
 A consumer $i$ has education $e(i)$ and a subjective discount factor $\beta_i$. The consumer faces a stochastic income stream, $y_{i,t}$, and chooses to consume some of that income when it arrives (the `splurge') and then to optimize consumption with what is left over. Therefore, consumption each period for consumer $i$ can be written as
 \begin{align}
   c_{i,t} = c_{sp,i,t} + c_{opt,i,t},
@@ -30,7 +31,8 @@ We use a standard CRRA (constant relative risk aversion) utility function, so $u
 \end{align}
 where $R$ is the gross interest factor for accumulated assets $a_{i,t}$ and $\hat{\Gamma}_{i,t+1}$ is the realized growth rate of permanent income from period $t$ to $t+1$, discussed further later.
 
-\subsubsection{The Income Process}
+\hypertarget{the-income-process}{}\subsubsection{The Income Process}
+
 Consumers face a stochastic income process with permanent and transitory shocks to income, along with unemployment shocks. In normal times, consumers who become unemployed receive unemployment benefits for two quarters. Permanent income evolves according to:
 \begin{align}
   p_{i,t+1} = \psi_{i,t+1}\Gamma_{e(i)}p_{i,t},
@@ -49,7 +51,7 @@ where $\xi_{i,t}$ is normally distributed with variance $\sigma_{\xi}^2$, and $\
 
 A Markov transition matrix $\Pi$ generates the unemployment dynamics where the number of states is given by $2$ plus the number of periods that unemployment benefits last. An employed consumer can continue being employed or move to being unemployed with benefits.\footnote{That is, as long as we assume that there is at least one period of unemployment benefits.} The first row of $\Pi$ is thus given by $[1-\pi_{eu}^{e(i)}, \pi_{eu}^{e(i)}, \mathbf{0}]$, where $\pi_{eu}^{e(i)}$ indicates the probability of becoming unemployed from an employed state and $\mathbf{0}$ is a vector of zeros of the appropriate length. Note that we allow this probability to depend on the education group of consumer $i$ and will calibrate this parameter to match the average unemployment rate for each education group. Upon becoming unemployed, all consumers face a probability $\pi_{ue}$ of transitioning back into employment and a probability $1-\pi_{ue}$ of remaining unemployed with one less period of remaining benefits. After transitioning into the unemployment state where the consumer is no longer eligible for benefits, the consumer will remain in this state until becoming employed again. The probability of becoming employed is thus the same for each of the unemployment states and education groups. 	
 
-\subsection{Recessions and policies}
+\hypertarget{recessions-and-policies}{}\subsection{Recessions and policies}
 \notinsubfile{\label{sec:recessions}}
 We model the arrival of a recession, and the government policy response to it, as an unpredictable event---an MIT shock. We have four types of shocks: one representing a recession and one for each of the three different policy responses we consider. The policy responses are usually modeled as in addition to the recession, but we also consider a counterfactual in which the policy response occurs without a recession in order to understand the welfare effects of the policy.
 
@@ -66,7 +68,7 @@ We model the arrival of a recession, and the government policy response to it, a
 To keep our analysis as simple as possible, we assume that our policies are debt financed and that none of the policy-induced government debt is repaid during that short period.  Any of a variety of fiscal rules could be imposed for the period following our short period of interest, but we did not want to choose any particular fiscal rule in order to avoid making a choice that should have little consequence for our key question. Advocates of alternative fiscal rules likely already have intuitions about how such rules' economic consequences differ, but under our approach, those consequences should be nearly the same for all three policies we consider.  Alternative choices of fiscal rules should therefore not affect the ranking of policies that is our principal concern. 
 
 
-\subsection{Aggregate demand effects}
+\subsection{aggregate-demand-effects}{}\subsection{Aggregate demand effects}
 \notinsubfile{\label{sec:ADeffects}}
 
 Our baseline model is a partial equilibrium model that does not include any feedback from aggregate consumption to income. In an extension to the model, we add aggregate demand effects during the recession. With this extension, any changes in consumption away from the steady-state consumption level feed back into labor income. Aggregate demand effects are evaluated as

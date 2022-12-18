@@ -4,7 +4,6 @@
 \input{\econtexRoot/Resources/owner}
 
 \begin{document}
-
 % Attempted to make all lines used for Web version contain {Web} (or version with only single curly brace at end) so can be removed with sed
 \ifthenelse{\boolean{Web}}{    % {Web}
   \renewcommand{\versn}{Web}     % Too hard to figure out passing -output-directory through make4ht through htlatex, so web version is compiled with junk files in main directory
