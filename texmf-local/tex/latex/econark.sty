@@ -7,11 +7,8 @@
   \fi #1% Removing this comment breaks the command
 }
 
-% Suppress useless warning "PDF inclusion: multiple PDFs with page group"
-\pdfsuppresswarningpagegroup=1
-
 % Appendices and body are subfiles
-\usepackage{subfiles}
+\RequirePackage{subfiles}
 
 % Command to define a label only if it does not yet exist (suppresses misleading
 % warnings when material created in subfiles is read in while references already
