@@ -1,5 +1,6 @@
 import os
 from Welfare import Welfare_Results
+from HARK.utilities import make_figs
 
 def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline'):
 
@@ -103,7 +104,8 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
     plt.xlabel('quarter')
     plt.ylabel('% difference relative to recession')
-    plt.savefig(fig_dir +'recession_taxcut_relrecession.pdf')
+    #plt.savefig(fig_dir +'recession_taxcut_relrecession.pdf')
+    make_figs('recession_taxcut_relrecession', True , False, target_dir=fig_dir)
     plt.show()   
     
     
@@ -139,7 +141,8 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
     plt.xlabel('quarter')
     plt.ylabel('% difference relative to recession')
-    plt.savefig(fig_dir +'recession_UI_relrecession.pdf')
+    #plt.savefig(fig_dir +'recession_UI_relrecession.pdf')
+    make_figs('recession_UI_relrecession', True , False, target_dir=fig_dir)
     plt.show() 
     
     
@@ -175,7 +178,8 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
     plt.xlabel('quarter')
     plt.ylabel('% difference relative to recession')
-    plt.savefig(fig_dir +'recession_Check_relrecession.pdf')
+    #plt.savefig(fig_dir +'recession_Check_relrecession.pdf')
+    make_figs('recession_Check_relrecession', True , False, target_dir=fig_dir)
     plt.show()        
     
     
@@ -254,7 +258,8 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     plt.legend(['Payroll Tax cut','Extended Unemployment Benefits','Stimulus Check'])
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, nPlotDiff))
     plt.xlabel('quarter')
-    plt.savefig(fig_dir +'Cummulative_multipliers.pdf')
+    #plt.savefig(fig_dir +'Cummulative_multipliers.pdf')
+    make_figs('Cummulative_multipliers', True , False, target_dir=fig_dir)
     plt.show()
         
     
