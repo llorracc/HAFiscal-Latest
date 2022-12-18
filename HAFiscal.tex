@@ -21,7 +21,7 @@
 % Definitions unique to this paper 
 \usepackage{\LaTeXInputs/\texname} % processes \texname.sty
 
-%\renewcommand{\ifthenelse}{\ifdef}
+% When compiling Web version of paper, construct targets/anchors
 \ifthenelse{\boolean{Web}}{\usepackage[destlabel=true]{hyperref}}{}
 
 % Custom author (year) bib style
@@ -36,12 +36,14 @@
 
 % Table of contents
 \ifthenelse{\boolean{TOC}}{\subfile{HAFiscal-contents.texinput}\pagebreak }{}
-\input{Subfiles.texinput} % Paper composed of these subfiles
+\input{Subfiles.texinput} % Paper is composed of subfiles enumerated here
 
 \pagebreak
 \appendix
 
-\ifthenelse{\boolean{Appendix}}{\subfile{Subfiles/Appendix}\pagebreak }{}
+%\ifthenelse{\boolean{Appendix}}{
+\subfile{Subfiles/Appendix}\pagebreak
+%}{}
 
 % Make the bibliography
 \input{\LaTeXInputs/bibliography_blend}
