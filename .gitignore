@@ -49,6 +49,9 @@ flycheck_*.el
 # directory configuration
 .dir-locals.el
 
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
 ### LaTeX ###
 ## Core latex/pdflatex auxiliary files:
 *.aux
