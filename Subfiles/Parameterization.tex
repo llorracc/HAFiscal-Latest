@@ -5,14 +5,14 @@
 \onlyinsubfile{\externaldocument{\econtexRoot/HAFiscal}} % Get xrefs -- esp to apndx -- from main file; only works if main file
 \begin{document}
 
-\hypertarget{parameterizing-the-model}{}\section{Parameterizing the model}
+\hypertarget{parameterizing-the-model}{}\par\section{Parameterizing the model}
 
 This section describes how we set the model's parameters. First, we estimate the extent to which consumers `splurge' when receiving an income shock. We do so using Norwegian data to allow the model to match the best available evidence on the time profile of the marginal propensity to spend provided by \citet{fagereng_mpc_2021}. For this exercise, we use a version of the model calibrated to the Norwegian economy. 
 
 Second, we calibrate the full model on U.S. data, taking the splurge factor as given from the Norwegian calibration. In the model, agents differ according to their level of education and their subjective discount factors. %Some parameters are calibrated equally for all of these different types, while some are calibrated separately for each education group.
 Finally, a distribution of subjective discount factors is estimated separately for each education group to match features of each within-group liquid wealth distribution. 
 
-\hypertarget{Estimation of the splurge factor}{}\subsection{Estimation of the splurge factor}
+\hypertarget{estimation-of-the-splurge-factor}{}\par\subsection{Estimation of the splurge factor}
 \notinsubfile{\label{sec:splurge}}
 
 We define splurging as the free spending of current labor income without concern for intertemporal maximization of utility. The splurge allows us to capture the shorter- and longer-term response of consumption to income shocks, especially for consumers with significant liquid wealth, that a standard model cannot. Specifically, we show that our model can account well for the results of \citet{fagereng_mpc_2021}, who study the effect of lottery winnings in Norway on consumption using millions of records from the Norwegian population registry. Using their results, we calibrate our model to reflect the Norwegian economy and estimate the splurge factor, as well as the distribution of discount factors in the population, to match two empirical moments. 
@@ -49,8 +49,7 @@ Using the calibrated model, we simulated unexpected lottery winnings and calcula
 
 The estimation yields a splurge factor of $0.314$ and a distribution of discount factors described by $\beta = 0.989$ and $\nabla=0.0179$. Given these estimated parameters and the remaining calibrated ones, the model is able to replicate the time path of consumption in response to a lottery win from \citet{fagereng_mpc_2021} and the targeted distribution of liquid wealth very well (see figure \ref{fig:splurge_estimation}).
 
-\hypertarget{data-on-permanent-income-liquid-wealth-and-education}{}
-\subsection{Data on permanent income, liquid wealth, and education}
+\hypertarget{data-on-permanent-income-liquid-wealth-and-education}{}\par\subsection{Data on permanent income, liquid wealth, and education}
 \notinsubfile{\label{sec:SCFdata}}
 
 Before we move on to the parameterization of the full model, we describe in detail the data that we use to get measures of permanent income, liquid wealth, and the division of households into educational groups in the United States. We use data on the distribution of liquid wealth from the 2004 wave of the SCF. We restrict our attention to households where the head is of working age, which we define to be in the range from 25 to 62. The SCF-variable ``normal annual income'' is our measure of the household's permanent income, and, to exclude outliers, we drop the observations that make up the bottom 5 percent of the distribution of this variable. The smallest value of permanent income for households in our sample is thus \$16,708. 
@@ -183,8 +182,7 @@ The probability of transitioning out of unemployment is the same for all househo
 Finally, the strength of the aggregate demand effect in recessions is determined by the consumption elasticity of productivity. We follow \cite{kmpHandbook2016} and set this to $\kappa=0.3$. 
 
 
-\hypertarget{estimating-the-discount-factor-distributions}{}
-\subsection{Estimating the discount factor distributions} 
+\hypertarget{estimating-the-discount-factor-distributions}{}\par\subsection{Estimating the discount factor distributions} 
 \notinsubfile{\label{sec:estimBetas}}
 
 Discount factor distributions are estimated separately for each education group to match the distribution of liquid wealth for households in that group. To do so, we let each education group consist of types that differ in their subjective discount factor,~$\beta$. The discount factors within each group $e\in \{d, h, c\}$ are assumed to be uniformly distributed in the range $[\beta_e-\nabla_e, \beta_e+\nabla_e]$. The parameters $\beta_e$ and $\nabla_e$ are chosen for each group separately to match the median liquid-wealth-to-permanent-income ratio and the $\nth{20}$, $\nth{40}$, $\nth{60}$, and $\nth{80}$ percentile points of the Lorenz curve for liquid wealth for that group. We approximate the uniform distribution of discount factors with a discrete approximation and let each education group consist of seven different types.
