@@ -22,7 +22,7 @@
 \usepackage{\LaTeXInputs/\texname} % processes \texname.sty
 
 % When compiling Web version of paper, construct targets/anchors
-\ifthenelse{\boolean{Web}}{\usepackage[destlabel=true]{hyperref}}{}
+\ifthenelse{\boolean{Web}}{\hypersetup{destlabel=true}}{}
 
 % Custom author (year) bib style
 \bibliographystyle{\econtexBibStyle} 
