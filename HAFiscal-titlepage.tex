@@ -5,20 +5,9 @@
 
 \begin{document}
 % Attempted to make all lines used for Web version contain {Web} (or version with only single curly brace at end) so can be removed with sed
-\ifthenelse{\boolean{Web}}{    % {Web}
-  \renewcommand{\versn}{Web}     % Too hard to figure out passing -output-directory through make4ht through htlatex, so web version is compiled with junk files in main directory
-  \renewcommand{\rootFromOut}{.} % {Web}
-}{}  % {Web}
+\ifthenelse{\boolean{Web}}{\renewcommand{\versn}{Web}}{}  % {Web}
 
-% Tiny info header at top tracks git commit
-% IF: The following line does not compile for me, so commented it out
-%\hfill{\tiny \jobname~\versn~\today~{at} \DTMcurrenttime, \input{\ResourcesDir/.git-source-commit}~~\input{\ResourcesDir/.git-public-commit}}
-
-\ifCDC{
-  \title{Welfare and Spending Effects \\ of Consumption Stimulus Policies}
-}{ %ifCDC
-  \title{[Working title:] Three Stimulus Policies Evaluated} %ifCDC
-} %ifCDC
+\title{Welfare and Spending Effects \\ of Consumption Stimulus Policies}
 
 \author{Christopher D. Carroll\authNum \and Edmund Crawley\authNum \and Ivan Frankovic\authNum \and H{\aa}kon Tretvoll\authNum}
 
@@ -29,7 +18,7 @@
 }
 
 % \date{\today}
-\renewcommand{\forcedate}{December 4, 2022}\date{\forcedate}
+\renewcommand{\forcedate}{December 20, 2022}\date{\forcedate}
 
 \maketitle
 \hypertarget{abstract}{}
@@ -55,7 +44,6 @@
       \texttt{~~~GitHub:~} \> \> \texttt{\href{https://github.com/\owner/HAFiscal}{https://github.com/\owner/HAFiscal}} \\
     \end{tabbing}
   \end{center}
-   %   The \href{https://econ-ark.org/materials/bufferstocktheory\?dashboard}{dashboard} lets users see consequences of alternative parameters in an interactive framework.
 } % end \parbox{\textwidth}
 \end{footnotesize}
 
