@@ -1,10 +1,10 @@
-% -*- mode: LaTeX; TeX-PDF-mode: t; -*-     # Tell emacs the file type
+% -*- mode: LaTeX; TeX-PDF-mode: t; -*-     # Configure emacs auctex viewer
 \input{./econtexRoot.texinput} % Set paths (like, \LaTeXInputs) to find resources
 
 % Document has title page and table of contents and header:
 \documentclass[titlepage, headings=optiontotocandhead]{\econtex} % \econtex: see ./econtexRoot
 
-% Whether or not to include the Appendix and Table of Contents
+% Include the Appendix and Table of Contents?
 % Change {true} to {false} to exclude 
 \provideboolean{Appendix}\setboolean{Appendix}{true}
 \provideboolean{TOC}\setboolean{TOC}{true}
@@ -12,13 +12,10 @@
 % Keyname for paper (optional)
 \newcommand{\texname}{HAFiscal}
 
-% Can compile either as pdf or web document (optional)
-\providecommand{\versn}{pdf} % Version; like, web or pdf or journal submission
-
 % Standard useful packages for economics
 \usepackage{\econtexSetup} % Gets, configures often-used packages
 
-% Definitions unique to this paper 
+% Definitions unique to this paper (`\texname` defined above)
 \usepackage{\LaTeXInputs/\texname} % processes \texname.sty
 
 % When compiling Web version of paper, construct targets/anchors
@@ -39,10 +36,9 @@
 \input{Subfiles.texinput} % Paper is composed of subfiles enumerated here
 
 \pagebreak
-\appendix
 
 %\ifthenelse{\boolean{Appendix}}{
-\subfile{Subfiles/Appendix}\pagebreak
+\appendix\subfile{Subfiles/Appendix}\pagebreak
 %}{}
 
 % Make the bibliography
