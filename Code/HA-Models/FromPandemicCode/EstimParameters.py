@@ -68,8 +68,8 @@ Splurge = dictload['splurge']
 
 PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
-IncUnemp = 0.3#0.7              # Unemployment benefits replacement rate (proportion of permanent income)
-IncUnempNoBenefits = 0.15#0.5    # Unemployment income when benefits run out (proportion of permanent income)
+IncUnemp = 0.7              # Unemployment benefits replacement rate (proportion of permanent income)
+IncUnempNoBenefits = 0.5    # Unemployment income when benefits run out (proportion of permanent income)
 if len(sys.argv) >= 5:
     IncUnemp = float(sys.argv[3])
     IncUnempNoBenefits = float(sys.argv[4])

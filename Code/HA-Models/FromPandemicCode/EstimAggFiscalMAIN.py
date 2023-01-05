@@ -4,6 +4,7 @@ This is the main script for estimating the discount factor distributions.
 from time import time
 import sys 
 import os 
+from importlib import reload 
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
@@ -27,6 +28,9 @@ else:
     figs_dir = '../../Figures'
     res_dir = 'Results'
 sys.path.append(Abs_Path)
+
+import EstimParameters as ep
+reload(ep)  # Force reload in case the code is running from commandline for different values 
 
 from EstimParameters import init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
      DiscFacCount, CRRA, Splurge, IncUnemp, IncUnempNoBenefits, AgentCountTotal, base_dict, \
