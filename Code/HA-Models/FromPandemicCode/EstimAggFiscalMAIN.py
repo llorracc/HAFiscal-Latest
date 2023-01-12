@@ -2,6 +2,9 @@
 This is the main script for estimating the discount factor distributions.
 '''
 from time import time
+import sys 
+import os 
+from importlib import reload 
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
@@ -12,10 +15,28 @@ from HARK.distribution import DiscreteDistribution, Uniform
 from HARK import multiThreadCommands, multiThreadCommandsFake
 from HARK.utilities import getPercentiles, getLorenzShares
 from HARK.estimation import minimizeNelderMead
+
+cwd             = os.getcwd()
+folders         = cwd.split(os.path.sep)
+top_most_folder = folders[-1]
+if top_most_folder == 'FromPandemicCode':
+    Abs_Path = cwd
+    figs_dir = '../../../Figures'
+    res_dir = '../Results'
+else:
+    Abs_Path = cwd + '\\FromPandemicCode'
+    figs_dir = '../../Figures'
+    res_dir = 'Results'
+sys.path.append(Abs_Path)
+
+import EstimParameters as ep
+reload(ep)  # Force reload in case the code is running from commandline for different values 
+
 from EstimParameters import init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
-     DiscFacCount, CRRA, Splurge, AgentCountTotal, base_dict, figs_dir, UBspell_normal, \
-     data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, data_medianLWPI,\
-     data_EducShares, data_WealthShares, Rfree_base, GICmaxBetas, GICfactor, minBeta
+     DiscFacCount, CRRA, Splurge, IncUnemp, IncUnempNoBenefits, AgentCountTotal, base_dict, \
+     UBspell_normal, data_LorenzPts, data_LorenzPtsAll, data_avgLWPI, data_LWoPI, \
+     data_medianLWPI, data_EducShares, data_WealthShares, Rfree_base, \
+     GICmaxBetas, GICfactor, minBeta
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 mystr = lambda x : '{:.2f}'.format(x)
 mystr4 = lambda x : '{:.4f}'.format(x)
@@ -157,7 +178,7 @@ def calcMPCbyEd(Agents):
         (Only splurge in the first quarter.)
     '''
     MPCsQ = [0]*(num_types+1)
-    MPCsA = [0]*(num_types+1)       # Annual MPCs with splurge every Q
+    MPCsA = [0]*(num_types+1)       # Annual MPCs with splurge
     for e in range(num_types):
         MPC_byEd_Q = []
         MPC_byEd_Q = np.concatenate([ThisType.MPCnow for ThisType in \
@@ -169,7 +190,7 @@ def calcMPCbyEd(Agents):
         
         MPCsQ[e] = np.mean(MPC_byEd_Q)
         MPCsA[e] = np.mean(MPC_byEd_A)
-
+        
     MPC_all_Q = np.concatenate([ThisType.MPCnow for ThisType in Agents])
     MPC_all_A = Splurge + (1-Splurge)*MPC_all_Q
     for qq in range(3):
@@ -179,42 +200,9 @@ def calcMPCbyEd(Agents):
     MPCsA[e+1] = np.mean(MPC_all_A)
 
     MPCs = namedtuple("MPCs", ["MPCsQ", "MPCsA"])
-
+ 
     return MPCs(MPCsQ,MPCsA)
-
-# =============================================================================
-#     MPCsQ = [0]*(num_types+1)
-#     MPCsA = [0]*(num_types+1)       # Annual MPCs with splurge every Q
-#     MPCsAalt = [0]*(num_types+1)    # Annual MPCs with splurge in Q1 only
-#     for e in range(num_types):
-#         MPC_byEd = []
-#         MPC_byEd = np.concatenate([ThisType.MPCnow for ThisType in \
-#                                        Agents[e*DiscFacCount:(e+1)*DiscFacCount]])
-#         MPCsQ[e] = np.mean(MPC_byEd)     # Avg. quarterly MPC for each ed group
-#         
-#         MPCsA[e] = Splurge + (1-Splurge)*MPCsQ[e]
-#         for qq in range(3):
-#             MPCsA[e] += (1-MPCsA[e])*(Splurge + (1-Splurge)*MPCsQ[e])
-#         
-#         MPCsAalt[e] = Splurge + (1-Splurge)*MPCsQ[e]
-#         for qq in range(3):
-#             MPCsAalt[e] += (1-MPCsAalt[e])*MPCsQ[e]
-# 
-#     MPC_all = np.concatenate([ThisType.MPCnow for ThisType in Agents])
-#     MPCsQ[e+1] = np.mean(MPC_all)
-# 
-#     MPCsA[e+1] = Splurge + (1-Splurge)*MPCsQ[e+1]
-#     for qq in range(3):
-#         MPCsA[e+1] += (1-MPCsA[e+1])*(Splurge + (1-Splurge)*MPCsQ[e+1])
-# 
-#     MPCsAalt[e+1] = Splurge + (1-Splurge)*MPCsQ[e+1]   # Splurge only in first Q
-#     for qq in range(3):
-#         MPCsAalt[e+1] += (1-MPCsAalt[e+1])*MPCsQ[e+1]
-# 
-#     MPCs = namedtuple("MPCs", ["MPCsQ", "MPCsA", "MPCsAalt"])
-# 
-#     return MPCs(MPCsQ,MPCsA,MPCsAalt)
-# # -----------------------------------------------------------------------------
+ 
 # -----------------------------------------------------------------------------
 def checkDiscFacDistribution(beta, nabla, educ_type, print_mode=False, print_file=False, filename='DefaultResultsFile.txt'):
     '''
@@ -269,7 +257,7 @@ def checkDiscFacDistribution(beta, nabla, educ_type, print_mode=False, print_fil
     return dfCheck(betaMin, betaMax, GICsatisfied)    
 
 # =============================================================================
-#%% 
+#%% Initialize economy
 # Make education types
 num_types = 3
 # This is not the number of discount factors, but the number of household types
@@ -459,11 +447,10 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False, print_file=F
               + ' C = ' + mystr(Stats.LWoPI[2]))
         print('Wealth Shares: D = ' + mystr(WealthShares[0]) + \
               ' H = ' + mystr(WealthShares[1]) + ' C = ' + mystr(WealthShares[2]))
-        print('Average Quarterly MPCs: D = ' + mystr(MPCs.MPCsQ[0]) + ' H = ' + mystr(MPCs.MPCsQ[1]) + \
-              ' C = ' + mystr(MPCs.MPCsQ[2]) + ' All = ' + mystr(MPCs.MPCsQ[3]))
-        print('Average annual MPCs, incl. splurge Q1 only: D = ' + mystr(MPCs.MPCsA[0]) + ' H = ' + mystr(MPCs.MPCsA[1]) + \
-              ' C = ' + mystr(MPCs.MPCsA[2]) + ' All = ' + mystr(MPCs.MPCsA[3]))
-    
+        print('Average MPCs (incl. splurge) = ['+str(round(MPCs.MPCsA[0],3))+', '
+                      +str(round(MPCs.MPCsA[1],3))+', '+str(round(MPCs.MPCsA[2],3))+', '
+                      +str(round(MPCs.MPCsA[3],3))+']\n')
+
     if print_file:
         with open(filename, 'a') as resFile: 
             resFile.write('Population calculations:\n')
@@ -472,8 +459,11 @@ def betasObjFunc(betas, spreads, target_option=1, print_mode=False, print_file=F
             resFile.write('\tLorenz Points = ['+str(round(Stats.LorenzPts[0],4))+', '
                           +str(round(Stats.LorenzPts[1],4))+', '+str(round(Stats.LorenzPts[2],4))+', '
                           +str(round(Stats.LorenzPts[3],4))+']\n')
-            resFile.write('\tWealth shares = '+str(WealthShares)+'\n')
-            resFile.write('\tAverage MPCs (incl. splurge) = '+str(MPCs.MPCsA)+'\n')
+            resFile.write('\tWealth shares = ['+str(round(WealthShares[0],3))+', '
+                          +str(round(WealthShares[1],3))+', '+str(round(WealthShares[2],3))+']\n')
+            resFile.write('\tAverage MPCs (incl. splurge) = ['+str(round(MPCs.MPCsA[0],3))+', '
+                          +str(round(MPCs.MPCsA[1],3))+', '+str(round(MPCs.MPCsA[2],3))+', '
+                          +str(round(MPCs.MPCsA[3],3))+']\n')
         
     return distance 
 # -----------------------------------------------------------------------------
@@ -552,7 +542,7 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
     
     Stats = calcEstimStats(TypeListAll)
     
-    sumSquares = 25*np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
+    sumSquares = np.sum((Stats.medianLWPI[educ_type]-data_medianLWPI[educ_type])**2)
     lp = calcLorenzPts(TypeListNewEduc)
     sumSquares += np.sum((np.array(lp) - data_LorenzPts[educ_type])**2)
 #    sumSquares = np.sum((Stats.avgLWPI[educ_type]-data_avgLWPI[educ_type])**2)
@@ -589,40 +579,57 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
 # -----------------------------------------------------------------------------
 #%% Estimate discount factor distributions separately for each education type
 
-print('Estimating for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_base[0],3))+':\n')
+if IncUnemp == 0.7 and IncUnempNoBenefits == 0.5:
+    # Baseline unemployment system: 
+    print('Estimating for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_base[0],3))+':\n')
+    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
+else:
+    print('Estimating for an alternativ unemployment system with IncUnemp = '+str(round(IncUnemp,2))+
+          ' and IncUnempNoBenefits = ' + str(round(IncUnempNoBenefits,2))+':\n')
+    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits.txt'
+    
 for edType in [0,1,2]:
     f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
     if edType == 0:
-        initValues = [0.7, 0.52]       # Dropouts
+        initValues = [0.69, 0.54]       # Dropouts
     elif edType == 1:
-        initValues = [0.84, 0.16]      # HighSchool
+        initValues = [0.90, 0.1]      # HighSchool
     elif edType == 2:
-        initValues = [0.96, 0.03]     # College
+        initValues = [0.97, 0.015]     # College
     else:
-        initValues = [0.95,0.02]
+        initValues = [0.90,0.02]
         
     opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
     print('Finished estimating for education type = '+str(edType)+'. Optimal beta and spread are:')
-    print(opt_params) 
-    betasObjFuncEduc(opt_params[0], opt_params[1], educ_type = edType, print_mode=True)
+    print('Beta = ' + mystr4(opt_params[0]) +'  Nabla = ' + mystr4(opt_params[1]))
 
     if edType == 0:
         mode = 'w'      # Overwrite old file...
     else:
         mode = 'a'      # ...but append all results in same file 
-    with open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt', mode) as f:        
+    with open(df_resFileStr, mode) as f: 
         outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : opt_params[1]})
         f.write(outStr+'\n')
         f.close()
 
 #%% Read in estimates and calculate all results:
-print('Calculating for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_base[0],3))+':\n')
-resFileStr = '../Results/AllResults_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
-with open(resFileStr, 'w') as resFile: 
+if IncUnemp == 0.7 and IncUnempNoBenefits == 0.5:
+    # Baseline unemployment system: 
+    print('Calculating all results for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_base[0],3))+':\n')
+    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
+    ar_resFileStr = res_dir+'/AllResults_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
+else:
+    print('Calculating all results for an alternativ unemployment system with IncUnemp = '+str(round(IncUnemp,2))+
+          ' and IncUnempNoBenefits = ' + str(round(IncUnempNoBenefits,2))+':\n')
+    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits.txt'
+    ar_resFileStr = res_dir+'/AllResults_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits.txt'
+
+with open(ar_resFileStr, 'w') as resFile: 
     resFile.write('Results for CRRA = '+str(CRRA)+' and R = '+str(round(Rfree_base[0],3))+'\n\n')
     
+# Calculate results by education group    
 myEstim = [[],[],[]]
-betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt', 'r')
+betFile = open(df_resFileStr, 'r')
 readStr = betFile.readline().strip()
 while readStr != '' :
     dictload = eval(readStr)
@@ -630,114 +637,83 @@ while readStr != '' :
     beta = dictload['beta']
     nabla = dictload['nabla']
     myEstim[edType] = [beta,nabla]
-    betasObjFuncEduc(beta, nabla, educ_type = edType, print_mode=True, print_file=True, filename=resFileStr)
-    checkDiscFacDistribution(beta, nabla, edType, print_mode=True, print_file=True, filename=resFileStr)
+    betasObjFuncEduc(beta, nabla, educ_type = edType, print_mode=True, print_file=True, filename=ar_resFileStr)
+    checkDiscFacDistribution(beta, nabla, edType, print_mode=True, print_file=True, filename=ar_resFileStr)
     readStr = betFile.readline().strip()
 betFile.close()
 
+# Also calculate results for the whole population 
 betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
              [myEstim[0][1], myEstim[1][1], myEstim[2][1]], \
-             target_option = 1, print_mode=True, print_file=True, filename=resFileStr)
+             target_option = 1, print_mode=True, print_file=True, filename=ar_resFileStr)
 
 
-#%% Test values:
-edType = 1
-testVals = [0.9041911231898487, 0.09910798026727206] # Estimates for edType=1, when CRRA=2.0
 
-checkDiscFacDistribution(testVals[0], testVals[1], edType, print_mode=True)
-betasObjFuncEduc(testVals[0], testVals[1], educ_type = edType, print_mode=True)
-
-
-#%% Read in estimates and save resulting discount factor distributions:
-myEstim = [[],[],[]]
-betFile = open('../Results/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt', 'r')
-readStr = betFile.readline().strip()
-while readStr != '' :
-    dictload = eval(readStr)
-    edType = dictload['EducationGroup']
-    beta = dictload['beta']
-    nabla = dictload['nabla']
-    myEstim[edType] = [beta,nabla]
+#%% 
+run_additional_analysis = False
+if run_additional_analysis:
+    #%% Read in estimates and save resulting discount factor distributions:
+    myEstim = [[],[],[]]
+    if IncUnemp == 0.7 and IncUnempNoBenefits == 0.5:
+        # Baseline unemployment system: 
+        betFile = open(res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt', 'r')
+    else:
+        betFile = open(res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits.txt', 'r')
     readStr = betFile.readline().strip()
-betFile.close()
+    while readStr != '' :
+        dictload = eval(readStr)
+        edType = dictload['EducationGroup']
+        beta = dictload['beta']
+        nabla = dictload['nabla']
+        myEstim[edType] = [beta,nabla]
+        readStr = betFile.readline().strip()
+    betFile.close()
 
-outFileStr = '../Results/DiscFacDistributions_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
-outFile = open(outFileStr, 'w')
-
-for e in [0,1,2]:
-    dfs = Uniform(myEstim[e][0]-myEstim[e][1], myEstim[e][0]+myEstim[e][1]).approx(DiscFacCount)
+    if IncUnemp == 0.7 and IncUnempNoBenefits == 0.5:
+        # Baseline unemployment system: 
+        outFileStr = res_dir+'/DiscFacDistributions_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
+    else:
+        outFileStr = res_dir+'/DiscFacDistributions_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits.txt'
+    outFile = open(outFileStr, 'w')
     
-    # Check GIC:
-    for thedf in range(DiscFacCount):
-        if dfs.X[thedf] > GICmaxBetas[e]*GICfactor:
-            dfs.X[thedf] = GICmaxBetas[e]*GICfactor
-        elif dfs.X[thedf] < minBeta:
-            dfs.X[thedf] = minBeta
-    theDFs = np.round(dfs.X,4)
-    outStr = repr({'EducationGroup' : e, 'betaDistr' : theDFs.tolist()})
-    outFile.write(outStr+'\n')
-outFile.close()
+    for e in [0,1,2]:
+        dfs = Uniform(myEstim[e][0]-myEstim[e][1], myEstim[e][0]+myEstim[e][1]).approx(DiscFacCount)
+        
+        # Check GIC:
+        for thedf in range(DiscFacCount):
+            if dfs.X[thedf] > GICmaxBetas[e]*GICfactor:
+                dfs.X[thedf] = GICmaxBetas[e]*GICfactor
+            elif dfs.X[thedf] < minBeta:
+                dfs.X[thedf] = minBeta
+        theDFs = np.round(dfs.X,4)
+        outStr = repr({'EducationGroup' : e, 'betaDistr' : theDFs.tolist()})
+        outFile.write(outStr+'\n')
+    outFile.close()
+    
 
-
-
-
-
-
-
-
+    #%% Plot of MPCs
+    mpcs = calcMPCbyEd(AggDemandEconomy.agents)
+    
+    plt.plot(range(len(mpcs[0])), np.sort(mpcs[0]))
+    plt.xlabel('Agents')
+    plt.ylabel('MPCs')
+    plt.title('Dropout')
+    plt.show()
+    
+    plt.plot(range(len(mpcs[1])), np.sort(mpcs[1]))
+    plt.xlabel('Agents')
+    plt.ylabel('MPCs')
+    plt.title('Highschool')
+    plt.show()
+    
+    plt.plot(range(len(mpcs[2])), np.sort(mpcs[2]))
+    plt.xlabel('Agents')
+    plt.ylabel('MPCs')
+    plt.title('College')
+    plt.show()
 
 
       
-#%% Temp test code to try different parameters
-estimates_d = [0.6, 0.2 ]  # Dropouts only 
-estimates_h = [0.6, 0.15]  # Highschool only
-estimates_c = [0.98525333, 0.04467869672522787] # College only
-
-betasObjFuncEduc(estimates_h[0], estimates_h[1], educ_type = 1, print_mode=True)
-betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \
-             [estimates_d[1], estimates_h[1], estimates_c[1]], \
-             target_option = 1, print_mode=True)
-
-
-#%% Estimates targeting median LW/PI (v3.0): 
-estimates_d = [0.79939338, 0.2279055 ]  # Dropouts only 
-estimates_h = [0.93744293, 0.06607694]  # Highschool only
-estimates_c = [0.98525333, 0.01241598] # College only
-betasObjFuncEduc(estimates_d[0], estimates_d[1], educ_type = 0, print_mode=True)
-betasObjFuncEduc(0.80, 0.15, educ_type = 0, print_mode=True)
-
-betasObjFunc([estimates_d[0], estimates_h[0], estimates_c[0]], \
-             [estimates_d[1], estimates_h[1], estimates_c[1]], \
-             target_option = 1, print_mode=True)
-
-# Implied discount factor distributions:
-DiscFacDstnD = Uniform(estimates_d[0]-estimates_d[1], estimates_d[0]+estimates_d[1]).approx(DiscFacCount)
-DiscFacDstnH = Uniform(estimates_h[0]-estimates_h[1], estimates_h[0]+estimates_h[1]).approx(DiscFacCount)
-DiscFacDstnC = Uniform(estimates_c[0]-estimates_c[1], estimates_c[0]+estimates_c[1]).approx(DiscFacCount)
-print('Discount factor distribution end points: ')
-print('Dropouts:\t ', mystr4(DiscFacDstnD.X[0]), ' to ', mystr4(DiscFacDstnD.X[6]))    
-print('Highschool:\t ', mystr4(DiscFacDstnH.X[0]), ' to ', mystr4(DiscFacDstnH.X[6])) 
-print('College:\t ', mystr4(DiscFacDstnC.X[0]), ' to ', mystr4(DiscFacDstnC.X[6])) 
-   
-
-#%% 
-# Estimates targeting median LW/PI (v2.5): 
-#TranShkStd = [0.12]  #[np.sqrt(0.12)]
-#PermShkStd = [0.003] #[np.sqrt(0.003)]
-estimates_d = [0.87691380, 0.13952285]  # Dropouts only 
-estimates_h = [0.97097283, 0.02996364]  # Highschool only
-estimates_c = [0.99264389, 0.00596917]  # College only
-
-# Old estimates targeting median LW/PI (v2.0): 
-estimates_d = [0.87509113, 0.13891492]  # Dropouts only 
-estimates_h = [0.96597689, 0.03307152]  # Highschool only
-estimates_c = [0.9886787, 0.00772621]   # College only
-
-# Old estimates targeting average LW/PI: 
-estimates_d = [0.79602650, 0.02785033]  # Dropouts only
-estimates_h = [0.98051198, 0.01675674]  # Highschool only
-estimates_c = [0.99160378, 0.00480153]  # College only
- 
 
 
 
@@ -745,59 +721,4 @@ estimates_c = [0.99160378, 0.00480153]  # College only
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-#%%
-# Estimate discount factor distributions with one spread
-f_temp = lambda x : betasObjFunc(x[0:3],3*[x[3]], target_option=1)
-initValues = [0.88, 0.963, 0.988, 0.01]
-opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
-
-print('Finished estimating. Optimal betas are:')
-print(opt_params[0:3]) 
-print('Optimal spread = ' + str(opt_params[3]) )
-
-betasObjFunc(opt_params[0:3], 3*[opt_params[3]], target_option = 2, print_mode=True)
-
-testVals = [0.88, 0.963, 0.988, 0.01]
-betasObjFunc(testVals[0:3], 3*[testVals[3]], target_option = 2, print_mode=True)
-#%%
-# Estimate discount factor distributions with separate spreads
-
-f_temp = lambda x : betasObjFunc(x[0:3],x[3:6], target_option=1)
-initValues = [0.88, 0.963, 0.988, 0.05, 0.02, 0.01]
-opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
-
-print('Finished estimating. Optimal betas are:')
-print(opt_params[0:3]) 
-print('Optimal spreads are:')
-print(opt_params[3:6])
-betasObjFunc(opt_params[0:3], opt_params[3:6], target_option = 2, print_mode=True)
-
-#%% Some stored results: 
-# Estimation 1: 
-opt_params = [0.96825, 0.97116, 0.97213, 0.02505]    
-# Estimation 2: 
-opt_params = [0.96971, 0.98628, 0.98764, 0.009815]
-# Estimation 3: 
-opt_params = [0.88622648, 0.98265369, 0.97298556, 0.12578517, 0.01426293, 0.0271796 ]
-betasObjFunc(opt_params[0:3], 3*[opt_params[3]], target_option = 2, print_mode=True)    
-
-# Implied discount factor distributions: 
-DiscFacDstnD = Uniform(opt_params[0]-opt_params[3], opt_params[0]+opt_params[3]).approx(DiscFacCount)
-DiscFacDstnH = Uniform(opt_params[1]-opt_params[3], opt_params[1]+opt_params[3]).approx(DiscFacCount)
-DiscFacDstnC = Uniform(opt_params[2]-opt_params[3], opt_params[2]+opt_params[3]).approx(DiscFacCount)
-print([DiscFacDstnD.X[0], DiscFacDstnD.X[6]])
-print([DiscFacDstnH.X[0], DiscFacDstnH.X[6]])
-print([DiscFacDstnC.X[0], DiscFacDstnC.X[6]])
 

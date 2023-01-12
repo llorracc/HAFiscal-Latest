@@ -1,20 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import os
-import csv
+import sys
 from HARK.distribution import Uniform
-from importlib import reload
-
-
-#figs_dir = './Figures/FullRun_June7th/'
-figs_dir = './Figures/Hakon_test/'
-
-try:
-    os.mkdir(figs_dir)
-except OSError:
-    print ("Creation of the directory %s failed" % figs_dir)
-else:
-    print ("Successfully created the directory %s " % figs_dir)
 
 # Targets in the estimation of the discount factor distributions for each 
 # education level. 
@@ -67,6 +54,10 @@ UBspell_normal = 2           # Average duration of unemployment benefits in norm
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
 CRRA = 2.0                 # Coefficient of relative risk aversion (1, 2 or 3)
+if len(sys.argv) >= 3:
+    CRRA = float(sys.argv[2])
+    if (CRRA != 1.0 and CRRA != 2.0 and CRRA != 3.0):
+        print('The Splurge was only estimated for CRRA = 1.0, 2.0 and 3.0')
 # Read in estimated Splurge --> depends on CRRA: 
 f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
 dictload = eval(f.read())
@@ -79,6 +70,9 @@ PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
 IncUnemp = 0.7              # Unemployment benefits replacement rate (proportion of permanent income)
 IncUnempNoBenefits = 0.5    # Unemployment income when benefits run out (proportion of permanent income)
+if len(sys.argv) >= 5:
+    IncUnemp = float(sys.argv[3])
+    IncUnempNoBenefits = float(sys.argv[4])
 
 # Parameters concerning the initial distribution of permanent income 
 # "newborn" = 25 years old in SCF 2004
@@ -165,7 +159,9 @@ PermGroFac_base_c = [1.0 + 0.01958/4]
 TranShkStd = [np.sqrt(0.12)]
 PermShkStd = [np.sqrt(0.003)]
 
-Rfree_base = [1.01]        #[1.01]#Baseline
+Rfree_base = [1.01]             #Baseline
+if len(sys.argv) >= 2:
+    Rfree_base = [float(sys.argv[1])]
 LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
 
 # Calculate max beta values for each education group where GIC holds with equality: 
@@ -183,11 +179,15 @@ for e in range(num_types):
 
 # find intial distribution of states for each education type
 vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
+vals_d = vals_d.real
+vecs_d = vecs_d.real
 dist_d = np.abs(np.abs(vals_d) - 1.)
 idx_d = np.argmin(dist_d)
 init_mrkv_dist_d = vecs_d[:,idx_d].astype(float)/np.sum(vecs_d[:,idx_d].astype(float))
 
 vals_h, vecs_h = np.linalg.eig(np.transpose(MrkvArray_base_h[0])) 
+vals_h = vals_h.real
+vecs_h = vecs_h.real
 dist_h = np.abs(np.abs(vals_h) - 1.)
 idx_h = np.argmin(dist_h)
 init_mrkv_dist_h = vecs_h[:,idx_h].astype(float)/np.sum(vecs_h[:,idx_h].astype(float))
