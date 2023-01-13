@@ -8,6 +8,7 @@ $clean_ext = "bbl nav out snm dvi idv mk4 css cfg tmp xref 4tc out aux log fls f
 $bibtex_use=2;
 $pdf_mode = 1;
 $rc_report = 1;
+@default_files = ('HAFiscal.tex');
 $pdflatex="pdflatex -interaction=nonstopmode %O %S";
 $aux_out_dir_report = 1;
 $silent  = 0;
