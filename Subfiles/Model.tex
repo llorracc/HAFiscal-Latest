@@ -10,43 +10,43 @@
 
 Consumers differ by their level of education and, within education group, by subjective discount factors (calibrated to match the within-group distribution of wealth). We first describe each kind of consumer's problem, given an income process with permanent and transitory shocks calibrated to their type, as well as type-specific shocks to employment. The next step describes the arrival of a recession and the policies we study as potential fiscal policy responses. The last section discusses an extension incorporating aggregate demand effects that induce feedback from aggregate consumption to income and (via the marginal propensity to consume) back to consumption, amplifying the effect of a recession when it occurs. 
 
-A consumer $i$ has education $e(i)$ and a subjective discount factor $\beta_i$. The consumer faces a stochastic income stream, $y_{i,t}$, and chooses to consume some of that income when it arrives (the `splurge') and then to optimize consumption with what is left over. Therefore, consumption each period for consumer $i$ can be written as
+A consumer $i$ has education $e(i)$ and a subjective discount factor $\beta_i$. The consumer faces a stochastic income stream, $\mathbf{y}_{i,t}$, and chooses to consume some of that income when it arrives (the `splurge') and then to optimize consumption with what is left over. Therefore, consumption each period for consumer $i$ can be written as
 \begin{verbatimwrite}{\EqDir/splurge.tex}
 \begin{align}
-  c_{i,t} &= c_{sp,i,t} + c_{opt,i,t}, \notinsubfile{\label{sec:model}}
+  \mathbf{c}_{i,t} &= \mathbf{c}_{sp,i,t} + \mathbf{c}_{opt,i,t}, \notinsubfile{\label{sec:model}}
 \end{align}
 \end{verbatimwrite}
 \input{\EqDir/splurge}
-where $c_{i,t}$ is total consumption, $c_{sp,i,t}$ is the splurge consumption, and $c_{opt,i,t}$ is the consumer's optimal choice of consumption after splurging. Splurge consumption is simply a fraction of income:
+where $\mathbf{c}_{i,t}$ is total consumption, $\mathbf{c}_{sp,i,t}$ is the splurge consumption, and $\mathbf{c}_{opt,i,t}$ is the consumer's optimal choice of consumption after splurging. Splurge consumption is simply a fraction of income:
 \begin{align}
-  c_{sp,i,t} = \varsigma y_{i,t},
+  \mathbf{c}_{sp,i,t} = \varsigma \mathbf{y}_{i,t},
 \end{align}
 while the optimized portion of consumption is chosen to maximize the perpetual-youth lifetime expected-utility-maximizing consumption, where $D$ is the end-of-life probability:
 \begin{align}
-  \sum_{t=0}^{\infty}\beta_i^t (1-D)^t \mathbb{E}_0 u(c_{opt,i,t}).
+  \sum_{t=0}^{\infty}\beta_i^t (1-D)^t \mathbb{E}_0 u(\mathbf{c}_{opt,i,t}).
 \end{align}
-We use a standard CRRA (constant relative risk aversion) utility function, so $u(c) = c^{1-\gamma}/(1-\gamma)$ for $\gamma \neq 1$ and $u(c) = \log(c)$ for $\gamma=1$, where $\gamma$ is the coefficient of relative risk aversion. The optimization is subject to the budget constraint, given existing market resources $m_{i,t}$ and income state, and a no-borrowing constraint: 
+We use a standard CRRA (constant relative risk aversion) utility function, so $u(c) = c^{1-\gamma}/(1-\gamma)$ for $\gamma \neq 1$ and $u(c) = \log(c)$ for $\gamma=1$, where $\gamma$ is the coefficient of relative risk aversion. The optimization is subject to the budget constraint, given existing market resources $\mathbf{m}_{i,t}$ and income state, and a no-borrowing constraint: 
 \begin{align}
-  a_{i,t} &= m_{i,t} - c_{i,t}, \notag \\ 
-  m_{i,t+1} &= (R/\hat{\Gamma}_{i,t+1}) a_{i,t} + (1-\varsigma) y_{i,t+1}, \\
-  a_{i,t} &\geq 0,   \notag
+  \mathbf{a}_{i,t} &= \mathbf{m}_{i,t} - \mathbf{c}_{i,t}, \notag \\ 
+  \mathbf{m}_{i,t+1} &= (R/\hat{\Gamma}_{i,t+1}) \mathbf{a}_{i,t} + (1-\varsigma) \mathbf{y}_{i,t+1}, \\
+  \mathbf{a}_{i,t} &\geq 0,   \notag
 \end{align}
-where $R$ is the gross interest factor for accumulated assets $a_{i,t}$ and $\hat{\Gamma}_{i,t+1}$ is the realized growth rate of permanent income from period $t$ to $t+1$, discussed further later.
+where $R$ is the gross interest factor for accumulated assets $\mathbf{a}_{i,t}$ and $\hat{\Gamma}_{i,t+1}$ is the realized growth rate of permanent income from period $t$ to $t+1$, discussed further later.
 
 \hypertarget{the-income-process}{}\par\subsection{The income process}
 
 Consumers face a stochastic income process with permanent and transitory shocks to income, along with unemployment shocks. In normal times, consumers who become unemployed receive unemployment benefits for two quarters. Permanent income evolves according to:
 \begin{align}
-  p_{i,t+1} = \psi_{i,t+1}\Gamma_{e(i)}p_{i,t},
+  \mathbf{p}_{i,t+1} = \psi_{i,t+1}\Gamma_{e(i)}\mathbf{p}_{i,t},
 \end{align}
 where $\psi_{i,t+1}$ is the shock to permanent income and $\Gamma_{e(i)}$ is the average growth rate of income for the consumer's education group $e(i)$.\footnote{We model the rate of growth for permanent income for each education group and keep this rate unchanged during periods of unemployment. There is evidence, e.g.\ in \cite{davis_recessions_2011}, that unemployment, especially in a recession, leads to permanent income loss. This finding could be added to the model---see \citet{carroll2020modeling} for an example---but is not material to the evaluation of stimulus payments here so we have chosen to keep the model simple.  } The realized growth rate of permanent income for consumer $i$ is thus $\hat{\Gamma}_{i,t+1} = \psi_{i,t+1} \Gamma_{e(i)}$. The shock to permanent income is normally distributed with variance $\sigma_{\psi}^2$.
 
 The actual income a consumer receives will be subject to the individual's employment status as well as transitory shocks, $\xi_{i,t}$:
 \begin{align}
-  y_{i,t} =   \begin{cases}
-    \xi_{i,t}p_{i,t}, & \text{if employed} \\
-    \rho_b p_{i,t}, & \text{if unemployed with benefits} \\
-    \rho_{nb} p_{i,t}, & \text{if unemployed without benefits} 
+  \mathbf{y}_{i,t} =   \begin{cases}
+    \xi_{i,t}\mathbf{p}_{i,t}, & \text{if employed} \\
+    \rho_b \mathbf{p}_{i,t}, & \text{if unemployed with benefits} \\
+    \rho_{nb} \mathbf{p}_{i,t}, & \text{if unemployed without benefits} 
   \end{cases}
 \end{align}
 where $\xi_{i,t}$ is normally distributed with variance $\sigma_{\xi}^2$, and $\rho_b$ and $\rho_{nb}$ are the replacement rates for an unemployed consumer who is or is not eligible for unemployment benefits, respectively. 
@@ -82,9 +82,9 @@ Our baseline model is a partial equilibrium model that does not include any feed
 \end{align}
 where $\tilde{C}$ is the level of consumption in the steady state. Idiosyncratic income in the aggregate demand extension is multiplied by $AD(C_t)$:
 \begin{align}
-  y_{AD,i,t} = AD(C_t)y_{i,t}.
+  \mathbf{y}_{AD,i,t} = AD(C_t)\mathbf{y}_{i,t}.
 \end{align}
-The series $y_{AD,i,t}$ is then used for each consumer's budget constraint.
+The series $\mathbf{y}_{AD,i,t}$ is then used for each consumer's budget constraint.
 
 \onlyinsubfile{\input{\LaTeXInputs/bibliography_blend}}
 
