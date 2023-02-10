@@ -951,10 +951,10 @@ class AggregateDemandEconomy(Market):
             recession_results = self.runExperiment(**recession_dict)
                 
             #Debugging
-            T_plot = 35
-            plt.plot(recession_results['Cratio_hist'][0:T_plot]) 
-            plt.pause(1)
-            plt.show()
+            # T_plot = 35
+            # plt.plot(recession_results['Cratio_hist'][0:T_plot]) 
+            # plt.pause(1)
+            # plt.show()
             
             MacroCFunc[0][3] = CRule(recession_results['Cratio_hist'][0],0.0)
             for j in range(self.num_experiment_periods-1):
