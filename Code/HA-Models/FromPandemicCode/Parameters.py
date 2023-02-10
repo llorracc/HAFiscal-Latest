@@ -58,6 +58,9 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         betas_txt_location = Abs_Path_Results+'/Results/DiscFacEstim_CRRA_2.0_R_1.01_altBenefits.txt'
         IncUnempNoBenefits = 0.15
         IncUnemp = 0.3
+    elif Parametrization == 'Splurge0' or Parametrization == 'Splurge0_PVSame':
+        betas_txt_location = Abs_Path_Results+'/Results/DiscFacEstim_CRRA_2.0_R_1.01_Splurge0.txt'
+        Splurge_txt_location = Abs_Path_Results+'/Target_AggMPCX_LiquWealth/Result_Splurge0.txt'
     
     myEstim = [[],[],[]]
     f = open(betas_txt_location, 'r')
@@ -95,7 +98,8 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         figs_dir_FullRun = Abs_Path+'/Figures/Rspell_4/'
     elif Parametrization == 'LowerUBnoB_PVSame':
         figs_dir_FullRun = Abs_Path+'/Figures/LowerUBnoB/'
-
+    elif Parametrization == 'Splurge0_PVSame':
+        figs_dir_FullRun = Abs_Path+'/Figures/Splurge0/'
 
         
     if Parametrization.find('PVSame')>0:

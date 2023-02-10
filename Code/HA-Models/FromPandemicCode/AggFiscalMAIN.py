@@ -22,14 +22,15 @@ from Output_Results import Output_Results
 #%%
 
 
-Run_Main                = True #DONE
-Run_EqualPVs            = True #DONE
-Run_ADElas_robustness   = True #DONE
-Run_CRRA1_robustness    = True #DONE
-Run_CRRA3_robustness    = True #DONE
-Run_Rfree_robustness    = True #DONE
-Run_Rspell_robustness   = True #DONE
-Run_LowerUBnoB          = True #DONE
+Run_Main                = False #DONE
+Run_EqualPVs            = False #DONE
+Run_ADElas_robustness   = False #DONE
+Run_CRRA1_robustness    = False #DONE
+Run_CRRA3_robustness    = False #DONE
+Run_Rfree_robustness    = False #DONE
+Run_Rspell_robustness   = False #DONE
+Run_LowerUBnoB          = False #DONE
+Run_Splurge0            = True
 
 
 Run_Dict = dict()
@@ -155,4 +156,17 @@ if Run_LowerUBnoB:
     figs_dir = Abs_Path+'/Figures/LowerUBnoB_PVSame/'
     Simulate(Run_Dict,figs_dir,Parametrization='LowerUBnoB_PVSame')
     Output_Results(Abs_Path+'/Figures/LowerUBnoB_PVSame/',Abs_Path+'/Figures/LowerUBnoB_PVSame/',Abs_Path+'/Tables/LowerUBnoB_PVSame/',Parametrization='LowerUBnoB_PVSame')
+ 
+    
+if Run_Splurge0:
+
+    Run_Dict['Run_1stRoundAD']          = False
+
+    figs_dir = Abs_Path+'/Figures/Splurge0/'
+    Simulate(Run_Dict,figs_dir,Parametrization='Splurge0')
+    Output_Results(Abs_Path+'/Figures/Splurge0/',Abs_Path+'/Figures/Splurge0/',Abs_Path+'/Tables/Splurge0/',Parametrization='Splurge0')
+   
+    figs_dir = Abs_Path+'/Figures/Splurge0_PVSame/'
+    Simulate(Run_Dict,figs_dir,Parametrization='Splurge0_PVSame')
+    Output_Results(Abs_Path+'/Figures/Splurge0_PVSame/',Abs_Path+'/Figures/Splurge0_PVSame/',Abs_Path+'/Tables/Splurge0_PVSame/',Parametrization='Splurge0_PVSame')
  
