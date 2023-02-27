@@ -35,6 +35,8 @@ mytitles = ['Dropout (9.3 pct)', 'Highschool (52.7 pct)', 'College (38 pct)', 'P
 myYticks = [range(0,30,5), range(0,30,5),range(0,30,5),range(0,30,5)]
 x_axis = np.array([20,40,60,80])
 
+
+#%% Plot figure for main results or robustness case (CRRA or R)
 fig = plt.figure()
 gs = fig.add_gridspec(2, 2, hspace=.5, wspace=.5)
 axs = gs.subplots(sharex=False, sharey=False)
@@ -161,3 +163,46 @@ elif len(sys.argv) >= 2:
     fig.set_facecolor(color="white")
     
     make_figs(myFigFile, True , False, target_dir=figs_dir)
+    
+    #%% Plot figure of the data only for motivation slide in presentation
+    plot_data_only = False
+    
+    fig = plt.figure()
+    gs = fig.add_gridspec(2, 2, hspace=.5, wspace=.5)
+    axs = gs.subplots(sharex=False, sharey=False)
+
+    if plot_data_only:
+        
+        for row in range(2):
+            for col in range(2):
+                idx = col+row*(row+1)+1
+                if idx < 4:
+                    dfToPlot = data_LP_byEd[data_LP_byEd['myEd']==idx]
+                    if idx == 1:
+                        dfToPlot = dfToPlot[dfToPlot['sumEdW'] <= 96.5]
+                    else:
+                        dfToPlot = dfToPlot[dfToPlot['sumEdW'] <= 90]
+                    axs[row,col].plot(dfToPlot['sumEdW'],dfToPlot['sumLW'], color="royalblue",
+                                      linestyle='solid', linewidth=1.5, label='Data')
+                else:
+                    dfToPlot = data_LP_popln[data_LP_popln['sumNormW'] <= 93]
+                    axs[row,col].plot(dfToPlot['sumNormW'],dfToPlot['sumLWall'], color="royalblue",
+                                      linestyle='solid', linewidth=1.5, label='Data')
+                axs[row,col].set_xticks(ticks=[0,20,40,60,80,100])
+                axs[row,col].set_yticks(ticks=myYticks[col+row*(row+1)])
+                axs[row,col].set_title(mytitles[col+row*(row+1)])
+                axs[row,col].title.set_fontsize(12)
+                
+                if idx == 4:
+                    handles, labels = axs[row,col].get_legend_handles_labels()
+        
+        for ax in axs.flat:
+            ax.set(xlabel='Percentile', ylabel='Cumulative share of wealth')
+            #ax.label_outer()
+        plt.rc('axes', labelsize=12)
+        
+#        lgd = fig.legend(handles, labels, loc='lower center', ncol=2, fancybox=True, shadow=False, 
+#                  bbox_to_anchor=(0.5, -0.03), fontsize=12)
+        fig.set_facecolor(color="white")
+        
+        make_figs('LorenzPoints_dataOnly', True , False, target_dir=figs_dir)

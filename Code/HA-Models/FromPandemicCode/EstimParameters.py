@@ -54,17 +54,21 @@ UBspell_normal = 2           # Average duration of unemployment benefits in norm
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
 CRRA = 2.0                 # Coefficient of relative risk aversion (1, 2 or 3)
-if len(sys.argv) >= 3:
-    CRRA = float(sys.argv[2])
-    if (CRRA != 1.0 and CRRA != 2.0 and CRRA != 3.0):
-        print('The Splurge was only estimated for CRRA = 1.0, 2.0 and 3.0')
-# Read in estimated Splurge --> depends on CRRA: 
 f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
 dictload = eval(f.read())
 Splurge = dictload['splurge'] 
-# Splurge = 0.31 
-# Splurge = 0.3138321699039471 # CRRA=1
-# Splurge = 0.3067109441016833 # CRRA=2
+if len(sys.argv) >= 6:
+    # Splurge set manually
+    Splurge = float(sys.argv[5])
+    CRRA = float(sys.argv[2])
+elif len(sys.argv) >= 3:
+    CRRA = float(sys.argv[2])
+    if (CRRA != 1.0 and CRRA != 2.0 and CRRA != 3.0):
+        print('The Splurge was only estimated for CRRA = 1.0, 2.0 and 3.0')
+    # Read in estimated Splurge --> depends on CRRA: 
+    f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
+    dictload = eval(f.read())
+    Splurge = dictload['splurge'] 
 
 PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor

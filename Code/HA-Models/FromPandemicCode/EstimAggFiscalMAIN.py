@@ -582,11 +582,18 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
 if IncUnemp == 0.7 and IncUnempNoBenefits == 0.5:
     # Baseline unemployment system: 
     print('Estimating for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_base[0],3))+':\n')
-    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
+    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])
 else:
     print('Estimating for an alternativ unemployment system with IncUnemp = '+str(round(IncUnemp,2))+
           ' and IncUnempNoBenefits = ' + str(round(IncUnempNoBenefits,2))+':\n')
-    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits.txt'
+    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits'
+
+if Splurge == 0:
+    print('Estimating for special case of Splurge = 0\n')
+    df_resFileStr = df_resFileStr + '_Splurge0'
+df_resFileStr = df_resFileStr + '.txt'
+
+print('Estimation results saved in ' + df_resFileStr)
     
 for edType in [0,1,2]:
     f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
@@ -616,17 +623,28 @@ for edType in [0,1,2]:
 if IncUnemp == 0.7 and IncUnempNoBenefits == 0.5:
     # Baseline unemployment system: 
     print('Calculating all results for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_base[0],3))+':\n')
-    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
-    ar_resFileStr = res_dir+'/AllResults_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'.txt'
+    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])
+    ar_resFileStr = res_dir+'/AllResults_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])
 else:
     print('Calculating all results for an alternativ unemployment system with IncUnemp = '+str(round(IncUnemp,2))+
           ' and IncUnempNoBenefits = ' + str(round(IncUnempNoBenefits,2))+':\n')
-    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits.txt'
-    ar_resFileStr = res_dir+'/AllResults_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits.txt'
+    df_resFileStr = res_dir+'/DiscFacEstim_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits'
+    ar_resFileStr = res_dir+'/AllResults_CRRA_'+str(CRRA)+'_R_'+str(Rfree_base[0])+'_altBenefits'
+
+if Splurge == 0:
+    df_resFileStr = df_resFileStr + '_Splurge0'
+    ar_resFileStr = ar_resFileStr + '_Splurge0'
+df_resFileStr = df_resFileStr + '.txt'
+ar_resFileStr = ar_resFileStr + '.txt'
+print('All model results saved in ' + ar_resFileStr)
 
 with open(ar_resFileStr, 'w') as resFile: 
-    resFile.write('Results for CRRA = '+str(CRRA)+' and R = '+str(round(Rfree_base[0],3))+'\n\n')
-    
+    if Splurge != 0:
+        resFile.write('Results for CRRA = '+str(CRRA)+' and R = '+str(round(Rfree_base[0],3))+'\n\n')
+    else:
+        resFile.write('Results for CRRA = '+str(CRRA)+', R = '+str(round(Rfree_base[0],3))+
+                      ' and Splurge = 0'+'\n\n')
+        
 # Calculate results by education group    
 myEstim = [[],[],[]]
 betFile = open(df_resFileStr, 'r')
