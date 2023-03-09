@@ -500,10 +500,77 @@ df = pd.DataFrame(x.T,columns=['Percentile','Data'])
 df.to_excel(Abs_Path+'/LiquWealth_Distribution_b.xlsx')
 
 
+#%% IMPC plot with splurge = 0
 
 
+def find_Opt_beta_nabla():
+
+    guess_beta_nabla = [0.898221523193016,0.1184323428984777]
+    
+    f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],target='AGG_MPC_plus_Liqu_Wealth')
+    opt = minimizeNelderMead(f_temp, guess_beta_nabla, verbose=True,  maxiter=100)
+    print('Finished estimating')
+    print('Optimal (beta,nabla) is ' + str(opt[0]) + ',' + str(opt[1]))
+    
+    return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1]}
+
+    
+
+base_params['CRRA'] = 2
+
+# Make several consumer types to be used during estimation
+BaseType = KinkedRconsumerType(**base_params)
+EstTypeList = []
+for j in range(TypeCount):
+    EstTypeList.append(deepcopy(BaseType))
+    EstTypeList[-1](seed = j)
+
+ 
+res = find_Opt_beta_nabla()
+
+splurge = res['splurge']    #0
+beta    = res['beta']       #0.8965220073683358
+nabla   = res['nabla']      #0.12056837545326626
 
 
+[distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
+
+print('Results for parametrization: ', Parametrization)
+print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin)#%% Plot aggregate MPC and MPCX
+print('Distance for target is', distance)
+print('Distance for Agg MPC is', distance_Agg_MPC)
+print('Distance for MPC matrix is', distance_MPC)
+
+
+plt.figure()
+xAxis = np.arange(0,5)
+plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,'b',linewidth=2)
+plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
+plt.legend(['Model','Fagereng, Holm and Natvik (2021)'])
+plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
+plt.xlabel('year')
+plt.ylabel('% of lottery win spent')
+#plt.savefig(Abs_Path+'/Figures/' +'AggMPC_LotteryWin.pdf')
+make_figs('AggMPC_LotteryWin_Splurge0', True , False, target_dir=Abs_Path+'/Figures/')
+plt.show()  
+
+print('Model: Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80])
+print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_target)
+print('Last percentile with negative assets', np.argmin(Lorenz_Data), '%')
+print('Percentile with zero cummulative assets', np.argwhere(Lorenz_Data>0)[0]-1, '%')
+
+    
+plt.figure()
+LorenzAxis = np.arange(101,dtype=float)
+lorenz_target_interp = np.interp(LorenzAxis,np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]))
+plt.plot(LorenzAxis,Lorenz_Data_Adj,'b',linewidth=2)
+plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
+plt.xlabel('Income percentile',fontsize=12)
+plt.ylabel('Cumulative liquid wealth share',fontsize=12)
+plt.legend(['Model','Data'])
+#plt.savefig(Abs_Path+'/Figures/' +'LiquWealth_Distribution.pdf')
+make_figs('LiquWealth_Distribution_Splurge0', True , False, target_dir=Abs_Path+'/Figures/')
+plt.show()  
 
 
 
