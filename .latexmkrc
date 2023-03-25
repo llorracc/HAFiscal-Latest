@@ -4,12 +4,12 @@
 # 
 # latexmk at unix command line will compile the paper
 $do_cd = 1;
-$clean_ext = "bbl nav out snm dvi idv mk4 css cfg tmp xref 4tc out aux log fls fdb_latexmk synctex.gz toc svg png html 4ct ps out.ps upa upb lg yml css upa dep";
-$bibtex_use=0;
+$clean_ext = "bbl nav out snm dvi idv mk4 css cfg tmp xref 4tc out aux log fls fdb_latexmk synctex.gz toc svg png html 4ct ps out.ps upa upb lg yml css out";
+$bibtex_use=2;
 $pdf_mode = 1;
 $rc_report = 1;
+@default_files = ('HAFiscal.tex');
 $pdflatex="pdflatex -interaction=nonstopmode %O %S";
 $aux_out_dir_report = 1;
 $silent  = 0;
-$max_repeat = 1;
 #warn "PATH = '$ENV{PATH}'\n";
