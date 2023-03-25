@@ -58,10 +58,11 @@ f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
 dictload = eval(f.read())
 Splurge = dictload['splurge'] 
 if len(sys.argv) >= 6:
-    # Splurge set manually
+    # Number of arguments indicates that Splurge is set manually 
     Splurge = float(sys.argv[5])
     CRRA = float(sys.argv[2])
 elif len(sys.argv) >= 3:
+    # Number of arguments indicates that CRRA is set manually
     CRRA = float(sys.argv[2])
     if (CRRA != 1.0 and CRRA != 2.0 and CRRA != 3.0):
         print('The Splurge was only estimated for CRRA = 1.0, 2.0 and 3.0')
@@ -69,11 +70,11 @@ elif len(sys.argv) >= 3:
     f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
     dictload = eval(f.read())
     Splurge = dictload['splurge'] 
-
+    
 PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
 IncUnemp = 0.7              # Unemployment benefits replacement rate (proportion of permanent income)
-IncUnempNoBenefits = 0.5    # Unemployment income when benefits run out (proportion of permanent income)
+IncUnempNoBenefits = 0.5   # Unemployment income when benefits run out (proportion of permanent income)
 if len(sys.argv) >= 5:
     IncUnemp = float(sys.argv[3])
     IncUnempNoBenefits = float(sys.argv[4])

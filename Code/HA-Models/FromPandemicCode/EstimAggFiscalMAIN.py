@@ -41,6 +41,11 @@ from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 mystr = lambda x : '{:.2f}'.format(x)
 mystr4 = lambda x : '{:.4f}'.format(x)
 
+print('Parameters: R = '+str(round(Rfree_base[0],2))+', CRRA = '+str(round(CRRA,2))
+      +', IncUnemp = '+str(round(IncUnemp,2))+', IncUnempNoBenefits = '+str(round(IncUnempNoBenefits,2))
+      +', Splurge = '+str(Splurge))
+
+
 # -----------------------------------------------------------------------------
 def calcEstimStats(Agents):
     '''
@@ -81,7 +86,7 @@ def calcEstimStats(Agents):
     medianLWPI = [0]*num_types 
     for e in range(num_types):
         aNrmAll_byEd = []
-        aNrmAll_byEd = np.concatenate([ThisType.aNrmNow for ThisType in \
+        aNrmAll_byEd = np.concatenate([(1-ThisType.Splurge)*ThisType.aNrmNow for ThisType in \
                           Agents[e*DiscFacCount:(e+1)*DiscFacCount]])
         weights = np.ones(len(aNrmAll_byEd))/len(aNrmAll_byEd)
         avgLWPI[e] = np.dot(aNrmAll_byEd, weights) * 100
@@ -564,8 +569,6 @@ def betasObjFuncEduc(beta, spread, educ_type=2, print_mode=False, print_file=Fal
         print('Non-targeted moments:')
         print('Average LW/PI-ratios for group e = ' + mystr(educ_type) + ' is: ' \
               + mystr(Stats.avgLWPI[educ_type]))
-        print('Lorenz shares - all:')
-        print(Stats.LorenzPts)
     
     if print_file:
         with open(filename, 'a') as resFile: 
@@ -594,18 +597,18 @@ if Splurge == 0:
 df_resFileStr = df_resFileStr + '.txt'
 
 print('Estimation results saved in ' + df_resFileStr)
-    
+
 for edType in [0,1,2]:
     f_temp = lambda x : betasObjFuncEduc(x[0],x[1], educ_type=edType)
     if edType == 0:
-        initValues = [0.69, 0.54]       # Dropouts
+        initValues = [0.70, 0.3]       # Dropouts
     elif edType == 1:
-        initValues = [0.90, 0.1]      # HighSchool
+        initValues = [0.89, 0.08]      # HighSchool
     elif edType == 2:
-        initValues = [0.97, 0.015]     # College
+        initValues = [0.95, 0.015]     # College
     else:
         initValues = [0.90,0.02]
-        
+
     opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
     print('Finished estimating for education type = '+str(edType)+'. Optimal beta and spread are:')
     print('Beta = ' + mystr4(opt_params[0]) +'  Nabla = ' + mystr4(opt_params[1]))
@@ -618,6 +621,11 @@ for edType in [0,1,2]:
         outStr = repr({'EducationGroup' : edType, 'beta' : opt_params[0], 'nabla' : opt_params[1]})
         f.write(outStr+'\n')
         f.close()
+        
+with open(df_resFileStr, 'a') as f: 
+    f.write('\nParameters: R = '+str(round(Rfree_base[0],2))+', CRRA = '+str(round(CRRA,2))
+          +', IncUnemp = '+str(round(IncUnemp,2))+', IncUnempNoBenefits = '+str(round(IncUnempNoBenefits,2))
+          +', Splurge = '+str(Splurge) +'\n')
 
 #%% Read in estimates and calculate all results:
 if IncUnemp == 0.7 and IncUnempNoBenefits == 0.5:
@@ -636,15 +644,14 @@ if Splurge == 0:
     ar_resFileStr = ar_resFileStr + '_Splurge0'
 df_resFileStr = df_resFileStr + '.txt'
 ar_resFileStr = ar_resFileStr + '.txt'
-print('All model results saved in ' + ar_resFileStr)
+print('Loading estimates from ' + df_resFileStr + ' and saving all model results in ' + ar_resFileStr)
 
 with open(ar_resFileStr, 'w') as resFile: 
-    if Splurge != 0:
-        resFile.write('Results for CRRA = '+str(CRRA)+' and R = '+str(round(Rfree_base[0],3))+'\n\n')
-    else:
-        resFile.write('Results for CRRA = '+str(CRRA)+', R = '+str(round(Rfree_base[0],3))+
-                      ' and Splurge = 0'+'\n\n')
-        
+    resFile.write('Results for parameters:\n')
+    resFile.write('R = '+str(round(Rfree_base[0],2))+', CRRA = '+str(round(CRRA,2))
+          +', IncUnemp = '+str(round(IncUnemp,2))+', IncUnempNoBenefits = '+str(round(IncUnempNoBenefits,2))
+          +', Splurge = '+str(Splurge) +'\n\n')
+           
 # Calculate results by education group    
 myEstim = [[],[],[]]
 betFile = open(df_resFileStr, 'r')
@@ -669,6 +676,17 @@ betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
 
 #%% 
 run_additional_analysis = False
+
+#%%
+if run_additional_analysis:
+    betasObjFuncEduc(0.89, 0.08, educ_type = 1, print_mode=True)
+
+# d - (0.72, 0.5)        
+# h - (0.94, 0.7)
+
+
+
+#%%
 if run_additional_analysis:
     #%% Read in estimates and save resulting discount factor distributions:
     myEstim = [[],[],[]]
