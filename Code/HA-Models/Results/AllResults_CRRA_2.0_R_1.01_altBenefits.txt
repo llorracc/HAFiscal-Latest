@@ -1,28 +1,29 @@
-Results for CRRA = 2.0 and R = 1.01
+Results for parameters:
+R = 1.01, CRRA = 2.0, IncUnemp = 0.3, IncUnempNoBenefits = 0.15, Splurge = 0.3063352052543205
 
-Education group = 0.00: beta = 0.5989, nabla = 0.6869
-	Median LW/PI-ratio = 4.65
-	Lorenz Points = [0.0, 0.0, 0.1186, 3.1582]
-	Approximation to beta distribution: betaMin = 0.01014, betaMax = 1.18768
+Education group = 0.00: beta = 0.5990, nabla = 1.2059
+	Median LW/PI-ratio = 4.64
+	Lorenz Points = [0.0, 0.0, 0.1321, 3.6155]
+	Approximation to beta distribution: betaMin = -0.43465, betaMax = 1.63264
 	GIC satisfied = False
 	Imposed GIC-consistent maximum beta = 0.99465
 
-Education group = 1.00: beta = 0.8522, nabla = 0.1592
-	Median LW/PI-ratio = 30.20
-	Lorenz Points = [0.0673, 1.0216, 3.7834, 11.2846]
-	Approximation to beta distribution: betaMin = 0.71571, betaMax = 0.98859
+Education group = 1.00: beta = 0.8901, nabla = 0.1160
+	Median LW/PI-ratio = 30.16
+	Lorenz Points = [0.164, 1.2813, 4.0679, 11.0924]
+	Approximation to beta distribution: betaMin = 0.7906, betaMax = 0.98953
 	GIC satisfied = True
 	Imposed GIC-consistent maximum beta = 0.99659
 
-Education group = 2.00: beta = 0.9676, nabla = 0.0276
-	Median LW/PI-ratio = 112.80
-	Lorenz Points = [0.3651, 1.5763, 4.1009, 9.7893]
-	Approximation to beta distribution: betaMin = 0.94399, betaMax = 0.99124
+Education group = 2.00: beta = 0.9785, nabla = 0.0162
+	Median LW/PI-ratio = 112.79
+	Lorenz Points = [0.3982, 1.615, 4.1084, 9.7497]
+	Approximation to beta distribution: betaMin = 0.96462, betaMax = 0.99231
 	GIC satisfied = True
 	Imposed GIC-consistent maximum beta = 0.99732
 
 Population calculations:
-	Median LW/PI-ratios = [4.65, 30.23, 112.71]
-	Lorenz Points = [0.0498, 0.6744, 2.6916, 8.6359]
-	Wealth shares = [ 8.47543392 19.88847614 71.63608994]
-	Average MPCs (incl. splurge) = [0.7980752409206671, 0.8023137674209333, 0.5732325398004315, 0.7148675572055568]
+	Median LW/PI-ratios = [4.64, 30.02, 114.24]
+	Lorenz Points = [0.0777, 0.7307, 2.6639, 8.3358]
+	Wealth shares = [8.457, 18.559, 72.984]
+	Average MPCs (incl. splurge) = [0.762, 0.761, 0.501, 0.662]

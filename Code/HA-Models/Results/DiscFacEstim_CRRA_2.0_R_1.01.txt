@@ -1,3 +1,5 @@
-{'EducationGroup': 0, 'beta': 0.6943526710942405, 'nabla': 0.5416309420838961}
-{'EducationGroup': 1, 'beta': 0.9041911231898487, 'nabla': 0.09910798026727206}
-{'EducationGroup': 2, 'beta': 0.9781145857784046, 'nabla': 0.015260298962451143}
+{'EducationGroup': 0, 'beta': 0.7357917016799134, 'nabla': 0.5584524415784018}
+{'EducationGroup': 1, 'beta': 0.9314497210793198, 'nabla': 0.5048744923435152}
+{'EducationGroup': 2, 'beta': 0.9838941233454087, 'nabla': 0.009553568500479719}
+
+Parameters: R = 1.01, CRRA = 2.0, IncUnemp = 0.7, IncUnempNoBenefits = 0.5, Splurge = 0.3063352052543205
