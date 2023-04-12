@@ -1,29 +1,32 @@
 Results for parameters:
 R = 1.01, CRRA = 2.0, IncUnemp = 0.7, IncUnempNoBenefits = 0.5, Splurge = 0.3063352052543205
 
-Education group = 0.00: beta = 0.7358, nabla = 0.5585
-	Median LW/PI-ratio = 4.71
-	Lorenz Points = [0.0, 0.0, 0.0999, 2.8385]
-	Approximation to beta distribution: betaMin = 0.25712, betaMax = 1.21447
-	GIC satisfied = False
-	Imposed GIC-consistent maximum beta = 0.99465
+Education group = 0.00: beta = 0.7354, nabla = 0.2978, GICfactor = 0.9977
+	Median LW/PI-ratio = 4.64
+	Lorenz Points = [0.0, 0.0074, 0.6537, 3.57]
+	Approximation to beta distribution:
+[0.4801 0.5652 0.6503 0.7354 0.8205 0.9056 0.9907]
+	GIC satisfied = True	GICmaxBeta = 0.9971
+	Imposed GIC-consistent maximum beta = 0.99488
 
-Education group = 1.00: beta = 0.9314, nabla = 0.5049
-	Median LW/PI-ratio = 30.29
-	Lorenz Points = [0.0, 0.0168, 0.258, 5.0498]
-	Approximation to beta distribution: betaMin = 0.4987, betaMax = 1.3642
-	GIC satisfied = False
-	Imposed GIC-consistent maximum beta = 0.99659
+Education group = 1.00: beta = 0.9236, nabla = 0.1373, GICfactor = 0.9901
+	Median LW/PI-ratio = 30.18
+	Lorenz Points = [0.0556, 0.8393, 3.3146, 11.4542]
+	Approximation to beta distribution:
+[0.806  0.8452 0.8844 0.9236 0.9629 1.0021 1.0413]
+	GIC satisfied = False	GICmaxBeta = 0.9991
+	Imposed GIC-consistent maximum beta = 0.98922
 
-Education group = 2.00: beta = 0.9839, nabla = 0.0096
-	Median LW/PI-ratio = 112.81
-	Lorenz Points = [0.3334, 1.4672, 3.9245, 9.863]
-	Approximation to beta distribution: betaMin = 0.97571, betaMax = 0.99208
-	GIC satisfied = True
-	Imposed GIC-consistent maximum beta = 0.99732
+Education group = 2.00: beta = 0.9839, nabla = 0.0096, GICfactor = 0.9996
+	Median LW/PI-ratio = 112.80
+	Lorenz Points = [0.3333, 1.4671, 3.9242, 9.8624]
+	Approximation to beta distribution:
+[0.9757 0.9784 0.9812 0.9839 0.9866 0.9894 0.9921]
+	GIC satisfied = True	GICmaxBeta = 0.9998
+	Imposed GIC-consistent maximum beta = 0.99945
 
 Population calculations:
-	Median LW/PI-ratios = [4.71, 30.38, 113.40]
-	Lorenz Points = [0.001, 0.1079, 0.7879, 4.5618]
-	Wealth shares = [1.771, 82.862, 15.366]
-	Average MPCs (incl. splurge) = [0.783, 0.672, 0.477, 0.608]
+	Median LW/PI-ratios = [4.64, 30.35, 113.40]
+	Lorenz Points = [0.0457, 0.6027, 2.6015, 8.8701]
+	Wealth shares = [1.14, 21.909, 76.951]
+	Average MPCs (incl. splurge) = [0.867, 0.713, 0.477, 0.637]
