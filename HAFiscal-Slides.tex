@@ -64,21 +64,58 @@
 \begin{frame}
 \frametitle{Motivation}
 \begin{itemize} 
-	\item Discretionary fiscal policies often used to fight recessions
-	\item A lot of variation in such policies
+	\item Various fiscal policies used to fight recessions: payroll tax cuts, stimulus checks, UI extension
 	\begin{itemize}
 		\itemsep = .25\bigskipamount 
+		\item little guidance from traditional RANK models	
 		\item different goals: increase output (a `GDP metric') or reduce misery (a `welfare metric')
-		\item little guidance from traditional RANK models
 	\end{itemize}
-	\item \textbf{This paper:} Develop a heterogeneous agent (HA) model to study effectiveness of policies
+	\bigskip
+	\pause
+	\item \textbf{This paper:} Develop a heterogeneous agent (HA) model to study effectiveness of policies in fighting recessions
 	\begin{itemize}
 		\itemsep = .25\bigskipamount 
-		\item Consumers subject to transitory/permanent income shocks and recessions (during which aggregate demand multipliers exist)
-		\item Consumers heterogenous in education, income, wealth, emplyoment status 
-		\item Consistent with evidence on \textit{intertemporal marginal propensity to consume} (iMPC)  (based on rich micro data from Norway)
+		\item Consumers subject to transitory \& permanent income shocks and unemployment risk, heterogeneous in education
+		\item Consistent with micro data
+		\item Not a HANK model, but aggregate demand multiplier exist during recessions
 	\end{itemize}
 \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Model consistent with micro data}
+	
+	\hypertarget{ConsistentWithMicroData}{}
+	
+	\begin{columns}
+		\begin{column}{0.4\textwidth}
+			SCF liquid wealth (Kaplan and Violante, 2014) 
+			
+			\includegraphics[width=\linewidth]{\FigDir/LorenzPoints.pdf}
+			
+			Modelling device: \textit{Ex-ante} heterogeneity in discount factors
+			
+		\end{column}
+	
+		\pause
+		
+		\begin{column}{0.4\textwidth}  	
+			iMPC from Fagereng, Holm, Natvik (2021)	
+			
+			\includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin.pdf}
+			
+			Modelling device: `Splurge' in consumption, i.e. exogenously given fraction of income directly consumed
+		\end{column}
+	\end{columns}
+	
+	\vspace{0.5cm}
+	\hyperlink{ParametrizationStrategy}{\beamerbutton{Parametrization strategy}}
+	\hspace{1cm}
+	\hyperlink{Parameters}{\beamerbutton{Calibrated parameters}}
+	\hspace{1cm}
+	\hyperlink{EstimationBetaNabla}{\beamerbutton{Estimated parameters \& fit}}
+	
 \end{frame}
 
 
@@ -92,23 +129,23 @@
 \begin{itemize}
 	\itemsep = .25\bigskipamount 
 	\item Stimulus check for \$1200 (means-tested)
-	\item Extension of unemployment benefits from 2 to 4q
-	\item Payroll tax cut by 2\% for 8q
+	\item Extension of unemployment benefits from 0.5 to 1 year
+	\item Payroll tax cut by 2\% for 2 years
 \end{itemize}
-\item Key features of the policies: 
-\begin{itemize}
-	\itemsep = .25\bigskipamount 
-	\item Targeting 
-	\item Timing of spending (overlap with recession!)
-	\item Scalability 
-\end{itemize}
+%\item Key features of the policies: 
+%\begin{itemize}
+%	\itemsep = .25\bigskipamount 
+%	\item Targeting 
+%	\item Timing of spending (overlap with recession!)
+%	\item Scalability 
+%\end{itemize}
+\bigskip
 \item Evaluation criteria: 
 \begin{itemize}
 	\itemsep = .25\bigskipamount 
-	\item Spending multipliers (for unfinanced policies)
-	\item Welfare (cost of policy considered)
+	\item Spending multipliers
+	\item Welfare (only recession-related welfare impact)
 \end{itemize}
-%	\item \textbf{Want}: Evaluation of policies in a hetergeneous agent (HA) model consistent with micro data
 \end{itemize}
 \end{frame}
 
@@ -120,18 +157,20 @@
 \item Welfare measure: Extension of UI benefits is the clear winner 
 \begin{itemize}
 \itemsep = .25\bigskipamount 
-\item Targeted at individuals with high MPCs 
-\item They also tend to have high MU of consumption 
+\item Targeted at individuals with high MPCs and high recession-related welfare losses
 \item But: higher spending may continue after recession is over 
 \end{itemize}
 \item Spending multiplier: Stimulus check has the highest multiplier 
 \begin{itemize}
 \itemsep = .25\bigskipamount 
 \item Not well targeted, but increases income immediately 
-\item Spending happens during recession 
-\item Also: more easily scaled up 
+%\item Also: easy to scale up
 \end{itemize}
-\item Tax cut: both poorly targeted and substantial amount of income boost may occur after the recession is over
+\item Tax cut
+\begin{itemize}
+	\itemsep = .25\bigskipamount 
+	\item Poorly targeted and much spending likely to occur after end of recession
+\end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -149,7 +188,7 @@ Christiano, Eichenbaum and Rebelo (2011); Eggertson (2011); Ramey and Zubairy (2
 Bhandari, Evans, Golosov and Sargent (2021); D{\'a}vila and Schaab (2022)
 \item \textbf{Extended unemployment insurance}:
 Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022) 
-\item \textbf{High MPCs and impatience}: Parker (2017)
+%\item \textbf{High MPCs and impatience}: Parker (2017)
 \end{itemize}
 \normalsize
 \end{frame}
@@ -169,6 +208,7 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 		\item Each group has distribution of subjective discount factors $\beta_i$
 		\item Idiosyncratic, stochastic income process $\mathbf{y}_{i,t}$
 		\item Estimated splurge factor $\varsigma$: $\mathbf{c}_{sp,i,t} = \varsigma \mathbf{y}_{i,t}$
+		\pause
 		\item Remaining consumption $c_{opt,i,t}$ is chosen to maximize utility
 			\begin{align}
 			\sum_{t=0}^{\infty}\beta_i^t (1-D)^t \mathbb{E}_0 u(\mathbf{c}_{opt,i,t}).
@@ -195,18 +235,19 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 			\begin{align}
 				\mathbf{y}_{i,t} =   \begin{cases}
 				\xi_{i,t}\mathbf{p}_{i,t}, & \text{if employed} \\
-				\rho_b \mathbf{p}_{i,t}, & \text{if unemployed with benefits} \\
-				\rho_{nb} \mathbf{p}_{i,t}, & \text{if unemployed without benefits} 
+				0.7 \mathbf{p}_{i,t}, & \text{if unemployed for $\leq$ 2q} \\
+				0.5 \mathbf{p}_{i,t}, & \text{if unemployed $\ge$ 2q} 
 				\end{cases}
 			\end{align}
-			($\xi_{i,t}$: trans. shock, $p$: perm. income, $\rho_x$ replacement rates)
+			($\xi_{i,t}$: trans. shock, $p$: perm. income)
 			
 		\item "Permanent income":  $\mathbf{p}_{i,t+1} = \underbrace{\psi_{i,t+1}}_{\text{perm. shock}} \underbrace{\Gamma_{e(i)}}_{\text{educ.-specific growth}}\mathbf{p}_{i,t}$ 
 
+		\pause
 		\item Emplyoment status is subject to a Markov process
 		\begin{itemize}
 			\item Unemployment rate education-specific (doubles in recession)
-			\item Expected length of unemployment: 2q  (doubles in recession)
+			\item Expected length of unemployment: 1.5q  (4q in recession)
 		\end{itemize}
 		
 		\item Recession is given by an MIT shock; end of recession as a Bernoulli process (avg. length of 6q)
@@ -268,38 +309,7 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 	\end{itemize}
 \end{frame}
 
-\begin{frame}
-\frametitle{Model consistent with micro data}
 
-\hypertarget{ConsistentWithMicroData}{}
-
-\begin{columns}
-	\begin{column}{0.45\textwidth}
-		SCF liquid wealth (Kaplan and Violante, 2014) 
-		
-		\includegraphics[width=\linewidth]{\FigDir/LorenzPoints.pdf}
-		
-		Modelling device: \textit{Ex-ante} heterogeneity in discount factors
-		
-	\end{column}
-	
-	\begin{column}{0.45\textwidth}  	
-		iMPC from Fagereng, Holm, Natvik (2021)	
-		
-		\includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin.pdf}
-		
-		Modelling device: `Splurge' in consumption, i.e. exogenously given fraction of income directly consumed
-	\end{column}
-\end{columns}
-
-\vspace{1cm}
-\hyperlink{ParametrizationStrategy}{\beamerbutton{Parametrization strategy}}
-\hspace{1cm}
-\hyperlink{Parameters}{\beamerbutton{Calibrated parameters}}
-\hspace{1cm}
-\hyperlink{EstimationBetaNabla}{\beamerbutton{Estimated parameters \& fit}}
-
-\end{frame}
 
 
 
@@ -311,7 +321,7 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 \ifbool{bundesb}{
 
 \begin{frame}
-\frametitle{Impulse responses for the three policies}
+\frametitle{Impulse responses}
 
 
 	\begin{columns}	
@@ -333,7 +343,8 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 	\end{column}  	
 
 \end{columns}
-	
+
+\pause
 	
 	\begin{columns}	
 		
@@ -404,18 +415,19 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 M^P_t = \frac{\text{Net present value of policy-induced consumption up to $t$}}{\text{Net present value of the cost of the policy}}
 \end{equation*}
 
-\begin{figure}[t]
-	\centering
-	\includegraphics[width=0.4\linewidth]{Code/HA-Models/FromPandemicCode/Figures/Cummulative_multipliers}
-	\caption{Cumulative multipliers over time}
-\end{figure}
+%\begin{figure}[t]
+%	\centering
+%	\includegraphics[width=0.4\linewidth]{Code/HA-Models/FromPandemicCode/Figures/Cummulative_multipliers}
+%	\caption{Cumulative multipliers over time}
+%\end{figure}
 
 \begin{table}
-	\footnotesize
+	%\footnotesize
 	\begin{tabular}{@{}lccc@{}} 
-		& Tax Cut    & UI extension    & Stimulus check    \\ 
-		Long-run Multiplier  &1.079  & 1.275  & 1.339     \\ 
-		Policy expenditure during recession  &57.6\%  & 80.6\%  & 100.0 \%    \\ 
+								&Tax Cut   	& UI extension    	& Stimulus check    \\ 
+		Multiplier in Q1		&0.05		& 0.25 				& 0.60				\\	
+		Long-run Multiplier  	&1.08  		& 1.28  			& 1.34     			\\ 
+		Policy expenditure during recession  &57.6\%  & 80.6\%  & 100.0 \%    		\\ 
 	\end{tabular}  
 \end{table}
 
@@ -439,8 +451,10 @@ M^P_t = \frac{\text{Net present value of policy-induced consumption up to $t$}}{
 		
 		Simple aggregation of consumer util. only satisfies principle 1 \& 2:
 		\begin{align*}
-			\mathcal{W}(\text{policy},Rec,AD) =\frac{1}{N}\sum_{i=1}^{N} \sum_{t=0}^{\infty} \beta_S^t u(\mathbf{c}_{it,\text{policy},Rec,AD}) 
+			\mathcal{W}(\text{policy},Rec,AD) =\frac{1}{N}\sum_{i=1}^{N} \sum_{t=0}^{\infty} \beta_S^t u(\mathbf{c}_{it,\text{policy},Rec,AD})
 		\end{align*}
+		
+		\pause
 		
 		To satisfy principle 3, we calculate
 		
@@ -466,8 +480,8 @@ M^P_t = \frac{\text{Net present value of policy-induced consumption up to $t$}}{
 	\begin{tabular}{@{}lccc@{}} 
 		\toprule 
 		& Check      & UI    & Tax Cut    \\  \midrule 
-		$\mathcal{C}(\text{policy},Rec,0)$ & 0.011  & 0.580  & 0.002     \\ 
-		$\mathcal{C}(\text{policy},Rec,AD)$ & 0.171  & 1.266  & 0.065     \\ 
+		Without AD effects & 0.011  & 0.580  & 0.002     \\ 
+		With AD effects & 0.171  & 1.266  & 0.065     \\ 
 	\end{tabular}  
 	\medskip
 	\begin{itemize}
@@ -487,7 +501,7 @@ M^P_t = \frac{\text{Net present value of policy-induced consumption up to $t$}}{
 	\frametitle{Conclusion: Comparing the policies}
 	\begin{itemize}
 		\itemsep = .5\bigskipamount 
-		\item We have compared three consumption stimulus policies in a HA model consistent with data on the distribution of liquid wealth and intertemporal MPCs 
+		\item Comparison of three consumption stimulus policies in a HA model consistent with data on the distribution of liquid wealth and intertemporal MPCs 
 		\item Welfare measure: UI extension is the clear bang-for-the-buck winner 
 		\item The stiumulus check is less well targeted, but\ldots 
 		\begin{itemize}
@@ -497,11 +511,26 @@ M^P_t = \frac{\text{Net present value of policy-induced consumption up to $t$}}{
 		\end{itemize}
 		\item The tax cut is both poorly targeted and may yield substantial spending after the recession is over 
 		\item Framework can be used to evaluate other candidate policies 
-		\item Other (competing?) models to evaluate these policies should match similar features of the data at the micro level 
 		
 	\end{itemize}
 	
 \end{frame}
+
+
+
+\begin{frame}
+	\frametitle{Thank you for your attention!}
+	\begin{itemize} 
+		\item Access the paper, presentation slides and code at: https://github.com/llorracc/HAFiscal
+	\end{itemize}	
+
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.3\linewidth]{"Presentations/QRCode.png"}
+		\end{figure}
+	
+\end{frame}
+
 
 
 
