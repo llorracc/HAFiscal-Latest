@@ -1,11 +1,10 @@
 % -*- mode: LaTeX; TeX-PDF-mode: t; -*-     # Configure emacs auctex viewer
-\input{./econtexRoot.texinput} % Set paths (like, \LaTeXInputs) to find resources
+\input{./.econtexRoot} % Set paths (like, \LaTeXInputs) to find resources
 
 % Document has title page and table of contents and header:
 \documentclass[titlepage, headings=optiontotocandhead]{\econtex} % \econtex: see ./econtexRoot
 
 % Include the Appendix and Table of Contents?
-% Change {true} to {false} to exclude 
 \provideboolean{Appendix}\setboolean{Appendix}{true}
 \provideboolean{TOC}\setboolean{TOC}{true}
 
@@ -31,15 +30,20 @@
 
 \subfile{HAFiscal-titlepage}\pagebreak
 
-% Table of contents
-\ifthenelse{\boolean{TOC}}{\subfile{HAFiscal-contents.texinput}\pagebreak }{}
+% Table of contents; to omit, \setboolean{TOC}{false}
+\ifthenelse{\boolean{TOC}}{\pagebreak
+\let\LaTeXStandardContentsName\contentsname
+\renewcommand{\contentsname}{}
+\tableofcontents
+}{}
+
 \input{Subfiles.texinput} % Paper is composed of subfiles enumerated here
 
 \pagebreak
 
-%\ifthenelse{\boolean{Appendix}}{
+\ifthenelse{\boolean{Appendix}}{
 \appendix\subfile{Subfiles/Appendix}\pagebreak
-%}{}
+}{}
 
 % Make the bibliography
 \input{\LaTeXInputs/bibliography_blend}

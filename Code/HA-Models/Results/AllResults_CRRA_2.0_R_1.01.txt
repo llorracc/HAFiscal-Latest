@@ -1,28 +1,29 @@
-Results for CRRA = 2.0 and R = 1.01
+Results for parameters:
+R = 1.01, CRRA = 2.0, IncUnemp = 0.7, IncUnempNoBenefits = 0.5, Splurge = 0.3063352052543205
 
-Education group = 0.00: beta = 0.6944, nabla = 0.5416
-	Median LW/PI-ratio = 4.64
-	Lorenz Points = [0.0, 0.0, 0.0652, 2.6826]
-	Approximation to beta distribution: betaMin = 0.2301, betaMax = 1.15861
+Education group = 0.00: beta = 0.7358, nabla = 0.5585
+	Median LW/PI-ratio = 4.71
+	Lorenz Points = [0.0, 0.0, 0.0999, 2.8385]
+	Approximation to beta distribution: betaMin = 0.25712, betaMax = 1.21447
 	GIC satisfied = False
 	Imposed GIC-consistent maximum beta = 0.99465
 
-Education group = 1.00: beta = 0.9042, nabla = 0.0991
-	Median LW/PI-ratio = 30.20
-	Lorenz Points = [0.0503, 1.0127, 3.8309, 11.2704]
-	Approximation to beta distribution: betaMin = 0.81924, betaMax = 0.98914
-	GIC satisfied = True
+Education group = 1.00: beta = 0.9314, nabla = 0.5049
+	Median LW/PI-ratio = 30.29
+	Lorenz Points = [0.0, 0.0168, 0.258, 5.0498]
+	Approximation to beta distribution: betaMin = 0.4987, betaMax = 1.3642
+	GIC satisfied = False
 	Imposed GIC-consistent maximum beta = 0.99659
 
-Education group = 2.00: beta = 0.9781, nabla = 0.0153
-	Median LW/PI-ratio = 112.80
-	Lorenz Points = [0.3298, 1.5146, 4.0396, 9.8412]
-	Approximation to beta distribution: betaMin = 0.96503, betaMax = 0.99119
+Education group = 2.00: beta = 0.9839, nabla = 0.0096
+	Median LW/PI-ratio = 112.81
+	Lorenz Points = [0.3334, 1.4672, 3.9245, 9.863]
+	Approximation to beta distribution: betaMin = 0.97571, betaMax = 0.99208
 	GIC satisfied = True
 	Imposed GIC-consistent maximum beta = 0.99732
 
 Population calculations:
-	Median LW/PI-ratios = [4.64, 30.02, 113.61]
-	Lorenz Points = [0.0394, 0.6198, 2.518, 8.1916]
-	Wealth shares = [12.39481832 18.57716551 69.02801617]
-	Average MPCs (incl. splurge) = [0.7921983699115048, 0.7795981154070548, 0.5406231461466691, 0.6899577489016316]
+	Median LW/PI-ratios = [4.71, 30.38, 113.40]
+	Lorenz Points = [0.001, 0.1079, 0.7879, 4.5618]
+	Wealth shares = [1.771, 82.862, 15.366]
+	Average MPCs (incl. splurge) = [0.783, 0.672, 0.477, 0.608]

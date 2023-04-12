@@ -1,5 +1,5 @@
 % -*- mode: LaTeX; TeX-PDF-mode: t; -*- # Tell emacs the file type (for syntax)
-\input{./econtexRoot.texinput}
+\input{./.econtexRoot}
 \documentclass[\econtexRoot/HAFiscal]{subfiles}
 \onlyinsubfile{\externaldocument{\econtexRoot/HAFiscal}} % Get xrefs -- esp to apndx -- from main file; only works if main file has already been compiled
 
@@ -64,8 +64,8 @@ Finally, a recent related paper is \cite{kekre2022unemployment}, which evaluates
 \onlyinsubfile{\input{\LaTeXInputs/bibliography_blend}}
 
 \ifthenelse{\boolean{Web}}{}{
-  \onlyinsubfile{\captionsetup[figure]{list=no}}
-  \onlyinsubfile{\captionsetup[table]{list=no}}
+%  \onlyinsubfile{\captionsetup[figure]{list=no}}
+%  \onlyinsubfile{\captionsetup[table]{list=no}}
   \end{document} \endinput
 }
 
