@@ -91,7 +91,7 @@ if len(sys.argv) < 2:
               bbox_to_anchor=(0.5, -0.03), fontsize=12)
     fig.set_facecolor(color="white")
     
-    make_figs('LorenzPoints', True , False, target_dir=figs_dir)
+    make_figs('LorenzPoints_CRRA_2.0_R_1.01', True , False, target_dir=figs_dir)
 
 elif len(sys.argv) >= 2: 
     if int(sys.argv[1]) == 1:
