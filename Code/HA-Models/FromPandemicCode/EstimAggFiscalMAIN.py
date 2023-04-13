@@ -254,7 +254,7 @@ def checkDiscFacDistribution(beta, nabla, GICfactor, educ_type, print_mode=False
         
     if print_file:
         with open(filename, 'a') as resFile: 
-            resFile.write('\tApproximation to beta distribution:\n'+np.round(DiscFacDstn.X,4)+'\n')
+            resFile.write('\tApproximation to beta distribution:\n'+str(np.round(DiscFacDstn.X,4))+'\n')
             resFile.write('\tGIC satisfied = '+str(GICsatisfied)+'\tGICmaxBeta = '+str(round(GICmaxBetas[educ_type],4))+'\n')
             resFile.write('\tImposed GIC-consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*GICfactor,5))+'\n\n')
     
@@ -689,7 +689,12 @@ run_additional_analysis = False
 
 #%%
 if run_additional_analysis:
-    betasObjFuncEduc(0.9838941233454087, 0.009553568500479719, 6, educ_type = 2, print_mode=True)
+    #betasObjFuncEduc(0.9838941233454087, 0.009553568500479719, 6, educ_type = 2, print_mode=True)
+
+    ar_resFileStr = res_dir + 'DEBUG_checkDiscFacDistribution.txt'
+    GICx = 6.0832796965018225
+    GICfactor = np.exp(GICx)/(1+np.exp(GICx))
+    checkDiscFacDistribution(0.7354184459881328, 0.29783637632458415, GICfactor, edType, print_mode=True, print_file=True, filename=ar_resFileStr)
 
 # d - (0.72, 0.5)        
 # h - (0.94, 0.7)
@@ -711,7 +716,9 @@ if run_additional_analysis:
         edType = dictload['EducationGroup']
         beta = dictload['beta']
         nabla = dictload['nabla']
-        myEstim[edType] = [beta,nabla]
+        GICx = dictload['GICx']
+        GICfactor = np.exp(GICx)/(1+np.exp(GICx))
+        myEstim[edType] = [beta,nabla,GICx,GICfactor]
         readStr = betFile.readline().strip()
     betFile.close()
 
@@ -727,8 +734,8 @@ if run_additional_analysis:
         
         # Check GIC:
         for thedf in range(DiscFacCount):
-            if dfs.X[thedf] > GICmaxBetas[e]*GICfactor:
-                dfs.X[thedf] = GICmaxBetas[e]*GICfactor
+            if dfs.X[thedf] > GICmaxBetas[e]*myEstim[e][3]:
+                dfs.X[thedf] = GICmaxBetas[e]*myEstim[e][3]
             elif dfs.X[thedf] < minBeta:
                 dfs.X[thedf] = minBeta
         theDFs = np.round(dfs.X,4)
@@ -737,7 +744,8 @@ if run_additional_analysis:
     outFile.close()
     
 
-    #%% Plot of MPCs
+#%% Plot of MPCs
+if run_additional_analysis:
     mpcs = calcMPCbyEd(AggDemandEconomy.agents)
     
     plt.plot(range(len(mpcs[0])), np.sort(mpcs[0]))
@@ -757,14 +765,4 @@ if run_additional_analysis:
     plt.ylabel('MPCs')
     plt.title('College')
     plt.show()
-
-
-      
-
-
-
-
-
-
-
 
