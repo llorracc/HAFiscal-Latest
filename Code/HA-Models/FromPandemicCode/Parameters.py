@@ -24,7 +24,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     pLvlInitMean_d, pLvlInitMean_h, pLvlInitMean_c,\
     pLvlInitStd_d, pLvlInitStd_h, pLvlInitStd_c,\
     PermGroFac_base_d, PermGroFac_base_h, PermGroFac_base_c,\
-    TranShkStd, PermShkStd, LivPrb_base, num_types
+    TranShkStd, PermShkStd, LivPrb_base, num_types, GICmaxBetas, minBeta, DiscFacCount
     
 
     CRRA = 2.0
@@ -62,19 +62,23 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         betas_txt_location = Abs_Path_Results+'/Results/DiscFacEstim_CRRA_2.0_R_1.01_Splurge0.txt'
         Splurge_txt_location = Abs_Path_Results+'/Target_AggMPCX_LiquWealth/Result_Splurge0.txt'
     
+    
+  
     myEstim = [[],[],[]]
-    f = open(betas_txt_location, 'r')
-    readStr = f.readline().strip()
+    betFile = open(betas_txt_location, 'r')
+    readStr = betFile.readline().strip()
     while readStr != '' :
         dictload = eval(readStr)
         edType = dictload['EducationGroup']
         beta = dictload['beta']
         nabla = dictload['nabla']
-        myEstim[edType] = [beta,nabla]
-        readStr = f.readline().strip()
-    f.close()
-    
-    
+        GICx = dictload['GICx']
+        GICfactor = np.exp(GICx)/(1+np.exp(GICx))
+        myEstim[edType] = [beta,nabla,GICx, GICfactor]
+        readStr = betFile.readline().strip()
+    betFile.close()
+
+
     f = open(Splurge_txt_location, 'r')
     if f.mode=='r':
         contents= f.read()
@@ -153,35 +157,46 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
 
     
 
-    # Parameters concerning the distribution of discount factors
-    DiscFacMeanD = myEstim[0][0]  # Mean intertemporal discount factor for dropout types
-    DiscFacMeanH = myEstim[1][0]  # Mean intertemporal discount factor for high school types
-    DiscFacMeanC = myEstim[2][0]  # Mean intertemporal discount factor for college types
-    # DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
-    DiscFacSpreadD = myEstim[0][1]
-    DiscFacSpreadH = myEstim[1][1]
-    DiscFacSpreadC = myEstim[2][1] 
+    # # Parameters concerning the distribution of discount factors
+    # DiscFacMeanD = myEstim[0][0]  # Mean intertemporal discount factor for dropout types
+    # DiscFacMeanH = myEstim[1][0]  # Mean intertemporal discount factor for high school types
+    # DiscFacMeanC = myEstim[2][0]  # Mean intertemporal discount factor for college types
+    # # DiscFacInit = [DiscFacMeanD, DiscFacMeanH, DiscFacMeanC]
+    # DiscFacSpreadD = myEstim[0][1]
+    # DiscFacSpreadH = myEstim[1][1]
+    # DiscFacSpreadC = myEstim[2][1] 
     
-    # Define the distribution of the discount factor for each eduation level
-    DiscFacCount = 7
-    DiscFacDstnD = Uniform(DiscFacMeanD-DiscFacSpreadD, DiscFacMeanD+DiscFacSpreadD).approx(DiscFacCount)
-    DiscFacDstnH = Uniform(DiscFacMeanH-DiscFacSpreadH, DiscFacMeanH+DiscFacSpreadH).approx(DiscFacCount)
-    DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpreadC, DiscFacMeanC+DiscFacSpreadC).approx(DiscFacCount)
-    DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
+    # # Define the distribution of the discount factor for each eduation level
+    # DiscFacCount = 7
+    # DiscFacDstnD = Uniform(DiscFacMeanD-DiscFacSpreadD, DiscFacMeanD+DiscFacSpreadD).approx(DiscFacCount)
+    # DiscFacDstnH = Uniform(DiscFacMeanH-DiscFacSpreadH, DiscFacMeanH+DiscFacSpreadH).approx(DiscFacCount)
+    # DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpreadC, DiscFacMeanC+DiscFacSpreadC).approx(DiscFacCount)
+    # DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
     
-    # Calculate max beta values for each education group where GIC holds with equality: 
-    GICmaxBetas = [(PermGroFac_base_d[0]**CRRA)/Rfree_base[0], (PermGroFac_base_h[0]**CRRA)/Rfree_base[0], 
-                       (PermGroFac_base_c[0]**CRRA)/Rfree_base[0]]
-    GICfactor = 0.9975
-    minBeta = 0.01
-    
-    for e in range(num_types):
-        for thedf in range(DiscFacCount):
-            if DiscFacDstns[e].X[thedf] > GICmaxBetas[e]*GICfactor: 
-                DiscFacDstns[e].X[thedf] = GICmaxBetas[e]*GICfactor
-            elif DiscFacDstns[e].X[thedf] < minBeta:
-                DiscFacDstns[e].X[thedf] = minBeta
 
+    
+    # for e in range(num_types):
+    #     for thedf in range(DiscFacCount):
+    #         if DiscFacDstns[e].X[thedf] > GICmaxBetas[e]*GICfactor: 
+    #             DiscFacDstns[e].X[thedf] = GICmaxBetas[e]*GICfactor
+    #         elif DiscFacDstns[e].X[thedf] < minBeta:
+    #             DiscFacDstns[e].X[thedf] = minBeta
+
+    # HAKON, can you check this section until before #Recession
+    DiscFacDstns = [None]*3
+    for e in [0,1,2]:
+        dfs = Uniform(myEstim[e][0]-myEstim[e][1], myEstim[e][0]+myEstim[e][1]).approx(DiscFacCount)
+        
+        # Check GIC:
+        for thedf in range(DiscFacCount):
+            if dfs.X[thedf] > GICmaxBetas[e]*myEstim[e][3]:
+                dfs.X[thedf] = GICmaxBetas[e]*myEstim[e][3]
+            elif dfs.X[thedf] < minBeta:
+                dfs.X[thedf] = minBeta
+        theDFs = np.round(dfs.X,4)
+        print('EducationGroup: ', e, ', betaDistr :', theDFs.tolist())
+        DiscFacDstns[e] = dfs
+        
   
     # Recession
     Urate_recession_d = 2 * Urate_normal_d # Unemployment rate in recession
