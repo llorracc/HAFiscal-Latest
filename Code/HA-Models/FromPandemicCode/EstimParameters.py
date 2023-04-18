@@ -172,7 +172,7 @@ LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life
 # Calculate max beta values for each education group where GIC holds with equality: 
 GICmaxBetas = [(PermGroFac_base_d[0]**CRRA)/Rfree_base[0], (PermGroFac_base_h[0]**CRRA)/Rfree_base[0], 
                    (PermGroFac_base_c[0]**CRRA)/Rfree_base[0]]
-theGICfactor = 0.9975
+theGICfactor = 0.999
 minBeta = 0.01
 
 for e in range(num_types):

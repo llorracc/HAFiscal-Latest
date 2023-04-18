@@ -41,7 +41,7 @@ from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 mystr = lambda x : '{:.2f}'.format(x)
 mystr4 = lambda x : '{:.4f}'.format(x)
 
-print('Parameters: R = '+str(round(Rfree_base[0],2))+', CRRA = '+str(round(CRRA,2))
+print('Parameters: R = '+str(round(Rfree_base[0],3))+', CRRA = '+str(round(CRRA,2))
       +', IncUnemp = '+str(round(IncUnemp,2))+', IncUnempNoBenefits = '+str(round(IncUnempNoBenefits,2))
       +', Splurge = '+str(Splurge))
 
@@ -242,19 +242,28 @@ def checkDiscFacDistribution(beta, nabla, GICfactor, educ_type, print_mode=False
     GICsatisfied : boolean
         True if betaMax satisfies the GIC for this education group. 
     '''
-    DiscFacDstn = Uniform(beta-nabla, beta+nabla).approx(DiscFacCount)
-    betaMin = DiscFacDstn.X[0]
-    betaMax = DiscFacDstn.X[DiscFacCount-1]
-    GICsatisfied = (betaMax < GICmaxBetas[educ_type])
+    DiscFacDstnBase = Uniform(beta-nabla, beta+nabla).approx(DiscFacCount)
+    betaMin = DiscFacDstnBase.X[0]
+    betaMax = DiscFacDstnBase.X[DiscFacCount-1]
+    GICsatisfied = (betaMax < GICmaxBetas[educ_type]*GICfactor)
+
+    DiscFacDstnActual = DiscFacDstnBase.X.copy()    
+    for thedf in range(DiscFacCount):
+        if DiscFacDstnActual[thedf] > GICmaxBetas[educ_type]*GICfactor: 
+            DiscFacDstnActual[thedf] = GICmaxBetas[educ_type]*GICfactor
+        elif DiscFacDstnActual[thedf] < minBeta:
+            DiscFacDstnActual[thedf] = minBeta
 
     if print_mode:
-        print('Approximation to beta distribution:\n'+str(np.round(DiscFacDstn.X,4))+'\n')
+        print('Base approximation to beta distribution:\n'+str(np.round(DiscFacDstnBase.X,4))+'\n')
+        print('Actual approximation to beta distribution:\n'+str(np.round(DiscFacDstnActual,4))+'\n')
         print('GIC satisfied = '+str(GICsatisfied)+'\tGICmaxBeta = '+str(round(GICmaxBetas[educ_type],4))+'\n')
         print('Imposed GIC consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*GICfactor,5))+'\n\n')
         
     if print_file:
         with open(filename, 'a') as resFile: 
-            resFile.write('\tApproximation to beta distribution:\n'+str(np.round(DiscFacDstn.X,4))+'\n')
+            resFile.write('\tBase approximation to beta distribution:\n\t'+str(np.round(DiscFacDstnBase.X,4))+'\n')
+            resFile.write('\tActual approximation to beta distribution:\n\t'+str(np.round(DiscFacDstnActual,4))+'\n')
             resFile.write('\tGIC satisfied = '+str(GICsatisfied)+'\tGICmaxBeta = '+str(round(GICmaxBetas[educ_type],4))+'\n')
             resFile.write('\tImposed GIC-consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*GICfactor,5))+'\n\n')
     
@@ -513,7 +522,7 @@ def betasObjFuncEduc(beta, spread, GICx, educ_type=2, print_mode=False, print_fi
     # Check GIC:
     for thedf in range(DiscFacCount):
         if dfs.X[thedf] > GICmaxBetas[educ_type]*np.exp(GICx)/(1+np.exp(GICx)):
-            dfs.X[thedf] = GICmaxBetas[educ_type]*np.exp(GICx)/(1+np.exp(GICx))
+            dfs.X[thedf] = GICmaxBetas[educ_type]*(np.exp(GICx)/(1+np.exp(GICx)))
         elif dfs.X[thedf] < minBeta:
             dfs.X[thedf] = minBeta
 
@@ -604,14 +613,14 @@ df_resFileStr = df_resFileStr + '.txt'
 
 print('Estimation results saved in ' + df_resFileStr)
 
-for edType in [0,2]:
+for edType in [0,1,2]:
     f_temp = lambda x : betasObjFuncEduc(x[0],x[1],x[2], educ_type=edType)
     if edType == 0:
-        initValues = [0.7, 0.3, 6]       # Dropouts
+        initValues = [0.75, 0.3, 6]       # Dropouts
     elif edType == 1:
-        initValues = [0.92, 0.12, 5]      # HighSchool
+        initValues = [0.93, 0.12, 5]      # HighSchool
     elif edType == 2:
-        initValues = [0.96, 0.015, 6]     # College
+        initValues = [0.98, 0.015, 6]     # College
     else:
         initValues = [0.90,0.02,6]
 

@@ -4,24 +4,30 @@ R = 1.01, CRRA = 2.0, IncUnemp = 0.7, IncUnempNoBenefits = 0.5, Splurge = 0.3063
 Education group = 0.00: beta = 0.7354, nabla = 0.2978, GICfactor = 0.9977
 	Median LW/PI-ratio = 4.64
 	Lorenz Points = [0.0, 0.0074, 0.6537, 3.57]
-	Approximation to beta distribution:
-[0.4801 0.5652 0.6503 0.7354 0.8205 0.9056 0.9907]
+	Base approximation to beta distribution:
+	[0.4801 0.5652 0.6503 0.7354 0.8205 0.9056 0.9907]
+	Actual approximation to beta distribution:
+	[0.4801 0.5652 0.6503 0.7354 0.8205 0.9056 0.9907]
 	GIC satisfied = True	GICmaxBeta = 0.9971
 	Imposed GIC-consistent maximum beta = 0.99488
 
 Education group = 1.00: beta = 0.9236, nabla = 0.1373, GICfactor = 0.9901
 	Median LW/PI-ratio = 30.18
 	Lorenz Points = [0.0556, 0.8393, 3.3146, 11.4542]
-	Approximation to beta distribution:
-[0.806  0.8452 0.8844 0.9236 0.9629 1.0021 1.0413]
+	Base approximation to beta distribution:
+	[0.806  0.8452 0.8844 0.9236 0.9629 1.0021 1.0413]
+	Actual approximation to beta distribution:
+	[0.806  0.8452 0.8844 0.9236 0.9629 0.9892 0.9892]
 	GIC satisfied = False	GICmaxBeta = 0.9991
 	Imposed GIC-consistent maximum beta = 0.98922
 
 Education group = 2.00: beta = 0.9839, nabla = 0.0096, GICfactor = 0.9996
 	Median LW/PI-ratio = 112.80
 	Lorenz Points = [0.3333, 1.4671, 3.9242, 9.8624]
-	Approximation to beta distribution:
-[0.9757 0.9784 0.9812 0.9839 0.9866 0.9894 0.9921]
+	Base approximation to beta distribution:
+	[0.9757 0.9784 0.9812 0.9839 0.9866 0.9894 0.9921]
+	Actual approximation to beta distribution:
+	[0.9757 0.9784 0.9812 0.9839 0.9866 0.9894 0.9921]
 	GIC satisfied = True	GICmaxBeta = 0.9998
 	Imposed GIC-consistent maximum beta = 0.99945
 
