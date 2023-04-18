@@ -12,28 +12,35 @@ import pandas as pd
 def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     
     
-    [max_recession_duration, Rspell, Rfree_base]  = returnParameters(Parametrization=Parametrization,OutputFor='_Output_Results.py')
+    [max_recession_duration, Rspell, Rfree_base, figs_dir_FullRun]  = returnParameters(Parametrization=Parametrization,OutputFor='_Output_Results.py')
+    
+    
+    folder_AD           = saved_results_dir
+    if Parametrization.find('PVSame')>0:
+        folder_nonPVSame         = figs_dir_FullRun
+    else:
+        folder_nonPVSame         = saved_results_dir
     
 
     
     base_results                        = loadPickle('base_results',saved_results_dir,locals())
     check_results                       = loadPickle('Check_results',saved_results_dir,locals())
-    UI_results                          = loadPickle('UI_results',saved_results_dir,locals())
+    UI_results                          = loadPickle('UI_results',figs_dir_FullRun,locals())
     TaxCut_results                      = loadPickle('TaxCut_results',saved_results_dir,locals())
     
-    recession_results                   = loadPickle('recession_results',saved_results_dir,locals())
-    recession_results_AD                = loadPickle('recession_results_AD',saved_results_dir,locals())
-    recession_UI_results                = loadPickle('recessionUI_results',saved_results_dir,locals())       
-    recession_UI_results_AD             = loadPickle('recessionUI_results_AD',saved_results_dir,locals())  
+    recession_results                   = loadPickle('recession_results',figs_dir_FullRun,locals())
+    recession_results_AD                = loadPickle('recession_results_AD',figs_dir_FullRun,locals())
+    recession_UI_results                = loadPickle('recessionUI_results',figs_dir_FullRun,locals())       
+    recession_UI_results_AD             = loadPickle('recessionUI_results_AD',figs_dir_FullRun,locals())  
     recession_Check_results             = loadPickle('recessionCheck_results',saved_results_dir,locals())       
     recession_Check_results_AD          = loadPickle('recessionCheck_results_AD',saved_results_dir,locals())
     recession_TaxCut_results            = loadPickle('recessionTaxCut_results',saved_results_dir,locals())
     recession_TaxCut_results_AD         = loadPickle('recessionTaxCut_results_AD',saved_results_dir,locals())
     
-    recession_all_results                   = loadPickle('recession_all_results',saved_results_dir,locals())
-    recession_all_results_AD                = loadPickle('recession_all_results_AD',saved_results_dir,locals())
-    recession_UI_all_results                = loadPickle('recessionUI_all_results',saved_results_dir,locals())       
-    recession_UI_all_results_AD             = loadPickle('recessionUI_all_results_AD',saved_results_dir,locals())  
+    recession_all_results                   = loadPickle('recession_all_results',figs_dir_FullRun,locals())
+    recession_all_results_AD                = loadPickle('recession_all_results_AD',figs_dir_FullRun,locals())
+    recession_UI_all_results                = loadPickle('recessionUI_all_results',figs_dir_FullRun,locals())       
+    recession_UI_all_results_AD             = loadPickle('recessionUI_all_results_AD',figs_dir_FullRun,locals())  
     recession_Check_all_results             = loadPickle('recessionCheck_all_results',saved_results_dir,locals())       
     recession_Check_all_results_AD          = loadPickle('recessionCheck_all_results_AD',saved_results_dir,locals())
     recession_TaxCut_all_results            = loadPickle('recessionTaxCut_all_results',saved_results_dir,locals())

@@ -22,8 +22,8 @@ from Output_Results import Output_Results
 #%%
 
 
-Run_Main                = True
-Run_EqualPVs            = False
+Run_Main                = False
+Run_EqualPVs            = True
 Run_ADElas_robustness   = False
 Run_CRRA1_robustness    = False
 Run_CRRA3_robustness    = False
@@ -45,11 +45,12 @@ Run_Dict['Run_TaxCut']              = True
 Run_Dict['Run_AD ']                 = True
 Run_Dict['Run_1stRoundAD']          = True
 Run_Dict['Run_NonAD']               = True
+# For PVSame some of this automatically set to False
 
 #%% Execute main Simulation
 
 if Run_Main:
-
+    
     figs_dir = Abs_Path+'/Figures/CRRA2/'    
     Simulate(Run_Dict,figs_dir,Parametrization='Baseline')    
     Output_Results(Abs_Path+'/Figures/CRRA2/',Abs_Path+'/Figures/',Abs_Path+'/Tables/CRRA2/',Parametrization='Baseline')

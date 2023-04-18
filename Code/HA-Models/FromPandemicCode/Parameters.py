@@ -86,6 +86,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     Splurge = dictload['splurge']
     
     
+    figs_dir_FullRun = ''
     if Parametrization == 'CRRA2_PVSame':
         figs_dir_FullRun = Abs_Path+'/Figures/CRRA2/'
     elif Parametrization == 'ADElas_PVSame':
@@ -590,4 +591,4 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
             
     elif OutputFor=='_Output_Results.py':
 
-        return [max_recession_duration, Rspell, Rfree_base] 
+        return [max_recession_duration, Rspell, Rfree_base, figs_dir_FullRun] 

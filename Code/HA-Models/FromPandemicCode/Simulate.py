@@ -35,6 +35,12 @@ def Simulate(Run_Dict,figs_dir,Parametrization='Baseline'):
     Run_NonAD               = Run_Dict['Run_NonAD'] 
     
     
+    if Parametrization.find('PVSame')>0:
+        Run_Recession           = False
+        Run_UB_Ext_Recession    = False
+        Run_1stRoundAD          = False
+        Run_UB_Ext              = False
+    
     try:
         os.mkdir(figs_dir)
     except OSError:

@@ -31,7 +31,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     mystr = lambda x : '{:.2f}'.format(x)
     
     
-    [max_recession_duration, Rspell, Rfree_base]  = returnParameters(Parametrization=Parametrization,OutputFor='_Output_Results.py')
+    [max_recession_duration, Rspell, Rfree_base, figs_dir_FullRun]  = returnParameters(Parametrization=Parametrization,OutputFor='_Output_Results.py')
     
     
     Plot_1stRoundAd         = False
@@ -39,31 +39,32 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     max_T = 16
     x_axis = np.arange(1,max_T+1)
     
-    folder_AD           = saved_results_dir 
-    folder_base         = saved_results_dir
-    folder_noAD         = saved_results_dir
-    folder_firstroundAD = saved_results_dir
+    folder_AD           = saved_results_dir
+    if Parametrization.find('PVSame')>0:
+        folder_nonPVSame         = figs_dir_FullRun
+    else:
+        folder_nonPVSame         = saved_results_dir
+        
+
+    base_results                            = loadPickle('base_results',folder_nonPVSame,locals())
     
+    recession_results                       = loadPickle('recession_results',folder_nonPVSame,locals())
+    recession_results_AD                    = loadPickle('recession_results_AD',folder_nonPVSame,locals())
+    recession_results_firstRoundAD          = loadPickle('recession_results_firstRoundAD',folder_nonPVSame,locals())
     
-    base_results                            = loadPickle('base_results',folder_base,locals())
+    recession_UI_results                    = loadPickle('recessionUI_results',folder_nonPVSame,locals())       
+    recession_UI_results_AD                 = loadPickle('recessionUI_results_AD',folder_nonPVSame,locals())
+    recession_UI_results_firstRoundAD       = loadPickle('recessionUI_results_firstRoundAD',folder_nonPVSame,locals())
     
-    recession_results                       = loadPickle('recession_results',folder_noAD,locals())
-    recession_results_AD                    = loadPickle('recession_results_AD',folder_AD,locals())
-    recession_results_firstRoundAD          = loadPickle('recession_results_firstRoundAD',folder_firstroundAD,locals())
+    recession_Check_results                 = loadPickle('recessionCheck_results',saved_results_dir,locals())       
+    recession_Check_results_AD              = loadPickle('recessionCheck_results_AD',saved_results_dir,locals())
+    recession_Check_results_firstRoundAD    = loadPickle('recessionCheck_results_firstRoundAD',saved_results_dir,locals())
     
-    recession_UI_results                    = loadPickle('recessionUI_results',folder_noAD,locals())       
-    recession_UI_results_AD                 = loadPickle('recessionUI_results_AD',folder_AD,locals())
-    recession_UI_results_firstRoundAD       = loadPickle('recessionUI_results_firstRoundAD',folder_firstroundAD,locals())
+    recession_TaxCut_results                = loadPickle('recessionTaxCut_results',saved_results_dir,locals())
+    recession_TaxCut_results_AD             = loadPickle('recessionTaxCut_results_AD',saved_results_dir,locals())
+    recession_TaxCut_results_firstRoundAD   = loadPickle('recessionTaxCut_results_firstRoundAD',saved_results_dir,locals())
     
-    recession_Check_results                 = loadPickle('recessionCheck_results',folder_noAD,locals())       
-    recession_Check_results_AD              = loadPickle('recessionCheck_results_AD',folder_AD,locals())
-    recession_Check_results_firstRoundAD    = loadPickle('recessionCheck_results_firstRoundAD',folder_firstroundAD,locals())
-    
-    recession_TaxCut_results                = loadPickle('recessionTaxCut_results',folder_noAD,locals())
-    recession_TaxCut_results_AD             = loadPickle('recessionTaxCut_results_AD',folder_AD,locals())
-    recession_TaxCut_results_firstRoundAD   = loadPickle('recessionTaxCut_results_firstRoundAD',folder_firstroundAD,locals())
-    
-    if type(recession_results_firstRoundAD) == int:
+    if type(recession_TaxCut_results_firstRoundAD) == int:
         Mltp_1stRoundAd         = False
     else:
         Mltp_1stRoundAd         = True
@@ -322,10 +323,10 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         return 100*ShareExpDuringRecession
         
              
-    recession_all_results        = loadPickle('recession_all_results',folder_AD,locals())   
-    recession_all_results_UI     = loadPickle('recessionUI_all_results',folder_AD,locals())
-    recession_all_results_TaxCut = loadPickle('recessionTaxCut_all_results',folder_AD,locals())
-    recession_all_results_Check  = loadPickle('recessionCheck_all_results',folder_AD,locals())
+    recession_all_results        = loadPickle('recession_all_results',folder_nonPVSame,locals())   
+    recession_all_results_UI     = loadPickle('recessionUI_all_results',folder_nonPVSame,locals())
+    recession_all_results_TaxCut = loadPickle('recessionTaxCut_all_results',saved_results_dir,locals())
+    recession_all_results_Check  = loadPickle('recessionCheck_all_results',saved_results_dir,locals())
         
     [Share_TaxCut,Share_UI,ShareCheck]=ShareOfPolicyDuringRec(recession_all_results,recession_all_results_TaxCut,\
                            recession_all_results_UI,recession_all_results_Check,\
@@ -382,15 +383,21 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     
         # Policy options 'recession_UI' / 'recession_TaxCut' / 'recession_Check'
         
-        recession_all_results               = loadPickle('recession_all_results',folder_noAD,locals())
-        recession_all_results_AD            = loadPickle('recession_all_results_AD',folder_AD,locals())
+        recession_all_results               = loadPickle('recession_all_results',folder_nonPVSame,locals())
+        recession_all_results_AD            = loadPickle('recession_all_results_AD',folder_nonPVSame,locals())
         if Mltp_1stRoundAd:
-            recession_all_results_firstRoundAD  = loadPickle('recession_all_results_firstRoundAD',folder_firstroundAD,locals())
+            recession_all_results_firstRoundAD  = loadPickle('recession_all_results_firstRoundAD',folder_nonPVSame,locals())
         
-        recession_all_policy_results        = loadPickle( Policy + '_all_results',folder_noAD,locals())       
-        recession_all_policy_results_AD     = loadPickle(Policy + '_all_results_AD',folder_AD,locals())
+        if Policy == 'recessionUI':
+            folder_policy = folder_nonPVSame
+        else:
+            folder_policy = saved_results_dir
+                
+        
+        recession_all_policy_results        = loadPickle( Policy + '_all_results',folder_policy,locals())       
+        recession_all_policy_results_AD     = loadPickle(Policy + '_all_results_AD',folder_policy,locals())
         if Mltp_1stRoundAd:
-            recession_all_policy_results_firstRoundAD= loadPickle(Policy + '_all_results_firstRoundAD',folder_firstroundAD,locals())
+            recession_all_policy_results_firstRoundAD= loadPickle(Policy + '_all_results_firstRoundAD',folder_policy,locals())
         
         
         NPV_AddInc                  = getSimulationDiff(recession_all_results[RecLength-1],recession_all_policy_results[RecLength-1],'NPV_AggIncome') # Policy expenditure
