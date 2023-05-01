@@ -122,7 +122,7 @@ if Run_Rfree_robustness:
      
     figs_dir = Abs_Path+'/Figures/Rfree_1005_PVSame/'
     Simulate(Run_Dict,figs_dir,Parametrization='Rfree_1005_PVSame')
-    Output_Results(Abs_Path+'/Figures/Rfree_1005_PVSame/',Abs_Path+'/Figures/Rfree_1005_PVsame/',Abs_Path+'/Tables/Rfree_1005_PVsame/',Parametrization='Rfree_1005_PVSame')
+    Output_Results(Abs_Path+'/Figures/Rfree_1005_PVSame/',Abs_Path+'/Figures/Rfree_1005_PVSame/',Abs_Path+'/Tables/Rfree_1005_PVSame/',Parametrization='Rfree_1005_PVSame')
 
     figs_dir = Abs_Path+'/Figures/Rfree_1015/'
     Simulate(Run_Dict,figs_dir,Parametrization='Rfree_1015')
