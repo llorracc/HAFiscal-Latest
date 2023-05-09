@@ -166,7 +166,7 @@ In our baseline calibration, we follow \cite{rothstein2017scraping} and calibrat
 \subsubsection{Discount factor distributions with different benefits}
 \notinsubfile{\label{sec:robust_benefits_estim}}
 
-Table~\ref{tab:robustness_benefits} shows that when benefits are less generous and the precautionary motive is stronger, the estimated discount factor distributions are centered on lower values of $\beta$, and the dispersion in the distributions increases, as $\nabla$ is considerably higher. The intuition is similar to the case when increasing risk aversion from $\gamma=2.0$ to $\gamma=3.0$, discussed in section~\ref{sec:robust_gamma_estim}: A stronger precautionary motive for saving must be counteracted by a lower average discount factor to match the same average level of saving as before. The distributions must also be more dispersed to match the same concentration of liquid wealth. In fact, the estimated discount factor distributions for the alternative calibration of the replacement rates are very similar to those reported for $\gamma=3.0$ in row~3 of table~\ref{tab:robustness_gamma}. 
+Table~\ref{tab:robustness_benefits} shows that when benefits are less generous and the precautionary motive is stronger, the estimated discount factor distributions are centered on lower values of~$\beta$. The intuition is similar to the case when increasing risk aversion from $\gamma=2.0$ to $\gamma=3.0$, discussed in section~\ref{sec:robust_gamma_estim}: A stronger precautionary motive for saving must be counteracted by a lower average discount factor to match the same average level of saving as before. The distributions must also be more dispersed to match the same concentration of liquid wealth.\footnote{Note that the estimated $\nabla_h$ values for the Highschool group are not directly comparable in terms of the degree of dispersion. One of these estimate is affected by hitting the GIC-imposed upper bound, but the other is not.} In fact, the estimated discount factor distributions for the alternative calibration of the replacement rates are very similar to those reported for $\gamma=3.0$ in row~3 of table~\ref{tab:robustness_gamma}. 
 
 \begin{table}[t]
   \begin{center}
@@ -174,12 +174,12 @@ Table~\ref{tab:robustness_benefits} shows that when benefits are less generous a
       \toprule
       & & & \multicolumn{2}{c}{Dropout} & \multicolumn{2}{c}{Highschool} & \multicolumn{2}{c}{College} \\ \midrule 
       & & Splurge & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ \\ \midrule 
-      Baseline & ($\rho_{b}=0.7$, $\rho_{nb}=0.5$) & 0.307 & 0.694 & 0.542 & 0.904 & 0.099 & 0.978 & 0.015 \\ 
-      Altern. & ($\rho_{b}=0.3$,  $\rho_{nb}=0.15$) & 0.307 & 0.599 & 0.687 & 0.852 & 0.159 & 0.968 & 0.028
+      Baseline & ($\rho_{b}=0.7$, $\rho_{nb}=0.5$) & 0.306 & 0.735 & 0.298 & 0.924 & $0.137^{*}$ & 0.984 & 0.010 \\ 
+      Altern. & ($\rho_{b}=0.3$,  $\rho_{nb}=0.15$) & 0.306 & 0.609 & $0.445^{*}$ & 0.890 & 0.116 & 0.978 & 0.016
       \\ \bottomrule 
     \end{tabular}
   \end{center}
-  \caption{Estimates of the Splurge and $(\beta,\nabla)$ for each education group for the baseline replacement rates $\rho_{b}$ and $\rho_{nb}$ and an alternative calibration}
+  \caption{Estimates of the Splurge and $(\beta,\nabla)$ for each education group for the baseline replacement rates $\rho_{b}$ and $\rho_{nb}$ and an alternative calibration. A $*$ denotes an estimate of $\nabla$ that implies that the largest discount factor value in our discrete approximation would violate the GIC and is thus replaced with a value below the upper bound.}
   \notinsubfile{\label{tab:robustness_benefits}}
 \end{table}
 
@@ -188,7 +188,7 @@ Table~\ref{tab:robustness_benefits} shows that when benefits are less generous a
 \subsubsection{Results with different benefits}
 \notinsubfile{\label{sec:robust_benefits_results}}
 
-In this section, we perform the welfare analysis for different benefit replacement rates. Table \ref{tab:robustness_benefit_results} shows that the alternative parameterization of the unemployment replacement rates yields considerably higher welfare benefits for the UI extension policy. In particular, the lower the replacement rate under the no-benefit regime, the more harmful is the expiration of eligibility to the UI. The UI extension is thus particularly powerful if $\rho_{nb}$ is small, which is mirrored by the long-run multiplier of the UI extension policy. It increases from 1.275 in the baseline calibration to 1.416 under the lower replacement rates. In contrast, multipliers and welfare effects of the other two policies do not change dramatically under the alternative calibration. Again, our ranking of the three policies remains the same.
+In this section, we perform the welfare analysis for different benefit replacement rates. Table \ref{tab:robustness_benefit_results} shows that the alternative parameterization of the unemployment replacement rates yields considerably higher welfare benefits for the UI extension policy. In particular, the lower the replacement rate under the no-benefit regime, the more harmful is the expiration of eligibility to the UI. The UI extension is thus particularly powerful if $\rho_{nb}$ is small, which is mirrored by the long-run multiplier of the UI extension policy. It increases from 1.20 in the baseline calibration to 1.38 under the lower replacement rates. In contrast, multipliers and welfare effects of the other two policies do not change dramatically under the alternative calibration. Again, our ranking of the three policies remains the same.
 
 
 \begin{table}[]
@@ -196,10 +196,10 @@ In this section, we perform the welfare analysis for different benefit replaceme
     \begin{tabular}{@{}lllll@{}}
       \toprule
       &                    & Stimulus check & UI extension & Tax cut \\ \cmidrule(l){1-5} 
-      \multirow{2}{*}{no AD effects} 	& Baseline  ($\rho_{b}=0.7$, $\rho_{nb}=0.5$) 		& 0.011          & 0.580        & 0.002   \\
-      & Altern.  ($\rho_{b}=0.3$, $\rho_{nb}=0.15$) 	& 0.043          & 1.913        & 0.003   \\ \cmidrule(l){1-5} 
-      \multirow{2}{*}{AD effects}		& Baseline  ($\rho_{b}=0.7$, $\rho_{nb}=0.5$)    	& 0.171          & 1.266        & 0.065   \\
-      & Altern.  ($\rho_{b}=0.3$, $\rho_{nb}=0.15$)    & 0.169          & 2.620        & 0.052   \\ \cmidrule(l){1-5} 
+      \multirow{2}{*}{no AD effects} 	& Baseline  ($\rho_{b}=0.7$, $\rho_{nb}=0.5$) 		& 0.011          & 0.509        & 0.002   \\
+      & Altern.  ($\rho_{b}=0.3$, $\rho_{nb}=0.15$) 	& 0.043          & 1.845        & 0.003   \\ \cmidrule(l){1-5} 
+      \multirow{2}{*}{AD effects}		& Baseline  ($\rho_{b}=0.7$, $\rho_{nb}=0.5$)    	& 0.151          & 1.101        & 0.056   \\
+      & Altern.  ($\rho_{b}=0.3$, $\rho_{nb}=0.15$)    & 0.157          & 2.514        & 0.048   \\ \cmidrule(l){1-5} 
     \end{tabular}
     \caption{Consumption equivalent welfare gains in basis points, calculated for policies implemented in a recession with and without aggregate demand effects, for different unemployment benefit rates}
     \notinsubfile{\label{tab:robustness_benefit_results}}
