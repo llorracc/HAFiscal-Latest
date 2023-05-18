@@ -4,8 +4,8 @@
 
 \usepackage{multirow}
 
-\newbool{fullcon}\global\booltrue{fullcon}\boolfalse{fullcon} %full content
-\newbool{bundesb}\global\booltrue{bundesb}%\boolfalse{bundesb} %reduced, 20 min presentation
+\newbool{fullcon}\global\booltrue{fullcon}%\boolfalse{fullcon} %full content, 30-40 min
+\newbool{bundesb}\global\booltrue{bundesb}\boolfalse{bundesb} %reduced, 20 min presentation
 \usepackage{\econark,\econtexShortcuts}
 
 
@@ -60,22 +60,33 @@
 % _____________ 1st section  ____________
 
 
+
+
 	
 \begin{frame}
 \frametitle{Motivation}
-\begin{itemize} 
-	\item Various fiscal policies used to fight recessions: payroll tax cuts, stimulus checks, UI extension
+\begin{itemize}
+	\item Fiscal policies that aim to boost consumption spending in recessions have been tried in many countries in recent decades  
+	\item A lot of variation in these policies (we study payroll tax cuts, stimulus checks, UI extension): Variation may be due to
 	\begin{itemize}
 		\itemsep = .25\bigskipamount 
 		\item little guidance from traditional RANK models	
-		\item different goals: increase output (a `GDP metric') or reduce misery (a `welfare metric')
+		\item different goals: increase output (`GDP metric') or reduce misery (`welfare metric')
+	\end{itemize}
+	\bigskip
+	\pause
+	\item Development of heterogeneous agent (HA) models
+		\begin{itemize}
+		\itemsep = .25\bigskipamount 
+		\item heterogeneity (in e.g. wealth, income and/or education) is taken into account
+		\item policy impacts depend on \textit{intertemporal marginal propensity to consume} or iMPC (on which rich micro data from Norway is available)
 	\end{itemize}
 	\bigskip
 	\pause
 	\item \textbf{This paper:} Develop a heterogeneous agent (HA) model to study effectiveness of policies in fighting recessions
 	\begin{itemize}
 		\itemsep = .25\bigskipamount 
-		\item Consumers subject to transitory \& permanent income shocks and unemployment risk, heterogeneous in education
+		\item Consumers subject to transitory/permanent income shocks and unemployment risk
 		\item Consistent with micro data
 		\item Not a HANK model, but aggregate demand multiplier exist during recessions
 	\end{itemize}
@@ -243,6 +254,8 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 			
 		\item "Permanent income":  $\mathbf{p}_{i,t+1} = \underbrace{\psi_{i,t+1}}_{\text{perm. shock}} \underbrace{\Gamma_{e(i)}}_{\text{educ.-specific growth}}\mathbf{p}_{i,t}$ 
 
+
+		\ifbool{bundesb}{
 		\pause
 		\item Emplyoment status is subject to a Markov process
 		\begin{itemize}
@@ -251,6 +264,7 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 		\end{itemize}
 		
 		\item Recession is given by an MIT shock; end of recession as a Bernoulli process (avg. length of 6q)
+		}
 	
 	\end{itemize}
 
@@ -259,8 +273,33 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 
 
 \ifbool{fullcon}{
+	
 	\begin{frame}
-	\frametitle{Three policies to fight the recession}
+		\frametitle{ Employment status and recessions}
+		\begin{itemize}
+			\itemsep = \bigskipamount 
+			\item Emplyoment status is subject to a Markov process
+			\begin{itemize}
+				\itemsep = .5\bigskipamount
+				\item Employed consumer: continue being employed or become unemployed 
+				\item Unemployed consumers: receives benefits for two quarters
+			\end{itemize}
+			
+			\item Recession is given by an MIT shock
+			\begin{itemize}
+				\itemsep = .5\bigskipamount
+				\item Unemployment rate doubles in each education group
+				\item Expected length of unemployment increases from 1.5q to 4q
+				\item End of recession occurs as a Bernoulli process calibrated for an avg. rec. length of 6q
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+}{}	
+
+	
+\ifbool{fullcon}{	
+	\begin{frame}
+	\frametitle{Three policies to fight the recession - Details}
 	
 		\begin{itemize}
 		\item Stimulus check
@@ -311,9 +350,119 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 
 
 
+\ifbool{fullcon}{
+
+\section{Parametrization}
+
+\begin{frame}
+	\frametitle{Parametrization --- Strategy}
+	\begin{itemize} 
+		\itemsep = \bigskipamount 
+		\item Step 1: Estimate the splurge factor in a Norwegian version of the economy --- match iMPCs from FHN (2021)
+		\item Step 2a: Calibrate a set of parameters that affect all education groups equally 
+		\item Step 2b: Calibrate a set of parameters that match features of the different education groups 
+		\item Step 3: Estimate a discount factor distribution for each education group to match within-group distribution of liquid wealth
+		\begin{itemize}
+			\itemsep = .25\bigskipamount 
+			\item $\beta_e$: center of discount factor distribution
+			\item $\nabla_e$: spread of discount factor distribution 
+			\item Uniform distribution, approximated with 7 different types
+		\end{itemize}
+	\end{itemize} 
+\end{frame}
+
+\begin{frame}
+	\frametitle{Step 1: iMPC from FHN (2021)}
+	\centering 
+	%	\includegraphics[width=3in]{\FigDir/AggMPC_LotteryWin.pdf}
+	\includegraphics[width=3in]{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin.pdf}
+	\begin{itemize}
+		\itemsep = .5\bigskipamount 
+		\item Estimated splurge factor: $\varsigma = 0.31$; MPC across wealth distrubtion and K/Y untargeted but close to targets
+		\item Zero splurge ($\varsigma = 0$): cannot match iMPC, wealth-dep. MPCs and K/Y-ratio at the same time
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Step 2a: Parameters --- same for all types  \hyperlink{sli:policies}{\beamerbutton{Policy parameters}} }
+	\hypertarget{Parameters}{}
+	\begin{tabular}{lcd{3}} 
+		\toprule
+		\multicolumn{3}{l}{Parameters that apply to all types} \\ \midrule
+		Parameter & Notation & \text{Value} \\ \midrule 
+		Risk aversion & $\gamma$ & 2.0 \\ 
+		Splurge & $\varsigma$ & 0.307 \\ 
+		Survival probability, quarterly & $1-D$ & 0.994 \\
+		Risk free interest rate, quarterly (gross) & $R$ & 1.01 \\ 
+		Standard deviation of transitory shock & $\sigma_\xi$ & 0.346 \\
+		Standard deviation of permanent shock & $\sigma_\psi$ & 0.0548 \\ 
+		Unemployment benefits replacement rate (share of PI) & \textcolor{red}{$\rho_b$} & \textcolor{red}{0}.\textcolor{red}{7} \\ 
+		Unemployment income w/o benefits (share of PI) & \textcolor{red}{$\rho_{nb}$} & \textcolor{red}{0}.\textcolor{red}{5} \\ 
+		Avg. duration of unemp. benefits in normal times (quarters) & & 2 \\
+		Avg. duration of unemp. spell in normal times (quarters) & & 1.5 \\
+		Probability of leaving unemployment & $\pi_{ue}$ & 0.667 \\ 
+		Consumption elasticity of aggregate demand effect & $\kappa$ & 0.3 
+		\\ \bottomrule 
+	\end{tabular}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Step 2b: Parameters --- by education group}
+	\label{sli:paramsByEd}
+	\begin{tabular}{lccc}
+		\toprule 
+		\multicolumn{4}{l}{Parameters calibrated for each education group} \\ \midrule
+		& Dropout & Highschool & College \\ \midrule
+		Percent of population & \phantom{0}9.3 & 52.7 & 38.0 \\ 
+		Avg. quarterly PI of ``newborn'' agent (\$1000) & \phantom{0}6.2 & 11.1 & 14.5 \\
+		Std. dev. of $\log($PI$)$ of ``newborn'' agent & 0.32 & 0.42 & 0.53 \\
+		Avg. quarterly gross growth rate of PI ($\Gamma_e$) & 1.0036 & 1.0045 & 1.0049 \\
+		Unemployment rate in normal times (percent) & \phantom{0}8.5 & \phantom{0}4.4 & \phantom{0}2.7 \\ 
+		Probability of entering unemployment ($\pi_{eu}^{e}$, percent) & \phantom{0}6.2 & \phantom{0}3.1 & \phantom{0}1.8 
+		\\ \bottomrule 
+	\end{tabular}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Step 3: Estimation of discount factors}
+	\begin{tabular}{lccc}
+		& Dropout & Highschool & College \\ \midrule
+		$(\beta_e, \nabla_e)$ & (0.694, 0.542) & (0.904, 0.099) & (0.978,0.015) \\
+		(Min, max) in approximation & (0.230, 0.995) & (0.819, 0.989) & (0.965, 0.991) \\
+		\midrule 
+	\end{tabular} 
+	\begin{tabular}{lccc}
+		\multicolumn{4}{l}{ } \\ \midrule
+		\textbf{Estimation targets} & Dropout & Highschool & College \\ \midrule
+		Median LW/ quarterly PI (data, percent) & 4.64 & 30.2 & 112.8 \\ 
+		Median LW/ quarterly PI (model, percent) & 4.64 & 30.2 & 112.8 %\\
+		%         $[20,40,60,80]$ pctiles of Lorenz curve (data) & $[0, 0.01, 0.6, 3.6]$ & $[0.06, 0.6, 3.0, 11.6]$ & $[0.2, 0.9, 3.3, 10.3]$ \\
+		%         $[20,40,60,80]$ pctiles of Lorenz curve (model) & $[0.0, 0.0, 0.5, 3.6]$ & $[0.04, 0.9, 3.7, 11.3]$ & $[0.3, 1.5, 4.0, \phantom{0}9.9]$
+		\\ \midrule 
+	\end{tabular} 
+	\begin{tabular}{lcccc}
+		\multicolumn{5}{l}{ } \\ \midrule
+		\textbf{Non-targeted moments} & Dropout & Highschool & College & Population \\ \midrule
+		Percent of total wealth (data) & 0.8 & 17.9 & 81.2 & 100 \\
+		Percent of total wealth (model) & 12.4 & 18.6 & 69.0 & 100 \\
+		Avg. annual MPC (model, incl. splurge) & 0.79 & 0.78 & 0.54 & 0.69
+		\\ \bottomrule 
+	\end{tabular}
+\end{frame}
 
 
 
+
+\begin{frame}
+	\frametitle{Step 3: Visualization of match with SCF}
+	\centering
+	\includegraphics[width=4in]{\FigDir/LorenzPoints.pdf}
+\end{frame}
+
+
+}{}
 
 \section{Results}
 
@@ -365,42 +514,54 @@ Ganong, Greig, Noel, Sullivan and Vavra (2022); Kekre (2022)
 
 
 \ifbool{fullcon}{
+	
+	
+	
+	
 
 
 	\begin{frame}
+		
 		\frametitle{IRFs for stimulus check}
-		\centering
-		\includegraphics[width=0.6\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
-		\begin{itemize}
-			\itemsep = .5\bigskipamount 
-			\item W/o AD effects: Q1 income is 5.5\% higher; consumption jumps by 3\% 
-			\item With AD effects: Q1 income is 6.5\% higher; consumption elevated for longer time
-		\end{itemize}
+		
+		\begin{columns}	
+		
+			\begin{column}{0.33\textwidth} 	
+				\begin{itemize}
+					\item Simulate check policy in recessions lasting  from 1 to 20 q
+					\item Construct probability-weighted sum across rec. lengths
+				\end{itemize}
+			\end{column}	
+			
+			
+			\begin{column}{0.66\textwidth}  
+				\centering
+				\includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
+			\end{column}  
+	
+		\end{columns}
+
 	\end{frame}
 
 	\begin{frame}
-		\frametitle{IRfs for extension of unemployment benefits}
-		\centering
-		\includegraphics[width=0.6\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_UI_relrecession}
-		\begin{itemize}
-			\itemsep = .5\bigskipamount 
-			\item W/o AD effects: quarterly income increases by max 0.7 percent, consumption response shows anticipation of longer duration
-			\item With AD effects: extra boost to income by 0.2 percent, consumption stays elevated for longer time
-		\end{itemize}
+		\frametitle{IRfs for extension of unemployment benefits / payroll tax cut}
+
+		\begin{columns}	
+		
+			\begin{column}{0.50\textwidth}  	
+				Extension of UI benefits:
+				\includegraphics[width=1.2\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_UI_relrecession} 
+			\end{column}
+			
+			\begin{column}{0.50\textwidth}  
+				Payroll tax cut:	
+				\includegraphics[width=1.2\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_taxcut_relrecession}
+			\end{column}
+		\end{columns}
 		
 	\end{frame}
 	
-	\begin{frame}
-		\frametitle{IRFs for payroll tax cut}
-		\centering
-		\includegraphics[width=0.6\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_taxcut_relrecession}
-		
-		\begin{itemize}
-			\itemsep = .5\bigskipamount 
-			\item W/o AD effects: income rises by close to 2 percent; Consumption jumps by 1.5 percent and drops sharply after the income decline.
-			\item With AD effects, income rises by 2.5 percent, declines steadily as the recession's likelihood decreases
-		\end{itemize}
-	\end{frame}
+
 
 }{}
 
@@ -471,7 +632,56 @@ M^P_t = \frac{\text{Net present value of policy-induced consumption up to $t$}}{
 	
 }{}
 
+\ifbool{fullcon}{
 
+\begin{frame}
+	\frametitle{Welfare measure construction}
+	
+	Guiding principles
+	
+	\begin{enumerate}
+		\item Each consumer is valued equally by the social planner 
+		\item Utility from splurge in the same way as other spending
+		\item No social benefit to the policies outside of a recession
+	\end{enumerate} 
+	
+	\vspace{0.6cm}
+	\pause
+	
+	Simple aggregation of consumer util. only satisfies principle 1 \& 2:
+	\begin{align*}
+		\mathcal{W}(\text{policy},Rec,AD) =\frac{1}{N}\sum_{i=1}^{N} \sum_{t=0}^{\infty} \beta_S^t u(\mathbf{c}_{it,\text{policy},Rec,AD}) 
+	\end{align*}
+	
+	\begin{itemize}
+		\item $\mathbf{c}_{it,\text{policy},Rec,AD}$: consumption paths (including splurge) for each consumer / policy
+		\item $Rec\in\{1,0\}$: recession indicator, $AD\in\{1,0\}$: AD ind.
+		\item $\beta_S = 1/R$: social planner's discount factor 
+	\end{itemize}	
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Welfare measure construction II}
+	
+	To satisfy principle 3 we define $\mathcal{C}(\text{policy},Rec,AD) =$
+	\begin{align*}
+		& \bigg( \underbrace{\frac{\mathcal{W}(\text{policy},Rec,AD)-\mathcal{W}(\text{None},Rec,AD)}{\mathcal{W}^c}}_\text{\RNum{1}}  - \underbrace{\frac{PV(\text{policy},Rec)}{\mathcal{P}^c} }_\text{\RNum{2}} \bigg) \nonumber \\  
+		& -
+		\bigg( \underbrace{\frac{\mathcal{W}(\text{policy},0,0) - \mathcal{W}(\text{None},0,0)}{\mathcal{W}^c}}_\text{\RNum{3}}  - \underbrace{\frac{PV(\text{policy},0)}{\mathcal{P}^c}}_\text{\RNum{4}}  \bigg) 
+	\end{align*}
+	
+	\begin{itemize}
+		\item \RNum{1}: Policy-induced increase in agg. welfare (in bp of SS-cons.)
+		\item \RNum{2}: Cost of policy $\Leftrightarrow$ \RNum{1} - \RNum{2}: Net agg. welfare increase
+		\item \RNum{3} - \RNum{4}: Net welfare impact of policy outside of recession
+		\item $\mathcal{C}$ measures only welfare effects beyond pure redistribution
+	\end{itemize}
+	
+\end{frame}
+
+}{}
 
 
 \begin{frame}
@@ -651,7 +861,7 @@ M^P_t = \frac{\text{Net present value of policy-induced consumption up to $t$}}{
 	\end{tabular}
 
 	\vspace{1cm}
-	\hyperlink{ConsistentWithMicroData}{\beamerbutton{Go back}} 
+	\hyperlink{Parameters}{\beamerbutton{Go back}} 
 \end{frame}
 
 \begin{frame}
