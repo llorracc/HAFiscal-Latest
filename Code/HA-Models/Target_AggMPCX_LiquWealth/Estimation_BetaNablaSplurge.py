@@ -12,7 +12,7 @@ from HARK.utilities import getPercentiles, getLorenzShares, make_figs
 from HARK.parallel import multiThreadCommands
 from HARK.estimation import minimizeNelderMead
 from HARK.ConsumptionSaving.ConsIndShockModel import *
-from HARK.cstwMPC.SetupParamsCSTW import init_infinite
+from SetupParamsCSTW import init_infinite
 
 
 # for plotting
@@ -260,7 +260,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
             c_base_Lvl[:,period] = c_base[:,period] * ThisType.pLvlNow
             
         
-            #for k in range(N_Lottery_Win_Sizes): # Loop through different lottery sizes
+            #for k in range(N_Lottery_Win_Sizes): # Loop through different lottery sizes, only this will produce values in simulated_MPC_means
             k = 4; # do not loop to save time 
             
             Llvl = lottery_size[k]*LotteryWin[:,period]  #Lottery win occurs only if LotteryWin = 1 for that agent
@@ -304,10 +304,8 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
                 c_actu_Lvl_year = c_actu_Lvl[:,(year-1)*4:year*4,k]
                 c_base_Lvl_year = c_base_Lvl[:,(year-1)*4:year*4]
                 MPC_this_type[:,k,year-1] = (np.sum(c_actu_Lvl_year,axis=1) - np.sum(c_base_Lvl_year,axis=1))/(lottery_size[k])
-                
-                
-                
-                
+                    
+                    
                 
         
         if estimation_mode==False:        
@@ -317,6 +315,8 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
                 for k in range(N_Lottery_Win_Sizes-1):  #only consider here 4 Lottery bins
                     for y in range(N_Year_Sim):
                         MPC_Lists[k][q][y].append(MPC_this_type[these,k,y])
+        #print(max(MPC_this_type[:,0,0]))
+        #print(MPC_Lists[0][0][0])
                     
         # sort MPCs for addtional Lottery bin
         for y in range(N_Year_Sim):
@@ -401,6 +401,7 @@ def find_Opt_splurge_beta_nabla():
 #%%
     
 CRRA_values = [1,2,3]
+#CRRA_values = [2]
 
 for el in range(0,len(CRRA_values)):
     print('Running CRRA = ', CRRA_values[el])
@@ -429,7 +430,15 @@ for el in range(0,len(CRRA_values)):
 
 #%% Plot main result with CRRA = 2.0
 
+print('Plotting CRRA = ', 2)
+base_params['CRRA'] = 2
 
+# Make several consumer types to be used during estimation
+BaseType = KinkedRconsumerType(**base_params)
+EstTypeList = []
+for j in range(TypeCount):
+    EstTypeList.append(deepcopy(BaseType))
+    EstTypeList[-1](seed = j)
     
         
 
@@ -476,7 +485,7 @@ LorenzAxis = np.arange(101,dtype=float)
 lorenz_target_interp = np.interp(LorenzAxis,np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]))
 plt.plot(LorenzAxis,Lorenz_Data_Adj,'b',linewidth=2)
 plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
-plt.xlabel('Income percentile',fontsize=12)
+plt.xlabel('Liquid wealth percentile',fontsize=12)
 plt.ylabel('Cumulative liquid wealth share',fontsize=12)
 plt.legend(['Model','Data'])
 #plt.savefig(Abs_Path+'/Figures/' +'LiquWealth_Distribution.pdf')

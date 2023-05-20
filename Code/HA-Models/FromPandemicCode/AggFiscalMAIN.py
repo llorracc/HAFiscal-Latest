@@ -22,15 +22,15 @@ from Output_Results import Output_Results
 #%%
 
 
-Run_Main                = False
+Run_Main                = True
 Run_EqualPVs            = True
-Run_ADElas_robustness   = False
-Run_CRRA1_robustness    = False
-Run_CRRA3_robustness    = False
-Run_Rfree_robustness    = False
-Run_Rspell_robustness   = False
-Run_LowerUBnoB          = False
-Run_Splurge0            = False
+Run_ADElas_robustness   = True
+Run_CRRA1_robustness    = True
+Run_CRRA3_robustness    = True
+Run_Rfree_robustness    = True
+Run_Rspell_robustness   = True
+Run_LowerUBnoB          = True
+Run_Splurge0            = True
 
 
 Run_Dict = dict()

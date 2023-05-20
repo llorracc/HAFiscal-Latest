@@ -223,7 +223,12 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         NPV_Multiplier_Rec_Check_firstRoundAD   = getNPVMultiplier(recession_results_firstRoundAD,  recession_Check_results_firstRoundAD,  NPV_AddInc_Rec_Check)
     else:
         NPV_Multiplier_Rec_Check_firstRoundAD = np.zeros_like(NPV_Multiplier_Rec_Check)
-    
+ 
+    #print('NPV Multiplier check recession no AD: \t\t',mystr(NPV_Multiplier_Rec_Check[-1]))
+    print('NPV Multiplier check recession with AD: \t',mystr(NPV_Multiplier_Rec_Check_AD[-1]))
+    print('NPV Multiplier check recession 1st round AD: \t',mystr(NPV_Multiplier_Rec_Check_firstRoundAD[-1]))
+    print('')
+    # Multipliers in non-AD are less than 1 -> this is because of deaths!
             
     #print('NPV Multiplier UI recession no AD: \t\t',mystr(NPV_Multiplier_UI_Rec[-1]))
     print('NPV Multiplier UI recession with AD: \t\t',mystr(NPV_Multiplier_UI_Rec_AD[-1]))
@@ -235,14 +240,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     print('NPV Multiplier tax cut recession 1st round AD:  ',mystr(NPV_Multiplier_Rec_TaxCut_firstRoundAD[-1]))
     print('')
     
-    #print('NPV Multiplier check recession no AD: \t\t',mystr(NPV_Multiplier_Rec_Check[-1]))
-    print('NPV Multiplier check recession with AD: \t',mystr(NPV_Multiplier_Rec_Check_AD[-1]))
-    print('NPV Multiplier check recession 1st round AD: \t',mystr(NPV_Multiplier_Rec_Check_firstRoundAD[-1]))
-    print('')
-    # Multipliers in non-AD are less than 1 -> this is because of deaths!
-    
-    
-    
+
     
     # Multiplier plots for AD case
     max_T2 = 15
@@ -253,10 +251,10 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     C_Multiplier_Rec_TaxCut_AD            = getNPVMultiplier(recession_results_AD,            recession_TaxCut_results_AD,        NPV_AddInc_Rec_TaxCut[-1])
     C_Multiplier_Rec_Check_AD             = getNPVMultiplier(recession_results_AD,            recession_Check_results_AD,         NPV_AddInc_Rec_Check[-1])
     x_axis = np.arange(1,max_T2+1)[::nPlotDiff]
-    plt.plot(x_axis,C_Multiplier_Rec_TaxCut_AD[0:max_T2][::nPlotDiff],              color='red',linestyle='-')
-    plt.plot(x_axis,C_Multiplier_UI_Rec_AD[0:max_T2][::nPlotDiff],                  color='blue',linestyle='-')
     plt.plot(x_axis,C_Multiplier_Rec_Check_AD[0:max_T2][::nPlotDiff],               color='green',linestyle='-')
-    plt.legend(['Payroll Tax cut','Extended Unemployment Benefits','Stimulus Check'])
+    plt.plot(x_axis,C_Multiplier_UI_Rec_AD[0:max_T2][::nPlotDiff],                  color='blue',linestyle='-')
+    plt.plot(x_axis,C_Multiplier_Rec_TaxCut_AD[0:max_T2][::nPlotDiff],              color='red',linestyle='-')
+    plt.legend(['Stimulus check','UI extension','Tax cut',])
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, nPlotDiff))
     plt.xlabel('quarter')
     #plt.savefig(fig_dir +'Cummulative_multipliers.pdf')
@@ -353,11 +351,13 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         
     output  ="\\begin{tabular}{@{}lccc@{}} \n"
     output +="\\toprule \n"
-    output +="& Tax Cut    & UI extension    & Stimulus check    \\\\  \\midrule \n"
-    output +="Long-run Multiplier (AD effect) &"                 + mystr3(NPV_Multiplier_Rec_TaxCut_AD[-1])             + "  & "+ mystr3(NPV_Multiplier_UI_Rec_AD[-1])               +  "  & "+  mystr3(NPV_Multiplier_Rec_Check_AD[-1])  + "     \\\\ \n"
-    output +="Long-run Multiplier (1st round AD effect only) &"  + mystr3(NPV_Multiplier_Rec_TaxCut_firstRoundAD[-1])   + "  & "+ mystr3(NPV_Multiplier_UI_Rec_firstRoundAD[-1])     +  "  & "+  mystr3(NPV_Multiplier_Rec_Check_firstRoundAD[-1])  + "     \\\\ \n"
-    output +="Share of policy expenditure during recession &" + mystr1(Share_TaxCut)   + "\%  & "+ mystr1(Share_UI)  +  "\%  & "+  mystr1(ShareCheck)  + " \%    \\\\ \n"
+    output +="& Stimulus check    & UI extension    & Tax cut     \\\\  \\midrule \n"
+    output +="10y-horizon Multiplier (no AD effect) &"   + mystr3(NPV_Multiplier_Rec_Check[-1])             + "  & "+ mystr3(NPV_Multiplier_UI_Rec[-1])               +  "  & "+  mystr3(NPV_Multiplier_Rec_TaxCut[-1])  + "     \\\\ \n"
+    output +="10y-horizon Multiplier (AD effect) &"      + mystr3(NPV_Multiplier_Rec_Check_AD[-1])             + "  & "+ mystr3(NPV_Multiplier_UI_Rec_AD[-1])               +  "  & "+  mystr3(NPV_Multiplier_Rec_TaxCut_AD[-1])  + "     \\\\ \n"
+    output +="10y-horizon (1st round AD effect only) &"  + mystr3(NPV_Multiplier_Rec_Check_firstRoundAD[-1])   + "  & "+ mystr3(NPV_Multiplier_UI_Rec_firstRoundAD[-1])     +  "  & "+  mystr3(NPV_Multiplier_Rec_TaxCut_firstRoundAD[-1])  + "     \\\\ \n"
+    output +="Share of policy expenditure during recession &" + mystr1(ShareCheck)   + "\%  & "+ mystr1(Share_UI)  +  "\%  & "+  mystr1(Share_TaxCut)  + " \%    \\\\ \n"
     output +="\\end{tabular}  \n"
+
     
     with open(table_dir + 'Multiplier.tex','w') as f:
         f.write(output)

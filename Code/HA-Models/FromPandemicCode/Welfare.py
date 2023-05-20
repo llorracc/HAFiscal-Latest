@@ -198,7 +198,7 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
         return out
     output  ="\\begin{tabular}{@{}lccc@{}} \n"
     output +="\\toprule \n"
-    output +="                          & Check      & UI    & Tax Cut    \\\\  \\midrule \n"
+    output +="                          & Stimulus check      & UI extension    & Tax cut    \\\\  \\midrule \n"
     output +="$\\mathcal{C}(Rec,\\text{policy})$ & "      + mystr3bp(Check_consumption_welfare)     + "  & "+ mystr3bp(UI_consumption_welfare)     +  "  & "+  mystr3bp(TaxCut_consumption_welfare)  + "     \\\\ \n"
     output +="$\\mathcal{C}(Rec, AD,\\text{policy})$ & "  + mystr3bp(Check_consumption_welfare_AD)  + "  & "+ mystr3bp(UI_consumption_welfare_AD)  +  "  & "+  mystr3bp(TaxCut_consumption_welfare_AD)  + "     \\\\ \n"
     output +="\\end{tabular}  \n"
