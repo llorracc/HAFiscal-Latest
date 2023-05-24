@@ -83,12 +83,13 @@ Table~\ref{tab:robustness_gamma} displays the values we obtain for the splurge a
       \toprule
       & & \multicolumn{2}{c}{Dropout} & \multicolumn{2}{c}{Highschool} & \multicolumn{2}{c}{College} \\ \midrule 
       & Splurge & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ & $\beta$ & $\nabla$ \\ \midrule 
-      $\gamma = 1.0$ & 0.312 & 0.692 & 0.333 & 0.966 & 0.154 & 1.05 & 0.015 \\ 
-      $\gamma = 2.0$ (baseline) & 0.306 & 0.735 & 0.298 & 0.924 & 0.137 & 0.984 & 0.0096 \\
-      $\gamma = 3.0$ & 0.304 & 0.593 & 0.459 & 0.889 & 0.110 & 0.973 & 0.017 
+      $\gamma = 1.0$ & 0.312 & 0.692 & 0.333 & 0.966 & $0.154^{*}$ & 1.05\textsuperscript{\textdagger} & 0.015 \\ 
+      $\gamma = 2.0$ (baseline) & 0.306 & 0.735 & 0.298 & 0.924 & $0.137^{*}$ & 0.984 & 0.0096 \\
+      $\gamma = 3.0$ & 0.304 & 0.593 & $0.459^{*}$ & 0.889 & 0.110 & 0.973 & 0.017 
       \\ \bottomrule 
     \end{tabular}
-    \caption{Estimates of the splurge and $(\beta,\nabla)$ for each education group for different values of risk aversion, $\gamma$}
+    \caption{Estimates of the splurge and $(\beta,\nabla)$ for each education group for different values of risk aversion, $\gamma$. A $*$ denotes an estimate of $\nabla$ that implies that the largest discount factor value in our discrete approximation would violate the GIC and is thus replaced with a value below the upper bound. A \textdagger\hspace{.01cm} indicates an estimate of $\beta$ that is so large that all values in the discrete approximation violate the GIC and replaced with a value below the upper bound.
+    }
     \notinsubfile{\label{tab:robustness_gamma}}
   \end{center}
 \end{table}
