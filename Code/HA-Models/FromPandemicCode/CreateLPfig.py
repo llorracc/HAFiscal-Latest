@@ -88,9 +88,11 @@ if len(sys.argv) < 2:
     plt.rc('axes', labelsize=12)
     
     lgd = fig.legend(handles, labels, loc='lower center', ncol=2, fancybox=True, shadow=False, 
-              bbox_to_anchor=(0.5, -0.03), fontsize=12)
+              bbox_to_anchor=(0.5, -0.005), fontsize=12)
     fig.set_facecolor(color="white")
     
+    plt.gcf().subplots_adjust(bottom=0.125)
+#    fig.savefig('LorenzPoints_CRRA_2.0_R_1.01.pdf')
     make_figs('LorenzPoints_CRRA_2.0_R_1.01', True , False, target_dir=figs_dir)
 
 elif len(sys.argv) >= 2: 
@@ -159,9 +161,11 @@ elif len(sys.argv) >= 2:
     plt.rc('axes', labelsize=12)
     
     lgd = fig.legend(handles, labels, loc='lower center', ncol=2, fancybox=True, shadow=False, 
-              bbox_to_anchor=(0.5, -0.10), fontsize=12)
+              bbox_to_anchor=(0.5, -0.005), fontsize=12)
     fig.set_facecolor(color="white")
     
+    plt.gcf().subplots_adjust(bottom=0.175)
+#    fig.savefig(myFigFile+'.pdf')
     make_figs(myFigFile, True , False, target_dir=figs_dir)
     
     #%% Plot figure of the data only for motivation slide in presentation
