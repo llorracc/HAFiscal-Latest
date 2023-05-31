@@ -22,14 +22,14 @@ from Output_Results import Output_Results
 #%%
 
 
-Run_Main                = False #DONE
-Run_EqualPVs            = False #DONE
-Run_ADElas_robustness   = False #DONE
-Run_CRRA1_robustness    = False #DONE
-Run_CRRA3_robustness    = False #DONE
-Run_Rfree_robustness    = False #DONE
-Run_Rspell_robustness   = False #DONE
-Run_LowerUBnoB          = False #DONE
+Run_Main                = True
+Run_EqualPVs            = True
+Run_ADElas_robustness   = True
+Run_CRRA1_robustness    = True
+Run_CRRA3_robustness    = True
+Run_Rfree_robustness    = True
+Run_Rspell_robustness   = True
+Run_LowerUBnoB          = True
 Run_Splurge0            = True
 
 
@@ -45,11 +45,12 @@ Run_Dict['Run_TaxCut']              = True
 Run_Dict['Run_AD ']                 = True
 Run_Dict['Run_1stRoundAD']          = True
 Run_Dict['Run_NonAD']               = True
+# For PVSame some of this automatically set to False
 
 #%% Execute main Simulation
 
 if Run_Main:
-
+    
     figs_dir = Abs_Path+'/Figures/CRRA2/'    
     Simulate(Run_Dict,figs_dir,Parametrization='Baseline')    
     Output_Results(Abs_Path+'/Figures/CRRA2/',Abs_Path+'/Figures/',Abs_Path+'/Tables/CRRA2/',Parametrization='Baseline')
@@ -121,7 +122,7 @@ if Run_Rfree_robustness:
      
     figs_dir = Abs_Path+'/Figures/Rfree_1005_PVSame/'
     Simulate(Run_Dict,figs_dir,Parametrization='Rfree_1005_PVSame')
-    Output_Results(Abs_Path+'/Figures/Rfree_1005_PVSame/',Abs_Path+'/Figures/Rfree_1005_PVsame/',Abs_Path+'/Tables/Rfree_1005_PVsame/',Parametrization='Rfree_1005_PVSame')
+    Output_Results(Abs_Path+'/Figures/Rfree_1005_PVSame/',Abs_Path+'/Figures/Rfree_1005_PVSame/',Abs_Path+'/Tables/Rfree_1005_PVSame/',Parametrization='Rfree_1005_PVSame')
 
     figs_dir = Abs_Path+'/Figures/Rfree_1015/'
     Simulate(Run_Dict,figs_dir,Parametrization='Rfree_1015')
