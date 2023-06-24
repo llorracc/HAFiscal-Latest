@@ -240,6 +240,8 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     AgentCountTotal = 10000     # Total simulated population
     T_sim = 40                  # Number of quarters to simulate in counterfactuals
     
+
+    
     # Basic lifecycle length parameters (don't touch these)
     T_cycle = 1
     
@@ -249,6 +251,11 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     num_base_MrkvStates = 2 + UBspell_normal #employed, unemployed with 2 quarters benefits, unemployed with 1 quarter benefit, unemployed no benefits
     num_experiment_periods = 20
     max_recession_duration = 21
+    
+    if Parametrization == 'Reduced_Run':
+        num_experiment_periods = 10
+        max_recession_duration = 11
+        T_age = 100
     
     def makeMacroMrkvArray_recession(Rspell, num_experiment_periods):
         R_persist = 1.-1./Rspell
@@ -381,7 +388,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     # Define a parameter dictionary for dropout type
     init_dropout = {"cycles": 0, # 00This will be overwritten at type construction
                     "T_cycle": T_cycle,
-                    'T_sim': 400, #Simhulate up to age 400
+                    'T_sim': T_age*2, #Simhulate up to age 400
                     'T_age': T_age,
                     'AgentCount': 1000, #number overwritten later
                     "PermGroFacAgg": PermGroFacAgg,
@@ -553,6 +560,14 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     num_max_iterations_solvingAD = 15
     convergence_tol_solvingAD = 1E-4
     Cfunc_iter_stepsize       = 1
+    act_T = 400
+    
+    if Parametrization == 'Reduced_Run':
+        AgentCountTotal = 100
+        T_sim = 22
+        num_max_iterations_solvingAD = 8
+        convergence_tol_solvingAD = 1E-2
+        act_T = 100
     
     # Make a dictionary to specify a Cobb-Douglas economy
     init_ADEconomy = {'intercept_prev': intercept_prev,
@@ -570,7 +585,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
                          "MrkvArray_base" : MrkvArray_base_h, 
                          'CgridBase' : CgridBase,
                          'EconomyMrkvNow_init': 0,
-                         'act_T' : 400,
+                         'act_T' : act_T,
                          'TaxCutContinuationProb_Rec' : TaxCutContinuationProb_Rec,
                          'TaxCutContinuationProb_Bas' : TaxCutContinuationProb_Bas
                          }
