@@ -184,21 +184,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     #             DiscFacDstns[e].X[thedf] = minBeta
 
     # HAKON, can you check this section until before #Recession
-    DiscFacDstns = [None]*3
-    for e in [0,1,2]:
-        dfs = Uniform(myEstim[e][0]-myEstim[e][1], myEstim[e][0]+myEstim[e][1]).approx(DiscFacCount)
-        
-        # Check GIC:
-        for thedf in range(DiscFacCount):
-            if dfs.X[thedf] > GICmaxBetas[e]*myEstim[e][3]:
-                dfs.X[thedf] = GICmaxBetas[e]*myEstim[e][3]
-            elif dfs.X[thedf] < minBeta:
-                dfs.X[thedf] = minBeta
-        theDFs = np.round(dfs.X,4)
-        print('EducationGroup: ', e, ', betaDistr :', theDFs.tolist())
-        DiscFacDstns[e] = dfs
-        
-  
+     
     # Recession
     Urate_recession_d = 2 * Urate_normal_d # Unemployment rate in recession
     Urate_recession_h = 2 * Urate_normal_h 
@@ -256,6 +242,21 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         num_experiment_periods = 10
         max_recession_duration = 11
         T_age = 100
+        DiscFacCount = 1
+        
+    DiscFacDstns = [None]*3
+    for e in [0,1,2]:
+        dfs = Uniform(myEstim[e][0]-myEstim[e][1], myEstim[e][0]+myEstim[e][1]).approx(DiscFacCount)
+        
+        # Check GIC:
+        for thedf in range(DiscFacCount):
+            if dfs.X[thedf] > GICmaxBetas[e]*myEstim[e][3]:
+                dfs.X[thedf] = GICmaxBetas[e]*myEstim[e][3]
+            elif dfs.X[thedf] < minBeta:
+                dfs.X[thedf] = minBeta
+        theDFs = np.round(dfs.X,4)
+        print('EducationGroup: ', e, ', betaDistr :', theDFs.tolist())
+        DiscFacDstns[e] = dfs
     
     def makeMacroMrkvArray_recession(Rspell, num_experiment_periods):
         R_persist = 1.-1./Rspell
