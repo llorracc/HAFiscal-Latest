@@ -308,7 +308,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         # then sums it up weighing by probability of that recession length
         ShareExpDuringRecession= np.zeros(3)
              
-        for i in range(21):      
+        for i in range(max_recession_duration):      
             NPV_TaxCut              = getSimulationDiff(rec[i],TaxCut[i],'NPV_AggIncome') 
             ShareExpDuringRecession[0] += NPV_TaxCut[i]/NPV_TaxCut[-1]*recession_prob_array[i]
             

@@ -7,9 +7,14 @@ import os
 
 
 #%% This script is a reduced version of do_all.py
-# It only executes Step 4 of that file (so skips the estimation of the splurge, discount factors and robustness runs)
-# For step 4, the simulation of the policy impacts, it only consider one policy, the extension of UI benefits
-# and simulates N= agents, rather than N= as in the full simulation
+# It only executes Step 4 of do_all.py 
+# It thus skips the estimation of the splurge and discount factors (and robustness estimations)
+# For step 4, we consider a simpler setup and reduce the number of discount factors per education group to 1
+# Furthermore, we only run N=100 rather than 10000 agents.
+# Finally, the Aggregate Demand solution is run calculated with fewer iterations (reducing accuracy)
+# The code creates IRF for the simulations in FromPandemicCode\Figures\Reduced_Run
+# and a table of the Multipliers in  FromPandemicCode\Tables\Reduced_Run
+# The whole code should take roughly one hour to execute (using a laptop computer)
 
 
 print('Step 4: Comparing policies\n')

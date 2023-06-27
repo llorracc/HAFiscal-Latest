@@ -154,10 +154,6 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     # # From SCF 2004: Weighted median of liquid wealth to permanent income ratio
     # data_medianLWPI = np.array([1.16, 7.55, 28.2])*4 # weighted median of fractions in percent
     
-    
-
-    
-
     # # Parameters concerning the distribution of discount factors
     # DiscFacMeanD = myEstim[0][0]  # Mean intertemporal discount factor for dropout types
     # DiscFacMeanH = myEstim[1][0]  # Mean intertemporal discount factor for high school types
@@ -183,7 +179,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     #         elif DiscFacDstns[e].X[thedf] < minBeta:
     #             DiscFacDstns[e].X[thedf] = minBeta
 
-    # HAKON, can you check this section until before #Recession
+
      
     # Recession
     Urate_recession_d = 2 * Urate_normal_d # Unemployment rate in recession
@@ -566,7 +562,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
     if Parametrization == 'Reduced_Run':
         AgentCountTotal = 100
         T_sim = 22
-        num_max_iterations_solvingAD = 8
+        num_max_iterations_solvingAD = 5
         convergence_tol_solvingAD = 1E-2
         act_T = 100
     
