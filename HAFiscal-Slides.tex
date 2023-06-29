@@ -4,8 +4,8 @@
 
 \usepackage{multirow}
 
-\newbool{fullcon}\global\booltrue{fullcon}%\boolfalse{fullcon} %full content, 30-40 min
-\newbool{bundesb}\global\booltrue{bundesb}\boolfalse{bundesb} %reduced, 20 min presentation
+\newbool{fullcon}\global\booltrue{fullcon}\boolfalse{fullcon} %full content, 30-40 min
+\newbool{bundesb}\global\booltrue{bundesb}%\boolfalse{bundesb} %reduced, 20 min presentation
 \usepackage{\econark,\econtexShortcuts}
 
 
@@ -26,11 +26,11 @@
 
 
 
-\ifbool{bundesb}{% set date for bundesbank
-	\date[\today]{Bundesbank in-house research seminar - March 28, 2023  \\ \medskip \medskip \medskip 
+\ifbool{bundesb}{% set date for CEF
+	\date[\today]{CEF - July 6, 2023  \\ \medskip \medskip \medskip 
 	\href{https://econ-ark.org/}{\small Powered By} \\ \includegraphics[width=0.5in]{\econtexRoot/Resources/econ-ark-logo-small.png}}
 }{}
-\ifbool{fullcon}{% set date for bundesbank
+\ifbool{fullcon}{% set date for SSB workshop
 	\date[\today]{SSB Fiscal Policy Workshop - May 25, 2023  \\ \medskip \medskip \medskip 
 		\href{https://econ-ark.org/}{\small Powered By} \\ \includegraphics[width=0.5in]{\econtexRoot/Resources/econ-ark-logo-small.png}}
 }{}
@@ -98,22 +98,22 @@
 	
 	\begin{columns}
 		\begin{column}{0.4\textwidth}
-			SCF liquid wealth (Kaplan and Violante, 2014) 
+			Liquid Wealth (Survey of Consumer Finances) 
 			
 			\includegraphics[width=\linewidth]{\FigDir/LorenzPoints.pdf}
 			
-			Modelling device: \textit{Ex-ante} heterogeneity in discount factors
+			Modeling device: \textit{Ex-ante} heterogeneity in discount factors
 			
 		\end{column}
 	
 		\pause
 		
 		\begin{column}{0.4\textwidth}  	
-			iMPC from Fagereng, Holm, Natvik (2021)	
+			Intertemporal MPC from Fagereng, Holm, Natvik (2021)	
 			
 			\includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin.pdf}
 			
-			Modelling device: `Splurge' in consumption, i.e. exogenously given fraction of income directly consumed
+			Modeling device: `Splurge' in consumption, i.e. exogenously given fraction of income directly consumed
 		\end{column}
 	\end{columns}
 	
@@ -130,7 +130,7 @@
 \begin{itemize}
 	\itemsep = .25\bigskipamount 
 	\item Stimulus check for \$1200 (means-tested)
-	\item Extension of unemployment benefits from 0.5 to 1 year
+	\item Extension of unemployment benefits from 6 months to 1 year
 	\item Payroll tax cut by 2\% for 2 years
 \end{itemize}
 %\item Key features of the policies: 
@@ -206,7 +206,7 @@ Bhandari, Evans, Golosov and Sargent (2021); D{\'a}vila and Schaab (2022)
 
 	\begin{itemize}
 		\item Education groups: "Dropout", "Highschool" and "College"
-		\item Each group has distribution of subjective discount factors $\beta_i$
+		\item Each group has distribution of discount factors $\beta_i$
 		\item Idiosyncratic, stochastic income process $\mathbf{y}_{i,t}$
 		\item Estimated splurge factor $\varsigma$: $\mathbf{c}_{sp,i,t} = \varsigma \mathbf{y}_{i,t}$
 		\pause
@@ -562,7 +562,14 @@ Bhandari, Evans, Golosov and Sargent (2021); D{\'a}vila and Schaab (2022)
 
 \begin{table}[t]
 	\center
-	\input{\econtexRoot/Code/HA-Models/FromPandemicCode/Tables/CRRA2/Multiplier.tex}
+\begin{tabular}{@{}lccc@{}} 
+	\toprule 
+	& Stimulus check    & UI extension    & Tax cut     \\  \midrule 
+	10y-horizon Multiplier (no AD effect) &0.872  & 0.910  & 0.847     \\ 
+	10y-horizon Multiplier (AD effect) &1.245  & 1.200  & 0.999     \\ 
+	%10y-horizon (1st round AD effect only) &1.162  & 1.140  & 0.967     \\ 
+	Share of policy expenditure during recession &100.0\%  & 80.6\%  & 57.6 \%    \\ 
+\end{tabular}  
 \end{table}
 
 \end{frame}
