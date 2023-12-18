@@ -343,3 +343,7 @@ cAndCwithStickyE-App.pdf
 
 *Old*
 ls-R
+
+# Avoid adding large data files to repo
+*.csv
+*.dat
