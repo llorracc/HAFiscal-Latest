@@ -1,17 +1,28 @@
 # Import python tools
-import sys
 import os
 import numpy as np
 import random
 from copy import deepcopy
 import pandas as pd
 
+
+# import sys
+# # print the original sys.path
+# print('Original sys.path:', sys.path)
+# # append a new directory to sys.path
+# sys.path.append('\\Client\D$\CustomTools\HARK')
+# # print the updated sys.path
+# print('Updated sys.path:', sys.path)
+# # now you can import your module
+# import HARK
+# print(HARK.__ver__)
+
 # Import needed tools from HARK
 from HARK.distribution import Uniform
 from HARK.utilities import getPercentiles, getLorenzShares, make_figs
 from HARK.parallel import multiThreadCommands
 from HARK.estimation import minimizeNelderMead
-from HARK.ConsumptionSaving.ConsIndShockModel import *
+from HARK.ConsumptionSaving.ConsIndShockModel import KinkedRconsumerType
 from SetupParamsCSTW import init_infinite
 
 
@@ -97,7 +108,7 @@ if  Parametrization == 'NOR_Final':
     base_params['BoroCnstArt']  = -0.8
     base_params['PermGroFacAgg']= 1.015**0.25     
 if  Parametrization == 'NOR_new':    
-    base_params['LivPrb']       = [1-1/160]
+    base_params['LivPrb']       = [1-1/160]     
     base_params['Rfree']        = 1.02**0.25
     base_params['Rsave']        = 1.02**0.25
     base_params['Rboro']        = 1.137**0.25
@@ -109,6 +120,7 @@ if  Parametrization == 'NOR_new':
     base_params['BoroCnstArt']  = -0.8
     base_params['PermGroFacAgg']= 1.01**0.25     
     base_params['CRRA']         = 2.0
+    base_params['T_age']        = None
 ###################
 ## TARGETS ########
 ###################
@@ -132,7 +144,6 @@ RandomLotteryWin = True #if True, then the 5th element will be replaced with a r
 
 
 # Liquid wealth target from US
-                        
 lorenz_target = np.array([0.029, 0.354, 1.84, 7.42])/100
 KY_target = 6.60
 
@@ -143,7 +154,7 @@ KY_target = 6.60
     
 # Define the objective function
 
-def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=True,target='AGG_MPC'):
+def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_mode=True,target='AGG_MPC',investigate=False):
     '''
     Objective function for the quick and dirty structural estimation to fit
     Fagereng, Holm, and Natvik's Table 9 results with a basic infinite horizon
@@ -165,26 +176,54 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         Euclidean distance between simulated MPCs and (adjusted) Table 9 MPCs.
     '''
     
+    for j in range(TypeCount):
+        EstTypeList[-1](seed = j)
+    
+    
     # Give our consumer types the requested discount factor distribution
     beta_set = Uniform(bot=center-spread, top=center+spread).approx(TypeCount).X
+    # Check GIC:
+        
+    GICmaxBeta = (1-base_params['LivPrb'][0]) + (base_params['PermGroFacAgg']**base_params['CRRA'])/base_params['Rfree']
+    minBeta = 0.01
+    for thedf in range(TypeCount):
+        if beta_set[thedf] > GICmaxBeta*np.exp(GICx)/(1+np.exp(GICx)):
+            beta_set[thedf] = GICmaxBeta*(np.exp(GICx)/(1+np.exp(GICx)))
+        elif beta_set[thedf] < minBeta:
+            beta_set[thedf] = minBeta
     
+    
+    # # Check GIC:
+    # GICmaxBeta = 0.0025 + (base_params['PermGroFacAgg']**base_params['CRRA'])/base_params['Rfree']
+    # minBeta = 0.01
+    # distance_add = 0
+    # for thedf in range(TypeCount):
+    #     if beta_set[thedf] > GICmaxBeta*np.exp(GICx)/(1+np.exp(GICx)):
+    #         beta_set[thedf] = GICmaxBeta*(np.exp(GICx)/(1+np.exp(GICx)))
+    #         distance_add = 1
+    #     elif beta_set[thedf] < minBeta:
+    #         beta_set[thedf] = minBeta
+
+
+
+        
     
     for j in range(TypeCount):
         EstTypeList[j](DiscFac = beta_set[j])
 
     # Solve and simulate all consumer types, then gather their wealth levels
-    multiThreadCommands(EstTypeList,['solve()','initializeSim()','simulate()','unpackcFunc()'])
+    multiThreadCommands(EstTypeList,['solve()','initializeSim()','simulate()','unpack("cFunc")'])
     WealthNow = np.concatenate([ThisType.aLvlNow for ThisType in EstTypeList])
     
     
-    if estimation_mode==False:
-        # Get wealth quartile cutoffs and distribute them to each consumer type
-        quartile_cuts = getPercentiles(WealthNow,percentiles=[0.25,0.50,0.75])
-        for ThisType in EstTypeList:
-            WealthQ = np.zeros(ThisType.AgentCount,dtype=int)
-            for n in range(3):
-                WealthQ[ThisType.aLvlNow > quartile_cuts[n]] += 1
-            ThisType(WealthQ = WealthQ)
+    #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':     
+    # Get wealth quartile cutoffs and distribute them to each consumer type
+    quartile_cuts = getPercentiles(WealthNow,percentiles=[0.25,0.50,0.75])
+    for ThisType in EstTypeList:
+        WealthQ = np.zeros(ThisType.AgentCount,dtype=int)
+        for n in range(3):
+            WealthQ[ThisType.aLvlNow > quartile_cuts[n]] += 1
+        ThisType(WealthQ = WealthQ)
             
 
          
@@ -208,16 +247,18 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     IncAgg = np.sum(permNow*TransNow)
     KY_Model = CapAgg/IncAgg
     
-    # calculate GIC condition
-    ThisType = EstTypeList[7]
-    ThisType.InvPermShkDstn=deepcopy(ThisType.PermShkDstn)
-    ThisType.InvPermShkDstn[0].X = 1/ThisType.PermShkDstn[0].X
-    ThisType.EPermShkInv=np.dot(ThisType.InvPermShkDstn[0].pmf,1/ThisType.PermShkDstn[0].X)
-    ThisType.InvEPermShkInv  = (1/ThisType.EPermShkInv)
-    ThisType.thorn = (ThisType.Rfree*ThisType.DiscFac*ThisType.LivPrb[0])**(1/ThisType.CRRA)   
-    ThisType.GPFInd = ThisType.thorn/(ThisType.PermGroFacAgg*ThisType.PermGroFac[0]*ThisType.InvEPermShkInv)  # [url]/#GICI
-    ThisType.GPFInd = EstTypeList[7].GPFInd - 0.0025 #manual adj. for max age
-    #print('EstTypeList[7].GPFInd = ', EstTypeList[7].GPFInd)
+
+    
+    # # calculate GIC condition
+    # ThisType = EstTypeList[7]
+    # ThisType.InvPermShkDstn=deepcopy(ThisType.PermShkDstn)
+    # ThisType.InvPermShkDstn[0].X = 1/ThisType.PermShkDstn[0].X
+    # ThisType.EPermShkInv=np.dot(ThisType.InvPermShkDstn[0].pmf,1/ThisType.PermShkDstn[0].X)
+    # ThisType.InvEPermShkInv  = (1/ThisType.EPermShkInv)
+    # ThisType.thorn = (ThisType.Rfree*ThisType.DiscFac*ThisType.LivPrb[0])**(1/ThisType.CRRA)   
+    # ThisType.GPFInd = ThisType.thorn/(ThisType.PermGroFacAgg*ThisType.PermGroFac[0]*ThisType.InvEPermShkInv)  # [url]/#GICI
+    # ThisType.GPFInd = EstTypeList[7].GPFInd - 0.0025 #manual adj. for max age
+    # #print('EstTypeList[7].GPFInd = ', EstTypeList[7].GPFInd)
         
         
     N_Quarter_Sim = 20; # Needs to be dividable by four
@@ -227,7 +268,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     
     EmptyList = [[],[],[],[],[]]
     MPC_set_list = [deepcopy(EmptyList),deepcopy(EmptyList),deepcopy(EmptyList),deepcopy(EmptyList)]
-    MPC_Lists    = [deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list)]    
+    MPC_Lists    = [deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list)]    
     # additional list for 5th Lottery bin, just need for elements for four years
     MPC_List_Add_Lottery_Bin = EmptyList
     
@@ -308,13 +349,13 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
                     
                 
         
-        if estimation_mode==False:        
-            # Sort the MPCs into the proper MPC sets
-            for q in range(4):
-                these = ThisType.WealthQ == q
-                for k in range(N_Lottery_Win_Sizes-1):  #only consider here 4 Lottery bins
-                    for y in range(N_Year_Sim):
-                        MPC_Lists[k][q][y].append(MPC_this_type[these,k,y])
+        #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':             
+        # Sort the MPCs into the proper MPC sets
+        for q in range(4):
+            these = ThisType.WealthQ == q
+            for k in range(N_Lottery_Win_Sizes):
+                for y in range(N_Year_Sim):
+                    MPC_Lists[k][q][y].append(MPC_this_type[these,k,y])
         #print(max(MPC_this_type[:,0,0]))
         #print(MPC_Lists[0][0][0])
                     
@@ -322,14 +363,14 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         for y in range(N_Year_Sim):
             MPC_List_Add_Lottery_Bin[y].append(MPC_this_type[:,4,y])
     
-    if estimation_mode==False:     
-        # Calculate average within each MPC set
-        simulated_MPC_means = np.zeros((N_Lottery_Win_Sizes-1,4,N_Year_Sim))
-        for k in range(4):
-            for q in range(4):
-                for y in range(N_Year_Sim):
-                    MPC_array = np.concatenate(MPC_Lists[k][q][y])
-                    simulated_MPC_means[k,q,y] = np.mean(MPC_array)
+    #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':     
+    # Calculate average within each MPC set
+    simulated_MPC_means = np.zeros((N_Lottery_Win_Sizes,4,N_Year_Sim))
+    for k in range(N_Lottery_Win_Sizes):
+        for q in range(4):
+            for y in range(N_Year_Sim):
+                MPC_array = np.concatenate(MPC_Lists[k][q][y])
+                simulated_MPC_means[k,q,y] = np.mean(MPC_array)
                 
     # Calculate aggregate MPC and MPCx
     simulated_MPC_mean_add_Lottery_Bin = np.zeros((N_Year_Sim))
@@ -339,11 +380,13 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
             
     # Calculate Euclidean distance between simulated MPC averages and Table 9 targets
     
-    if estimation_mode==False:     
-        diff_MPC = simulated_MPC_means[:,:,0] - MPC_target
-        if drop_corner:
-            diff_MPC[0,0] = 0.0
-        distance_MPC = np.sqrt(np.sum((diff_MPC)**2))   
+    #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC': 
+    
+    # MPC for representative lottery win (k=4), which corresponds to third row in MPC_target
+    diff_MPC = simulated_MPC_means[4,:,0] - MPC_target[2,:]
+    # if drop_corner:
+    #     diff_MPC[0,0] = 0.0
+    distance_MPC = np.sqrt(np.sum((diff_MPC)**2))   
       
     diff_Agg_MPC = simulated_MPC_mean_add_Lottery_Bin - Agg_MPCX_target
     distance_Agg_MPC = np.sqrt(np.sum((diff_Agg_MPC)**2))     
@@ -353,12 +396,11 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     diff_lorenz = lorenz_Model - lorenz_target
     distance_lorenz = np.sqrt(np.sum((diff_lorenz)**2))
     
-    diff_KY = (KY_target - KY_Model)/KY_target
-    distance_KY = np.sqrt(np.sum((diff_KY)**2))
+    distance_KY = np.abs((KY_target - KY_Model)/KY_target) 
     
 
     if target == 'MPC':
-        distance = distance_MPC
+        distance = distance_MPC + distance_Agg_MPC
     elif target == 'AGG_MPC':
         distance = distance_Agg_MPC
     elif target == 'AGG_MPC_234':
@@ -366,220 +408,483 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     elif target == 'MPC_plus_AGG_MPC_1':
         distance = distance_MPC + distance_Agg_MPC_01
     elif target == 'AGG_MPC_plus_Liqu_Wealth':
-        distance = distance_Agg_MPC + distance_lorenz + 0*distance_KY
-        if EstTypeList[7].GPFInd > 1:
-            distance = distance + 2
-        if estimation_mode==False:   
-            print(distance_Agg_MPC,distance_lorenz,distance_KY)
+        distance = distance_Agg_MPC + distance_lorenz
+    elif target == 'AGG_MPC_plus_Liqu_Wealth_plusKY':
+        distance = distance_Agg_MPC + distance_lorenz + distance_KY
+    elif target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':
+        distance = distance_MPC + distance_Agg_MPC + distance_lorenz + distance_KY
         
+        
+
+        
+    # # if EstTypeList[7].GPFInd > 1:
+    # #     distance = distance + 2
+    # distance = distance + distance_add
+        
+    if estimation_mode==False:   
+        print(distance_Agg_MPC,distance_lorenz,distance_KY)
         
     if verbose:
         print(simulated_MPC_means)
     else:
-        print (SplurgeEstimate, center, spread, distance)
+        print (SplurgeEstimate, center, spread, GICx, distance)
+        print (beta_set)
+        
+    if investigate:
+        print("distance_MPC", distance_MPC) 
+        print("distance_Agg_MPC", distance_Agg_MPC)
+        print("distance_lorenz", distance_lorenz)
+        print("distance_KY", distance_KY)
+        
+    if investigate:
+        for j in range(TypeCount):
+            CapAggj = np.sum(EstTypeList[j].aLvlNow)
+            permNowj = EstTypeList[j].pLvlNow 
+            TransNowj = EstTypeList[j].TranShkNow 
+            KY_Modelj = CapAggj/np.sum(permNowj*TransNowj)
+            print("K/Y for DF group ", str(j), ": ",  KY_Modelj)
+        print("K/Y for whole pop : ",  KY_Model)
+        print("")
         
     if estimation_mode:
         return distance
     else:
-        return [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]
+        return [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]
 
 
-#%%
-
-def find_Opt_splurge_beta_nabla():
-
-    guess_splurge_beta_nabla = [0.314,0.983,0.0174]
+def PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False):
     
-    f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],target='AGG_MPC_plus_Liqu_Wealth')
-    opt = minimizeNelderMead(f_temp, guess_splurge_beta_nabla, verbose=True,  maxiter=100)
+
+    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]=FagerengObjFunc(splurge,beta,nabla,GICx,estimation_mode=False,target=target)
+    
+    print('Results for parametrization: ', Parametrization)
+    print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin)#%% Plot aggregate MPC and MPCX
+    print('MPCs across wealth quartiles are  \n', simulated_MPC_means[4,:,0])
+    print('K/Y is ', KY_Model, ', Target is ', KY_target)
+    
+    print('Distance for target is', distance)
+    print('Distance for Agg MPC is', distance_Agg_MPC)
+    print('Distance for MPC matrix is', distance_MPC)
+
+    
+    plt.figure()
+    xAxis = np.arange(0,5)
+    plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,'b',linewidth=2)
+    plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
+    plt.legend(['Model','Fagereng, Holm and Natvik (2021)'])
+    plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
+    plt.xlabel('year')
+    plt.ylabel('% of lottery win spent')
+    #plt.savefig(Abs_Path+'/Figures/' +'AggMPC_LotteryWin.pdf')
+    make_figs('AggMPC_LotteryWin', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show()  
+    
+    print('Model: Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80])
+    print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_target)
+    print('Last percentile with negative assets', np.argmin(Lorenz_Data), '%')
+    print('Percentile with zero cummulative assets', np.argwhere(Lorenz_Data>0)[0]-1, '%')
+    
+    
+    
+    
+    plt.figure()
+    LorenzAxis = np.arange(101,dtype=float)
+    #lorenz_target_interp = np.interp(LorenzAxis,np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]))
+    plt.plot(LorenzAxis,Lorenz_Data_Adj,'b',linewidth=2)
+    plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
+    plt.xlabel('Liquid wealth percentile',fontsize=12)
+    plt.ylabel('Cumulative liquid wealth share',fontsize=12)
+    plt.legend(['Model','Data'])
+    #plt.savefig(Abs_Path+'/Figures/' +'LiquWealth_Distribution.pdf')
+    make_figs('LiquWealth_Distribution', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show()  
+    
+    
+    
+    if Output_to_Excel:
+        x = np.vstack(( xAxis, simulated_MPC_mean_add_Lottery_Bin, Agg_MPCX_target) )
+        df = pd.DataFrame(x.T,columns=['Year','Model','Fagereng'])
+        df.to_excel(Abs_Path+'/Data_AggMPC_LotteryWin.xlsx')
+        
+        x = np.vstack(( LorenzAxis, Lorenz_Data_Adj ) )
+        df = pd.DataFrame(x.T,columns=['Percentile','Model'])
+        df.to_excel(Abs_Path+'/LiquWealth_Distribution_a.xlsx')
+        
+        x = np.vstack(( np.array([20,40,60,80,100]), np.hstack([lorenz_target,1]) ) )
+        df = pd.DataFrame(x.T,columns=['Percentile','Data'])
+        df.to_excel(Abs_Path+'/LiquWealth_Distribution_b.xlsx')
+
+
+def save_betanabla_res_txt(filename,res):
+    with open(Abs_Path+filename, 'w') as f:
+        str1 = repr(res)
+        f.write(str1)
+        f.close
+        
+def load_betanabla_res_txt(filename):
+    f = open(Abs_Path+filename, 'r')
+    if f.mode=='r':
+        contents= f.read()
+    dictload= eval(contents)
+    splurge = dictload['splurge']
+    beta    = dictload['beta']
+    nabla   = dictload['nabla']
+    GICx   = dictload['GICx']
+    return [splurge,beta,nabla,GICx]
+
+
+def find_Opt(target=''):
+        
+    startpoint = [0.27,0.975,0.035,8]
+    
+    f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],x[3],target=target)
+    opt = minimizeNelderMead(f_temp, startpoint, verbose=1, xtol=0.001, ftol=0.001)
     print('Finished estimating')
     print('Optimal splurge is ' + str(opt[0]) )
     print('Optimal (beta,nabla) is ' + str(opt[1]) + ',' + str(opt[2]))
+    print('Optimal GICx is ' + str(opt[3]))
     
-    return {'splurge' : opt[0], 'beta' : opt[1], 'nabla': opt[2]}
+    return {'splurge' : opt[0], 'beta' : opt[1], 'nabla': opt[2], 'GICx': opt[3]}
 
-#%%
+# import scipy.optimize
+
+# def find_Opt(target=''):
+        
+#     startpoint = [0.27,0.975,0.035,8]
     
-CRRA_values = [1,2,3]
-#CRRA_values = [2]
+#     f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],x[3],target=target)
+#     opt = scipy.optimize.basinhopping(f_temp, startpoint, disp=True)
+#     print('Finished estimating')
+#     print('Optimal splurge is ' + str(opt.x[0]) )
+#     print('Optimal (beta,nabla) is ' + str(opt.x[1]) + ',' + str(opt.x[2]))
+#     print('Optimal GICx is ' + str(opt.x[3]))
+    
+#     return {'splurge' : opt.x[0], 'beta' : opt.x[1], 'nabla': opt.x[2], 'GICx': opt.x[3]}
 
-for el in range(0,len(CRRA_values)):
-    print('Running CRRA = ', CRRA_values[el])
-    base_params['CRRA'] = CRRA_values[el]
 
+
+# def find_Opt_splurge0(target=''):
+        
+#     startpoint = [0.975,0.035,8]
+    
+#     f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],x[2], target=target)
+#     opt = minimizeNelderMead(f_temp, startpoint, verbose=1, xtol=0.001, ftol=0.001)
+#     #opt = minimizeNelderMead(f_temp, startpoint)
+#     print('Finished estimating')
+#     print('Optimal (beta,nabla) is ' + str(opt[0]) + ',' + str(opt[1]))    
+#     print('Optimal GICx is ' + str(opt[2]))
+    
+#     return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1], 'GICx': opt[2]}
+
+
+def find_Opt_splurge0(target=''):
+        
+    startpoint = [0.93,0.07]
+    
+    f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],9, target=target)
+    opt = minimizeNelderMead(f_temp, startpoint, verbose=1, xtol=0.001, ftol=0.001, maxiter=2000, maxfun=2000)
+    #opt = minimizeNelderMead(f_temp, startpoint)
+    print('Finished estimating')
+    print('Optimal (beta,nabla) is ' + str(opt[0]) + ',' + str(opt[1]))    
+    
+    return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1], 'GICx': 9}
+
+
+# Make several consumer types to be used during estimation
+BaseType = KinkedRconsumerType(**base_params)
+EstTypeList = []
+for j in range(TypeCount):
+    EstTypeList.append(deepcopy(BaseType))
+    EstTypeList[-1](seed = j)
+
+
+Force_SplurgeZero = False
+# set only one to true
+Run_KY_initMPC_estimation = False
+Run_KY_estimation = False
+Run_initMPC_estimation = False
+Run_original_estimation = False
+
+# or run checks
+Run_3D_Plot = True
+Run_Investigation = True
+
+
+
+#%% Estimate with KY target and initial MPC
+
+
+if Run_Investigation:
+    FagerengObjFunc(0,0.925 ,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
+    FagerengObjFunc(0,0.9285,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
+    FagerengObjFunc(0,0.932 ,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
+
+
+if Run_3D_Plot:
+    # Define the function to be evaluated
+    def my_function(x,y):
+        return FagerengObjFunc(0,x,y,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC')
+      
+          
+    # Define the ranges for x and y
+    x_range = np.linspace(0.925, 0.932, 3)
+    y_range = np.linspace(0.086, 0.0865, 2)
+     
+    # Create empty arrays to store the results
+    z_values = np.zeros((len(x_range), len(y_range)))
+     
+    # Evaluate the function using loops
+    for i, x in enumerate(x_range):
+        for j, y in enumerate(y_range):
+            if (x + y > 1.05) or  (x + y < 0.98):
+                z_values[i, j] = None
+            else:
+                z_values[i, j] = my_function(x, y)
+                
+                
+               
+                
+    # Create a 3D plot
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+     
+    # Create meshgrid for plotting
+    x_grid, y_grid = np.meshgrid(x_range, y_range)
+     
+    # Plot the surface
+    surf = ax.plot_surface(x_grid, y_grid, z_values.T, cmap='viridis')
+     
+    # Add labels and title
+    ax.set_xlabel('X-axis')
+    ax.set_ylabel('Y-axis')
+    ax.set_zlabel('Z-axis')
+    ax.set_title('Function Evaluation over 2D Grid (using loops)')
+     
+    # Add color bar
+    fig.colorbar(surf, ax=ax, shrink=0.5, aspect=10)
+     
+    # Show the plot
+    plt.show()
+
+
+if Run_KY_initMPC_estimation:
+    print("RUNNING RUN KY AND INIT MPC ESTIMATION")
+    
+    if Force_SplurgeZero:
+        target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
+        filename = '\Result_CRRA_2.0_KYTarget_initMPC_Active_Splurge0.txt'  
+        res = find_Opt_splurge0(target=target)  
+        
+    else: 
+        target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
+        filename = '\Result_CRRA_2.0_KYTarget_initMPC_Active.txt'  
+        res = find_Opt(target=target)
+    
+    save_betanabla_res_txt(filename,res)
+    [splurge,beta,nabla,GICx] = load_betanabla_res_txt(filename)
+    PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False)
+
+
+#%% Estimate with KY target
+
+if Run_KY_estimation:
+    print("RUNNING RUN KY ESTIMATION")
+    
+    if Force_SplurgeZero:
+        target = 'AGG_MPC_plus_Liqu_Wealth_plusKY'
+        filename = '\Result_CRRA_2.0_KYTargetActive_Splurge0.txt'
+        res = find_Opt_splurge0(target=target)
+    else: 
+        target = 'AGG_MPC_plus_Liqu_Wealth_plusKY'
+        filename = '\Result_CRRA_2.0_KYTargetActive.txt'
+        res = find_Opt(target=target)
+    
+    save_betanabla_res_txt(filename,res)
+    [splurge,beta,nabla,GICx] = load_betanabla_res_txt(filename)
+    PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False)
+
+
+#%% Estimate with initial MPC
+
+if Run_initMPC_estimation:
+    print("RUNNING RUN INIT MPC ESTIMATION")
+    
+    if Force_SplurgeZero:
+        target = 'MPC'
+        filename = '\Result_CRRA_2.0_initMPC_Active_Splurge0.txt'
+        res = find_Opt_splurge0(target=target)
+    else: 
+        target = 'MPC'
+        filename = '\Result_CRRA_2.0_initMPC_Active.txt'
+        res = find_Opt(target=target)
+        
+    
+    save_betanabla_res_txt(filename,res)
+    [splurge,beta,nabla,GICx] = load_betanabla_res_txt(filename)
+    PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False)
+
+#%% Estimate without any additional target
+
+
+if Run_original_estimation:
+    print("RUNNING original ESTIMATION")
+    
+    if Force_SplurgeZero:
+        target = 'AGG_MPC_plus_Liqu_Wealth'
+        filename = '\Result_CRRA_2.0_Splurge0.txt'    
+        res = find_Opt_splurge0(target=target)
+    else: 
+        target = 'AGG_MPC_plus_Liqu_Wealth'
+        filename = '\Result_CRRA_2.0.txt'
+        res = find_Opt(target=target)
+
+    
+    save_betanabla_res_txt(filename,res)
+    [splurge,beta,nabla,GICx] = load_betanabla_res_txt(filename)
+    PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False)
+
+
+
+
+
+
+#%% needs update
+
+Run_estimation = False
+Run_all_CRRA_values = False
+
+if Run_estimation:
+    
+    if Run_all_CRRA_values:
+        CRRA_values = [1,2,3]
+    else:
+        CRRA_values = [2]
+    
+    for el in range(0,len(CRRA_values)):
+        print('Running CRRA = ', CRRA_values[el])
+        base_params['CRRA'] = CRRA_values[el]
+    
+        # Make several consumer types to be used during estimation
+        BaseType = KinkedRconsumerType(**base_params)
+        EstTypeList = []
+        for j in range(TypeCount):
+            EstTypeList.append(deepcopy(BaseType))
+            EstTypeList[-1](seed = j)
+    
+     
+        res = find_Opt()
+    
+    
+        with open(Abs_Path+'/Result_CRRA_'+str(base_params['CRRA'])+'.0.txt', 'w') as f:
+            str1 = repr(res)
+            f.write(str1)
+            f.close
+    
+
+
+
+#%% Plot main result with CRRA = 2.0
+
+Run_Plot_CRRA2 = False
+
+if Run_Plot_CRRA2:
+    print('Plotting CRRA = ', 2)
+    base_params['CRRA'] = 2
+    
     # Make several consumer types to be used during estimation
     BaseType = KinkedRconsumerType(**base_params)
     EstTypeList = []
     for j in range(TypeCount):
         EstTypeList.append(deepcopy(BaseType))
         EstTypeList[-1](seed = j)
-
- 
-    res = find_Opt_splurge_beta_nabla()
-
-
-    with open(Abs_Path+'/Result_CRRA_'+str(base_params['CRRA'])+'.0.txt', 'w') as f:
-        str1 = repr(res)
-        f.write(str1)
-        f.close
-    
-
-
-
-
-
-#%% Plot main result with CRRA = 2.0
-
-print('Plotting CRRA = ', 2)
-base_params['CRRA'] = 2
-
-# Make several consumer types to be used during estimation
-BaseType = KinkedRconsumerType(**base_params)
-EstTypeList = []
-for j in range(TypeCount):
-    EstTypeList.append(deepcopy(BaseType))
-    EstTypeList[-1](seed = j)
-    
         
-
-f = open(Abs_Path+'\Result_CRRA_2.0.txt', 'r')
-if f.mode=='r':
-    contents= f.read()
-dictload= eval(contents)
-splurge = dictload['splurge']
-beta    = dictload['beta']
-nabla   = dictload['nabla']
-
-
-[distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
-
-print('Results for parametrization: ', Parametrization)
-print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin)#%% Plot aggregate MPC and MPCX
-print('Distance for target is', distance)
-print('Distance for Agg MPC is', distance_Agg_MPC)
-print('Distance for MPC matrix is', distance_MPC)
-
-
-plt.figure()
-xAxis = np.arange(0,5)
-plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,'b',linewidth=2)
-plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
-plt.legend(['Model','Fagereng, Holm and Natvik (2021)'])
-plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
-plt.xlabel('year')
-plt.ylabel('% of lottery win spent')
-#plt.savefig(Abs_Path+'/Figures/' +'AggMPC_LotteryWin.pdf')
-make_figs('AggMPC_LotteryWin', True , False, target_dir=Abs_Path+'/Figures/')
-plt.show()  
-
-print('Model: Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80])
-print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_target)
-print('Last percentile with negative assets', np.argmin(Lorenz_Data), '%')
-print('Percentile with zero cummulative assets', np.argwhere(Lorenz_Data>0)[0]-1, '%')
-
-
-
-
-plt.figure()
-LorenzAxis = np.arange(101,dtype=float)
-lorenz_target_interp = np.interp(LorenzAxis,np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]))
-plt.plot(LorenzAxis,Lorenz_Data_Adj,'b',linewidth=2)
-plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
-plt.xlabel('Liquid wealth percentile',fontsize=12)
-plt.ylabel('Cumulative liquid wealth share',fontsize=12)
-plt.legend(['Model','Data'])
-#plt.savefig(Abs_Path+'/Figures/' +'LiquWealth_Distribution.pdf')
-make_figs('LiquWealth_Distribution', True , False, target_dir=Abs_Path+'/Figures/')
-plt.show()  
-
-
-
-
-# Output to Excel:
-x = np.vstack(( xAxis, simulated_MPC_mean_add_Lottery_Bin, Agg_MPCX_target) )
-df = pd.DataFrame(x.T,columns=['Year','Model','Fagereng'])
-df.to_excel(Abs_Path+'/Data_AggMPC_LotteryWin.xlsx')
-
-x = np.vstack(( LorenzAxis, Lorenz_Data_Adj ) )
-df = pd.DataFrame(x.T,columns=['Percentile','Model'])
-df.to_excel(Abs_Path+'/LiquWealth_Distribution_a.xlsx')
-
-x = np.vstack(( np.array([20,40,60,80,100]), np.hstack([lorenz_target,1]) ) )
-df = pd.DataFrame(x.T,columns=['Percentile','Data'])
-df.to_excel(Abs_Path+'/LiquWealth_Distribution_b.xlsx')
-
+            
+    
+    f = open(Abs_Path+'\Result_CRRA_2.0.txt', 'r')
+    if f.mode=='r':
+        contents= f.read()
+    dictload= eval(contents)
+    splurge = dictload['splurge']
+    beta    = dictload['beta']
+    nabla   = dictload['nabla']
+    
+    PlotResults(splurge,beta,nabla,'AGG_MPC_plus_Liqu_Wealth')
 
 #%% IMPC plot with splurge = 0
 
+Run_SplurgeZero_Analysis = False
 
-def find_Opt_beta_nabla():
-
-    guess_beta_nabla = [0.898221523193016,0.1184323428984777]
-    
-    f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],target='AGG_MPC_plus_Liqu_Wealth')
-    opt = minimizeNelderMead(f_temp, guess_beta_nabla, verbose=True,  maxiter=100)
-    print('Finished estimating')
-    print('Optimal (beta,nabla) is ' + str(opt[0]) + ',' + str(opt[1]))
-    
-    return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1]}
+if Run_SplurgeZero_Analysis:
 
     
-
-base_params['CRRA'] = 2
-
-# Make several consumer types to be used during estimation
-BaseType = KinkedRconsumerType(**base_params)
-EstTypeList = []
-for j in range(TypeCount):
-    EstTypeList.append(deepcopy(BaseType))
-    EstTypeList[-1](seed = j)
-
- 
-res = find_Opt_beta_nabla()
-
-splurge = res['splurge']    #0
-beta    = res['beta']       #0.8965220073683358
-nabla   = res['nabla']      #0.12056837545326626
-
-
-[distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
-
-print('Results for parametrization: ', Parametrization)
-print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin)#%% Plot aggregate MPC and MPCX
-print('Distance for target is', distance)
-print('Distance for Agg MPC is', distance_Agg_MPC)
-print('Distance for MPC matrix is', distance_MPC)
-
-
-plt.figure()
-xAxis = np.arange(0,5)
-plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,'b',linewidth=2)
-plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
-plt.legend(['Model','Fagereng, Holm and Natvik (2021)'])
-plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
-plt.xlabel('year')
-plt.ylabel('% of lottery win spent')
-#plt.savefig(Abs_Path+'/Figures/' +'AggMPC_LotteryWin.pdf')
-make_figs('AggMPC_LotteryWin_Splurge0', True , False, target_dir=Abs_Path+'/Figures/')
-plt.show()  
-
-print('Model: Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80])
-print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_target)
-print('Last percentile with negative assets', np.argmin(Lorenz_Data), '%')
-print('Percentile with zero cummulative assets', np.argwhere(Lorenz_Data>0)[0]-1, '%')
-
+    def find_Opt_beta_nabla():
     
-plt.figure()
-LorenzAxis = np.arange(101,dtype=float)
-lorenz_target_interp = np.interp(LorenzAxis,np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]))
-plt.plot(LorenzAxis,Lorenz_Data_Adj,'b',linewidth=2)
-plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
-plt.xlabel('Income percentile',fontsize=12)
-plt.ylabel('Cumulative liquid wealth share',fontsize=12)
-plt.legend(['Model','Data'])
-#plt.savefig(Abs_Path+'/Figures/' +'LiquWealth_Distribution.pdf')
-make_figs('LiquWealth_Distribution_Splurge0', True , False, target_dir=Abs_Path+'/Figures/')
-plt.show()  
+        guess_beta_nabla = [0.898221523193016,0.1184323428984777]
+        
+        f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],target='AGG_MPC_plus_Liqu_Wealth')
+        opt = minimizeNelderMead(f_temp, guess_beta_nabla, verbose=True,  maxiter=100)
+        print('Finished estimating')
+        print('Optimal (beta,nabla) is ' + str(opt[0]) + ',' + str(opt[1]))
+        
+        return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1]}
+    
+        
+    
+    base_params['CRRA'] = 2
+    
+    # Make several consumer types to be used during estimation
+    BaseType = KinkedRconsumerType(**base_params)
+    EstTypeList = []
+    for j in range(TypeCount):
+        EstTypeList.append(deepcopy(BaseType))
+        EstTypeList[-1](seed = j)
+    
+     
+    res = find_Opt_beta_nabla()
+    
+    splurge = res['splurge']    #0
+    beta    = res['beta']       #0.8965220073683358
+    nabla   = res['nabla']      #0.12056837545326626
+    
+    
+    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
+    
+    print('Results for parametrization: ', Parametrization)
+    print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin)#%% Plot aggregate MPC and MPCX
+    print('Distance for target is', distance)
+    print('Distance for Agg MPC is', distance_Agg_MPC)
+    print('Distance for MPC matrix is', distance_MPC)
+    
+    
+    plt.figure()
+    xAxis = np.arange(0,5)
+    plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,'b',linewidth=2)
+    plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
+    plt.legend(['Model','Fagereng, Holm and Natvik (2021)'])
+    plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
+    plt.xlabel('year')
+    plt.ylabel('% of lottery win spent')
+    #plt.savefig(Abs_Path+'/Figures/' +'AggMPC_LotteryWin.pdf')
+    make_figs('AggMPC_LotteryWin_Splurge0', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show()  
+    
+    print('Model: Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80])
+    print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_target)
+    print('Last percentile with negative assets', np.argmin(Lorenz_Data), '%')
+    print('Percentile with zero cummulative assets', np.argwhere(Lorenz_Data>0)[0]-1, '%')
+    
+        
+    plt.figure()
+    LorenzAxis = np.arange(101,dtype=float)
+    lorenz_target_interp = np.interp(LorenzAxis,np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]))
+    plt.plot(LorenzAxis,Lorenz_Data_Adj,'b',linewidth=2)
+    plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
+    plt.xlabel('Income percentile',fontsize=12)
+    plt.ylabel('Cumulative liquid wealth share',fontsize=12)
+    plt.legend(['Model','Data'])
+    #plt.savefig(Abs_Path+'/Figures/' +'LiquWealth_Distribution.pdf')
+    make_figs('LiquWealth_Distribution_Splurge0', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show()  
 
 
 
