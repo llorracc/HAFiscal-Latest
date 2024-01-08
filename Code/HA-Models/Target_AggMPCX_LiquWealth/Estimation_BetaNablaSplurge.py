@@ -21,9 +21,10 @@ import pandas as pd
 from HARK.distribution import Uniform
 from HARK.utilities import getPercentiles, getLorenzShares, make_figs
 from HARK.parallel import multiThreadCommands
-from HARK.estimation import minimizeNelderMead
+from HARK.estimation import minimizeNelderMead, minimizePowell
 from HARK.ConsumptionSaving.ConsIndShockModel import KinkedRconsumerType
 from SetupParamsCSTW import init_infinite
+from scipy.optimize import minimize
 
 
 # for plotting
@@ -177,7 +178,9 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
     '''
     
     for j in range(TypeCount):
-        EstTypeList[-1](seed = j)
+        EstTypeList[j].resetRNG()
+    random.seed(55)
+        
     
     
     # Give our consumer types the requested discount factor distribution
@@ -219,11 +222,13 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
     #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':     
     # Get wealth quartile cutoffs and distribute them to each consumer type
     quartile_cuts = getPercentiles(WealthNow,percentiles=[0.25,0.50,0.75])
+    wealth_list = np.array([])
     for ThisType in EstTypeList:
         WealthQ = np.zeros(ThisType.AgentCount,dtype=int)
         for n in range(3):
             WealthQ[ThisType.aLvlNow > quartile_cuts[n]] += 1
         ThisType(WealthQ = WealthQ)
+        wealth_list = np.concatenate((wealth_list, ThisType.aLvlNow ))
             
 
          
@@ -247,156 +252,194 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
     IncAgg = np.sum(permNow*TransNow)
     KY_Model = CapAgg/IncAgg
     
-
-    
-    # # calculate GIC condition
-    # ThisType = EstTypeList[7]
-    # ThisType.InvPermShkDstn=deepcopy(ThisType.PermShkDstn)
-    # ThisType.InvPermShkDstn[0].X = 1/ThisType.PermShkDstn[0].X
-    # ThisType.EPermShkInv=np.dot(ThisType.InvPermShkDstn[0].pmf,1/ThisType.PermShkDstn[0].X)
-    # ThisType.InvEPermShkInv  = (1/ThisType.EPermShkInv)
-    # ThisType.thorn = (ThisType.Rfree*ThisType.DiscFac*ThisType.LivPrb[0])**(1/ThisType.CRRA)   
-    # ThisType.GPFInd = ThisType.thorn/(ThisType.PermGroFacAgg*ThisType.PermGroFac[0]*ThisType.InvEPermShkInv)  # [url]/#GICI
-    # ThisType.GPFInd = EstTypeList[7].GPFInd - 0.0025 #manual adj. for max age
-    # #print('EstTypeList[7].GPFInd = ', EstTypeList[7].GPFInd)
-        
-        
-    N_Quarter_Sim = 20; # Needs to be dividable by four
-    N_Year_Sim = int(N_Quarter_Sim/4)
-    N_Lottery_Win_Sizes = 5 # 4 lottery size bin + 1 representative one for agg MPCX
-
-    
-    EmptyList = [[],[],[],[],[]]
-    MPC_set_list = [deepcopy(EmptyList),deepcopy(EmptyList),deepcopy(EmptyList),deepcopy(EmptyList)]
-    MPC_Lists    = [deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list)]    
-    # additional list for 5th Lottery bin, just need for elements for four years
-    MPC_List_Add_Lottery_Bin = EmptyList
-    
-    
-    for ThisType in EstTypeList:
-        
-        c_base = np.zeros((ThisType.AgentCount,N_Quarter_Sim))                        #c_base (in case of no lottery win) for each quarter
-        c_base_Lvl = np.zeros((ThisType.AgentCount,N_Quarter_Sim))                    #same in levels
-        c_actu = np.zeros((ThisType.AgentCount,N_Quarter_Sim,N_Lottery_Win_Sizes))    #c_actu (actual consumption in case of lottery win in one random quarter) for each quarter and lottery size
-        c_actu_Lvl = np.zeros((ThisType.AgentCount,N_Quarter_Sim,N_Lottery_Win_Sizes))#same in levels
-        a_actu = np.zeros((ThisType.AgentCount,N_Quarter_Sim,N_Lottery_Win_Sizes))    #a_actu captures the actual market resources after potential lottery win (last index) was added and c_actu deducted
-        T_hist = np.zeros((ThisType.AgentCount,N_Quarter_Sim))
-        P_hist = np.zeros((ThisType.AgentCount,N_Quarter_Sim)) 
+################## Can return K/Y here
+    if target != "Liqu_Wealth_plusKY":
+        # # calculate GIC condition
+        # ThisType = EstTypeList[7]
+        # ThisType.InvPermShkDstn=deepcopy(ThisType.PermShkDstn)
+        # ThisType.InvPermShkDstn[0].X = 1/ThisType.PermShkDstn[0].X
+        # ThisType.EPermShkInv=np.dot(ThisType.InvPermShkDstn[0].pmf,1/ThisType.PermShkDstn[0].X)
+        # ThisType.InvEPermShkInv  = (1/ThisType.EPermShkInv)
+        # ThisType.thorn = (ThisType.Rfree*ThisType.DiscFac*ThisType.LivPrb[0])**(1/ThisType.CRRA)   
+        # ThisType.GPFInd = ThisType.thorn/(ThisType.PermGroFacAgg*ThisType.PermGroFac[0]*ThisType.InvEPermShkInv)  # [url]/#GICI
+        # ThisType.GPFInd = EstTypeList[7].GPFInd - 0.0025 #manual adj. for max age
+        # #print('EstTypeList[7].GPFInd = ', EstTypeList[7].GPFInd)
             
-        # LotteryWin is an array with AgentCount x 4 periods many entries; there is only one 1 in each row indicating the quarter of the Lottery win for the agent in each row
-        # This can be coded more efficiently
-        LotteryWin = np.zeros((ThisType.AgentCount,N_Quarter_Sim))   
-        for i in range(ThisType.AgentCount):
-            LotteryWin[i,random.randint(0,3)] = 1
             
-        MPC_this_type = np.zeros((ThisType.AgentCount,N_Lottery_Win_Sizes,N_Year_Sim)) #Empty array, MPC for each Lottery size and agent
-        
-        for period in range(N_Quarter_Sim): #Simulate for 4 quarters as opposed to 1 year
-            
-            # Simulate forward for one quarter
-            ThisType.simulate(1)           
-            
-            # capture base consumption which is consumption in absence of lottery win
-            c_base[:,period] = ThisType.cNrmNow 
-            c_base_Lvl[:,period] = c_base[:,period] * ThisType.pLvlNow
-            
-        
-            #for k in range(N_Lottery_Win_Sizes): # Loop through different lottery sizes, only this will produce values in simulated_MPC_means
-            k = 4; # do not loop to save time 
-            
-            Llvl = lottery_size[k]*LotteryWin[:,period]  #Lottery win occurs only if LotteryWin = 1 for that agent
-            
-            if RandomLotteryWin and k == 5:
-                for i in range(ThisType.AgentCount):
-                    Llvl[i] = lottery_size[random.randint(0,3)]*LotteryWin[i,period]
-                    if LotteryWin[i,period]==1 and i==0:
-                        print(Llvl[i])
-            
-            Lnrm = Llvl/ThisType.pLvlNow
-            SplurgeNrm = SplurgeEstimate*Lnrm  #Splurge occurs only if LotteryWin = 1 for that agent
+        N_Quarter_Sim = 20; # Needs to be dividable by four
+        N_Year_Sim = int(N_Quarter_Sim/4)
+        N_Lottery_Win_Sizes = 5 # 4 lottery size bin + 1 representative one for agg MPCX
     
         
-            R_kink = np.zeros((ThisType.AgentCount))       
+        EmptyList = [[],[],[],[],[]]
+        MPC_set_list = [deepcopy(EmptyList),deepcopy(EmptyList),deepcopy(EmptyList),deepcopy(EmptyList)]
+        MPC_Lists    = [deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list),deepcopy(MPC_set_list)]    
+        # additional list for 5th Lottery bin, just need for elements for four years
+        MPC_List_Add_Lottery_Bin = EmptyList
+        
+        MPC_this_type = np.zeros((TypeCount, ThisType.AgentCount,N_Lottery_Win_Sizes,N_Year_Sim)) #Empty array, MPC for each Lottery size and agent
+            
+        for type_num, ThisType in zip(range(TypeCount), EstTypeList):
+            
+            c_base = np.zeros((ThisType.AgentCount,N_Quarter_Sim))                        #c_base (in case of no lottery win) for each quarter
+            c_base_Lvl = np.zeros((ThisType.AgentCount,N_Quarter_Sim))                    #same in levels
+            c_actu = np.zeros((ThisType.AgentCount,N_Quarter_Sim,N_Lottery_Win_Sizes))    #c_actu (actual consumption in case of lottery win in one random quarter) for each quarter and lottery size
+            c_actu_Lvl = np.zeros((ThisType.AgentCount,N_Quarter_Sim,N_Lottery_Win_Sizes))#same in levels
+            a_actu = np.zeros((ThisType.AgentCount,N_Quarter_Sim,N_Lottery_Win_Sizes))    #a_actu captures the actual market resources after potential lottery win (last index) was added and c_actu deducted
+            T_hist = np.zeros((ThisType.AgentCount,N_Quarter_Sim))
+            P_hist = np.zeros((ThisType.AgentCount,N_Quarter_Sim)) 
+                
+            # LotteryWin is an array with AgentCount x 4 periods many entries; there is only one 1 in each row indicating the quarter of the Lottery win for the agent in each row
+            # This can be coded more efficiently
+            LotteryWin = np.zeros((ThisType.AgentCount,N_Quarter_Sim))   
             for i in range(ThisType.AgentCount):
-                if a_actu[i,period-1,k] < 0:
-                    R_kink[i] = base_params['Rboro']
-                else:
-                    R_kink[i] = base_params['Rsave']  
-            
-            
-            if period == 0:
-                m_adj = ThisType.mNrmNow + Lnrm - SplurgeNrm
-                c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
-                c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
-                a_actu[:,period,k] = ThisType.mNrmNow + Lnrm - c_actu[:,period,k] #save for next periods
-            else:  
-                T_hist[:,period] = ThisType.TranShkNow 
-                P_hist[:,period] = ThisType.PermShkNow
-                for i_agent in range(ThisType.AgentCount):
-                    if ThisType.TranShkNow[i_agent] == 1.0: # indicator of death
-                        a_actu[i_agent,period-1,k] = np.exp(base_params['aNrmInitMean'])
-                m_adj = a_actu[:,period-1,k]*R_kink/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - SplurgeNrm #continue with resources from last period
-                c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
-                c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
-                a_actu[:,period,k] = a_actu[:,period-1,k]*R_kink/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - c_actu[:,period,k] 
+                LotteryWin[i,random.randint(0,3)] = 1
                 
-            if period%4 + 1 == 4: #if we are in the 4th quarter of a year
-                year = int((period+1)/4)
-                c_actu_Lvl_year = c_actu_Lvl[:,(year-1)*4:year*4,k]
-                c_base_Lvl_year = c_base_Lvl[:,(year-1)*4:year*4]
-                MPC_this_type[:,k,year-1] = (np.sum(c_actu_Lvl_year,axis=1) - np.sum(c_base_Lvl_year,axis=1))/(lottery_size[k])
-                    
-                    
+
+            for period in range(N_Quarter_Sim): #Simulate for 4 quarters as opposed to 1 year
                 
+                # Simulate forward for one quarter
+                ThisType.simulate(1)           
+                
+                # capture base consumption which is consumption in absence of lottery win
+                c_base[:,period] = ThisType.cNrmNow 
+                c_base_Lvl[:,period] = c_base[:,period] * ThisType.pLvlNow
+                
+            
+                #for k in range(N_Lottery_Win_Sizes): # Loop through different lottery sizes, only this will produce values in simulated_MPC_means
+                k = 4; # do not loop to save time 
+                
+                Llvl = lottery_size[k]*LotteryWin[:,period]  #Lottery win occurs only if LotteryWin = 1 for that agent
+                
+                if RandomLotteryWin and k == 5:
+                    for i in range(ThisType.AgentCount):
+                        Llvl[i] = lottery_size[random.randint(0,3)]*LotteryWin[i,period]
+                        if LotteryWin[i,period]==1 and i==0:
+                            print(Llvl[i])
+                
+                Lnrm = Llvl/ThisType.pLvlNow
+                SplurgeNrm = SplurgeEstimate*Lnrm  #Splurge occurs only if LotteryWin = 1 for that agent
         
-        #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':             
-        # Sort the MPCs into the proper MPC sets
-        for q in range(4):
-            these = ThisType.WealthQ == q
-            for k in range(N_Lottery_Win_Sizes):
-                for y in range(N_Year_Sim):
-                    MPC_Lists[k][q][y].append(MPC_this_type[these,k,y])
-        #print(max(MPC_this_type[:,0,0]))
-        #print(MPC_Lists[0][0][0])
-                    
-        # sort MPCs for addtional Lottery bin
-        for y in range(N_Year_Sim):
-            MPC_List_Add_Lottery_Bin[y].append(MPC_this_type[:,4,y])
-    
-    #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':     
-    # Calculate average within each MPC set
-    simulated_MPC_means = np.zeros((N_Lottery_Win_Sizes,4,N_Year_Sim))
-    for k in range(N_Lottery_Win_Sizes):
-        for q in range(4):
-            for y in range(N_Year_Sim):
-                MPC_array = np.concatenate(MPC_Lists[k][q][y])
-                simulated_MPC_means[k,q,y] = np.mean(MPC_array)
-                
-    # Calculate aggregate MPC and MPCx
-    simulated_MPC_mean_add_Lottery_Bin = np.zeros((N_Year_Sim))
-    for y in range(N_Year_Sim):
-        MPC_array = np.concatenate(MPC_List_Add_Lottery_Bin[y])
-        simulated_MPC_mean_add_Lottery_Bin[y] = np.mean(MPC_array)
             
-    # Calculate Euclidean distance between simulated MPC averages and Table 9 targets
-    
-    #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC': 
-    
-    # MPC for representative lottery win (k=4), which corresponds to third row in MPC_target
-    diff_MPC = simulated_MPC_means[4,:,0] - MPC_target[2,:]
-    # if drop_corner:
-    #     diff_MPC[0,0] = 0.0
-    distance_MPC = np.sqrt(np.sum((diff_MPC)**2))   
-      
-    diff_Agg_MPC = simulated_MPC_mean_add_Lottery_Bin - Agg_MPCX_target
-    distance_Agg_MPC = np.sqrt(np.sum((diff_Agg_MPC)**2))     
-    distance_Agg_MPC_24 = np.sqrt(np.sum((diff_Agg_MPC[2:4])**2))
-    distance_Agg_MPC_01 = np.sqrt(np.sum((diff_Agg_MPC[0:1])**2))
-    
+                R_kink = np.zeros((ThisType.AgentCount))       
+                for i in range(ThisType.AgentCount):
+                    if a_actu[i,period-1,k] < 0:
+                        R_kink[i] = base_params['Rboro']
+                    else:
+                        R_kink[i] = base_params['Rsave']  
+                
+                
+                if period == 0:
+                    m_adj = ThisType.mNrmNow + Lnrm - SplurgeNrm
+                    c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
+                    c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
+                    a_actu[:,period,k] = ThisType.mNrmNow + Lnrm - c_actu[:,period,k] #save for next periods
+                else:  
+                    T_hist[:,period] = ThisType.TranShkNow 
+                    P_hist[:,period] = ThisType.PermShkNow
+                    for i_agent in range(ThisType.AgentCount):
+                        if ThisType.TranShkNow[i_agent] == 1.0: # indicator of death
+                            a_actu[i_agent,period-1,k] = np.exp(base_params['aNrmInitMean'])
+                    m_adj = a_actu[:,period-1,k]*R_kink/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - SplurgeNrm #continue with resources from last period
+                    c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
+                    c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
+                    a_actu[:,period,k] = a_actu[:,period-1,k]*R_kink/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - c_actu[:,period,k] 
+                    
+                if period%4 + 1 == 4: #if we are in the 4th quarter of a year
+                    year = int((period+1)/4)
+                    c_actu_Lvl_year = c_actu_Lvl[:,(year-1)*4:year*4,k]
+                    c_base_Lvl_year = c_base_Lvl[:,(year-1)*4:year*4]
+                    MPC_this_type[type_num,:,k,year-1] = (np.sum(c_actu_Lvl_year,axis=1) - np.sum(c_base_Lvl_year,axis=1))/(lottery_size[k])
+                        
+                        
+                    
+            
+            #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':             
+            # Sort the MPCs into the proper MPC sets
+            for q in range(4):
+                these = ThisType.WealthQ == q
+                for k in range(N_Lottery_Win_Sizes):
+                    for y in range(N_Year_Sim):
+                        MPC_Lists[k][q][y].append(MPC_this_type[type_num,these,k,y])
+            #print(max(MPC_this_type[:,0,0]))
+            #print(MPC_Lists[0][0][0])
+                        
+            # sort MPCs for addtional Lottery bin
+            for y in range(N_Year_Sim):
+                MPC_List_Add_Lottery_Bin[y].append(MPC_this_type[type_num,:,4,y])
+                
+        #Create a list of wealth and MPCs
+        MPC_list = np.array([])
+        for type_num, ThisType in zip(range(TypeCount), EstTypeList):
+            MPC_list = np.concatenate((MPC_list, MPC_this_type[type_num, :, 4, 0] ))
+        sorted_wealth_MPC = np.stack((wealth_list, MPC_list))[:,wealth_list.argsort()]
+        MPC_by_quartile = np.zeros(4)
+        total_agents = len(MPC_list)
+        quartile1_weights = np.zeros(total_agents)
+        quartile1_weights[0:int(np.floor(total_agents*9/40))] = 1.0
+        quartile1_slope_length = (int(np.floor(total_agents*11/40)-np.floor(total_agents*9/40)))
+        quartile1_weights[int(np.floor(total_agents*9/40)):int(np.floor(total_agents*11/40))] = (quartile1_slope_length-np.arange(quartile1_slope_length))/quartile1_slope_length
+        quartile2_weights = np.zeros(total_agents)
+        quartile2_weights[0:int(np.floor(total_agents*19/40))] = 1- quartile1_weights[0:int(np.floor(total_agents*19/40))]
+        quartile2_slope_length = (int(np.floor(total_agents*21/40)-np.floor(total_agents*19/40)))
+        quartile2_weights[int(np.floor(total_agents*19/40)):int(np.floor(total_agents*21/40))] = (quartile2_slope_length-np.arange(quartile2_slope_length))/quartile2_slope_length
+        quartile3_weights = np.flip(quartile2_weights)
+        quartile4_weights = np.flip(quartile1_weights)
+        simulated_MPC_means_smoothed = np.zeros(4)
+        simulated_MPC_means_smoothed[0] = np.average(sorted_wealth_MPC[1],weights=quartile1_weights)
+        simulated_MPC_means_smoothed[1] = np.average(sorted_wealth_MPC[1],weights=quartile2_weights)
+        simulated_MPC_means_smoothed[2] = np.average(sorted_wealth_MPC[1],weights=quartile3_weights)
+        simulated_MPC_means_smoothed[3] = np.average(sorted_wealth_MPC[1],weights=quartile4_weights)
+        
+        #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':     
+        # Calculate average within each MPC set
+        simulated_MPC_means = np.zeros((N_Lottery_Win_Sizes,4,N_Year_Sim))
+        for k in range(N_Lottery_Win_Sizes):
+            for q in range(4):
+                for y in range(N_Year_Sim):
+                    MPC_array = np.concatenate(MPC_Lists[k][q][y])
+                    simulated_MPC_means[k,q,y] = np.mean(MPC_array)
+                    
+        # Calculate aggregate MPC and MPCx
+        simulated_MPC_mean_add_Lottery_Bin = np.zeros((N_Year_Sim))
+        for y in range(N_Year_Sim):
+            MPC_array = np.concatenate(MPC_List_Add_Lottery_Bin[y])
+            simulated_MPC_mean_add_Lottery_Bin[y] = np.mean(MPC_array)
+                
+        # Calculate Euclidean distance between simulated MPC averages and Table 9 targets
+        
+        #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC': 
+        
+        # MPC for representative lottery win (k=4), which corresponds to third row in MPC_target
+        #diff_MPC = simulated_MPC_means[4,:,0] - MPC_target[2,:]
+        diff_MPC = simulated_MPC_means_smoothed - MPC_target[2,:]
+        # if drop_corner:
+        #     diff_MPC[0,0] = 0.0
+        distance_MPC = 0.1*np.sqrt(np.sum((diff_MPC)**2))   
+          
+        diff_Agg_MPC = simulated_MPC_mean_add_Lottery_Bin - Agg_MPCX_target
+        distance_Agg_MPC = np.sqrt(np.sum((diff_Agg_MPC)**2))     
+        distance_Agg_MPC_24 = np.sqrt(np.sum((diff_Agg_MPC[2:4])**2))
+        distance_Agg_MPC_01 = np.sqrt(np.sum((diff_Agg_MPC[0:1])**2))
+    else:
+        distance_MPC = 0
+        diff_Agg_MPC = 0
+        distance_Agg_MPC = 0
+        distance_Agg_MPC_24 = 0
+        distance_Agg_MPC_01 = 0
+        simulated_MPC_means = 0
+        simulated_MPC_mean_add_Lottery_Bin = 0
+        c_actu_Lvl = 0
+        c_base_Lvl = 0
+        LotteryWin = 0
+        
+        
+        
     diff_lorenz = lorenz_Model - lorenz_target
     distance_lorenz = np.sqrt(np.sum((diff_lorenz)**2))
     
-    distance_KY = np.abs((KY_target - KY_Model)/KY_target) 
+    #distance_KY = np.abs((KY_target - KY_Model)/KY_target) 
+    distance_KY = 1.0*((KY_target - KY_Model)/KY_target)**2 
     
 
     if target == 'MPC':
@@ -413,7 +456,10 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
         distance = distance_Agg_MPC + distance_lorenz + distance_KY
     elif target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':
         distance = distance_MPC + distance_Agg_MPC + distance_lorenz + distance_KY
-        
+    elif target == "Liqu_Wealth_plusKY":
+        distance = distance_lorenz + distance_KY
+    elif target == "test":
+        distance = distance_MPC
         
 
         
@@ -426,15 +472,16 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
         
     if verbose:
         print(simulated_MPC_means)
+        print(simulated_MPC_means_smoothed)
     else:
         print (SplurgeEstimate, center, spread, GICx, distance)
-        print (beta_set)
         
     if investigate:
         print("distance_MPC", distance_MPC) 
         print("distance_Agg_MPC", distance_Agg_MPC)
         print("distance_lorenz", distance_lorenz)
         print("distance_KY", distance_KY)
+        print (beta_set)
         
     if investigate:
         for j in range(TypeCount):
@@ -449,17 +496,18 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
     if estimation_mode:
         return distance
     else:
-        return [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]
+        return [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means_smoothed,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]
 
 
 def PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False):
     
 
-    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]=FagerengObjFunc(splurge,beta,nabla,GICx,estimation_mode=False,target=target)
+    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means_smoothed,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]=FagerengObjFunc(splurge,beta,nabla,GICx,estimation_mode=False,target=target)
     
     print('Results for parametrization: ', Parametrization)
     print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin)#%% Plot aggregate MPC and MPCX
-    print('MPCs across wealth quartiles are  \n', simulated_MPC_means[4,:,0])
+    #print('MPCs across wealth quartiles are  \n', simulated_MPC_means[4,:,0])
+    print('MPCs across wealth quartiles are  \n', simulated_MPC_means_smoothed)
     print('K/Y is ', KY_Model, ', Target is ', KY_target)
     
     print('Distance for target is', distance)
@@ -533,18 +581,21 @@ def load_betanabla_res_txt(filename):
     return [splurge,beta,nabla,GICx]
 
 
-def find_Opt(target=''):
+# def find_Opt(target='', startpoint = [0.27,0.975,0.035,8]):
         
-    startpoint = [0.27,0.975,0.035,8]
+#     #Rotation of parameters that seems to work better for NelderMead optimization
+#     startpoint2 = [0.27,startpoint[1]+startpoint[2],startpoint[2],8]
     
-    f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],x[3],target=target)
-    opt = minimizeNelderMead(f_temp, startpoint, verbose=1, xtol=0.001, ftol=0.001)
-    print('Finished estimating')
-    print('Optimal splurge is ' + str(opt[0]) )
-    print('Optimal (beta,nabla) is ' + str(opt[1]) + ',' + str(opt[2]))
-    print('Optimal GICx is ' + str(opt[3]))
+#     f_temp = lambda x : FagerengObjFunc(x[0],x[1]-x[2],x[2],x[3],target=target)
+#     opt = minimizeNelderMead(f_temp, startpoint2, verbose=1, xtol=0.001, ftol=0.001)
+#     beta = opt[1]-opt[2]
+#     nabla = opt[2]
+#     print('Finished estimating')
+#     print('Optimal splurge is ' + str(opt[0]) )
+#     print('Optimal (beta,nabla) is ' + str(beta) + ',' + str(nabla))
+#     print('Optimal GICx is ' + str(opt[3]))
     
-    return {'splurge' : opt[0], 'beta' : opt[1], 'nabla': opt[2], 'GICx': opt[3]}
+#     return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'GICx': opt[3]}
 
 # import scipy.optimize
 
@@ -577,17 +628,91 @@ def find_Opt(target=''):
 #     return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1], 'GICx': opt[2]}
 
 
-def find_Opt_splurge0(target=''):
+# def find_Opt_splurge0(target='', startpoint = [0.93,0.07], method = "NelderMead"):
         
-    startpoint = [0.93,0.07]
+#     #startpoint = [0.93,0.07]
+#     startpoint2 = [startpoint[0]+startpoint[1], startpoint[1]]
     
-    f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],9, target=target)
-    opt = minimizeNelderMead(f_temp, startpoint, verbose=1, xtol=0.001, ftol=0.001, maxiter=2000, maxfun=2000)
-    #opt = minimizeNelderMead(f_temp, startpoint)
+#     #f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],9, target=target)
+#     f_temp = lambda x : FagerengObjFunc(0,x[0]-x[1],x[1],9, target=target)
+#     if method == "NelderMead":
+#         opt = minimizeNelderMead(f_temp, startpoint2, verbose=1, xtol=0.001, ftol=0.001, maxiter=2000, maxfun=2000)
+#         #opt = minimizeNelderMead(f_temp, startpoint)
+#     elif method == "L-BFGS-B":
+#         opt = minimize(f_temp, startpoint2,method="L-BFGS-B", bounds = [(0.7,1.5),(0.0,0.4)]).x
+#     elif method == "Powell":
+#         opt = minimizePowell(f_temp, startpoint2, verbose=True)
+
+#     print('Finished estimating')
+#     #beta = opt[0]
+#     #nabla = opt[1]
+#     beta = opt[0]-opt[1]
+#     nabla = opt[1]
+#     print('Optimal (beta,nabla) is ' + str(beta) + ',' + str(nabla))  
+    
+#     return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1], 'GICx': 9}
+
+def find_Opt(target='', startpoint = [0.27,0.96,0.03,8], check_maximum = True):
+        
+    #Rotation of parameters that seems to work better for NelderMead optimization
+    # startpoint_rotate = [startpoint[0],startpoint[1]+startpoint[2],startpoint[2],startpoint[3]]
+    
+    # f_temp = lambda x : FagerengObjFunc(x[0],x[1]-x[2],x[2],x[3],target=target)
+    f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],x[3],target=target)
+    #opt = minimizeNelderMead(f_temp, startpoint2, verbose=1, xtol=0.001, ftol=0.001)
+    opt_output = minimize(f_temp, startpoint,method="L-BFGS-B", bounds = [(0.0,0.9),(0.7,1.1),(0.0,0.4),(1,30)])
+    opt = opt_output.x
+    obs = opt_output.fun
+    beta = opt[1]
+    nabla = opt[2]
     print('Finished estimating')
-    print('Optimal (beta,nabla) is ' + str(opt[0]) + ',' + str(opt[1]))    
+    print('Optimal splurge is ' + str(opt[0]) )
+    print('Optimal (beta,nabla) is ' + str(beta) + ',' + str(nabla))
+    print('Optimal GICx is ' + str(opt[3]))
+    if check_maximum:
+        check_start = [opt[0],opt[2], opt[3]]
+        check_obs = [0.0, 0.0]
+        for i,deviation in zip(range(2), [-0.0001, 0.0001]):
+            f_temp = lambda y : FagerengObjFunc(y[0],opt[1]+deviation,y[1],y[2],target=target)
+            check_opt = minimize(f_temp, check_start,method="L-BFGS-B", bounds = [(0.0,0.9),(0.0,0.4),(1,30)])
+            check_obs[i] = check_opt.fun
+        print("Objective around minimum:")
+        print([check_obs[0], obs, check_obs[1]])
+        if check_obs[0]<obs or check_obs[1] < obs :
+            print("Didn't find minimum - check what is going on")
+            return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'GICx': opt[3], 'Error': 'Not a maximum'}
+        else:
+            print("Local minimum check passed")
     
-    return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1], 'GICx': 9}
+    return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'GICx': opt[3]}
+
+def find_Opt_splurge0(target='', startpoint = [0.96,0.03,9], check_maximum = True):
+        
+
+    f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],x[2], target=target)
+    opt_output = minimize(f_temp, startpoint,method="L-BFGS-B", bounds = [(0.7,1.01),(0.0,0.4),(0,30)])
+    opt = opt_output.x
+    obs = opt_output.fun
+    beta = opt[0]
+    nabla = opt[1]
+    print('Optimal (beta,nabla) is ' + str(beta) + ',' + str(nabla)) 
+    if check_maximum:
+        check_start = [opt[1]]
+        check_obs = [0.0, 0.0]
+        for i,deviation in zip(range(2), [-0.0001, 0.0001]):
+            f_temp = lambda y : FagerengObjFunc(0,opt[0]+deviation,y[0],opt[2],target=target)
+            check_opt = minimize(f_temp, check_start,method="L-BFGS-B", bounds = [(0.0,0.4)])
+            check_obs[i] = check_opt.fun
+            print([opt[0]+deviation,check_opt.x,check_opt.fun])
+        print("Objective around minimum:")
+        print([check_obs[0], obs, check_obs[1]])
+        if check_obs[0]<obs or check_obs[1] < obs :
+            print("Didn't find minimum - check what is going on")
+            return {'splurge' : 0, 'beta' : beta, 'nabla': nabla, 'GICx': opt[2], 'Error': 'Not a maximum'}
+        else:
+            print("Local minimum check passed")
+    
+    return {'splurge' : 0, 'beta' : beta, 'nabla': nabla, 'GICx': opt[2]}
 
 
 # Make several consumer types to be used during estimation
@@ -598,16 +723,21 @@ for j in range(TypeCount):
     EstTypeList[-1](seed = j)
 
 
-Force_SplurgeZero = False
+Force_SplurgeZero = True
 # set only one to true
-Run_KY_initMPC_estimation = False
-Run_KY_estimation = False
-Run_initMPC_estimation = False
-Run_original_estimation = False
+Run_KY_initMPC_estimation = True
+Run_KY_estimation = True
+Run_initMPC_estimation = True
+Run_original_estimation = True
+
+Run_ESC_experiment = False
 
 # or run checks
-Run_3D_Plot = True
-Run_Investigation = True
+Run_3D_Plot = False
+Run_Investigation = False
+
+startpoint = [0.27,0.96,0.03,8]
+startpoint = [0.27,0.9219903036773804, 0.09448396318353519,8]
 
 
 
@@ -615,9 +745,11 @@ Run_Investigation = True
 
 
 if Run_Investigation:
-    FagerengObjFunc(0,0.925 ,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
-    FagerengObjFunc(0,0.9285,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
-    FagerengObjFunc(0,0.932 ,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
+    for this_beta in np.linspace(0.925,0.932,10):
+        FagerengObjFunc(0,this_beta ,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
+    # FagerengObjFunc(0,0.925 ,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
+    # FagerengObjFunc(0,0.9285,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
+    # FagerengObjFunc(0,0.932 ,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
 
 
 if Run_3D_Plot:
@@ -626,9 +758,12 @@ if Run_3D_Plot:
         return FagerengObjFunc(0,x,y,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC')
       
           
-    # Define the ranges for x and y
-    x_range = np.linspace(0.925, 0.932, 3)
-    y_range = np.linspace(0.086, 0.0865, 2)
+    # # Define the ranges for x and y
+    # x_range = np.linspace(0.925, 0.932, 3)
+    # y_range = np.linspace(0.086, 0.0865, 2)
+    
+    x_range = np.linspace(0.925, 0.95, 10)
+    y_range = np.linspace(0.006, 0.01, 10)
      
     # Create empty arrays to store the results
     z_values = np.zeros((len(x_range), len(y_range)))
@@ -665,6 +800,16 @@ if Run_3D_Plot:
      
     # Show the plot
     plt.show()
+    
+if Run_ESC_experiment:
+    print("RUNNING RUN KY AND INIT MPC ESTIMATION")
+    #method = "L-BFGS-B"
+    method = "L-BFGS-B"
+    target = 'Liqu_Wealth_plusKY'
+    res = find_Opt_splurge0(target=target, startpoint = [0.93,0.07], method=method) 
+    res = find_Opt_splurge0(target=target, startpoint = [0.92,0.08], method = method) 
+    res = find_Opt_splurge0(target=target, startpoint = [0.9745578996729346,0.03414631779518296], method = method) 
+    
 
 
 if Run_KY_initMPC_estimation:
@@ -673,12 +818,12 @@ if Run_KY_initMPC_estimation:
     if Force_SplurgeZero:
         target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
         filename = '\Result_CRRA_2.0_KYTarget_initMPC_Active_Splurge0.txt'  
-        res = find_Opt_splurge0(target=target)  
+        res = find_Opt_splurge0(target=target, startpoint=startpoint[1:3])  
         
     else: 
         target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
         filename = '\Result_CRRA_2.0_KYTarget_initMPC_Active.txt'  
-        res = find_Opt(target=target)
+        res = find_Opt(target=target, startpoint=startpoint)
     
     save_betanabla_res_txt(filename,res)
     [splurge,beta,nabla,GICx] = load_betanabla_res_txt(filename)
@@ -693,11 +838,11 @@ if Run_KY_estimation:
     if Force_SplurgeZero:
         target = 'AGG_MPC_plus_Liqu_Wealth_plusKY'
         filename = '\Result_CRRA_2.0_KYTargetActive_Splurge0.txt'
-        res = find_Opt_splurge0(target=target)
+        res = find_Opt_splurge0(target=target, startpoint=startpoint[1:3])
     else: 
         target = 'AGG_MPC_plus_Liqu_Wealth_plusKY'
         filename = '\Result_CRRA_2.0_KYTargetActive.txt'
-        res = find_Opt(target=target)
+        res = find_Opt(target=target, startpoint=startpoint)
     
     save_betanabla_res_txt(filename,res)
     [splurge,beta,nabla,GICx] = load_betanabla_res_txt(filename)
@@ -712,11 +857,11 @@ if Run_initMPC_estimation:
     if Force_SplurgeZero:
         target = 'MPC'
         filename = '\Result_CRRA_2.0_initMPC_Active_Splurge0.txt'
-        res = find_Opt_splurge0(target=target)
+        res = find_Opt_splurge0(target=target, startpoint=startpoint[1:3])
     else: 
         target = 'MPC'
         filename = '\Result_CRRA_2.0_initMPC_Active.txt'
-        res = find_Opt(target=target)
+        res = find_Opt(target=target, startpoint=startpoint)
         
     
     save_betanabla_res_txt(filename,res)
@@ -732,11 +877,11 @@ if Run_original_estimation:
     if Force_SplurgeZero:
         target = 'AGG_MPC_plus_Liqu_Wealth'
         filename = '\Result_CRRA_2.0_Splurge0.txt'    
-        res = find_Opt_splurge0(target=target)
+        res = find_Opt_splurge0(target=target, startpoint=startpoint[1:3])
     else: 
         target = 'AGG_MPC_plus_Liqu_Wealth'
         filename = '\Result_CRRA_2.0.txt'
-        res = find_Opt(target=target)
+        res = find_Opt(target=target, startpoint=startpoint)
 
     
     save_betanabla_res_txt(filename,res)
@@ -847,7 +992,7 @@ if Run_SplurgeZero_Analysis:
     nabla   = res['nabla']      #0.12056837545326626
     
     
-    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
+    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means_smoothed,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target='AGG_MPC_plus_Liqu_Wealth')
     
     print('Results for parametrization: ', Parametrization)
     print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin)#%% Plot aggregate MPC and MPCX
