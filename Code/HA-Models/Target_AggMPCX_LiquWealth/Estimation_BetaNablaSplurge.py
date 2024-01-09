@@ -190,8 +190,12 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
     GICmaxBeta = (1-base_params['LivPrb'][0]) + (base_params['PermGroFacAgg']**base_params['CRRA'])/base_params['Rfree']
     minBeta = 0.01
     for thedf in range(TypeCount):
-        if beta_set[thedf] > GICmaxBeta*np.exp(GICx)/(1+np.exp(GICx)):
-            beta_set[thedf] = GICmaxBeta*(np.exp(GICx)/(1+np.exp(GICx)))
+        # if beta_set[thedf] > GICmaxBeta*np.exp(GICx)/(1+np.exp(GICx)):
+        #     beta_set[thedf] = GICmaxBeta*(np.exp(GICx)/(1+np.exp(GICx)))
+        # Taper off toward the growth impatience condition
+        taper_threshold = 0.01
+        if beta_set[thedf] > GICmaxBeta-taper_threshold:
+            beta_set[thedf] = GICmaxBeta-taper_threshold + (np.arctan((beta_set[thedf] - GICmaxBeta + taper_threshold)/taper_threshold))*taper_threshold/np.pi*2
         elif beta_set[thedf] < minBeta:
             beta_set[thedf] = minBeta
     
@@ -415,12 +419,16 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
         diff_MPC = simulated_MPC_means_smoothed - MPC_target[2,:]
         # if drop_corner:
         #     diff_MPC[0,0] = 0.0
-        distance_MPC = 0.1*np.sqrt(np.sum((diff_MPC)**2))   
+        # distance_MPC = 0.1*np.sqrt(np.sum((diff_MPC)**2))   
+        distance_MPC = 0.1*np.sum((diff_MPC)**2) 
           
         diff_Agg_MPC = simulated_MPC_mean_add_Lottery_Bin - Agg_MPCX_target
-        distance_Agg_MPC = np.sqrt(np.sum((diff_Agg_MPC)**2))     
-        distance_Agg_MPC_24 = np.sqrt(np.sum((diff_Agg_MPC[2:4])**2))
-        distance_Agg_MPC_01 = np.sqrt(np.sum((diff_Agg_MPC[0:1])**2))
+        # distance_Agg_MPC = np.sqrt(np.sum((diff_Agg_MPC)**2))     
+        # distance_Agg_MPC_24 = np.sqrt(np.sum((diff_Agg_MPC[2:4])**2))
+        # distance_Agg_MPC_01 = np.sqrt(np.sum((diff_Agg_MPC[0:1])**2))
+        distance_Agg_MPC = np.sum((diff_Agg_MPC)**2)     
+        distance_Agg_MPC_24 = np.sum((diff_Agg_MPC[2:4])**2)
+        distance_Agg_MPC_01 = np.sum((diff_Agg_MPC[0:1])**2)
     else:
         distance_MPC = 0
         diff_Agg_MPC = 0
@@ -436,7 +444,8 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
         
         
     diff_lorenz = lorenz_Model - lorenz_target
-    distance_lorenz = np.sqrt(np.sum((diff_lorenz)**2))
+    # distance_lorenz = np.sqrt(np.sum((diff_lorenz)**2))
+    distance_lorenz = np.sum((diff_lorenz)**2)
     
     #distance_KY = np.abs((KY_target - KY_Model)/KY_target) 
     distance_KY = 1.0*((KY_target - KY_Model)/KY_target)**2 
@@ -652,15 +661,15 @@ def load_betanabla_res_txt(filename):
     
 #     return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1], 'GICx': 9}
 
-def find_Opt(target='', startpoint = [0.27,0.96,0.03,8], check_maximum = True):
+def find_Opt(target='', startpoint = [0.27,0.96,0.03], check_maximum = False):
         
     #Rotation of parameters that seems to work better for NelderMead optimization
     # startpoint_rotate = [startpoint[0],startpoint[1]+startpoint[2],startpoint[2],startpoint[3]]
     
     # f_temp = lambda x : FagerengObjFunc(x[0],x[1]-x[2],x[2],x[3],target=target)
-    f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],x[3],target=target)
+    f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],30,target=target)
     #opt = minimizeNelderMead(f_temp, startpoint2, verbose=1, xtol=0.001, ftol=0.001)
-    opt_output = minimize(f_temp, startpoint,method="L-BFGS-B", bounds = [(0.0,0.9),(0.7,1.1),(0.0,0.4),(1,30)])
+    opt_output = minimize(f_temp, startpoint,method="L-BFGS-B", bounds = [(0.0,0.9),(0.7,1.1),(0.0,0.4)])
     opt = opt_output.x
     obs = opt_output.fun
     beta = opt[1]
@@ -668,29 +677,29 @@ def find_Opt(target='', startpoint = [0.27,0.96,0.03,8], check_maximum = True):
     print('Finished estimating')
     print('Optimal splurge is ' + str(opt[0]) )
     print('Optimal (beta,nabla) is ' + str(beta) + ',' + str(nabla))
-    print('Optimal GICx is ' + str(opt[3]))
+    print('Optimal GICx is ' + str(30))
     if check_maximum:
-        check_start = [opt[0],opt[2], opt[3]]
+        check_start = [opt[0],opt[2]]
         check_obs = [0.0, 0.0]
         for i,deviation in zip(range(2), [-0.0001, 0.0001]):
-            f_temp = lambda y : FagerengObjFunc(y[0],opt[1]+deviation,y[1],y[2],target=target)
-            check_opt = minimize(f_temp, check_start,method="L-BFGS-B", bounds = [(0.0,0.9),(0.0,0.4),(1,30)])
+            f_temp = lambda y : FagerengObjFunc(y[0],opt[1]+deviation,y[1],30,target=target)
+            check_opt = minimize(f_temp, check_start,method="L-BFGS-B", bounds = [(0.0,0.9),(0.0,0.4)])
             check_obs[i] = check_opt.fun
         print("Objective around minimum:")
         print([check_obs[0], obs, check_obs[1]])
         if check_obs[0]<obs or check_obs[1] < obs :
             print("Didn't find minimum - check what is going on")
-            return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'GICx': opt[3], 'Error': 'Not a maximum'}
+            return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'GICx': 30, 'Error': 'Not a maximum'}
         else:
             print("Local minimum check passed")
     
-    return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'GICx': opt[3]}
+    return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'GICx': 30}
 
-def find_Opt_splurge0(target='', startpoint = [0.96,0.03,9], check_maximum = True):
+def find_Opt_splurge0(target='', startpoint = [0.96,0.03], check_maximum = False):
         
 
-    f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],x[2], target=target)
-    opt_output = minimize(f_temp, startpoint,method="L-BFGS-B", bounds = [(0.7,1.01),(0.0,0.4),(0,30)])
+    f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],30, target=target)
+    opt_output = minimize(f_temp, startpoint,method="L-BFGS-B", bounds = [(0.7,1.01),(0.0,0.4)])
     opt = opt_output.x
     obs = opt_output.fun
     beta = opt[0]
@@ -700,7 +709,7 @@ def find_Opt_splurge0(target='', startpoint = [0.96,0.03,9], check_maximum = Tru
         check_start = [opt[1]]
         check_obs = [0.0, 0.0]
         for i,deviation in zip(range(2), [-0.0001, 0.0001]):
-            f_temp = lambda y : FagerengObjFunc(0,opt[0]+deviation,y[0],opt[2],target=target)
+            f_temp = lambda y : FagerengObjFunc(0,opt[0]+deviation,y[0],30,target=target)
             check_opt = minimize(f_temp, check_start,method="L-BFGS-B", bounds = [(0.0,0.4)])
             check_obs[i] = check_opt.fun
             print([opt[0]+deviation,check_opt.x,check_opt.fun])
@@ -708,11 +717,11 @@ def find_Opt_splurge0(target='', startpoint = [0.96,0.03,9], check_maximum = Tru
         print([check_obs[0], obs, check_obs[1]])
         if check_obs[0]<obs or check_obs[1] < obs :
             print("Didn't find minimum - check what is going on")
-            return {'splurge' : 0, 'beta' : beta, 'nabla': nabla, 'GICx': opt[2], 'Error': 'Not a maximum'}
+            return {'splurge' : 0, 'beta' : beta, 'nabla': nabla, 'GICx': 30, 'Error': 'Not a maximum'}
         else:
             print("Local minimum check passed")
     
-    return {'splurge' : 0, 'beta' : beta, 'nabla': nabla, 'GICx': opt[2]}
+    return {'splurge' : 0, 'beta' : beta, 'nabla': nabla, 'GICx': 30}
 
 
 # Make several consumer types to be used during estimation
@@ -723,12 +732,12 @@ for j in range(TypeCount):
     EstTypeList[-1](seed = j)
 
 
-Force_SplurgeZero = True
+Force_SplurgeZero = False
 # set only one to true
 Run_KY_initMPC_estimation = True
 Run_KY_estimation = True
 Run_initMPC_estimation = True
-Run_original_estimation = True
+Run_original_estimation = False
 
 Run_ESC_experiment = False
 
@@ -736,8 +745,8 @@ Run_ESC_experiment = False
 Run_3D_Plot = False
 Run_Investigation = False
 
-startpoint = [0.27,0.96,0.03,8]
-startpoint = [0.27,0.9219903036773804, 0.09448396318353519,8]
+startpoint = [0.27,0.96,0.03]
+startpoint = [0.27,0.9219903036773804, 0.09448396318353519]
 
 
 
