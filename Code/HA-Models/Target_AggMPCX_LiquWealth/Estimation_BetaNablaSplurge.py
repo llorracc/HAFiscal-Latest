@@ -6,17 +6,6 @@ from copy import deepcopy
 import pandas as pd
 
 
-# import sys
-# # print the original sys.path
-# print('Original sys.path:', sys.path)
-# # append a new directory to sys.path
-# sys.path.append('\\Client\D$\CustomTools\HARK')
-# # print the updated sys.path
-# print('Updated sys.path:', sys.path)
-# # now you can import your module
-# import HARK
-# print(HARK.__ver__)
-
 # Import needed tools from HARK
 from HARK.distribution import Uniform
 from HARK.utilities import getPercentiles, getLorenzShares, make_figs
@@ -155,7 +144,7 @@ KY_target = 6.60
     
 # Define the objective function
 
-def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_mode=True,target='AGG_MPC',investigate=False):
+def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=True,target='AGG_MPC',investigate=False):
     '''
     Objective function for the quick and dirty structural estimation to fit
     Fagereng, Holm, and Natvik's Table 9 results with a basic infinite horizon
@@ -185,35 +174,18 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
     
     # Give our consumer types the requested discount factor distribution
     beta_set = Uniform(bot=center-spread, top=center+spread).approx(TypeCount).X
-    # Check GIC:
-        
+    
+    # Taper off toward the growth impatience condition 
     GICmaxBeta = (1-base_params['LivPrb'][0]) + (base_params['PermGroFacAgg']**base_params['CRRA'])/base_params['Rfree']
     minBeta = 0.01
     for thedf in range(TypeCount):
-        # if beta_set[thedf] > GICmaxBeta*np.exp(GICx)/(1+np.exp(GICx)):
-        #     beta_set[thedf] = GICmaxBeta*(np.exp(GICx)/(1+np.exp(GICx)))
-        # Taper off toward the growth impatience condition
         taper_threshold = 0.01
         if beta_set[thedf] > GICmaxBeta-taper_threshold:
             beta_set[thedf] = GICmaxBeta-taper_threshold + (np.arctan((beta_set[thedf] - GICmaxBeta + taper_threshold)/taper_threshold))*taper_threshold/np.pi*2
         elif beta_set[thedf] < minBeta:
             beta_set[thedf] = minBeta
     
-    
-    # # Check GIC:
-    # GICmaxBeta = 0.0025 + (base_params['PermGroFacAgg']**base_params['CRRA'])/base_params['Rfree']
-    # minBeta = 0.01
-    # distance_add = 0
-    # for thedf in range(TypeCount):
-    #     if beta_set[thedf] > GICmaxBeta*np.exp(GICx)/(1+np.exp(GICx)):
-    #         beta_set[thedf] = GICmaxBeta*(np.exp(GICx)/(1+np.exp(GICx)))
-    #         distance_add = 1
-    #     elif beta_set[thedf] < minBeta:
-    #         beta_set[thedf] = minBeta
-
-
-
-        
+      
     
     for j in range(TypeCount):
         EstTypeList[j](DiscFac = beta_set[j])
@@ -222,8 +194,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
     multiThreadCommands(EstTypeList,['solve()','initializeSim()','simulate()','unpack("cFunc")'])
     WealthNow = np.concatenate([ThisType.aLvlNow for ThisType in EstTypeList])
     
-    
-    #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':     
+       
     # Get wealth quartile cutoffs and distribute them to each consumer type
     quartile_cuts = getPercentiles(WealthNow,percentiles=[0.25,0.50,0.75])
     wealth_list = np.array([])
@@ -258,18 +229,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
     
 ################## Can return K/Y here
     if target != "Liqu_Wealth_plusKY":
-        # # calculate GIC condition
-        # ThisType = EstTypeList[7]
-        # ThisType.InvPermShkDstn=deepcopy(ThisType.PermShkDstn)
-        # ThisType.InvPermShkDstn[0].X = 1/ThisType.PermShkDstn[0].X
-        # ThisType.EPermShkInv=np.dot(ThisType.InvPermShkDstn[0].pmf,1/ThisType.PermShkDstn[0].X)
-        # ThisType.InvEPermShkInv  = (1/ThisType.EPermShkInv)
-        # ThisType.thorn = (ThisType.Rfree*ThisType.DiscFac*ThisType.LivPrb[0])**(1/ThisType.CRRA)   
-        # ThisType.GPFInd = ThisType.thorn/(ThisType.PermGroFacAgg*ThisType.PermGroFac[0]*ThisType.InvEPermShkInv)  # [url]/#GICI
-        # ThisType.GPFInd = EstTypeList[7].GPFInd - 0.0025 #manual adj. for max age
-        # #print('EstTypeList[7].GPFInd = ', EstTypeList[7].GPFInd)
-            
-            
+
         N_Quarter_Sim = 20; # Needs to be dividable by four
         N_Year_Sim = int(N_Quarter_Sim/4)
         N_Lottery_Win_Sizes = 5 # 4 lottery size bin + 1 representative one for agg MPCX
@@ -355,18 +315,13 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
                     c_base_Lvl_year = c_base_Lvl[:,(year-1)*4:year*4]
                     MPC_this_type[type_num,:,k,year-1] = (np.sum(c_actu_Lvl_year,axis=1) - np.sum(c_base_Lvl_year,axis=1))/(lottery_size[k])
                         
-                        
-                    
             
-            #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC':             
             # Sort the MPCs into the proper MPC sets
             for q in range(4):
                 these = ThisType.WealthQ == q
                 for k in range(N_Lottery_Win_Sizes):
                     for y in range(N_Year_Sim):
                         MPC_Lists[k][q][y].append(MPC_this_type[type_num,these,k,y])
-            #print(max(MPC_this_type[:,0,0]))
-            #print(MPC_Lists[0][0][0])
                         
             # sort MPCs for addtional Lottery bin
             for y in range(N_Year_Sim):
@@ -377,7 +332,6 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
         for type_num, ThisType in zip(range(TypeCount), EstTypeList):
             MPC_list = np.concatenate((MPC_list, MPC_this_type[type_num, :, 4, 0] ))
         sorted_wealth_MPC = np.stack((wealth_list, MPC_list))[:,wealth_list.argsort()]
-        MPC_by_quartile = np.zeros(4)
         total_agents = len(MPC_list)
         quartile1_weights = np.zeros(total_agents)
         quartile1_weights[0:int(np.floor(total_agents*9/40))] = 1.0
@@ -412,20 +366,12 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
                 
         # Calculate Euclidean distance between simulated MPC averages and Table 9 targets
         
-        #if estimation_mode==False or target == 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC': 
-        
+       
         # MPC for representative lottery win (k=4), which corresponds to third row in MPC_target
-        #diff_MPC = simulated_MPC_means[4,:,0] - MPC_target[2,:]
-        diff_MPC = simulated_MPC_means_smoothed - MPC_target[2,:]
-        # if drop_corner:
-        #     diff_MPC[0,0] = 0.0
-        # distance_MPC = 0.1*np.sqrt(np.sum((diff_MPC)**2))   
+        diff_MPC = simulated_MPC_means_smoothed - MPC_target[2,:] 
         distance_MPC = 0.1*np.sum((diff_MPC)**2) 
           
         diff_Agg_MPC = simulated_MPC_mean_add_Lottery_Bin - Agg_MPCX_target
-        # distance_Agg_MPC = np.sqrt(np.sum((diff_Agg_MPC)**2))     
-        # distance_Agg_MPC_24 = np.sqrt(np.sum((diff_Agg_MPC[2:4])**2))
-        # distance_Agg_MPC_01 = np.sqrt(np.sum((diff_Agg_MPC[0:1])**2))
         distance_Agg_MPC = np.sum((diff_Agg_MPC)**2)     
         distance_Agg_MPC_24 = np.sum((diff_Agg_MPC[2:4])**2)
         distance_Agg_MPC_01 = np.sum((diff_Agg_MPC[0:1])**2)
@@ -470,12 +416,6 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
     elif target == "test":
         distance = distance_MPC
         
-
-        
-    # # if EstTypeList[7].GPFInd > 1:
-    # #     distance = distance + 2
-    # distance = distance + distance_add
-        
     if estimation_mode==False:   
         print(distance_Agg_MPC,distance_lorenz,distance_KY)
         
@@ -483,7 +423,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
         print(simulated_MPC_means)
         print(simulated_MPC_means_smoothed)
     else:
-        print (SplurgeEstimate, center, spread, GICx, distance)
+        print (SplurgeEstimate, center, spread, distance)
         
     if investigate:
         print("distance_MPC", distance_MPC) 
@@ -508,10 +448,10 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,GICx,verbose=False,estimation_
         return [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means_smoothed,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]
 
 
-def PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False):
+def PlotResults(splurge,beta,nabla,target,Output_to_Excel=False):
     
 
-    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means_smoothed,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]=FagerengObjFunc(splurge,beta,nabla,GICx,estimation_mode=False,target=target)
+    [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means_smoothed,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target=target)
     
     print('Results for parametrization: ', Parametrization)
     print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin)#%% Plot aggregate MPC and MPCX
@@ -540,9 +480,6 @@ def PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False):
     print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_target)
     print('Last percentile with negative assets', np.argmin(Lorenz_Data), '%')
     print('Percentile with zero cummulative assets', np.argwhere(Lorenz_Data>0)[0]-1, '%')
-    
-    
-    
     
     plt.figure()
     LorenzAxis = np.arange(101,dtype=float)
@@ -586,88 +523,12 @@ def load_betanabla_res_txt(filename):
     splurge = dictload['splurge']
     beta    = dictload['beta']
     nabla   = dictload['nabla']
-    GICx   = dictload['GICx']
-    return [splurge,beta,nabla,GICx]
+    return [splurge,beta,nabla]
 
-
-# def find_Opt(target='', startpoint = [0.27,0.975,0.035,8]):
-        
-#     #Rotation of parameters that seems to work better for NelderMead optimization
-#     startpoint2 = [0.27,startpoint[1]+startpoint[2],startpoint[2],8]
-    
-#     f_temp = lambda x : FagerengObjFunc(x[0],x[1]-x[2],x[2],x[3],target=target)
-#     opt = minimizeNelderMead(f_temp, startpoint2, verbose=1, xtol=0.001, ftol=0.001)
-#     beta = opt[1]-opt[2]
-#     nabla = opt[2]
-#     print('Finished estimating')
-#     print('Optimal splurge is ' + str(opt[0]) )
-#     print('Optimal (beta,nabla) is ' + str(beta) + ',' + str(nabla))
-#     print('Optimal GICx is ' + str(opt[3]))
-    
-#     return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'GICx': opt[3]}
-
-# import scipy.optimize
-
-# def find_Opt(target=''):
-        
-#     startpoint = [0.27,0.975,0.035,8]
-    
-#     f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],x[3],target=target)
-#     opt = scipy.optimize.basinhopping(f_temp, startpoint, disp=True)
-#     print('Finished estimating')
-#     print('Optimal splurge is ' + str(opt.x[0]) )
-#     print('Optimal (beta,nabla) is ' + str(opt.x[1]) + ',' + str(opt.x[2]))
-#     print('Optimal GICx is ' + str(opt.x[3]))
-    
-#     return {'splurge' : opt.x[0], 'beta' : opt.x[1], 'nabla': opt.x[2], 'GICx': opt.x[3]}
-
-
-
-# def find_Opt_splurge0(target=''):
-        
-#     startpoint = [0.975,0.035,8]
-    
-#     f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],x[2], target=target)
-#     opt = minimizeNelderMead(f_temp, startpoint, verbose=1, xtol=0.001, ftol=0.001)
-#     #opt = minimizeNelderMead(f_temp, startpoint)
-#     print('Finished estimating')
-#     print('Optimal (beta,nabla) is ' + str(opt[0]) + ',' + str(opt[1]))    
-#     print('Optimal GICx is ' + str(opt[2]))
-    
-#     return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1], 'GICx': opt[2]}
-
-
-# def find_Opt_splurge0(target='', startpoint = [0.93,0.07], method = "NelderMead"):
-        
-#     #startpoint = [0.93,0.07]
-#     startpoint2 = [startpoint[0]+startpoint[1], startpoint[1]]
-    
-#     #f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],9, target=target)
-#     f_temp = lambda x : FagerengObjFunc(0,x[0]-x[1],x[1],9, target=target)
-#     if method == "NelderMead":
-#         opt = minimizeNelderMead(f_temp, startpoint2, verbose=1, xtol=0.001, ftol=0.001, maxiter=2000, maxfun=2000)
-#         #opt = minimizeNelderMead(f_temp, startpoint)
-#     elif method == "L-BFGS-B":
-#         opt = minimize(f_temp, startpoint2,method="L-BFGS-B", bounds = [(0.7,1.5),(0.0,0.4)]).x
-#     elif method == "Powell":
-#         opt = minimizePowell(f_temp, startpoint2, verbose=True)
-
-#     print('Finished estimating')
-#     #beta = opt[0]
-#     #nabla = opt[1]
-#     beta = opt[0]-opt[1]
-#     nabla = opt[1]
-#     print('Optimal (beta,nabla) is ' + str(beta) + ',' + str(nabla))  
-    
-#     return {'splurge' : 0, 'beta' : opt[0], 'nabla': opt[1], 'GICx': 9}
 
 def find_Opt(target='', startpoint = [0.27,0.96,0.03], check_maximum = False):
         
-    #Rotation of parameters that seems to work better for NelderMead optimization
-    # startpoint_rotate = [startpoint[0],startpoint[1]+startpoint[2],startpoint[2],startpoint[3]]
-    
-    # f_temp = lambda x : FagerengObjFunc(x[0],x[1]-x[2],x[2],x[3],target=target)
-    f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],30,target=target)
+    f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],target=target)
     #opt = minimizeNelderMead(f_temp, startpoint2, verbose=1, xtol=0.001, ftol=0.001)
     opt_output = minimize(f_temp, startpoint,method="L-BFGS-B", bounds = [(0.0,0.9),(0.7,1.1),(0.0,0.4)])
     opt = opt_output.x
@@ -677,28 +538,27 @@ def find_Opt(target='', startpoint = [0.27,0.96,0.03], check_maximum = False):
     print('Finished estimating')
     print('Optimal splurge is ' + str(opt[0]) )
     print('Optimal (beta,nabla) is ' + str(beta) + ',' + str(nabla))
-    print('Optimal GICx is ' + str(30))
     if check_maximum:
         check_start = [opt[0],opt[2]]
         check_obs = [0.0, 0.0]
         for i,deviation in zip(range(2), [-0.0001, 0.0001]):
-            f_temp = lambda y : FagerengObjFunc(y[0],opt[1]+deviation,y[1],30,target=target)
+            f_temp = lambda y : FagerengObjFunc(y[0],opt[1]+deviation,y[1],target=target)
             check_opt = minimize(f_temp, check_start,method="L-BFGS-B", bounds = [(0.0,0.9),(0.0,0.4)])
             check_obs[i] = check_opt.fun
         print("Objective around minimum:")
         print([check_obs[0], obs, check_obs[1]])
         if check_obs[0]<obs or check_obs[1] < obs :
             print("Didn't find minimum - check what is going on")
-            return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'GICx': 30, 'Error': 'Not a maximum'}
+            return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'Error': 'Not a maximum'}
         else:
             print("Local minimum check passed")
     
-    return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla, 'GICx': 30}
+    return {'splurge' : opt[0], 'beta' : beta, 'nabla': nabla}
 
 def find_Opt_splurge0(target='', startpoint = [0.96,0.03], check_maximum = False):
         
 
-    f_temp = lambda x : FagerengObjFunc(0,x[0],x[1],30, target=target)
+    f_temp = lambda x : FagerengObjFunc(0,x[0],x[1], target=target)
     opt_output = minimize(f_temp, startpoint,method="L-BFGS-B", bounds = [(0.7,1.01),(0.0,0.4)])
     opt = opt_output.x
     obs = opt_output.fun
@@ -709,7 +569,7 @@ def find_Opt_splurge0(target='', startpoint = [0.96,0.03], check_maximum = False
         check_start = [opt[1]]
         check_obs = [0.0, 0.0]
         for i,deviation in zip(range(2), [-0.0001, 0.0001]):
-            f_temp = lambda y : FagerengObjFunc(0,opt[0]+deviation,y[0],30,target=target)
+            f_temp = lambda y : FagerengObjFunc(0,opt[0]+deviation,y[0],target=target)
             check_opt = minimize(f_temp, check_start,method="L-BFGS-B", bounds = [(0.0,0.4)])
             check_obs[i] = check_opt.fun
             print([opt[0]+deviation,check_opt.x,check_opt.fun])
@@ -717,11 +577,11 @@ def find_Opt_splurge0(target='', startpoint = [0.96,0.03], check_maximum = False
         print([check_obs[0], obs, check_obs[1]])
         if check_obs[0]<obs or check_obs[1] < obs :
             print("Didn't find minimum - check what is going on")
-            return {'splurge' : 0, 'beta' : beta, 'nabla': nabla, 'GICx': 30, 'Error': 'Not a maximum'}
+            return {'splurge' : 0, 'beta' : beta, 'nabla': nabla, 'Error': 'Not a maximum'}
         else:
             print("Local minimum check passed")
     
-    return {'splurge' : 0, 'beta' : beta, 'nabla': nabla, 'GICx': 30}
+    return {'splurge' : 0, 'beta' : beta, 'nabla': nabla}
 
 
 # Make several consumer types to be used during estimation
@@ -737,9 +597,7 @@ Force_SplurgeZero = False
 Run_KY_initMPC_estimation = True
 Run_KY_estimation = True
 Run_initMPC_estimation = True
-Run_original_estimation = False
-
-Run_ESC_experiment = False
+Run_original_estimation = True
 
 # or run checks
 Run_3D_Plot = False
@@ -755,16 +613,12 @@ startpoint = [0.27,0.9219903036773804, 0.09448396318353519]
 
 if Run_Investigation:
     for this_beta in np.linspace(0.925,0.932,10):
-        FagerengObjFunc(0,this_beta ,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
-    # FagerengObjFunc(0,0.925 ,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
-    # FagerengObjFunc(0,0.9285,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
-    # FagerengObjFunc(0,0.932 ,0.086,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
-
+        FagerengObjFunc(0,this_beta ,0.086, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
 
 if Run_3D_Plot:
     # Define the function to be evaluated
     def my_function(x,y):
-        return FagerengObjFunc(0,x,y,9, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC')
+        return FagerengObjFunc(0,x,y, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC')
       
           
     # # Define the ranges for x and y
@@ -810,17 +664,6 @@ if Run_3D_Plot:
     # Show the plot
     plt.show()
     
-if Run_ESC_experiment:
-    print("RUNNING RUN KY AND INIT MPC ESTIMATION")
-    #method = "L-BFGS-B"
-    method = "L-BFGS-B"
-    target = 'Liqu_Wealth_plusKY'
-    res = find_Opt_splurge0(target=target, startpoint = [0.93,0.07], method=method) 
-    res = find_Opt_splurge0(target=target, startpoint = [0.92,0.08], method = method) 
-    res = find_Opt_splurge0(target=target, startpoint = [0.9745578996729346,0.03414631779518296], method = method) 
-    
-
-
 if Run_KY_initMPC_estimation:
     print("RUNNING RUN KY AND INIT MPC ESTIMATION")
     
@@ -835,8 +678,8 @@ if Run_KY_initMPC_estimation:
         res = find_Opt(target=target, startpoint=startpoint)
     
     save_betanabla_res_txt(filename,res)
-    [splurge,beta,nabla,GICx] = load_betanabla_res_txt(filename)
-    PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False)
+    [splurge,beta,nabla] = load_betanabla_res_txt(filename)
+    PlotResults(splurge,beta,nabla,target,Output_to_Excel=False)
 
 
 #%% Estimate with KY target
@@ -854,8 +697,8 @@ if Run_KY_estimation:
         res = find_Opt(target=target, startpoint=startpoint)
     
     save_betanabla_res_txt(filename,res)
-    [splurge,beta,nabla,GICx] = load_betanabla_res_txt(filename)
-    PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False)
+    [splurge,beta,nabla] = load_betanabla_res_txt(filename)
+    PlotResults(splurge,beta,nabla,target,Output_to_Excel=False)
 
 
 #%% Estimate with initial MPC
@@ -874,8 +717,8 @@ if Run_initMPC_estimation:
         
     
     save_betanabla_res_txt(filename,res)
-    [splurge,beta,nabla,GICx] = load_betanabla_res_txt(filename)
-    PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False)
+    [splurge,beta,nabla] = load_betanabla_res_txt(filename)
+    PlotResults(splurge,beta,nabla,target,Output_to_Excel=False)
 
 #%% Estimate without any additional target
 
@@ -894,8 +737,8 @@ if Run_original_estimation:
 
     
     save_betanabla_res_txt(filename,res)
-    [splurge,beta,nabla,GICx] = load_betanabla_res_txt(filename)
-    PlotResults(splurge,beta,nabla,GICx,target,Output_to_Excel=False)
+    [splurge,beta,nabla] = load_betanabla_res_txt(filename)
+    PlotResults(splurge,beta,nabla,target,Output_to_Excel=False)
 
 
 
