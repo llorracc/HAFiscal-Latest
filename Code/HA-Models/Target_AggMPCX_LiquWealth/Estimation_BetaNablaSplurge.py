@@ -527,10 +527,12 @@ def load_betanabla_res_txt(filename):
 
 
 def find_Opt(target='', startpoint = [0.27,0.96,0.03], check_maximum = False):
+    
+    bounds = [(0.0,0.9),(0.7,1.1),(0.0,0.4)]
         
     f_temp = lambda x : FagerengObjFunc(x[0],x[1],x[2],target=target)
     #opt = minimizeNelderMead(f_temp, startpoint2, verbose=1, xtol=0.001, ftol=0.001)
-    opt_output = minimize(f_temp, startpoint,method="L-BFGS-B", bounds = [(0.0,0.9),(0.7,1.1),(0.0,0.4)])
+    opt_output = minimize(f_temp, startpoint,method="Powell", bounds =bounds)
     opt = opt_output.x
     obs = opt_output.fun
     beta = opt[1]
@@ -543,7 +545,7 @@ def find_Opt(target='', startpoint = [0.27,0.96,0.03], check_maximum = False):
         check_obs = [0.0, 0.0]
         for i,deviation in zip(range(2), [-0.0001, 0.0001]):
             f_temp = lambda y : FagerengObjFunc(y[0],opt[1]+deviation,y[1],target=target)
-            check_opt = minimize(f_temp, check_start,method="L-BFGS-B", bounds = [(0.0,0.9),(0.0,0.4)])
+            check_opt = minimize(f_temp, check_start,method="Powell", bounds = [(0.0,0.9),(0.0,0.4)])
             check_obs[i] = check_opt.fun
         print("Objective around minimum:")
         print([check_obs[0], obs, check_obs[1]])
@@ -605,7 +607,6 @@ Run_Investigation = False
 
 startpoint = [0.27,0.96,0.03]
 startpoint = [0.27,0.9219903036773804, 0.09448396318353519]
-
 
 
 #%% Estimate with KY target and initial MPC
