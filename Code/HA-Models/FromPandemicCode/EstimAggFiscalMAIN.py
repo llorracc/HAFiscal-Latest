@@ -182,8 +182,8 @@ def calcMPCbyEd(Agents):
         The average MPC for each education type - Annualized, taking splurge into account. 
         (Only splurge in the first quarter.)
     '''
-    MPCsQ = [0]*(num_types+1)
-    MPCsA = [0]*(num_types+1)       # Annual MPCs with splurge
+    MPCsQ = [0]*(num_types+1)   # MPC for each eduation type + for whole population
+    MPCsA = [0]*(num_types+1)   # Annual MPCs with splurge (each ed. type + population)
     for e in range(num_types):
         MPC_byEd_Q = []
         MPC_byEd_Q = np.concatenate([ThisType.MPCnow for ThisType in \
@@ -207,6 +207,59 @@ def calcMPCbyEd(Agents):
     MPCs = namedtuple("MPCs", ["MPCsQ", "MPCsA"])
  
     return MPCs(MPCsQ,MPCsA)
+ 
+# -----------------------------------------------------------------------------
+def calcMPCbyWealth(Agents):
+    '''
+    Calculate the average MPC for each wealth quartile. 
+    Assumption: Agents is organized by EducType and there are DiscFacCount
+    AgentTypes of each EducType. 
+    
+    Parameters
+    ----------
+    Agents : [AgentType]
+        List of all AgentTypes in the economy. They are assumed to differ in 
+        their EducType attribute.
+
+    Returns
+    -------
+    MPCs : namedtuple("MPCsQ", "MPCsA")    
+    MPCsQ : [float]
+        The average MPC for each wealth quartile - Quarterly, ignores splurge.
+    MPCsA : [float]
+        The average MPC for each wealth quartile - Annualized, taking splurge into account. 
+        (Only splurge in the first quarter.)
+    '''
+    WealthNow = np.concatenate([ThisType.aLvlNow for ThisType in Agents])
+    
+    # Get wealth quartile cutoffs and distribute them to each consumer type
+    quartile_cuts = getPercentiles(WealthNow,percentiles=[0.25,0.50,0.75])
+    WealthQsAll = np.array([])
+    for ThisType in Agents:
+        WealthQ = np.zeros(ThisType.AgentCount,dtype=int)
+        for n in range(3):
+            WealthQ[ThisType.aLvlNow > quartile_cuts[n]] += 1
+        ThisType(WealthQ = WealthQ)
+        WealthQsAll = np.concatenate([WealthQsAll, WealthQ])
+    
+    MPC_agents_Q = np.concatenate([ThisType.MPCnow for ThisType in Agents])
+    # Annual MPC: first Q includes Splurge, other three Qs do not
+    MPC_agents_A = Splurge+(1-Splurge)*MPC_agents_Q
+    for qq in range(3):
+        MPC_agents_A += (1-MPC_agents_A)*MPC_agents_Q
+
+    MPCsQ = [0]*(4+1)       # MPC for each quartile + for whole population
+    MPCsA = [0]*(4+1)       # Annual MPCs with splurge (each quartile + population)
+    # Mean MPCs for each of the 4 quartiles of wealth + all agents         
+    for qq in range(4):
+        MPCsQ[qq] = np.mean(MPC_agents_Q[WealthQsAll==qq])
+        MPCsA[qq] = np.mean(MPC_agents_A[WealthQsAll==qq])
+    MPCsQ[4] = np.mean(MPC_agents_Q)
+    MPCsA[4] = np.mean(MPC_agents_A)
+    
+    MPCs = namedtuple("MPCs", ["MPCsQ", "MPCsA"])
+ 
+    return MPCs(MPCsQ,MPCsA)    
  
 # -----------------------------------------------------------------------------
 def checkDiscFacDistribution(beta, nabla, GICfactor, educ_type, print_mode=False, print_file=False, filename='DefaultResultsFile.txt'):
@@ -439,7 +492,8 @@ def betasObjFunc(betas, spreads, GICfactors, target_option=1, print_mode=False, 
 
     if print_mode or print_file:
         WealthShares = calcWealthShareByEd(TypeListNew)
-        MPCs = calcMPCbyEd(TypeListNew)
+        MPCsByEd = calcMPCbyEd(TypeListNew)
+        MPCsByW  = calcMPCbyWealth(TypeListNew)
 
     # If not estimating, print stats by education level
     if print_mode:
@@ -465,9 +519,12 @@ def betasObjFunc(betas, spreads, GICfactors, target_option=1, print_mode=False, 
               + ' C = ' + mystr(Stats.LWoPI[2]))
         print('Wealth Shares: D = ' + mystr(WealthShares[0]) + \
               ' H = ' + mystr(WealthShares[1]) + ' C = ' + mystr(WealthShares[2]))
-        print('Average MPCs (incl. splurge) = ['+str(round(MPCs.MPCsA[0],3))+', '
-                      +str(round(MPCs.MPCsA[1],3))+', '+str(round(MPCs.MPCsA[2],3))+', '
-                      +str(round(MPCs.MPCsA[3],3))+']\n')
+        print('Average MPCs by Ed. (incl. splurge) = ['+str(round(MPCsByEd.MPCsA[0],3))+', '
+                      +str(round(MPCsByEd.MPCsA[1],3))+', '+str(round(MPCsByEd.MPCsA[2],3))+', '
+                      +str(round(MPCsByEd.MPCsA[3],3))+']')
+        print('Average MPCs by Wealth (incl. splurge) = ['+str(round(MPCsByW.MPCsA[0],3))+', '
+                      +str(round(MPCsByW.MPCsA[1],3))+', '+str(round(MPCsByW.MPCsA[2],3))+', '
+                      +str(round(MPCsByW.MPCsA[3],3))+', '+str(round(MPCsByW.MPCsA[4],3))+']\n')
 
     if print_file:
         with open(filename, 'a') as resFile: 
@@ -479,9 +536,12 @@ def betasObjFunc(betas, spreads, GICfactors, target_option=1, print_mode=False, 
                           +str(round(Stats.LorenzPts[3],4))+']\n')
             resFile.write('\tWealth shares = ['+str(round(WealthShares[0],3))+', '
                           +str(round(WealthShares[1],3))+', '+str(round(WealthShares[2],3))+']\n')
-            resFile.write('\tAverage MPCs (incl. splurge) = ['+str(round(MPCs.MPCsA[0],3))+', '
-                          +str(round(MPCs.MPCsA[1],3))+', '+str(round(MPCs.MPCsA[2],3))+', '
-                          +str(round(MPCs.MPCsA[3],3))+']\n')
+            resFile.write('\tAverage MPCs by Ed. (incl. splurge) = ['+str(round(MPCsByEd.MPCsA[0],3))+', '
+                          +str(round(MPCsByEd.MPCsA[1],3))+', '+str(round(MPCsByEd.MPCsA[2],3))+', '
+                          +str(round(MPCsByEd.MPCsA[3],3))+']\n')
+            resFile.write('\tAverage MPCs by Wealth (incl. splurge) = ['+str(round(MPCsByW.MPCsA[0],3))+', '
+                          +str(round(MPCsByW.MPCsA[1],3))+', '+str(round(MPCsByW.MPCsA[2],3))+', '
+                          +str(round(MPCsByW.MPCsA[3],3))+', '+str(round(MPCsByW.MPCsA[4],3))+']\n')
         
     return distance 
 # -----------------------------------------------------------------------------

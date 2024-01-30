@@ -56,20 +56,24 @@ UBspell_normal = 2           # Average duration of unemployment benefits in norm
 CRRA = 2.0                 # Coefficient of relative risk aversion (1, 2 or 3)
 f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
 dictload = eval(f.read())
-Splurge = dictload['splurge'] 
-if len(sys.argv) >= 6:
-    # Number of arguments indicates that Splurge is set manually 
-    Splurge = float(sys.argv[5])
-    CRRA = float(sys.argv[2])
-elif len(sys.argv) >= 3:
-    # Number of arguments indicates that CRRA is set manually
-    CRRA = float(sys.argv[2])
-    if (CRRA != 1.0 and CRRA != 2.0 and CRRA != 3.0):
-        print('The Splurge was only estimated for CRRA = 1.0, 2.0 and 3.0')
-    # Read in estimated Splurge --> depends on CRRA: 
-    f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
-    dictload = eval(f.read())
-    Splurge = dictload['splurge'] 
+# Splurge = dictload['splurge'] 
+# if len(sys.argv) >= 6:
+#     # Number of arguments indicates that Splurge is set manually 
+#     Splurge = float(sys.argv[5])
+#     CRRA = float(sys.argv[2])
+# elif len(sys.argv) >= 3:
+#     # Number of arguments indicates that CRRA is set manually
+#     CRRA = float(sys.argv[2])
+#     if (CRRA != 1.0 and CRRA != 2.0 and CRRA != 3.0):
+#         print('The Splurge was only estimated for CRRA = 1.0, 2.0 and 3.0')
+#     # Read in estimated Splurge --> depends on CRRA: 
+#     f = open('../Target_AggMPCX_LiquWealth/Result_CRRA_'+str(CRRA)+'.txt', 'r')
+#     dictload = eval(f.read())
+#     Splurge = dictload['splurge'] 
+
+# Temporary until Splurge estimation is finalized
+Splurge = 0.302
+# END Temporary
     
 PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
@@ -170,8 +174,8 @@ if len(sys.argv) >= 2:
 LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
 
 # Calculate max beta values for each education group where GIC holds with equality: 
-GICmaxBetas = [(PermGroFac_base_d[0]**CRRA)/Rfree_base[0], (PermGroFac_base_h[0]**CRRA)/Rfree_base[0], 
-                   (PermGroFac_base_c[0]**CRRA)/Rfree_base[0]]
+GICmaxBetas = (1-LivPrb_base[0]) + np.array([(PermGroFac_base_d[0]**CRRA)/Rfree_base[0], (PermGroFac_base_h[0]**CRRA)/Rfree_base[0], 
+                   (PermGroFac_base_c[0]**CRRA)/Rfree_base[0]])
 theGICfactor = 0.999
 minBeta = 0.01
 
