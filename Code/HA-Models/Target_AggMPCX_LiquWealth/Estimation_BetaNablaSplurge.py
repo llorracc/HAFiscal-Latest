@@ -26,7 +26,7 @@ else:
 
 
 # Set key problem-specific parameters
-TypeCount =  8      # Number of consumer types with heterogeneous discount factors
+TypeCount = 7       # Number of consumer types with heterogeneous discount factors
 AdjFactor = 1.0     # Factor by which to scale all of MPCs in Table 9
 T_kill    = 400     # Don't let agents live past this age (expressed in quarters)
 drop_corner = True  # If True, ignore upper left corner when calculating distance
@@ -40,7 +40,7 @@ base_params['Rboro']        = 1.025         #from stickyE paper
 base_params['PermShkStd']   = [0.001**0.5]  #from stickyE paper
 base_params['TranShkStd']   = [0.132**0.5]  #from stickyE paper
 base_params['T_age']        = 400           # Kill off agents if they manage to achieve T_kill working years
-base_params['AgentCount']   = 5000         # Number of agents per instance of IndShockConsType
+base_params['AgentCount']   = 5000          # Number of agents per instance of IndShockConsType
 base_params['pLvlInitMean'] = np.log(23.72) 
 base_params['T_sim']        = 800
 
@@ -56,7 +56,7 @@ if  Parametrization == 'NOR':
     base_params['IncUnemp']     = 0.60
     base_params['PermShkStd']   = [0.001**0.5] #from Crawley,Moll,Tretvoll
     base_params['TranShkStd']   = [0.132**0.5]
-    base_params['BoroCnstArt']  = -0.8
+    base_params['BoroCnstArt']  = 0 #-0.8
     base_params['PermGroFacAgg']= 1.01**0.25     
     base_params['CRRA']         = 2.0
     base_params['T_age']        = None
@@ -159,20 +159,18 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     WealthNow_sorted = WealthNow[order]
     Lorenz_Data = getLorenzShares(WealthNow_sorted,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
     Lorenz_Data = np.hstack((np.array(0.0),Lorenz_Data,np.array(1.0)))  
-    permNow = np.concatenate([ThisType.pLvlNow for ThisType in EstTypeList])   
-    Wealth_Perm_Ratio = WealthNow / permNow
-    order2 = np.argsort(Wealth_Perm_Ratio)
-    Wealth_Perm_Ratio = Wealth_Perm_Ratio[order2]
-    Wealth_Perm_Ratio_adj = Wealth_Perm_Ratio - Wealth_Perm_Ratio[0] # add lowest possible value to everyone
-    Lorenz_Data_Adj = getLorenzShares(Wealth_Perm_Ratio_adj,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
+    
+    Wealth_adj = WealthNow_sorted - WealthNow_sorted[0] # add lowest possible value to everyone
+    Lorenz_Data_Adj = getLorenzShares(Wealth_adj,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
     Lorenz_Data_Adj = np.hstack((np.array(0.0),Lorenz_Data_Adj,np.array(1.0))) 
     lorenz_Model = np.array([Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80]])
     
     # Get K to Y
-    CapAgg = np.sum(WealthNow)
-    TransNow = np.concatenate([ThisType.TranShkNow for ThisType in EstTypeList])
-    IncAgg = np.sum(permNow*TransNow)
-    KY_Model = CapAgg/IncAgg
+    CapAgg      = np.sum(WealthNow)
+    TransNow    = np.concatenate([ThisType.TranShkNow for ThisType in EstTypeList])
+    permNow     = np.concatenate([ThisType.pLvlNow for ThisType in EstTypeList]) 
+    IncAgg      = np.sum(permNow*TransNow)
+    KY_Model    = CapAgg/IncAgg
     
 ################## Can return K/Y here
     if target != "Liqu_Wealth_plusKY":
@@ -396,6 +394,8 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         Output['distance'] = distance
         Output['distance_MPC'] = distance_MPC
         Output['distance_Agg_MPC'] = distance_Agg_MPC
+        Output['distance_lorenz'] = distance_lorenz
+        Output['distance_KY'] = distance_KY
         Output['simulated_MPC_means_smoothed'] = simulated_MPC_means_smoothed
         Output['simulated_MPC_mean_add_Lottery_Bin'] = simulated_MPC_mean_add_Lottery_Bin
         Output['c_actu_Lvl'] = c_actu_Lvl
@@ -403,7 +403,6 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         Output['LotteryWin'] = LotteryWin
         Output['Lorenz_Data'] = Lorenz_Data
         Output['Lorenz_Data_Adj'] = Lorenz_Data_Adj
-        Output['Wealth_Perm_Ratio'] = Wealth_Perm_Ratio
         Output['KY_Model'] = KY_Model
         return Output
 
@@ -558,8 +557,8 @@ for j in range(TypeCount):
 
 
 #%% Estimation
-Run_estimation      = False
-Force_SplurgeZero   = False
+Run_estimation      = True
+Force_SplurgeZero   = True
 
 RunLoopofStarpoints = False 
 # Running the Loop of startpoints shows that that the algorithm converges to the same
@@ -599,6 +598,7 @@ if RunLoopofStarpoints:
                         [0.50, 1, 0.10]]
 else:
     startpoints = [ [0.302, 0.974, 0.0486] ]
+    
 
 
 if Run_estimation:
@@ -627,8 +627,11 @@ if Run_estimation:
         save_betanabla_res_txt(filename,res)
 
 
+# FagerengObjFunc(0.21066000634669158,0.9593959718003409 ,0.06920913628518194, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
+# FagerengObjFunc(0.24572502813857786,0.9679151335419922 ,0.057353275600092665, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True) 
 
-Run_other_CRRA_values = True
+
+Run_other_CRRA_values = False
 if Run_other_CRRA_values:
     CRRA_values = [1,3]
     startpoint  = [0.302, 0.99, 0.02]
@@ -678,13 +681,13 @@ if Run_other_CRRA_values:
 
 #%% Output results for paper
 
-# Make several consumer types to be used during estimation
-base_params['CRRA'] = 2
-BaseType = KinkedRconsumerType(**base_params)
-EstTypeList = []
-for j in range(TypeCount):
-    EstTypeList.append(deepcopy(BaseType))
-    EstTypeList[-1](seed = j)
+# # Make several consumer types to be used during estimation
+# base_params['CRRA'] = 2
+# BaseType = KinkedRconsumerType(**base_params)
+# EstTypeList = []
+# for j in range(TypeCount):
+#     EstTypeList.append(deepcopy(BaseType))
+#     EstTypeList[-1](seed = j)
 
 target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
 # Splurge=0 solution 
@@ -786,6 +789,7 @@ Run_Investigation   = False
 if Run_Investigation:
     for this_beta in np.linspace(0.925,0.932,10):
         FagerengObjFunc(0,this_beta ,0.086, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
+        
 
 if Run_3D_Plot:
     # Define the function to be evaluated
