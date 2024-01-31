@@ -116,6 +116,9 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     '''
     
     # Give our consumer types the requested discount factor distribution
+    for j in range(TypeCount):
+        EstTypeList[j].reset_rng()
+    random.seed(55)
     beta_set = Uniform(bot=center-spread, top=center+spread).discretize(TypeCount).atoms[0]
     
     # Taper off toward the growth impatience condition 
@@ -145,7 +148,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         WealthQ = np.zeros(ThisType.AgentCount,dtype=int)
         for n in range(3):
             WealthQ[ThisType.state_now["aLvl"] > quartile_cuts[n]] += 1
-        ThisType(WealthQ = WealthQ)
+        ThisType.WealthQ = WealthQ
         wealth_list = np.concatenate((wealth_list, ThisType.state_now["aLvl"] ))
             
 
@@ -156,7 +159,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     Lorenz_Data = get_lorenz_shares(WealthNow_sorted,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
     Lorenz_Data = np.hstack((np.array(0.0),Lorenz_Data,np.array(1.0))) 
     Wealth_adj = WealthNow_sorted - WealthNow_sorted[0] # add lowest possible value to everyone
-    Lorenz_Data_Adj = getLorenzShares(Wealth_adj,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
+    Lorenz_Data_Adj = get_lorenz_shares(Wealth_adj,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
     Lorenz_Data_Adj = np.hstack((np.array(0.0),Lorenz_Data_Adj,np.array(1.0))) 
     lorenz_Model = np.array([Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80]])
     
@@ -485,6 +488,7 @@ BaseType = KinkedRconsumerType(**base_params)
 EstTypeList = []
 for j in range(TypeCount):
     EstTypeList.append(deepcopy(BaseType))
+    EstTypeList[-1].seed = j
 
 
 
