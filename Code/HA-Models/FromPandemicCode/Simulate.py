@@ -65,34 +65,34 @@ def Simulate(Run_Dict,figs_dir,Parametrization='Baseline'):
     InfHorizonTypeAgg_c = AggFiscalType(**init_college)
     InfHorizonTypeAgg_c.cycles = 0
     AggDemandEconomy = AggregateDemandEconomy(**init_ADEconomy)
-    InfHorizonTypeAgg_d.getEconomyData(AggDemandEconomy)
-    InfHorizonTypeAgg_h.getEconomyData(AggDemandEconomy)
-    InfHorizonTypeAgg_c.getEconomyData(AggDemandEconomy)
+    InfHorizonTypeAgg_d.get_economy_data(AggDemandEconomy)
+    InfHorizonTypeAgg_h.get_economy_data(AggDemandEconomy)
+    InfHorizonTypeAgg_c.get_economy_data(AggDemandEconomy)
     BaseTypeList = [InfHorizonTypeAgg_d, InfHorizonTypeAgg_h, InfHorizonTypeAgg_c ]
           
     # Fill in the Markov income distribution for each base type
     # NOTE: THIS ASSUMES NO LIFECYCLE
-    IncomeDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg_d.IncUnemp])])
-    IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg_d.IncUnempNoBenefits])])
+    IncShkDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg_d.IncUnemp])])
+    IncShkDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg_d.IncUnempNoBenefits])])
         
     for ThisType in BaseTypeList:
-        EmployedIncomeDstn = deepcopy(ThisType.IncomeDstn[0])
-        ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0]] + [IncomeDstn_unemp]*UBspell_normal + [IncomeDstn_unemp_nobenefits] 
-        ThisType.IncomeDstn_base = ThisType.IncomeDstn
+        EmployedIncShkDstn = deepcopy(ThisType.IncShkDstn[0])
+        ThisType.IncShkDstn = [[ThisType.IncShkDstn[0]] + [IncShkDstn_unemp]*UBspell_normal + [IncShkDstn_unemp_nobenefits]]
+        ThisType.IncShkDstn_base = ThisType.IncShkDstn
         
-        IncomeDstn_recession = [ThisType.IncomeDstn[0]*(2*(num_experiment_periods+1))] # for normal, rec, recovery  
-        ThisType.IncomeDstn_recession = IncomeDstn_recession
-        ThisType.IncomeDstn_recessionUI = IncomeDstn_recession
+        IncShkDstn_recession = [ThisType.IncShkDstn[0]*(2*(num_experiment_periods+1))] # for normal, rec, recovery  
+        ThisType.IncShkDstn_recession = IncShkDstn_recession
+        ThisType.IncShkDstn_recessionUI = IncShkDstn_recession
         
-        EmployedIncomeDstn.X[1] = EmployedIncomeDstn.X[1]*ThisType.TaxCutIncFactor
-        TaxCutStatesIncomeDstn = [EmployedIncomeDstn] + [IncomeDstn_unemp]*UBspell_normal + [IncomeDstn_unemp_nobenefits] 
-        IncomeDstn_recessionTaxCut = deepcopy(IncomeDstn_recession)
+        EmployedIncShkDstn.atoms[0][1] = EmployedIncShkDstn.atoms[0][1]*ThisType.TaxCutIncFactor
+        TaxCutStatesIncShkDstn = [EmployedIncShkDstn] + [IncShkDstn_unemp]*UBspell_normal + [IncShkDstn_unemp_nobenefits] 
+        IncShkDstn_recessionTaxCut = deepcopy(IncShkDstn_recession)
         # Tax states are 2,3 (q1) 4,5 (q2) ... 16,17 (q8)
         for i in range(2*num_base_MrkvStates,18*num_base_MrkvStates,1):
-            IncomeDstn_recessionTaxCut[0][i] =  TaxCutStatesIncomeDstn[np.mod(i,4)]
-        ThisType.IncomeDstn_recessionTaxCut = IncomeDstn_recessionTaxCut
+            IncShkDstn_recessionTaxCut[0][i] =  TaxCutStatesIncShkDstn[np.mod(i,4)]
+        ThisType.IncShkDstn_recessionTaxCut = IncShkDstn_recessionTaxCut
         
-        ThisType.IncomeDstn_recessionCheck = deepcopy(IncomeDstn_recession)
+        ThisType.IncShkDstn_recessionCheck = deepcopy(IncShkDstn_recession)
     
 
         
@@ -101,8 +101,8 @@ def Simulate(Run_Dict,figs_dir,Parametrization='Baseline'):
     n = 0
     for e in range(num_types):
         for b in range(DiscFacCount):
-            DiscFac = DiscFacDstns[e].X[b]
-            AgentCount = int(np.floor(AgentCountTotal*data_EducShares[e]*DiscFacDstns[e].pmf[b]))
+            DiscFac = DiscFacDstns[e].atoms[0][b]
+            AgentCount = int(np.floor(AgentCountTotal*data_EducShares[e]*DiscFacDstns[e].pmv[b]))
             ThisType = deepcopy(BaseTypeList[e])
             ThisType.AgentCount = AgentCount
             ThisType.DiscFac = DiscFac
@@ -116,14 +116,14 @@ def Simulate(Run_Dict,figs_dir,Parametrization='Baseline'):
     
     AggDemandEconomy.reset()
     for agent in AggDemandEconomy.agents:
-        agent.initializeSim()
+        agent.initialize_sim()
         agent.AggDemandFac = 1.0
         agent.RfreeNow = 1.0
         agent.CaggNow = 1.0
-    AggDemandEconomy.makeHistory()   
-    AggDemandEconomy.saveState()   
-    AggDemandEconomy.switchToCounterfactualMode("base")
-    AggDemandEconomy.makeIdiosyncraticShockHistories()
+    AggDemandEconomy.make_history()   
+    AggDemandEconomy.save_state()   
+    AggDemandEconomy.switch_to_counterfactual_mode("base")
+    AggDemandEconomy.make_idiosyncratic_shock_histories()
     
     output_keys = ['NPV_AggIncome', 'NPV_AggCons', 'AggIncome', 'AggCons']
     
@@ -143,9 +143,9 @@ def Simulate(Run_Dict,figs_dir,Parametrization='Baseline'):
     if Run_Baseline:   
         # Run the baseline consumption level
         t0 = time()
-        base_results = AggDemandEconomy.runExperiment(**base_dict_agg, Full_Output = 'ForWelfare')
+        base_results = AggDemandEconomy.run_experiment(**base_dict_agg, Full_Output = 'ForWelfare')
         saveAsPickleUnderVarName(base_results,figs_dir,locals())
-        AggDemandEconomy.storeBaseline(base_results['AggCons'])     
+        AggDemandEconomy.store_baseline(base_results['AggCons'])     
         t1 = time()
         print('Calculating agg consumption took ' + mystr(t1-t0) + ' seconds.')
         
@@ -165,7 +165,7 @@ def Simulate(Run_Dict,figs_dir,Parametrization='Baseline'):
             dictt['EconomyMrkv_init'] = list(np.arange(1,AggDemandEconomy.num_experiment_periods+1)*2) + [0]*20 
             dictt['EconomyMrkv_init'][0:t+1] = np.array(dictt['EconomyMrkv_init'][0:t+1]) +1
             print(dictt['EconomyMrkv_init'])
-            this_result = AggDemandEconomy.runExperiment(**dictt, Full_Output = 'ForWelfare')
+            this_result = AggDemandEconomy.run_experiment(**dictt, Full_Output = 'ForWelfare')
             all_results += [this_result]
         for key in output_keys:
             avg_results[key] = np.sum(np.array([all_results[t][key]*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)   
@@ -179,7 +179,7 @@ def Simulate(Run_Dict,figs_dir,Parametrization='Baseline'):
         dictt = base_dict_agg.copy()
         dictt.update(**dict_changes)
         dictt['EconomyMrkv_init'] = list(np.arange(1,AggDemandEconomy.num_experiment_periods+1)*2) + [0]*20 
-        results = AggDemandEconomy.runExperiment(**dictt, Full_Output = True)
+        results = AggDemandEconomy.run_experiment(**dictt, Full_Output = True)
         t1 = time()
         print('Calculating took ' + mystr(t1-t0) + ' seconds.') 
         return results
@@ -238,7 +238,7 @@ def Simulate(Run_Dict,figs_dir,Parametrization='Baseline'):
             
             print('Calculating AD effects for shock_type: ', shock_type)
             AggDemandEconomy_Routine.switch_shock_type(shock_type)
-            AggDemandEconomy_Routine.restoreADsolution(name = shock_type)
+            AggDemandEconomy_Routine.restore_ADsolution(name = shock_type)
             [results_AD,all_results_AD] = runExperimentsAllRecessions(changes,AggDemandEconomy_Routine)
             saveAsPickle(shock_type + '_results_AD',results_AD,figs_dir)
             saveAsPickle(shock_type + '_all_results_AD',all_results_AD,figs_dir)
