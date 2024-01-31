@@ -1,19 +1,22 @@
 # Import python tools
+import sys
 import os
 import numpy as np
 import random
 from copy import deepcopy
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # Import needed tools from HARK
 from HARK.distribution import Uniform
-from HARK.utilities import getPercentiles, getLorenzShares, make_figs
-from HARK.parallel import multiThreadCommands
-from HARK.ConsumptionSaving.ConsIndShockModel import KinkedRconsumerType
-from SetupParamsCSTW import init_infinite
+from HARK.utilities import get_percentiles, get_lorenz_shares, make_figs
+from HARK.parallel import multi_thread_commands
 from scipy.optimize import minimize
+from HARK.ConsumptionSaving.ConsIndShockModel import *
+from SetupParamsCSTW import init_infinite
 
+
+# for plotting
+import matplotlib.pyplot as plt
 
 # for output
 cwd             = os.getcwd()
@@ -22,8 +25,7 @@ top_most_folder = folders[-1]
 if top_most_folder == 'Target_AggMPCX_LiquWealth':
     Abs_Path = cwd
 else:
-    Abs_Path = cwd + '\\Target_AggMPCX_LiquWealth'
-
+    Abs_Path = cwd + '/Code/HA-Models/Target_AggMPCX_LiquWealth'
 
 # Set key problem-specific parameters
 TypeCount = 7       # Number of consumer types with heterogeneous discount factors
@@ -113,14 +115,8 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         Euclidean distance between simulated MPCs and (adjusted) Table 9 MPCs.
     '''
     
-    for j in range(TypeCount):
-        EstTypeList[j].resetRNG()
-    random.seed(55)
-        
-    
-    
     # Give our consumer types the requested discount factor distribution
-    beta_set = Uniform(bot=center-spread, top=center+spread).approx(TypeCount).X
+    beta_set = Uniform(bot=center-spread, top=center+spread).discretize(TypeCount).atoms[0]
     
     # Taper off toward the growth impatience condition 
     GICmaxBeta = (1-base_params['LivPrb'][0]) + (base_params['PermGroFacAgg']**base_params['CRRA'])/base_params['Rfree']
@@ -135,31 +131,30 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
       
     
     for j in range(TypeCount):
-        EstTypeList[j](DiscFac = beta_set[j])
+        EstTypeList[j].DiscFac = beta_set[j]
 
     # Solve and simulate all consumer types, then gather their wealth levels
-    multiThreadCommands(EstTypeList,['solve()','initializeSim()','simulate()','unpack("cFunc")'])
-    WealthNow = np.concatenate([ThisType.aLvlNow for ThisType in EstTypeList])
+    multi_thread_commands(EstTypeList,['solve()','initialize_sim()','simulate()','unpack_cFunc()'])
+    WealthNow = np.concatenate([ThisType.state_now["aLvl"] for ThisType in EstTypeList])
     
-       
+
     # Get wealth quartile cutoffs and distribute them to each consumer type
-    quartile_cuts = getPercentiles(WealthNow,percentiles=[0.25,0.50,0.75])
+    quartile_cuts = get_percentiles(WealthNow,percentiles=[0.25,0.50,0.75])
     wealth_list = np.array([])
     for ThisType in EstTypeList:
         WealthQ = np.zeros(ThisType.AgentCount,dtype=int)
         for n in range(3):
-            WealthQ[ThisType.aLvlNow > quartile_cuts[n]] += 1
+            WealthQ[ThisType.state_now["aLvl"] > quartile_cuts[n]] += 1
         ThisType(WealthQ = WealthQ)
-        wealth_list = np.concatenate((wealth_list, ThisType.aLvlNow ))
+        wealth_list = np.concatenate((wealth_list, ThisType.state_now["aLvl"] ))
             
 
          
     # Get lorenz curve
     order = np.argsort(WealthNow)
     WealthNow_sorted = WealthNow[order]
-    Lorenz_Data = getLorenzShares(WealthNow_sorted,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
-    Lorenz_Data = np.hstack((np.array(0.0),Lorenz_Data,np.array(1.0)))  
-    
+    Lorenz_Data = get_lorenz_shares(WealthNow_sorted,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
+    Lorenz_Data = np.hstack((np.array(0.0),Lorenz_Data,np.array(1.0))) 
     Wealth_adj = WealthNow_sorted - WealthNow_sorted[0] # add lowest possible value to everyone
     Lorenz_Data_Adj = getLorenzShares(Wealth_adj,percentiles=np.arange(0.01,1.00,0.01),presorted=True) 
     Lorenz_Data_Adj = np.hstack((np.array(0.0),Lorenz_Data_Adj,np.array(1.0))) 
@@ -167,8 +162,8 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
     
     # Get K to Y
     CapAgg      = np.sum(WealthNow)
-    TransNow    = np.concatenate([ThisType.TranShkNow for ThisType in EstTypeList])
-    permNow     = np.concatenate([ThisType.pLvlNow for ThisType in EstTypeList]) 
+    TransNow    = np.concatenate([ThisType.shocks["TranShk"] for ThisType in EstTypeList])
+    permNow     = np.concatenate([ThisType.state_now["pLvl"] for ThisType in EstTypeList]) 
     IncAgg      = np.sum(permNow*TransNow)
     KY_Model    = CapAgg/IncAgg
     
@@ -211,8 +206,8 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
                 ThisType.simulate(1)           
                 
                 # capture base consumption which is consumption in absence of lottery win
-                c_base[:,period] = ThisType.cNrmNow 
-                c_base_Lvl[:,period] = c_base[:,period] * ThisType.pLvlNow
+                c_base[:,period] = ThisType.controls["cNrm"] 
+                c_base_Lvl[:,period] = c_base[:,period] * ThisType.state_now["pLvl"]
                 
             
                 #for k in range(N_Lottery_Win_Sizes): # Loop through different lottery sizes, only this will produce values in simulated_MPC_means
@@ -226,7 +221,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
                         if LotteryWin[i,period]==1 and i==0:
                             print(Llvl[i])
                 
-                Lnrm = Llvl/ThisType.pLvlNow
+                Lnrm = Llvl/ThisType.state_now["pLvl"]
                 SplurgeNrm = SplurgeEstimate*Lnrm  #Splurge occurs only if LotteryWin = 1 for that agent
         
             
@@ -239,20 +234,20 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
                 
                 
                 if period == 0:
-                    m_adj = ThisType.mNrmNow + Lnrm - SplurgeNrm
+                    m_adj = ThisType.state_now["mNrm"]  + Lnrm - SplurgeNrm
                     c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
-                    c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
-                    a_actu[:,period,k] = ThisType.mNrmNow + Lnrm - c_actu[:,period,k] #save for next periods
+                    c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.state_now["pLvl"]
+                    a_actu[:,period,k] = ThisType.state_now["mNrm"] + Lnrm - c_actu[:,period,k] #save for next periods
                 else:  
-                    T_hist[:,period] = ThisType.TranShkNow 
-                    P_hist[:,period] = ThisType.PermShkNow
+                    T_hist[:,period] = ThisType.shocks["TranShk"] 
+                    P_hist[:,period] = ThisType.shocks["PermShk"]
                     for i_agent in range(ThisType.AgentCount):
-                        if ThisType.TranShkNow[i_agent] == 1.0: # indicator of death
+                        if ThisType.shocks["TranShk"][i_agent] == 1.0: # indicator of death
                             a_actu[i_agent,period-1,k] = np.exp(base_params['aNrmInitMean'])
-                    m_adj = a_actu[:,period-1,k]*R_kink/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - SplurgeNrm #continue with resources from last period
+                    m_adj = a_actu[:,period-1,k]*R_kink/ThisType.shocks["PermShk"] + ThisType.shocks["TranShk"] + Lnrm - SplurgeNrm #continue with resources from last period
                     c_actu[:,period,k] = ThisType.cFunc[0](m_adj) + SplurgeNrm
-                    c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.pLvlNow
-                    a_actu[:,period,k] = a_actu[:,period-1,k]*R_kink/ThisType.PermShkNow + ThisType.TranShkNow + Lnrm - c_actu[:,period,k] 
+                    c_actu_Lvl[:,period,k] = c_actu[:,period,k] * ThisType.state_now["pLvl"]
+                    a_actu[:,period,k] = a_actu[:,period-1,k]*R_kink/ThisType.shocks["PermShk"] + ThisType.shocks["TranShk"] + Lnrm - c_actu[:,period,k] 
                     
                 if period%4 + 1 == 4: #if we are in the 4th quarter of a year
                     year = int((period+1)/4)
@@ -271,6 +266,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
             # sort MPCs for addtional Lottery bin
             for y in range(N_Year_Sim):
                 MPC_List_Add_Lottery_Bin[y].append(MPC_this_type[type_num,:,4,y])
+
                 
         #Create a list of wealth and MPCs
         MPC_list = np.array([])
@@ -335,10 +331,8 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         
         
     diff_lorenz = lorenz_Model - lorenz_target
-    # distance_lorenz = np.sqrt(np.sum((diff_lorenz)**2))
     distance_lorenz = np.sum((diff_lorenz)**2)
     
-    #distance_KY = np.abs((KY_target - KY_Model)/KY_target) 
     distance_KY = 1.0*((KY_target - KY_Model)/KY_target)**2 
     
 
@@ -379,9 +373,9 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         
     if investigate:
         for j in range(TypeCount):
-            CapAggj = np.sum(EstTypeList[j].aLvlNow)
-            permNowj = EstTypeList[j].pLvlNow 
-            TransNowj = EstTypeList[j].TranShkNow 
+            CapAggj = np.sum(EstTypeList[j].state_now["aLvl"])
+            permNowj = EstTypeList[j].state_now["pLvl"] 
+            TransNowj = EstTypeList[j].shocks["TranShk"]
             KY_Modelj = CapAggj/np.sum(permNowj*TransNowj)
             print("K/Y for DF group ", str(j), ": ",  KY_Modelj)
         print("K/Y for whole pop : ",  KY_Model)
@@ -405,67 +399,6 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         Output['Lorenz_Data_Adj'] = Lorenz_Data_Adj
         Output['KY_Model'] = KY_Model
         return Output
-
-
-# def PlotResults(splurge,beta,nabla,target,Output_to_Excel=False):
-    
-
-#     [distance,distance_MPC,distance_Agg_MPC,simulated_MPC_means_smoothed,simulated_MPC_mean_add_Lottery_Bin,c_actu_Lvl,c_base_Lvl,LotteryWin,Lorenz_Data,Lorenz_Data_Adj,Wealth_Perm_Ratio,KY_Model]=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target=target)
-    
-#     print('Results for parametrization: ', Parametrization)
-#     print('Agg MPC from first year to year t+4 \n', simulated_MPC_mean_add_Lottery_Bin)#%% Plot aggregate MPC and MPCX
-#     #print('MPCs across wealth quartiles are  \n', simulated_MPC_means[4,:,0])
-#     print('MPCs across wealth quartiles are  \n', simulated_MPC_means_smoothed)
-#     print('K/Y is ', KY_Model, ', Target is ', KY_target)
-    
-#     print('Distance for target is', distance)
-#     print('Distance for Agg MPC is', distance_Agg_MPC)
-#     print('Distance for MPC matrix is', distance_MPC)
-
-    
-#     plt.figure()
-#     xAxis = np.arange(0,5)
-#     plt.plot(xAxis,simulated_MPC_mean_add_Lottery_Bin,'b',linewidth=2)
-#     plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
-#     plt.legend(['Model','Fagereng, Holm and Natvik (2021)'])
-#     plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
-#     plt.xlabel('year')
-#     plt.ylabel('% of lottery win spent')
-#     #plt.savefig(Abs_Path+'/Figures/' +'AggMPC_LotteryWin.pdf')
-#     make_figs('AggMPC_LotteryWin', True , False, target_dir=Abs_Path+'/Figures/')
-#     plt.show()  
-    
-#     print('Model: Lorenz shares at 20th, 40th, 60th and 80th percentile', Lorenz_Data_Adj[20], Lorenz_Data_Adj[40], Lorenz_Data_Adj[60], Lorenz_Data_Adj[80])
-#     print('Data: Lorenz shares at 20th, 40th, 60th and 80th percentile', lorenz_target)
-#     print('Last percentile with negative assets', np.argmin(Lorenz_Data), '%')
-#     print('Percentile with zero cummulative assets', np.argwhere(Lorenz_Data>0)[0]-1, '%')
-    
-#     plt.figure()
-#     LorenzAxis = np.arange(101,dtype=float)
-#     #lorenz_target_interp = np.interp(LorenzAxis,np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]))
-#     plt.plot(LorenzAxis,Lorenz_Data_Adj,'b',linewidth=2)
-#     plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
-#     plt.xlabel('Liquid wealth percentile',fontsize=12)
-#     plt.ylabel('Cumulative liquid wealth share',fontsize=12)
-#     plt.legend(['Model','Data'])
-#     #plt.savefig(Abs_Path+'/Figures/' +'LiquWealth_Distribution.pdf')
-#     make_figs('LiquWealth_Distribution', True , False, target_dir=Abs_Path+'/Figures/')
-#     plt.show()  
-    
-    
-    
-#     if Output_to_Excel:
-#         x = np.vstack(( xAxis, simulated_MPC_mean_add_Lottery_Bin, Agg_MPCX_target) )
-#         df = pd.DataFrame(x.T,columns=['Year','Model','Fagereng'])
-#         df.to_excel(Abs_Path+'/Data_AggMPC_LotteryWin.xlsx')
-        
-#         x = np.vstack(( LorenzAxis, Lorenz_Data_Adj ) )
-#         df = pd.DataFrame(x.T,columns=['Percentile','Model'])
-#         df.to_excel(Abs_Path+'/LiquWealth_Distribution_a.xlsx')
-        
-#         x = np.vstack(( np.array([20,40,60,80,100]), np.hstack([lorenz_target,1]) ) )
-#         df = pd.DataFrame(x.T,columns=['Percentile','Data'])
-#         df.to_excel(Abs_Path+'/LiquWealth_Distribution_b.xlsx')
 
 
 def save_betanabla_res_txt(filename,res):
@@ -552,7 +485,7 @@ BaseType = KinkedRconsumerType(**base_params)
 EstTypeList = []
 for j in range(TypeCount):
     EstTypeList.append(deepcopy(BaseType))
-    EstTypeList[-1](seed = j)
+
 
 
 
@@ -627,8 +560,6 @@ if Run_estimation:
         save_betanabla_res_txt(filename,res)
 
 
-# FagerengObjFunc(0.21066000634669158,0.9593959718003409 ,0.06920913628518194, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True)
-# FagerengObjFunc(0.24572502813857786,0.9679151335419922 ,0.057353275600092665, target='AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC',investigate=True) 
 
 
 Run_other_CRRA_values = False
@@ -678,17 +609,6 @@ if Run_other_CRRA_values:
             res = find_Opt(target=target, startpoint=startpoint)
             save_betanabla_res_txt(filename,res)
 
-
-#%% Output results for paper
-
-# # Make several consumer types to be used during estimation
-# base_params['CRRA'] = 2
-# BaseType = KinkedRconsumerType(**base_params)
-# EstTypeList = []
-# for j in range(TypeCount):
-#     EstTypeList.append(deepcopy(BaseType))
-#     EstTypeList[-1](seed = j)
-
 target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
 # Splurge=0 solution 
 [splurge,beta,nabla] = load_betanabla_res_txt('\Result_AllTarget_Splurge0.txt')
@@ -732,6 +652,7 @@ def mystr2(number):
         out = ''
     return out
 
+
     
 output  ="\\begin{tabular}{@{}lcccccc@{}} \n"
 output +="\\toprule \n"
@@ -769,17 +690,7 @@ if Output_to_Excel:
     df = pd.DataFrame(x.T,columns=['Percentile','Data'])
     df.to_excel(Abs_Path+'/LiquWealth_Distribution_b.xlsx')
 
-
-
-
-
-    
  
-    
-    
-
-
-
 #%% For testing purposes
 
 Run_3D_Plot         = False
@@ -834,12 +745,3 @@ if Run_3D_Plot:
      
     # Show the plot
     plt.show()
-
-
-
-
-    
-
-
-
-
