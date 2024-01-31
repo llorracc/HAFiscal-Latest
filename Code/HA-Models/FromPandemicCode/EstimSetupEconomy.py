@@ -36,8 +36,8 @@ TypeList = []
 n = 0
 myAggTotal = 0
 for e in range(num_types):
-    for b in range(DiscFacDstns[0].X.size):
-        DiscFac = DiscFacDstns[e].X[b]
+    for b in range(DiscFacDstns[0].atoms[0].size):
+        DiscFac = DiscFacDstns[e].atoms[0][b]
         AgentCount = int(np.floor(AgentCountTotal*EducShares[e]*DiscFacDstns[e].pmf[b]))
         ThisType = deepcopy(BaseTypeList[e])
         ThisType.AgentCount = AgentCount
