@@ -38,9 +38,9 @@ DiscFacSpreadC = 0.00480  # Half-width of uniform distribution of discount facto
 
 # Define the distribution of the discount factor for each eduation level
 DiscFacCount = 7
-DiscFacDstnD = Uniform(DiscFacMeanD-DiscFacSpreadD, DiscFacMeanD+DiscFacSpreadD).approx(DiscFacCount)
-DiscFacDstnH = Uniform(DiscFacMeanH-DiscFacSpreadH, DiscFacMeanH+DiscFacSpreadH).approx(DiscFacCount)
-DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpreadC, DiscFacMeanC+DiscFacSpreadC).approx(DiscFacCount)
+DiscFacDstnD = Uniform(DiscFacMeanD-DiscFacSpreadD, DiscFacMeanD+DiscFacSpreadD)._approx_equiprobable(DiscFacCount)
+DiscFacDstnH = Uniform(DiscFacMeanH-DiscFacSpreadH, DiscFacMeanH+DiscFacSpreadH)._approx_equiprobable(DiscFacCount)
+DiscFacDstnC = Uniform(DiscFacMeanC-DiscFacSpreadC, DiscFacMeanC+DiscFacSpreadC)._approx_equiprobable(DiscFacCount)
 DiscFacDstns = [DiscFacDstnD, DiscFacDstnH, DiscFacDstnC]
 
 # Parameters concerning Markov transition matrix
@@ -181,10 +181,10 @@ minBeta = 0.01
 
 for e in range(num_types):
     for thedf in range(DiscFacCount):
-        if DiscFacDstns[e].X[thedf] > GICmaxBetas[e]*theGICfactor: 
-            DiscFacDstns[e].X[thedf] = GICmaxBetas[e]*theGICfactor
-        elif DiscFacDstns[e].X[thedf] < minBeta:
-            DiscFacDstns[e].X[thedf] = minBeta
+        if DiscFacDstns[e].atoms[0][thedf] > GICmaxBetas[e]*theGICfactor: 
+            DiscFacDstns[e].atoms[0][thedf] = GICmaxBetas[e]*theGICfactor
+        elif DiscFacDstns[e].atoms[0][thedf] < minBeta:
+            DiscFacDstns[e].atoms[0][thedf] = minBeta
 
 # find intial distribution of states for each education type
 vals_d, vecs_d = np.linalg.eig(np.transpose(MrkvArray_base_d[0])) 
