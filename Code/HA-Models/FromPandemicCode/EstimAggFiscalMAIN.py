@@ -12,9 +12,9 @@ from collections import namedtuple
 import pickle
 import random 
 from HARK.distribution import DiscreteDistribution, Uniform
-from HARK import multiThreadCommands, multiThreadCommandsFake
-from HARK.utilities import getPercentiles, getLorenzShares
-from HARK.estimation import minimizeNelderMead
+from HARK import multi_thread_commands, multi_thread_commands_fake
+from HARK.utilities import get_percentiles, get_lorenz_shares
+from HARK.estimation import minimize_nelder_mead
 
 cwd             = os.getcwd()
 folders         = cwd.split(os.path.sep)
@@ -24,9 +24,10 @@ if top_most_folder == 'FromPandemicCode':
     figs_dir = '../../../Figures'
     res_dir = '../Results'
 else:
-    Abs_Path = cwd + '\\FromPandemicCode'
+    Abs_Path = cwd + '/Code/HA-Models/FromPandemicCode'
     figs_dir = '../../Figures'
     res_dir = 'Results'
+    os.chdir(Abs_Path)
 sys.path.append(Abs_Path)
 
 import EstimParameters as ep
@@ -72,34 +73,34 @@ def calcEstimStats(Agents):
         (liquid) wealth.
     '''
 
-    aLvlAll = np.concatenate([ThisType.aLvlNow for ThisType in Agents])
+    aLvlAll = np.concatenate([ThisType.state_now["aLvl"] for ThisType in Agents])
     numAgents = 0
     for ThisType in Agents: 
         numAgents += ThisType.AgentCount
     weights = np.ones(numAgents) / numAgents      # just using equal weights for now
 
     # Lorenz points:
-    LorenzPts = 100*getLorenzShares(aLvlAll, weights=weights, percentiles = [0.2, 0.4, 0.6, 0.8] )
+    LorenzPts = 100*get_lorenz_shares(aLvlAll, weights=weights, percentiles = [0.2, 0.4, 0.6, 0.8] )
 
     avgLWPI = [0]*num_types
     LWoPI = [0]*num_types 
     medianLWPI = [0]*num_types 
     for e in range(num_types):
         aNrmAll_byEd = []
-        aNrmAll_byEd = np.concatenate([(1-ThisType.Splurge)*ThisType.aNrmNow for ThisType in \
+        aNrmAll_byEd = np.concatenate([(1-ThisType.Splurge)*ThisType.state_now['aNrm'] for ThisType in \
                           Agents[e*DiscFacCount:(e+1)*DiscFacCount]])
         weights = np.ones(len(aNrmAll_byEd))/len(aNrmAll_byEd)
         avgLWPI[e] = np.dot(aNrmAll_byEd, weights) * 100
         
         aLvlAll_byEd = []
-        aLvlAll_byEd = np.concatenate([ThisType.aLvlNow for ThisType in \
+        aLvlAll_byEd = np.concatenate([ThisType.state_now["aLvl"] for ThisType in \
                           Agents[e*DiscFacCount:(e+1)*DiscFacCount]])
         pLvlAll_byEd = []
-        pLvlAll_byEd = np.concatenate([ThisType.pLvlNow for ThisType in \
+        pLvlAll_byEd = np.concatenate([ThisType.state_now['pLvl'] for ThisType in \
                           Agents[e*DiscFacCount:(e+1)*DiscFacCount]])
         LWoPI[e] = np.dot(aLvlAll_byEd, weights) / np.dot(pLvlAll_byEd, weights) * 100
 
-        medianLWPI[e] = 100*getPercentiles(aNrmAll_byEd,weights=weights,percentiles=[0.5])
+        medianLWPI[e] = 100*get_percentiles(aNrmAll_byEd,weights=weights,percentiles=[0.5])
 
     Stats = namedtuple("Stats", ["avgLWPI", "LWoPI", "medianLWPI", "LorenzPts"])
 
@@ -122,13 +123,13 @@ def calcWealthShareByEd(Agents):
     WealthShares : np.array(float)
         The share of total liquid wealth held by each education type. 
     '''
-    aLvlAll = np.concatenate([ThisType.aLvlNow for ThisType in Agents])
+    aLvlAll = np.concatenate([ThisType.state_now["aLvl"] for ThisType in Agents])
     totLiqWealth = np.sum(aLvlAll)
     
     WealthShares = [0]*num_types
     for e in range(num_types):
         aLvlAll_byEd = []
-        aLvlAll_byEd = np.concatenate([ThisType.aLvlNow for ThisType in \
+        aLvlAll_byEd = np.concatenate([ThisType.state_now["aLvl"] for ThisType in \
                                        Agents[e*DiscFacCount:(e+1)*DiscFacCount]])
         WealthShares[e] = np.sum(aLvlAll_byEd)/totLiqWealth * 100
     
@@ -150,14 +151,14 @@ def calcLorenzPts(Agents):
         The 20th, 40th, 60th, and 80th percentile points of the Lorenz curve for 
         (liquid) wealth.
     '''
-    aLvlAll = np.concatenate([ThisType.aLvlNow for ThisType in Agents])
+    aLvlAll = np.concatenate([ThisType.state_now["aLvl"] for ThisType in Agents])
     numAgents = 0
     for ThisType in Agents: 
         numAgents += ThisType.AgentCount
     weights = np.ones(numAgents) / numAgents      # just using equal weights for now
     
     # Lorenz points:
-    LorenzPts = 100*getLorenzShares(aLvlAll, weights=weights, percentiles = [0.2, 0.4, 0.6, 0.8] )
+    LorenzPts = 100*get_lorenz_shares(aLvlAll, weights=weights, percentiles = [0.2, 0.4, 0.6, 0.8] )
 
     return LorenzPts
 # -----------------------------------------------------------------------------
@@ -230,15 +231,15 @@ def calcMPCbyWealth(Agents):
         The average MPC for each wealth quartile - Annualized, taking splurge into account. 
         (Only splurge in the first quarter.)
     '''
-    WealthNow = np.concatenate([ThisType.aLvlNow for ThisType in Agents])
+    WealthNow = np.concatenate([ThisType.state_now["aLvl"] for ThisType in Agents])
     
     # Get wealth quartile cutoffs and distribute them to each consumer type
-    quartile_cuts = getPercentiles(WealthNow,percentiles=[0.25,0.50,0.75])
+    quartile_cuts = get_percentiles(WealthNow,percentiles=[0.25,0.50,0.75])
     WealthQsAll = np.array([])
     for ThisType in Agents:
         WealthQ = np.zeros(ThisType.AgentCount,dtype=int)
         for n in range(3):
-            WealthQ[ThisType.aLvlNow > quartile_cuts[n]] += 1
+            WealthQ[ThisType.state_now["aLvl"] > quartile_cuts[n]] += 1
         ThisType(WealthQ = WealthQ)
         WealthQsAll = np.concatenate([WealthQsAll, WealthQ])
     
@@ -295,12 +296,12 @@ def checkDiscFacDistribution(beta, nabla, GICfactor, educ_type, print_mode=False
     GICsatisfied : boolean
         True if betaMax satisfies the GIC for this education group. 
     '''
-    DiscFacDstnBase = Uniform(beta-nabla, beta+nabla).approx(DiscFacCount)
-    betaMin = DiscFacDstnBase.X[0]
-    betaMax = DiscFacDstnBase.X[DiscFacCount-1]
+    DiscFacDstnBase = Uniform(beta-nabla, beta+nabla).discretize(DiscFacCount)
+    betaMin = DiscFacDstnBase.atoms[0][0]
+    betaMax = DiscFacDstnBase.atoms[0][DiscFacCount-1]
     GICsatisfied = (betaMax < GICmaxBetas[educ_type]*GICfactor)
 
-    DiscFacDstnActual = DiscFacDstnBase.X.copy()    
+    DiscFacDstnActual = DiscFacDstnBase.atoms[0].copy()    
     for thedf in range(DiscFacCount):
         if DiscFacDstnActual[thedf] > GICmaxBetas[educ_type]*GICfactor: 
             DiscFacDstnActual[thedf] = GICmaxBetas[educ_type]*GICfactor
@@ -308,14 +309,14 @@ def checkDiscFacDistribution(beta, nabla, GICfactor, educ_type, print_mode=False
             DiscFacDstnActual[thedf] = minBeta
 
     if print_mode:
-        print('Base approximation to beta distribution:\n'+str(np.round(DiscFacDstnBase.X,4))+'\n')
+        print('Base approximation to beta distribution:\n'+str(np.round(DiscFacDstnBase.atoms[0],4))+'\n')
         print('Actual approximation to beta distribution:\n'+str(np.round(DiscFacDstnActual,4))+'\n')
         print('GIC satisfied = '+str(GICsatisfied)+'\tGICmaxBeta = '+str(round(GICmaxBetas[educ_type],4))+'\n')
         print('Imposed GIC consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*GICfactor,5))+'\n\n')
         
     if print_file:
         with open(filename, 'a') as resFile: 
-            resFile.write('\tBase approximation to beta distribution:\n\t'+str(np.round(DiscFacDstnBase.X,4))+'\n')
+            resFile.write('\tBase approximation to beta distribution:\n\t'+str(np.round(DiscFacDstnBase.atoms[0],4))+'\n')
             resFile.write('\tActual approximation to beta distribution:\n\t'+str(np.round(DiscFacDstnActual,4))+'\n')
             resFile.write('\tGIC satisfied = '+str(GICsatisfied)+'\tGICmaxBeta = '+str(round(GICmaxBetas[educ_type],4))+'\n')
             resFile.write('\tImposed GIC-consistent maximum beta = ' + str(round(GICmaxBetas[educ_type]*GICfactor,5))+'\n\n')
@@ -336,9 +337,9 @@ InfHorizonTypeAgg_h.cycles = 0
 InfHorizonTypeAgg_c = AggFiscalType(**init_college)
 InfHorizonTypeAgg_c.cycles = 0
 AggDemandEconomy = AggregateDemandEconomy(**init_ADEconomy)
-InfHorizonTypeAgg_d.getEconomyData(AggDemandEconomy)
-InfHorizonTypeAgg_h.getEconomyData(AggDemandEconomy)
-InfHorizonTypeAgg_c.getEconomyData(AggDemandEconomy)
+InfHorizonTypeAgg_d.get_economy_data(AggDemandEconomy)
+InfHorizonTypeAgg_h.get_economy_data(AggDemandEconomy)
+InfHorizonTypeAgg_c.get_economy_data(AggDemandEconomy)
 BaseTypeList = [InfHorizonTypeAgg_d, InfHorizonTypeAgg_h, InfHorizonTypeAgg_c ]
       
 # Fill in the Markov income distribution for each base type
@@ -347,17 +348,17 @@ IncomeDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.ar
 IncomeDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([InfHorizonTypeAgg_d.IncUnempNoBenefits])])
     
 for ThisType in BaseTypeList:
-    EmployedIncomeDstn = deepcopy(ThisType.IncomeDstn[0])
-    ThisType.IncomeDstn[0] = [ThisType.IncomeDstn[0]] + [IncomeDstn_unemp]*UBspell_normal + [IncomeDstn_unemp_nobenefits] 
-    ThisType.IncomeDstn_base = ThisType.IncomeDstn
+    EmployedIncomeDstn = deepcopy(ThisType.IncShkDstn[0])
+    ThisType.IncShkDstn = [[ThisType.IncShkDstn[0]] + [IncomeDstn_unemp]*UBspell_normal + [IncomeDstn_unemp_nobenefits]]
+    ThisType.IncomeDstn_base = ThisType.IncShkDstn
     
 # Make the overall list of types
 TypeList = []
 n = 0
 for e in range(num_types):
     for b in range(DiscFacCount):
-        DiscFac = DiscFacDstns[e].X[b]
-        AgentCount = int(np.floor(AgentCountTotal*data_EducShares[e]*DiscFacDstns[e].pmf[b]))
+        DiscFac = DiscFacDstns[e].atoms[0][b]
+        AgentCount = int(np.floor(AgentCountTotal*data_EducShares[e]*DiscFacDstns[e].pmv[b]))
         ThisType = deepcopy(BaseTypeList[e])
         ThisType.AgentCount = AgentCount
         ThisType.DiscFac = DiscFac
@@ -371,13 +372,13 @@ AggDemandEconomy.solve()
 
 AggDemandEconomy.reset()
 for agent in AggDemandEconomy.agents:
-    agent.initializeSim()
+    agent.initialize_sim()
     agent.AggDemandFac = 1.0
     agent.RfreeNow = 1.0
     agent.CaggNow = 1.0
 
-AggDemandEconomy.makeHistory()   
-AggDemandEconomy.saveState()   
+AggDemandEconomy.make_history()   
+AggDemandEconomy.save_state()   
 #AggDemandEconomy.switchToCounterfactualMode("base")
 #AggDemandEconomy.makeIdiosyncraticShockHistories()
 
@@ -428,28 +429,28 @@ def betasObjFunc(betas, spreads, GICfactors, target_option=1, print_mode=False, 
     spread_d, spread_h, spread_c = spreads
 
     # # Overwrite the discount factor distribution for each education level with new values
-    dfs_d = Uniform(beta_d-spread_d, beta_d+spread_d).approx(DiscFacCount)
-    dfs_h = Uniform(beta_h-spread_h, beta_h+spread_h).approx(DiscFacCount)
-    dfs_c = Uniform(beta_c-spread_c, beta_c+spread_c).approx(DiscFacCount)
+    dfs_d = Uniform(beta_d-spread_d, beta_d+spread_d).discretize(DiscFacCount)
+    dfs_h = Uniform(beta_h-spread_h, beta_h+spread_h).discretize(DiscFacCount)
+    dfs_c = Uniform(beta_c-spread_c, beta_c+spread_c).discretize(DiscFacCount)
     dfs = [dfs_d, dfs_h, dfs_c]
 
     # Check GIC for each type:
     for e in range(num_types):
         for thedf in range(DiscFacCount):
-            if dfs[e].X[thedf] > GICmaxBetas[e]*GICfactors[e]: 
-                dfs[e].X[thedf] = GICmaxBetas[e]*GICfactors[e]
-            elif dfs[e].X[thedf] < minBeta:
-                dfs[e].X[thedf] = minBeta
+            if dfs[e].atoms[0][thedf] > GICmaxBetas[e]*GICfactors[e]: 
+                dfs[e].atoms[0][thedf] = GICmaxBetas[e]*GICfactors[e]
+            elif dfs[e].atoms[0][thedf] < minBeta:
+                dfs[e].atoms[0][thedf] = minBeta
 
     # Make a new list of types with updated discount factors 
     TypeListNew = []
     n = 0
     for e in range(num_types):
         for b in range(DiscFacCount):
-            AgentCount = int(np.floor(AgentCountTotal*data_EducShares[e]*dfs[e].pmf[b]))
+            AgentCount = int(np.floor(AgentCountTotal*data_EducShares[e]*dfs[e].pmv[b]))
             ThisType = deepcopy(BaseTypeList[e])
             ThisType.AgentCount = AgentCount
-            ThisType.DiscFac = dfs[e].X[b]
+            ThisType.DiscFac = dfs[e].atoms[0][b]
             ThisType.seed = n
             TypeListNew.append(ThisType)
             n += 1
@@ -460,19 +461,19 @@ def betasObjFunc(betas, spreads, GICfactors, target_option=1, print_mode=False, 
 
     AggDemandEconomy.reset()
     for agent in AggDemandEconomy.agents:
-        agent.initializeSim()
+        agent.initialize_sim()
         agent.AggDemandFac = 1.0
         agent.RfreeNow = 1.0
         agent.CaggNow = 1.0
 
-    AggDemandEconomy.makeHistory()   
-    AggDemandEconomy.saveState()   
+    AggDemandEconomy.make_history()   
+    AggDemandEconomy.save_state()   
 
     # Simulate each type to get a new steady state solution 
     # solve: done in AggDemandEconomy.solve(), initializeSim: done in AggDemandEconomy.reset() 
     # baseline_commands = ['solve()', 'initializeSim()', 'simulate()', 'saveState()']
-    baseline_commands = ['simulate()', 'saveState()']
-    multiThreadCommandsFake(TypeListNew, baseline_commands)
+    baseline_commands = ['simulate()', 'save_state()']
+    multi_thread_commands_fake(TypeListNew, baseline_commands)
     
     Stats = calcEstimStats(TypeListNew)
     
@@ -577,23 +578,23 @@ def betasObjFuncEduc(beta, spread, GICx, educ_type=2, print_mode=False, print_fi
     # # Set seed to ensure distance only changes due to different parameters 
     # random.seed(1234)
 
-    dfs = Uniform(beta-spread, beta+spread).approx(DiscFacCount)
+    dfs = Uniform(beta-spread, beta+spread).discretize(DiscFacCount)
     
     # Check GIC:
     for thedf in range(DiscFacCount):
-        if dfs.X[thedf] > GICmaxBetas[educ_type]*np.exp(GICx)/(1+np.exp(GICx)):
-            dfs.X[thedf] = GICmaxBetas[educ_type]*(np.exp(GICx)/(1+np.exp(GICx)))
-        elif dfs.X[thedf] < minBeta:
-            dfs.X[thedf] = minBeta
+        if dfs.atoms[0][thedf] > GICmaxBetas[educ_type]*np.exp(GICx)/(1+np.exp(GICx)):
+            dfs.atoms[0][thedf] = GICmaxBetas[educ_type]*(np.exp(GICx)/(1+np.exp(GICx)))
+        elif dfs.atoms[0][thedf] < minBeta:
+            dfs.atoms[0][thedf] = minBeta
 
     # Make a new list of types with updated discount factors for the given educ type
     TypeListNewEduc = []
     n = 0
     for b in range(DiscFacCount):
-        AgentCount = int(np.floor(AgentCountTotal*data_EducShares[educ_type]*dfs.pmf[b]))
+        AgentCount = int(np.floor(AgentCountTotal*data_EducShares[educ_type]*dfs.pmv[b]))
         ThisType = deepcopy(BaseTypeList[educ_type])
         ThisType.AgentCount = AgentCount
-        ThisType.DiscFac = dfs.X[b]
+        ThisType.DiscFac = dfs.atoms[0][b]
         ThisType.seed = n
         TypeListNewEduc.append(ThisType)
         n += 1
@@ -606,19 +607,19 @@ def betasObjFuncEduc(beta, spread, GICx, educ_type=2, print_mode=False, print_fi
 
     AggDemandEconomy.reset()
     for agent in AggDemandEconomy.agents:
-        agent.initializeSim()
+        agent.initialize_sim()
         agent.AggDemandFac = 1.0
         agent.RfreeNow = 1.0
         agent.CaggNow = 1.0
 
-    AggDemandEconomy.makeHistory()   
-    AggDemandEconomy.saveState()   
+    AggDemandEconomy.make_history()   
+    AggDemandEconomy.save_state()   
 
     # Simulate each type to get a new steady state solution 
     # solve: done in AggDemandEconomy.solve(), initializeSim: done in AggDemandEconomy.reset() 
     # baseline_commands = ['solve()', 'initializeSim()', 'simulate()', 'saveState()']
-    baseline_commands = ['simulate()', 'saveState()']
-    multiThreadCommandsFake(TypeListAll, baseline_commands)
+    baseline_commands = ['simulate()', 'save_state()']
+    multi_thread_commands_fake(TypeListAll, baseline_commands)
     
     Stats = calcEstimStats(TypeListAll)
     
@@ -684,7 +685,7 @@ for edType in [0,1,2]:
     else:
         initValues = [0.90,0.02,6]
 
-    opt_params = minimizeNelderMead(f_temp, initValues, verbose=True)
+    opt_params = minimize_nelder_mead(f_temp, initValues, verbose=True)
     print('Finished estimating for education type = '+str(edType)+'. Optimal beta, spread and GIC factor are:')
     print('Beta = ' + mystr4(opt_params[0]) +'  Nabla = ' + mystr4(opt_params[1]) + 
           ' GIC factor = ' + mystr4(np.exp(opt_params[2])/(1+np.exp(opt_params[2]))))
@@ -799,15 +800,15 @@ if run_additional_analysis:
     outFile = open(outFileStr, 'w')
     
     for e in [0,1,2]:
-        dfs = Uniform(myEstim[e][0]-myEstim[e][1], myEstim[e][0]+myEstim[e][1]).approx(DiscFacCount)
+        dfs = Uniform(myEstim[e][0]-myEstim[e][1], myEstim[e][0]+myEstim[e][1]).discretize(DiscFacCount)
         
         # Check GIC:
         for thedf in range(DiscFacCount):
-            if dfs.X[thedf] > GICmaxBetas[e]*myEstim[e][3]:
-                dfs.X[thedf] = GICmaxBetas[e]*myEstim[e][3]
-            elif dfs.X[thedf] < minBeta:
-                dfs.X[thedf] = minBeta
-        theDFs = np.round(dfs.X,4)
+            if dfs.atoms[0][thedf] > GICmaxBetas[e]*myEstim[e][3]:
+                dfs.atoms[0][thedf] = GICmaxBetas[e]*myEstim[e][3]
+            elif dfs.atoms[0][thedf] < minBeta:
+                dfs.atoms[0][thedf] = minBeta
+        theDFs = np.round(dfs.atoms[0],4)
         outStr = repr({'EducationGroup' : e, 'betaDistr' : theDFs.tolist()})
         outFile.write(outStr+'\n')
     outFile.close()
