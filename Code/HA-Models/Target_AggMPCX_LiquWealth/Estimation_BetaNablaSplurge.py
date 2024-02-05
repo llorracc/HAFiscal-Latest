@@ -1,5 +1,4 @@
 # Import python tools
-import sys
 import os
 import numpy as np
 import random
@@ -11,7 +10,7 @@ from HARK.distribution import Uniform
 from HARK.utilities import get_percentiles, get_lorenz_shares, make_figs
 from HARK.parallel import multi_thread_commands
 from scipy.optimize import minimize
-from HARK.ConsumptionSaving.ConsIndShockModel import *
+from HARK.ConsumptionSaving.ConsIndShockModel import KinkedRconsumerType
 from SetupParamsCSTW import init_infinite
 
 
@@ -137,7 +136,7 @@ def FagerengObjFunc(SplurgeEstimate,center,spread,verbose=False,estimation_mode=
         EstTypeList[j].DiscFac = beta_set[j]
 
     # Solve and simulate all consumer types, then gather their wealth levels
-    multi_thread_commands(EstTypeList,['solve()','initialize_sim()','simulate()','unpack_cFunc()'])
+    multi_thread_commands(EstTypeList,['solve()','initialize_sim()','simulate()', 'unpack_cFunc()'])
     WealthNow = np.concatenate([ThisType.state_now["aLvl"] for ThisType in EstTypeList])
     
 
@@ -494,109 +493,194 @@ for j in range(TypeCount):
 
 
 #%% Estimation
-Run_estimation      = True
-Force_SplurgeZero   = True
+Run_estimation      = False
+Run_SplurgeZero     = False
 
 RunLoopofStarpoints = False 
 # Running the Loop of startpoints shows that that the algorithm converges to the same
 # solution independent of startpoint and thus strongly suggests that the global minimum was found
 
-if RunLoopofStarpoints:
-    if Force_SplurgeZero:
-        # Loop over starting points with beta in (0.85, 0.925, 1) and nabla in (0, 0.10, 0.20)
-        startpoints = [ [0.00, 0.85, 0.00],
-                        [0.00, 0.85, 0.10],
-                        [0.00, 0.85, 0.20],
-                        [0.00, 0.925, 0.00],
-                        [0.00, 0.925, 0.10],
-                        [0.00, 0.925, 0.20],
-                        [0.00, 1, 0.00],
-                        [0.00, 1, 0.10],
-                        [0.00, 1, 0.20]]
-    else:
-        # Loop over starting points with splurge in (0.10,0.3,0.5), beta in (0.85, 0.925, 1) and nabla in (0, 0.10)
-        startpoints = [ [0.10, 0.85, 0.00],
-                        [0.10, 0.85, 0.10],
-                        [0.10, 0.925, 0.00],
-                        [0.10, 0.925, 0.10],
-                        [0.10, 1, 0.00],
-                        [0.10, 1, 0.10],
-                        [0.30, 0.85, 0.00],
-                        [0.30, 0.85, 0.10],
-                        [0.30, 0.925, 0.00],
-                        [0.30, 0.925, 0.10],
-                        [0.30, 1, 0.00],
-                        [0.30, 1, 0.10],
-                        [0.50, 0.85, 0.00],
-                        [0.50, 0.85, 0.10],
-                        [0.50, 0.925, 0.00],
-                        [0.50, 0.925, 0.10],
-                        [0.50, 1, 0.00],
-                        [0.50, 1, 0.10]]
-else:
-    startpoints = [ [0.302, 0.974, 0.0486] ]
     
-
-
 if Run_estimation:
     print("RUNNING RUN KY AND INIT MPC ESTIMATION")
+    target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
+    
+    if RunLoopofStarpoints:
+        # Loop over starting points with splurge in (0.10,0.3,0.5), beta in (0.85, 0.925, 1) and nabla in (0.05, 0.10)
+        startpoints = [ [0.10, 0.85, 0.05],#
+                        [0.10, 0.85, 0.10],
+                        [0.10, 0.925, 0.05],#
+                        [0.10, 0.925, 0.10],
+                        [0.10, 1, 0.05],
+                        [0.10, 1, 0.10],
+                        [0.30, 0.85, 0.05],#
+                        [0.30, 0.85, 0.10],
+                        [0.30, 0.925, 0.05],#
+                        [0.30, 0.925, 0.10],
+                        [0.30, 1, 0.05],
+                        [0.30, 1, 0.10],
+                        [0.50, 0.85, 0.05],#
+                        [0.50, 0.85, 0.10],
+                        [0.50, 0.925, 0.05],
+                        [0.50, 0.925, 0.10],
+                        [0.50, 1, 0.05],
+                        [0.50, 1, 0.10]]
+    else:
+        startpoints = [ [0.24906992981618237, 0.9675474591463475, 0.05782806961924406] ]
     
     for i,startpoint in enumerate(startpoints):
         print("Startpoint run no. ",i+1)
         print("Startpoint used: ", startpoint)
-    
-        if Force_SplurgeZero:
-            target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
-            if RunLoopofStarpoints:
-                filename = '\Result_AllTarget_Splurge0_startpoint'+str(i+1)+'.txt'  
-            else:
-                filename = '\Result_AllTarget_Splurge0.txt'  
-            res = find_Opt_splurge0(target=target, startpoint=startpoint[1:3])  
-            
-        else: 
-            target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
-            if RunLoopofStarpoints:
-                filename = '\Result_AllTarget_startpoint'+str(i+1)+'.txt'
-            else:
-                filename = '\Result_AllTarget.txt'  
-            res = find_Opt(target=target, startpoint=startpoint)
+
         
+        if RunLoopofStarpoints:
+            filename = '\Result_AllTarget_startpoint'+str(i+1)+'.txt'
+        else:
+            filename = '\Result_AllTarget.txt'  
+        res = find_Opt(target=target, startpoint=startpoint)   
+        save_betanabla_res_txt(filename,res)
+        
+
+if Run_SplurgeZero:
+    print("RUNNING RUN KY AND INIT MPC ESTIMATION, SPLURGE = 0")
+    target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
+    
+    if RunLoopofStarpoints:
+        # Loop over starting points with beta in (0.85, 0.925, 1) and nabla in (0.05, 0.10, 0.20)
+        startpoints = [ [0.00, 0.85, 0.05],
+                        [0.00, 0.85, 0.10],
+                        [0.00, 0.85, 0.20],
+                        [0.00, 0.925, 0.05],
+                        [0.00, 0.925, 0.10],
+                        [0.00, 0.925, 0.20],
+                        [0.00, 1, 0.05],
+                        [0.00, 1, 0.10],
+                        [0.00, 1, 0.20]]
+    else:
+        startpoints = [ [0, 0.9215203827041509, 0.11625829523973752] ]
+        
+    for i,startpoint in enumerate(startpoints):
+        print("Startpoint run no. ",i+1)
+        print("Startpoint used: ", startpoint)
+    
+        
+        if RunLoopofStarpoints:
+            filename = '\Result_AllTarget_Splurge0_startpoint'+str(i+1)+'.txt'  
+        else:
+            filename = '\Result_AllTarget_Splurge0.txt'  
+        res = find_Opt_splurge0(target=target, startpoint=startpoint[1:3])  
         save_betanabla_res_txt(filename,res)
 
+#%% Output results for paper
 
+Plot_Output = False
+if Plot_Output:
+    target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
+    # Splurge=0 solution 
+    [splurge,beta,nabla] = load_betanabla_res_txt('\Result_AllTarget_Splurge0.txt')
+    Splurge0_Sol=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target=target)
+    
+    # Splurge>0 solution
+    [splurge,beta,nabla] = load_betanabla_res_txt('\Result_AllTarget.txt')
+    SplurgeNot0_Sol=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target=target)
+    
+    # Plot Lorentz curve
+    plt.figure()
+    LorenzAxis = np.arange(101,dtype=float)
+    plt.plot(LorenzAxis,SplurgeNot0_Sol['Lorenz_Data_Adj'] ,'b-',linewidth=2)
+    plt.plot(LorenzAxis,Splurge0_Sol['Lorenz_Data_Adj']    ,'r:',linewidth=2)
+    plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
+    plt.xlabel('Liquid wealth percentile',fontsize=12)
+    plt.ylabel('Cumulative liquid wealth share',fontsize=12)
+    plt.legend(['Model, splurge $\geq$ 0','Model, splurge = 0','Data'])
+    make_figs('LiquWealth_Distribution_comparison', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show()  
+    
+    # Plot Agg MPCx
+    plt.figure()
+    xAxis = np.arange(0,5)
+    plt.plot(xAxis,SplurgeNot0_Sol['simulated_MPC_mean_add_Lottery_Bin'] ,'b-',linewidth=2)
+    plt.plot(xAxis,Splurge0_Sol['simulated_MPC_mean_add_Lottery_Bin']    ,'r:',linewidth=2)
+    plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
+    plt.legend(['Model, splurge $\geq$ 0','Model, splurge = 0','Fagereng, Holm and Natvik (2021)'])
+    plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
+    plt.xlabel('year')
+    plt.ylabel('% of lottery win spent')
+    make_figs('AggMPC_LotteryWin_comparison', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show()  
+    
+    # Table initial MPCs along wealth q
+    
+    def mystr2(number):
+        if not np.isnan(number):
+            out = "{:.2f}".format(number)
+        else:
+            out = ''
+        return out
+    
+        
+    output  ="\\begin{tabular}{@{}lcccccc@{}} \n"
+    output +="\\toprule \n"
+    output +="                  & \multicolumn{5}{c}{MPC} &   \\\\   \n"
+    output +="                  &  1st WQ  & 2nd WQ  & 3rd WQ & 4th WQ  & Agg  &  K/Y  \\\\  \\midrule \n"
+    output +="Splurge $\geq$ 0 &"+mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][3])      + " & "+ mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][2])+ " & "+  \
+                                mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][1])      + " & "+ mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][0]) + " & "+  \
+                                mystr2(SplurgeNot0_Sol['simulated_MPC_mean_add_Lottery_Bin'][0])+ " & "+ mystr2(SplurgeNot0_Sol['KY_Model'])  + " \\\\ \n"
+    output +="Splurge = 0 &"+   mystr2(Splurge0_Sol['simulated_MPC_means_smoothed'][3])         + " & "+ mystr2(Splurge0_Sol['simulated_MPC_means_smoothed'][2])+ " & "+  \
+                                mystr2(Splurge0_Sol['simulated_MPC_means_smoothed'][1])         + " & "+ mystr2(Splurge0_Sol['simulated_MPC_means_smoothed'][0]) + " & "+  \
+                                mystr2(Splurge0_Sol['simulated_MPC_mean_add_Lottery_Bin'][0])   + " & "+ mystr2(Splurge0_Sol['KY_Model'])  + " \\\\ \n"
+    output +="Data &"+          mystr2(MPC_target[2,3])                                         + " & "+ mystr2(MPC_target[2,2])+ " & "+  \
+                                mystr2(MPC_target[2,1])                                         + " & "+ mystr2(MPC_target[2,0]) + " & "+  \
+                                mystr2(Agg_MPCX_target[0])                                      + " & "+ mystr2(KY_target)  + " \\\\ \n"
+    output +="\\end{tabular}  \n"
+    
+    
+    with open(Abs_Path+'/Figures/Comparison_Splurge_Table.tex','w') as f:
+        f.write(output)
+        f.close()   
+    
+    
+    
+    Output_to_Excel = True
+    if Output_to_Excel:
+        x = np.vstack(( xAxis, SplurgeNot0_Sol['simulated_MPC_mean_add_Lottery_Bin'], Splurge0_Sol['simulated_MPC_mean_add_Lottery_Bin'] , Agg_MPCX_target) )
+        df = pd.DataFrame(x.T,columns=['Year','Model, splurge > 0','Model, splurge = 0','Fagereng, Holm and Natvik (2021)'])
+        df.to_excel(Abs_Path+'/Data_AggMPC_LotteryWin.xlsx')
+        
+        x = np.vstack(( LorenzAxis, SplurgeNot0_Sol['Lorenz_Data_Adj'], Splurge0_Sol['Lorenz_Data_Adj'] ) )
+        df = pd.DataFrame(x.T,columns=['Percentile','Model, splurge > 0','Model, splurge = 0'])
+        df.to_excel(Abs_Path+'/LiquWealth_Distribution_a.xlsx')
+        
+        x = np.vstack(( np.array([20,40,60,80,100]), np.hstack([lorenz_target,1]) ) )
+        df = pd.DataFrame(x.T,columns=['Percentile','Data'])
+        df.to_excel(Abs_Path+'/LiquWealth_Distribution_b.xlsx')
+    
+    
 
-
+#%%
 Run_other_CRRA_values = False
 if Run_other_CRRA_values:
     CRRA_values = [1,3]
-    startpoint  = [0.302, 0.99, 0.02]
     
     RunLoopofStarpoints = False 
-    startpoints = [ [0.10, 0.85, 0.00],
-                    [0.10, 0.85, 0.10],
-                    [0.10, 0.925, 0.00],
-                    [0.10, 0.925, 0.10],
-                    [0.10, 1, 0.00],
-                    [0.10, 1, 0.10],
-                    [0.30, 0.85, 0.00],
+    startpoints = [ [0.10, 0.85, 0.10],
+                    [0.10, 0.95, 0.15],
                     [0.30, 0.85, 0.10],
-                    [0.30, 0.925, 0.00],
-                    [0.30, 0.925, 0.10],
-                    [0.30, 1, 0.00],
-                    [0.30, 1, 0.10]]
+                    [0.30, 0.95, 0.15] ]
     
     for el in range(0,len(CRRA_values)):
         print('Running CRRA = ', CRRA_values[el])
         base_params['CRRA'] = CRRA_values[el]
     
         # Make several consumer types to be used during estimation
-        BaseType = KinkedRconsumerType(**base_params)
+        del EstTypeList
+        BaseTypeCRRA = KinkedRconsumerType(**base_params)
         EstTypeList = []
         for j in range(TypeCount):
-            EstTypeList.append(deepcopy(BaseType))
-            EstTypeList[-1](seed = j)
+            EstTypeList.append(deepcopy(BaseTypeCRRA))
+            EstTypeList[-1].seed = j
     
-        
+    
     
         if RunLoopofStarpoints:
             for i,startpoint in enumerate(startpoints):
@@ -608,94 +692,107 @@ if Run_other_CRRA_values:
                 res = find_Opt(target=target, startpoint=startpoint)
                 save_betanabla_res_txt(filename,res)
         else:
+            if CRRA_values[el] == 1:
+                startpoint  = [0.14936532325901916, 0.9768205536148804, 0.09086039551142643]
+            else:
+                startpoint  = [0.2660514984112632, 0.9549940464615455, 0.06597517675173052]    
+            
             target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
             filename = '\Result_AllTarget_CRRA_'+str(CRRA_values[el])+'.txt'  
             res = find_Opt(target=target, startpoint=startpoint)
             save_betanabla_res_txt(filename,res)
 
-target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
-# Splurge=0 solution 
-[splurge,beta,nabla] = load_betanabla_res_txt('\Result_AllTarget_Splurge0.txt')
-Splurge0_Sol=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target=target)
 
-# Splurge>0 solution
-[splurge,beta,nabla] = load_betanabla_res_txt('\Result_AllTarget.txt')
-SplurgeNot0_Sol=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target=target)
-
-# Plot Lorentz curve
-plt.figure()
-LorenzAxis = np.arange(101,dtype=float)
-plt.plot(LorenzAxis,SplurgeNot0_Sol['Lorenz_Data_Adj'] ,'b-',linewidth=2)
-plt.plot(LorenzAxis,Splurge0_Sol['Lorenz_Data_Adj']    ,'r:',linewidth=2)
-plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
-plt.xlabel('Liquid wealth percentile',fontsize=12)
-plt.ylabel('Cumulative liquid wealth share',fontsize=12)
-plt.legend(['Model, splurge $\geq$ 0','Model, splurge = 0','Data'])
-make_figs('LiquWealth_Distribution_comparison', True , False, target_dir=Abs_Path+'/Figures/')
-plt.show()  
-
-# Plot Agg MPCx
-plt.figure()
-xAxis = np.arange(0,5)
-plt.plot(xAxis,SplurgeNot0_Sol['simulated_MPC_mean_add_Lottery_Bin'] ,'b-',linewidth=2)
-plt.plot(xAxis,Splurge0_Sol['simulated_MPC_mean_add_Lottery_Bin']    ,'r:',linewidth=2)
-plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
-plt.legend(['Model, splurge $\geq$ 0','Model, splurge = 0','Fagereng, Holm and Natvik (2021)'])
-plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
-plt.xlabel('year')
-plt.ylabel('% of lottery win spent')
-make_figs('AggMPC_LotteryWin_comparison', True , False, target_dir=Abs_Path+'/Figures/')
-plt.show()  
-
-# Table initial MPCs along wealth q
-
-def mystr2(number):
-    if not np.isnan(number):
-        out = "{:.2f}".format(number)
-    else:
-        out = ''
-    return out
+Plot_other_CRRA_values = True
+if Plot_other_CRRA_values:
+    target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
+    # CRRA=1 
+    del EstTypeList
+    base_params['CRRA'] = 1
+    BaseType = KinkedRconsumerType(**base_params)
+    EstTypeList = []
+    for j in range(TypeCount):
+        EstTypeList.append(deepcopy(BaseType))
+        EstTypeList[-1].seed = j
+    [splurge,beta,nabla] = load_betanabla_res_txt('\Result_AllTarget_CRRA_1.txt')
+    CRRA1=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target=target)
+    
+    # CRRA=2
+    del EstTypeList
+    base_params['CRRA'] = 3
+    BaseType = KinkedRconsumerType(**base_params)
+    EstTypeList = []
+    for j in range(TypeCount):
+        EstTypeList.append(deepcopy(BaseType))
+        EstTypeList[-1].seed = j
+    [splurge,beta,nabla] = load_betanabla_res_txt('\Result_AllTarget_CRRA_3.txt')
+    CRRA3=FagerengObjFunc(splurge,beta,nabla,estimation_mode=False,target=target)
+    
+    # Plot Lorentz curve
+    plt.figure()
+    LorenzAxis = np.arange(101,dtype=float)
+    plt.plot(LorenzAxis,CRRA1['Lorenz_Data_Adj'] ,'b-',linewidth=2)
+    plt.plot(LorenzAxis,CRRA3['Lorenz_Data_Adj']    ,'r:',linewidth=2)
+    plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
+    plt.xlabel('Liquid wealth percentile',fontsize=12)
+    plt.ylabel('Cumulative liquid wealth share',fontsize=12)
+    plt.legend(['CRRA=1','CRRA = 3','Data'])
+    make_figs('LiquWealth_Distribution_comparison_CRRA', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show()  
+    
+    # Plot Agg MPCx
+    plt.figure()
+    xAxis = np.arange(0,5)
+    plt.plot(xAxis,CRRA1['simulated_MPC_mean_add_Lottery_Bin'] ,'b-',linewidth=2)
+    plt.plot(xAxis,CRRA3['simulated_MPC_mean_add_Lottery_Bin']    ,'r:',linewidth=2)
+    plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
+    plt.legend(['CRRA=1','CRRA = 3','Fagereng, Holm and Natvik (2021)'])
+    plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
+    plt.xlabel('year')
+    plt.ylabel('% of lottery win spent')
+    make_figs('AggMPC_LotteryWin_comparison_CRRA', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show()  
+    
+    # Table initial MPCs along wealth q
+    
+    def mystr2(number):
+        if not np.isnan(number):
+            out = "{:.2f}".format(number)
+        else:
+            out = ''
+        return out
+    
+        
+    output  ="\\begin{tabular}{@{}lcccccc@{}} \n"
+    output +="\\toprule \n"
+    output +="                  & \multicolumn{5}{c}{MPC} &   \\\\   \n"
+    output +="                  &  1st WQ  & 2nd WQ  & 3rd WQ & 4th WQ  & Agg  &  K/Y  \\\\  \\midrule \n"
+    output +="CRRA=1 &"+mystr2(CRRA1['simulated_MPC_means_smoothed'][3])      + " & "+ mystr2(CRRA1['simulated_MPC_means_smoothed'][2])+ " & "+  \
+                                mystr2(CRRA1['simulated_MPC_means_smoothed'][1])      + " & "+ mystr2(CRRA1['simulated_MPC_means_smoothed'][0]) + " & "+  \
+                                mystr2(CRRA1['simulated_MPC_mean_add_Lottery_Bin'][0])+ " & "+ mystr2(CRRA1['KY_Model'])  + " \\\\ \n"
+    output +="CRRA=3 &"+   mystr2(CRRA3['simulated_MPC_means_smoothed'][3])         + " & "+ mystr2(CRRA3['simulated_MPC_means_smoothed'][2])+ " & "+  \
+                                mystr2(CRRA3['simulated_MPC_means_smoothed'][1])         + " & "+ mystr2(CRRA3['simulated_MPC_means_smoothed'][0]) + " & "+  \
+                                mystr2(CRRA3['simulated_MPC_mean_add_Lottery_Bin'][0])   + " & "+ mystr2(CRRA3['KY_Model'])  + " \\\\ \n"
+    output +="Data &"+          mystr2(MPC_target[2,3])                                         + " & "+ mystr2(MPC_target[2,2])+ " & "+  \
+                                mystr2(MPC_target[2,1])                                         + " & "+ mystr2(MPC_target[2,0]) + " & "+  \
+                                mystr2(Agg_MPCX_target[0])                                      + " & "+ mystr2(KY_target)  + " \\\\ \n"
+    output +="\\end{tabular}  \n"
+    
+    
+    with open(Abs_Path+'/Figures/Comparison_CRRA_Table.tex','w') as f:
+        f.write(output)
+        f.close()   
+    
 
 
     
-output  ="\\begin{tabular}{@{}lcccccc@{}} \n"
-output +="\\toprule \n"
-output +="                  & \multicolumn{5}{c}{MPC} &   \\\\   \n"
-output +="                  &  1st WQ  & 2nd WQ  & 3rd WQ & 4th WQ  & Agg  &  K/Y  \\\\  \\midrule \n"
-output +="Splurge $\geq$ 0 &"+mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][3])      + " & "+ mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][2])+ " & "+  \
-                            mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][1])      + " & "+ mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][0]) + " & "+  \
-                            mystr2(SplurgeNot0_Sol['simulated_MPC_mean_add_Lottery_Bin'][0])+ " & "+ mystr2(SplurgeNot0_Sol['KY_Model'])  + " \\\\ \n"
-output +="Splurge = 0 &"+   mystr2(Splurge0_Sol['simulated_MPC_means_smoothed'][3])         + " & "+ mystr2(Splurge0_Sol['simulated_MPC_means_smoothed'][2])+ " & "+  \
-                            mystr2(Splurge0_Sol['simulated_MPC_means_smoothed'][1])         + " & "+ mystr2(Splurge0_Sol['simulated_MPC_means_smoothed'][0]) + " & "+  \
-                            mystr2(Splurge0_Sol['simulated_MPC_mean_add_Lottery_Bin'][0])   + " & "+ mystr2(Splurge0_Sol['KY_Model'])  + " \\\\ \n"
-output +="Data &"+          mystr2(MPC_target[2,3])                                         + " & "+ mystr2(MPC_target[2,2])+ " & "+  \
-                            mystr2(MPC_target[2,1])                                         + " & "+ mystr2(MPC_target[2,0]) + " & "+  \
-                            mystr2(Agg_MPCX_target[0])                                      + " & "+ mystr2(KY_target)  + " \\\\ \n"
-output +="\\end{tabular}  \n"
-
-
-with open(Abs_Path+'/Figures/Comparison_Splurge_Table.tex','w') as f:
-    f.write(output)
-    f.close()   
-
-
-
-Output_to_Excel = True
-if Output_to_Excel:
-    x = np.vstack(( xAxis, SplurgeNot0_Sol['simulated_MPC_mean_add_Lottery_Bin'], Splurge0_Sol['simulated_MPC_mean_add_Lottery_Bin'] , Agg_MPCX_target) )
-    df = pd.DataFrame(x.T,columns=['Year','Model, splurge > 0','Model, splurge = 0','Fagereng, Holm and Natvik (2021)'])
-    df.to_excel(Abs_Path+'/Data_AggMPC_LotteryWin.xlsx')
-    
-    x = np.vstack(( LorenzAxis, SplurgeNot0_Sol['Lorenz_Data_Adj'], Splurge0_Sol['Lorenz_Data_Adj'] ) )
-    df = pd.DataFrame(x.T,columns=['Percentile','Model, splurge > 0','Model, splurge = 0'])
-    df.to_excel(Abs_Path+'/LiquWealth_Distribution_a.xlsx')
-    
-    x = np.vstack(( np.array([20,40,60,80,100]), np.hstack([lorenz_target,1]) ) )
-    df = pd.DataFrame(x.T,columns=['Percentile','Data'])
-    df.to_excel(Abs_Path+'/LiquWealth_Distribution_b.xlsx')
-
  
-#%% For testing purposes
+    
+    
+
+
+
+    #%% For testing purposes
 
 Run_3D_Plot         = False
 Run_Investigation   = False
@@ -749,3 +846,13 @@ if Run_3D_Plot:
      
     # Show the plot
     plt.show()
+
+
+
+
+    
+
+
+
+
+    
