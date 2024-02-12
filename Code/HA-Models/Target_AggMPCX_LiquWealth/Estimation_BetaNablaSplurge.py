@@ -493,10 +493,10 @@ for j in range(TypeCount):
 
 
 #%% Estimation
-Run_estimation      = False
-Run_SplurgeZero     = False
+Run_estimation      = True
+Run_SplurgeZero     = True
 
-RunLoopofStarpoints = False 
+RunLoopofStarpoints = True 
 # Running the Loop of startpoints shows that that the algorithm converges to the same
 # solution independent of startpoint and thus strongly suggests that the global minimum was found
 
@@ -658,11 +658,11 @@ if Plot_Output:
     
 
 #%%
-Run_other_CRRA_values = False
+Run_other_CRRA_values = True
 if Run_other_CRRA_values:
     CRRA_values = [1,3]
     
-    RunLoopofStarpoints = False 
+    RunLoopofStarpoints = True 
     startpoints = [ [0.10, 0.85, 0.10],
                     [0.10, 0.95, 0.15],
                     [0.30, 0.85, 0.10],
@@ -703,7 +703,7 @@ if Run_other_CRRA_values:
             save_betanabla_res_txt(filename,res)
 
 
-Plot_other_CRRA_values = True
+Plot_other_CRRA_values = False
 if Plot_other_CRRA_values:
     target = 'AGG_MPC_plus_Liqu_Wealth_plusKY_plusMPC'
     # CRRA=1 
