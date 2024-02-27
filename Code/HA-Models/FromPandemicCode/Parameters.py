@@ -242,15 +242,15 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         
     DiscFacDstns = [None]*3
     for e in [0,1,2]:
-        dfs = Uniform(myEstim[e][0]-myEstim[e][1], myEstim[e][0]+myEstim[e][1]).approx(DiscFacCount)
+        dfs = Uniform(myEstim[e][0]-myEstim[e][1], myEstim[e][0]+myEstim[e][1]).discretize(DiscFacCount)
         
         # Check GIC:
         for thedf in range(DiscFacCount):
-            if dfs.X[thedf] > GICmaxBetas[e]*myEstim[e][3]:
-                dfs.X[thedf] = GICmaxBetas[e]*myEstim[e][3]
-            elif dfs.X[thedf] < minBeta:
-                dfs.X[thedf] = minBeta
-        theDFs = np.round(dfs.X,4)
+            if dfs.atoms[0][thedf] > GICmaxBetas[e]*myEstim[e][3]:
+                dfs.atoms[0][thedf] = GICmaxBetas[e]*myEstim[e][3]
+            elif dfs.atoms[0][thedf] < minBeta:
+                dfs.atoms[0][thedf] = minBeta
+        theDFs = np.round(dfs.atoms[0],4)
         print('EducationGroup: ', e, ', betaDistr :', theDFs.tolist())
         DiscFacDstns[e] = dfs
     

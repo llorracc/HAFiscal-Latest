@@ -15,7 +15,8 @@ top_most_folder = folders[-1]
 if top_most_folder == 'FromPandemicCode':
     Abs_Path = cwd
 else:
-    Abs_Path = cwd + '\\FromPandemicCode'
+    Abs_Path = cwd + '/Code/HA-Models/FromPandemicCode'
+    os.chdir(Abs_Path)
 
 sys.path.append(Abs_Path)
 from Simulate import Simulate
