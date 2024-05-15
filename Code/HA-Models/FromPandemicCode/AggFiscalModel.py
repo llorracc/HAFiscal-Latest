@@ -10,7 +10,7 @@ from HARK.ConsumptionSaving.ConsAggShockModel import MargValueFunc2D, AggShockCo
 from HARK.interpolation import LinearInterp, BilinearInterp, VariableLowerBoundFunc2D, \
                                 LinearInterpOnInterp1D, LowerEnvelope2D, UpperEnvelope, ConstantFunction
 from HARK import Market
-from HARK.core import distance_metric
+from HARK.metric import distance_metric
 from HARK.core import Model
 
 from copy import copy, deepcopy
