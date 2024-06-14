@@ -915,28 +915,42 @@ the solid, blue line in ﬁgure <a
 href="#x1-13005r1">1<!--tex4ht:ref: fig:splurge_estimation --></a>).
 <!--l. 66--><p class="indent" >  The splurge is essential in matching the empirical evidence mentioned above. If we impose a
 zero splurge in our estimation, the model is not able to account for the exact empirical proﬁles.
-In order to generate a high initial marginal propensity to consume, the estimation yields
+In order to generate a high initial marginal propensity to consume, the estimation yields a very
                                                                                 
                                                                                 
-a very wide distribution of discount factors (<img 
+wide distribution of discount factors (<img 
 src="HAFiscal68x.svg" alt="β = 0.921  " class="math";align="absmiddle"> and <img 
-src="HAFiscal69x.svg" alt="∇  = 0.116  " class="math";align="absmiddle">). This
-ensures that suﬃcient agents are at the liquidity constraint and sensitive to transitory
-income shocks to generate a high initial MPC in absence of the splurge. However,
-the large diﬀerences in discount factor lead to a strongly unequal distribution of
-liquid wealth, exceeding that observed in data. The model without the splurge also
-misses the time proﬁle of the marginal propensity to consume and the distribution of
-initial consumption responses across wealth quartiles. Speciﬁcally, the model cannot
-account for the high initial MPC among the wealthiest. To compensate for that, the
-estimation yields more liquidity-constrained agents, and thus a higher MPC among the
-least wealthy. This in turn leads also to a higher spending propensity in the ﬁrst
-year after the shock as liquidity-constrained agents spend the additional income
-quicker.
-<!--l. 68--><p class="indent" >  <a 
+src="HAFiscal69x.svg" alt="∇  = 0.116  " class="math";align="absmiddle">). This ensures that suﬃcient
+agents are at the liquidity constraint and sensitive to transitory income shocks to generate a
+high initial MPC in absence of the splurge. However, the large diﬀerences in discount factor
+lead to a strongly unequal distribution of liquid wealth, exceeding that observed in
+data. The model without the splurge also misses the time proﬁle of the marginal
+propensity to consume and the distribution of initial consumption responses across wealth
+quartiles. Speciﬁcally, the model cannot account for the high initial MPC among the
+wealthiest. To compensate for that, the estimation yields more liquidity-constrained
+agents, and thus a higher MPC among the least wealthy. This in turn leads also to a
+higher spending propensity in the ﬁrst year after the shock as liquidity-constrained
+agents spend the additional income quicker. Overall, the model ﬁt with the data
+deteriorates roughly by a factor of two measured by the Euclidean norm of the targeting
+error.<span class="footnote-mark"><a 
+href="HAFiscal13.html#fn12x0"><sup class="textsuperscript">12</sup></a></span><a 
+ id="x1-13011f12"></a>  
+<!--l. 68--><p class="indent" >  The shortcomings of the model without a splurge are likely to aﬀect the derived policy
+recommendations, for two reasons. First, if multipliers are larger during recessions and the
+recession length is stochastic, the exact timing of induced consumption matters for the policies’
+overall eﬀectiveness. A recession-dependent multiplier will in particular magnify the already
+sizeable diﬀerence in predicted consumption responses in year 1 and 2 across the models with
+and without the splurge. Second, the welfare impacts of the policies will depend on how the
+policies aﬀect consumption responses across the wealth distribution. The model without the
+splurge predicts - counterfactually - that consumption responses are concentrated among the
+poorest (that are most likely to be aﬀected by recession-induced unemployment). The model
+with the splurge can instead accurately capture consumption responses across the wealth
+distribution.
+<!--l. 74--><p class="indent" >  <a 
  id="data-on-permanent-income-liquid-wealth-and-education"></a>
   <h4 class="subsectionHead"><span class="titlemark">3.2 </span> <a 
  id="x1-140003.2"></a>Data on permanent income, liquid wealth, and education</h4>
-<!--l. 71--><p class="noindent" >Before we move on to the parameterization of the full model, we describe in detail the data
+<!--l. 77--><p class="noindent" >Before we move on to the parameterization of the full model, we describe in detail the data
 that we use to get measures of permanent income, liquid wealth, and the division of households
 into educational groups in the United States. We use data on the distribution of liquid wealth
 from the 2004 wave of the SCF. We restrict our attention to households where the head is of
@@ -945,16 +959,18 @@ annual income” is our measure of the household’s permanent income, and, to e
 we drop the observations that make up the bottom 5 percent of the distribution of this
 variable. The smallest value of permanent income for households in our sample is thus
 $16,708.
-<!--l. 73--><p class="indent" >  Liquid wealth is deﬁned as in <span 
+<!--l. 79--><p class="indent" >  Liquid wealth is deﬁned as in <span 
 class="ecbx-1095">? </span>and consists of cash, money market, checking, savings, and
 call accounts; directly held mutual funds; and stocks and bonds. We subtract oﬀ liquid
+                                                                                
+                                                                                
 debt, which is the revolving debt on credit card balances. Note that the SCF does
 not contain information on cash holdings, so these are imputed with the procedure
 described in Appendix B.1 of <span 
 class="ecbx-1095">?</span>, which also describes the credit card balances that are
 considered part of liquid debt. We drop any households that have negative liquid
 wealth.
-<!--l. 75--><p class="indent" >  Households are classiﬁed into three educational groups. The ﬁrst group, “Dropout,”
+<!--l. 81--><p class="indent" >  Households are classiﬁed into three educational groups. The ﬁrst group, “Dropout,”
 applies to households where the head of household has not obtained a high school
 diploma; the second group, “Highschool,” includes heads of households who have a high
 school diploma and those who, in addition, have some years of college education
@@ -966,14 +982,12 @@ the population, the Highschool group <img
 src="HAFiscal71x.svg" alt="52.7  " class="math";align="absmiddle"> percent, and the College group <img 
 src="HAFiscal72x.svg" alt="38.0  " class="math";align="absmiddle">
 percent.
-<!--l. 77--><p class="indent" >  With our sample selection criteria, we are left with a sample representing about 61.3 million
+<!--l. 83--><p class="indent" >  With our sample selection criteria, we are left with a sample representing about 61.3 million
 U.S. households.
-                                                                                
-                                                                                
-<!--l. 79--><p class="noindent" >
+<!--l. 85--><p class="noindent" >
   <h4 class="subsectionHead"><span class="titlemark">3.3 </span> <a 
  id="x1-150003.3"></a>Calibrated parameters</h4>
-<!--l. 82--><p class="noindent" >With households divided into the three education groups, some parameters, presented in
+<!--l. 88--><p class="noindent" >With households divided into the three education groups, some parameters, presented in
 panel A of table <a 
 href="#x1-15001r2">2<!--tex4ht:ref: tab:calibration --></a>, are calibrated equally across all groups, while other parameters, presented
 in panel B of table <a 
@@ -983,7 +997,7 @@ For completeness, panel C of table <a
 href="#x1-15001r2">2<!--tex4ht:ref: tab:calibration --></a> summarizes the parameters describing how
 we model a recession and the three policies we consider as potential responses to a
 recession.
-<!--l. 84--><p class="indent" >  All households are assumed to have a coeﬃcient of relative risk aversion equal to <img 
+<!--l. 90--><p class="indent" >  All households are assumed to have a coeﬃcient of relative risk aversion equal to <img 
 src="HAFiscal73x.svg" alt="γ = 2  " class="math";align="absmiddle">. We
 also assume that all households have the same propensity to splurge out of transitory
 income gains and set <img 
@@ -1002,13 +1016,13 @@ quarter.
   <div class="table">
                                                                                 
                                                                                 
-<!--l. 148--><p class="indent" >  <figure class="float" 
+<!--l. 154--><p class="indent" >  <figure class="float" 
 >
                                                                                 
                                                                                 
 <div class="center" 
 >
-<!--l. 148--><p class="noindent" >
+<!--l. 154--><p class="noindent" >
 <div class="pic-tabular">
 <img 
 src="HAFiscal77x.svg" alt="-------------------------------------------------------------------------------
@@ -1080,7 +1094,7 @@ class="content">Panel (A) shows parameters calibrated the same for all types. Pa
   </div>
                                                                                 
                                                                                 
-<!--l. 172--><p class="indent" >  When consumers are born, they receive an initial level of permanent income. This initial
+<!--l. 178--><p class="indent" >  When consumers are born, they receive an initial level of permanent income. This initial
 value is drawn from a log-normal distribution that depends on the education level the
 household is born with. For each education group, the parameters of the distribution
 are determined by the mean and standard deviation of log-permanent income for
@@ -1092,7 +1106,7 @@ src="HAFiscal78x.svg" alt="0.32  " class="math";align="absmiddle">, <img
 src="HAFiscal79x.svg" alt="0.42  " class="math";align="absmiddle">, and
 <img 
 src="HAFiscal80x.svg" alt="0.53  " class="math";align="absmiddle">.
-<!--l. 192--><p class="indent" >  While households remain employed, their income is subject to both permanent and
+<!--l. 198--><p class="indent" >  While households remain employed, their income is subject to both permanent and
 transitory idiosyncratic shocks. These shocks are distributed equally for the three
 education groups. The standard deviations of these shocks are taken from <span 
 class="ecbx-1095">?</span>, who set the
@@ -1114,7 +1128,7 @@ src="HAFiscal84x.svg" alt="Γ d = 1.0036  " class="math";align="absmiddle">, <im
 src="HAFiscal85x.svg" alt="Γ h = 1.0045  " class="math";align="absmiddle">, and
 <img 
 src="HAFiscal86x.svg" alt="Γ c = 1.0049  " class="math";align="absmiddle">.
-<!--l. 194--><p class="indent" >  Consumers also face the risk of becoming unemployed and will then have access to
+<!--l. 200--><p class="indent" >  Consumers also face the risk of becoming unemployed and will then have access to
 unemployment beneﬁts for a certain period. The parameters describing the unemployment
 beneﬁts in normal times are based on the work of <span 
 class="ecbx-1095">?</span>, who study the eﬀects on household income
@@ -1128,15 +1142,15 @@ rates are set as a share of the households’ permanent income and are based on 
 initial drop in income upon entering an unemployment spell, presented in ﬁgure 3 in
 <span 
 class="ecbx-1095">?</span>.<span class="footnote-mark"><a 
-href="HAFiscal13.html#fn12x0"><sup class="textsuperscript">12</sup></a></span><a 
- id="x1-15002f12"></a>  
+href="HAFiscal14.html#fn13x0"><sup class="textsuperscript">13</sup></a></span><a 
+ id="x1-15002f13"></a>  
 The duration of unemployment beneﬁts in normal times is set to two quarters, so that our
 Markov transition matrix <img 
 src="HAFiscal89x.svg" alt="Π  " class="math";align="absmiddle"> has four states. This length of time corresponds to the mean
 duration of unemployment beneﬁts across U.S. states from 2004 to mid-2008 of 26 weeks,
 reported by <span 
 class="ecbx-1095">?</span>.
-<!--l. 196--><p class="indent" >  The probability of transitioning out of unemployment is the same for all households
+<!--l. 202--><p class="indent" >  The probability of transitioning out of unemployment is the same for all households
 and is set to <img 
 src="HAFiscal90x.svg" alt="πue = 2∕3  " class="math";align="absmiddle">. This probability implies that the average duration of an
                                                                                 
@@ -1147,8 +1161,8 @@ class="ecbx-1095">?</span>. However, the diﬀerent education groups do diﬀer 
 probability of transitioning into unemployment in the ﬁrst place. These probabilities
 are set to match the average U.S. unemployment rate by education group in
 2004.<span class="footnote-mark"><a 
-href="HAFiscal14.html#fn13x0"><sup class="textsuperscript">13</sup></a></span><a 
- id="x1-15004f13"></a>  
+href="HAFiscal15.html#fn14x0"><sup class="textsuperscript">14</sup></a></span><a 
+ id="x1-15004f14"></a>  
 This average was 8.5 percent for the Dropout group, 4.4 percent for the Highschool group, and
 2.7 percent for the College group. These values imply that the probabilities of transitioning
 into unemployment in normal times are <img 
@@ -1159,15 +1173,15 @@ src="HAFiscal92x.svg" alt="πh = 3.1
 <img 
 src="HAFiscal93x.svg" alt="  c
 πeu = 1.8  " class="math";align="absmiddle"> percent, respectively.
-<!--l. 198--><p class="indent" >  Finally, the strength of the aggregate demand eﬀect in recessions is determined by the
+<!--l. 204--><p class="indent" >  Finally, the strength of the aggregate demand eﬀect in recessions is determined by the
 consumption elasticity of productivity. We follow <span 
 class="ecbx-1095">? </span>and set this to <img 
 src="HAFiscal94x.svg" alt="κ = 0.3  " class="math";align="absmiddle">.
-<!--l. 201--><p class="indent" >  <a 
+<!--l. 207--><p class="indent" >  <a 
  id="estimating-the-discount-factor-distributions"></a>
   <h4 class="subsectionHead"><span class="titlemark">3.4 </span> <a 
  id="x1-160003.4"></a>Estimating the discount factor distributions</h4>
-<!--l. 204--><p class="noindent" >Discount factor distributions are estimated separately for each education group to match the
+<!--l. 210--><p class="noindent" >Discount factor distributions are estimated separately for each education group to match the
 distribution of liquid wealth for households in that group. To do so, we let each education
 group consist of types that diﬀer in their subjective discount factor, <img 
 src="HAFiscal95x.svg" alt="β  " class="math";align="absmiddle">. The discount factors
@@ -1186,7 +1200,7 @@ src="HAFiscal103x.svg" alt="80th  " class="math";align="absmiddle"> percentile p
 for that group. We approximate the uniform distribution of discount factors with
 a discrete approximation and let each education group consist of seven diﬀerent
 types.
-<!--l. 206--><p class="indent" >  Panel A of table <a 
+<!--l. 212--><p class="indent" >  Panel A of table <a 
 href="#x1-16001r3">3<!--tex4ht:ref: tab:estimBetas --></a> shows the estimated values of <img 
 src="HAFiscal104x.svg" alt="(βe,∇e )  " class="math";align="absmiddle"> for each education group. The
 panel also shows the minimum and maximum values of the discount factors we actually use in
@@ -1206,13 +1220,13 @@ wealth.
   <div class="table">
                                                                                 
                                                                                 
-<!--l. 208--><p class="indent" >  <figure class="float" 
+<!--l. 214--><p class="indent" >  <figure class="float" 
 >
                                                                                 
                                                                                 
 <div class="center" 
 >
-<!--l. 209--><p class="noindent" >
+<!--l. 215--><p class="noindent" >
 <div class="pic-tabular">
 <img 
 src="HAFiscal105x.svg" alt=" Panel (A) Estimated  discount factor distributions
@@ -1244,7 +1258,7 @@ src="HAFiscal105x.svg" alt=" Panel (A) Estimated  discount factor distributions
 class="content">Estimated discount factor distributions, estimation targets, and non-targeted
          moments
 </span></figcaption><!--tex4ht:label?: x1-16001r3 -->
-<!--l. 240--><p class="noindent" ><span 
+<!--l. 246--><p class="noindent" ><span 
 class="ecbx-1000">Note</span><span 
 class="ecrm-1000">: Panel (A) shows the estimated parameters of the discount distributions for each education group.</span>
 <span 
@@ -1269,7 +1283,7 @@ class="ecrm-1000">and the quarterly MPCs, and then averaged by education group.<
                                                                                 
   </figure>
   </div>
-<!--l. 244--><p class="indent" >  One point we should note concerns the estimated discount factor distribution for the
+<!--l. 250--><p class="indent" >  One point we should note concerns the estimated discount factor distribution for the
 Highschool group, however. Panel A of table <a 
 href="#x1-16001r3">3<!--tex4ht:ref: tab:estimBetas --></a> reports values of <img 
 src="HAFiscal107x.svg" alt="βh = 0.924  " class="math";align="absmiddle"> and
@@ -1294,8 +1308,8 @@ distributions, but for the baseline parameter values it is only binding for the 
 group. Thus, the estimation can select a large value of <img 
 src="HAFiscal113x.svg" alt="∇h  " class="math";align="absmiddle"> without violating the
 constraint.<span class="footnote-mark"><a 
-href="HAFiscal15.html#fn14x0"><sup class="textsuperscript">14</sup></a></span><a 
- id="x1-16002f14"></a>  
+href="HAFiscal16.html#fn15x0"><sup class="textsuperscript">15</sup></a></span><a 
+ id="x1-16002f15"></a>  
   <div class="figure" 
 >
                                                                                 
@@ -1304,8 +1318,8 @@ href="HAFiscal15.html#fn14x0"><sup class="textsuperscript">14</sup></a></span><a
                                                                                 
 <div class="center" 
 >
-<!--l. 247--><p class="noindent" >
-<!--l. 248--><p class="noindent" > <img 
+<!--l. 253--><p class="noindent" >
+<!--l. 254--><p class="noindent" > <img 
 src="Subfiles/../Figures/LorenzPoints_CRRA_2.0_R_1.01-.svg" alt="PIC"  
 style="width:90%"> <a 
  id="x1-16004r2"></a>
@@ -1317,14 +1331,14 @@ class="content">Distributions  of  liquid  wealth  within  each  educational  gr
                                                                                 
                                                                                 
   </div>
-<!--l. 254--><p class="indent" >  Also, note that several of the types in the Dropout group have very low discount factors and
+<!--l. 260--><p class="indent" >  Also, note that several of the types in the Dropout group have very low discount factors and
 are very impatient. In this way, the model ﬁts the feature of the data for the Dropout group
 that the bottom quintiles do not save at all and do not accumulate any liquid wealth. Very low
 estimates for discount factors are in line with those obtained in the literature on payday
 lending.<span class="footnote-mark"><a 
-href="HAFiscal16.html#fn15x0"><sup class="textsuperscript">15</sup></a></span><a 
- id="x1-16005f15"></a>  
-<!--l. 256--><p class="indent" >  Finally, panel C of table <a 
+href="HAFiscal17.html#fn16x0"><sup class="textsuperscript">16</sup></a></span><a 
+ id="x1-16005f16"></a>  
+<!--l. 262--><p class="indent" >  Finally, panel C of table <a 
 href="#x1-16001r3">3<!--tex4ht:ref: tab:estimBetas --></a> shows the wealth distribution across the three education groups
 in the data and in the model. The model matches these shares quite closely, which may not be
 surprising given that we calibrate the size of each group and we manage to ﬁt the wealth
@@ -1504,8 +1518,8 @@ the model with aggregate demand eﬀects, income rises by about 2.5 percent abov
 the counterfactual and then declines steadily as the probability that the recession
 remains active—and hence the aggregate demand eﬀects in place—goes down over
 time.<span class="footnote-mark"><a 
-href="HAFiscal17.html#fn16x0"><sup class="textsuperscript">16</sup></a></span><a 
- id="x1-21002f16"></a>  
+href="HAFiscal18.html#fn17x0"><sup class="textsuperscript">17</sup></a></span><a 
+ id="x1-21002f17"></a>  
 In response to the now declining expected path for income over the two years during which the
 tax cut remains in place, consumption also declines, albeit at a slightly slower pace.
 Following the end of the policy, the savings stock in the model with aggregate demand
@@ -1678,8 +1692,8 @@ src="HAFiscal140x.svg" alt="N  " class="math";align="absmiddle"> is the number o
 units. Using this baseline, we deﬁne the marginal increase in welfare that occurs when
 every consumer increases consumption proportionally to baseline consumption as the
 following<span class="footnote-mark"><a 
-href="HAFiscal18.html#fn17x0"><sup class="textsuperscript">17</sup></a></span><a 
- id="x1-23008f17"></a>  
+href="HAFiscal19.html#fn18x0"><sup class="textsuperscript">18</sup></a></span><a 
+ id="x1-23008f18"></a>  
   <div class="align"><img 
 src="HAFiscal142x.svg" alt="pict" ><a 
  id="x1-23010r10"></a></div>
@@ -1690,8 +1704,8 @@ src="HAFiscal144x.svg" alt="𝒲-(policy,Rec,AD𝒲)−c-𝒲(None,Rec,AD-)  " c
 However, this welfare increase ignores the cost of the policy to the government,
 <img 
 src="HAFiscal145x.svg" alt="P V (policy,Rec)  " class="math";align="absmiddle">.<span class="footnote-mark"><a 
-href="HAFiscal19.html#fn18x0"><sup class="textsuperscript">18</sup></a></span><a 
- id="x1-23011f18"></a>  
+href="HAFiscal20.html#fn19x0"><sup class="textsuperscript">19</sup></a></span><a 
+ id="x1-23011f19"></a>  
                                                                                 
                                                                                 
 We therefore subtract the ﬁscal cost of each policy in steady-state consumption units:
@@ -1715,8 +1729,8 @@ href="#x1-23017r5">5<!--tex4ht:ref: welfare --></a> shows the welfare beneﬁts 
 href="#x1-23014r12">12<!--tex4ht:ref: welfare_defn --></a>). The stimulus check and
 payroll tax cut policies have been adjusted to be the same ﬁscal size (in the absence of a recession) as the
 UI extension.<span class="footnote-mark"><a 
-href="HAFiscal20.html#fn19x0"><sup class="textsuperscript">19</sup></a></span><a 
- id="x1-23015f19"></a>  
+href="HAFiscal21.html#fn20x0"><sup class="textsuperscript">20</sup></a></span><a 
+ id="x1-23015f20"></a>  
 The table shows consumption-equivalent welfare gains in basis points, which are to be
 interpreted as follows. A welfare gain of <img 
 src="HAFiscal150x.svg" alt="x  " class="math";align="absmiddle"> implies that the social planner is indiﬀerent
@@ -2107,8 +2121,8 @@ src="HAFiscal213x.svg" alt="∇h  " class="math";align="absmiddle"> no longer im
 patient type. Thus the comparison of <img 
 src="HAFiscal214x.svg" alt="∇h  " class="math";align="absmiddle"> with the value from the baseline is not so
 relevant.<span class="footnote-mark"><a 
-href="HAFiscal21.html#fn20x0"><sup class="textsuperscript">20</sup></a></span><a 
- id="x1-30002f20"></a>  
+href="HAFiscal22.html#fn21x0"><sup class="textsuperscript">21</sup></a></span><a 
+ id="x1-30002f21"></a>  
 <!--l. 103--><p class="indent" >  When we decrease risk aversion to <img 
 src="HAFiscal216x.svg" alt="γ = 1.0  " class="math";align="absmiddle">, however, we run into problems when
 estimating the discount factor distribution. Our model fails to jointly ﬁt both the median
@@ -2230,8 +2244,8 @@ src="HAFiscal226x.svg" alt="γ = 3  " class="math";align="absmiddle"> and AD e�
 in the baseline. When AD eﬀects are switched oﬀ, this only applies in the case of the UI
 extension. For both cases, with and without AD eﬀects, the changes are quite small in
 magnitude.<span class="footnote-mark"><a 
-href="HAFiscal22.html#fn21x0"><sup class="textsuperscript">21</sup></a></span><a 
- id="x1-31001f21"></a>  
+href="HAFiscal23.html#fn22x0"><sup class="textsuperscript">22</sup></a></span><a 
+ id="x1-31001f22"></a>  
 Most importantly, the welfare ranking of the policies is robust to this alternative value for the
 risk-aversion parameter.
   <div class="table">
@@ -2287,8 +2301,8 @@ src="HAFiscal233x.svg" alt="ρnb = 0.15  " class="math";align="absmiddle"> when 
 without beneﬁts. This latter value is the same as the replacement rate used in
 <span 
 class="ecbx-1095">?</span>.<span class="footnote-mark"><a 
-href="HAFiscal23.html#fn22x0"><sup class="textsuperscript">22</sup></a></span><a 
- id="x1-32001f22"></a>  
+href="HAFiscal24.html#fn23x0"><sup class="textsuperscript">23</sup></a></span><a 
+ id="x1-32001f23"></a>  
 With these replacement rates, being unemployed is more serious for consumers than in our
 baseline calibration, and the precautionary saving motive is stronger.
   <h5 class="subsubsectionHead"><span class="titlemark">5.3.1 </span> <a 
@@ -2305,8 +2319,8 @@ href="#x1-300005.2.1">5.2.1<!--tex4ht:ref: sec:robust_gamma_estim --></a>: A str
 average discount factor to match the same average level of saving as before. The
 distributions must also be more dispersed to match the same concentration of liquid
 wealth.<span class="footnote-mark"><a 
-href="HAFiscal24.html#fn23x0"><sup class="textsuperscript">23</sup></a></span><a 
- id="x1-33001f23"></a>  
+href="HAFiscal25.html#fn24x0"><sup class="textsuperscript">24</sup></a></span><a 
+ id="x1-33001f24"></a>  
 In fact, the estimated discount factor distributions for the alternative calibration of
 the replacement rates are very similar to those reported for <img 
 src="HAFiscal238x.svg" alt="γ = 3.0  " class="math";align="absmiddle"> in row 3 of
