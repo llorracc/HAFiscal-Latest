@@ -7,13 +7,15 @@ from HARK.distribution import DiscreteDistribution
 from AggFiscalModel import AggFiscalType, AggregateDemandEconomy
 from copy import deepcopy
 from Parameters import returnParameters
+import matplotlib.pyplot as plt
     
 [init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
 DiscFacCount, AgentCountTotal, base_dict, num_max_iterations_solvingAD,\
 convergence_tol_solvingAD, UBspell_normal, num_base_MrkvStates, \
 data_EducShares, max_recession_duration, num_experiment_periods,\
 recession_changes, UI_changes, recession_UI_changes,\
-TaxCut_changes, recession_TaxCut_changes, Check_changes, recession_Check_changes] = returnParameters(Parametrization='Baseline',OutputFor='_Main.py')
+TaxCut_changes, recession_TaxCut_changes, Check_changes, recession_Check_changes] = \
+    returnParameters(Parametrization='Baseline',OutputFor='_Main.py')
       
 agent1 = AggFiscalType(**init_dropout)
 agent1.cycles = 0
@@ -30,19 +32,22 @@ BaseTypeList = [agent1, agent2, agent3]
 # Fill in the Markov income distribution for each base type
 # NOTE: THIS ASSUMES NO LIFECYCLE
 IncShkDstn_unemp = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([agent1.IncUnemp])])
-IncShkDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), [np.array([1.0]), np.array([agent1.IncUnempNoBenefits])])
+IncShkDstn_unemp_nobenefits = DiscreteDistribution(np.array([1.0]), \
+                                                   [np.array([1.0]), np.array([agent1.IncUnempNoBenefits])])
         
 for ThisType in BaseTypeList:
     EmployedIncShkDstn = deepcopy(ThisType.IncShkDstn[0])
-    ThisType.IncShkDstn = [[ThisType.IncShkDstn[0]] + [IncShkDstn_unemp]*UBspell_normal + [IncShkDstn_unemp_nobenefits]]
+    ThisType.IncShkDstn = [[ThisType.IncShkDstn[0]] + \
+                           [IncShkDstn_unemp]*UBspell_normal + [IncShkDstn_unemp_nobenefits]]
     ThisType.IncShkDstn_base = ThisType.IncShkDstn
         
-    IncShkDstn_recession = [ThisType.IncShkDstn[0]*(2*(num_experiment_periods+1))] # for normal, rec, recovery  
+    IncShkDstn_recession = [ThisType.IncShkDstn[0]*(2*(num_experiment_periods+1))] 
     ThisType.IncShkDstn_recession = IncShkDstn_recession
     ThisType.IncShkDstn_recessionUI = IncShkDstn_recession
         
     EmployedIncShkDstn.atoms[0][1] = EmployedIncShkDstn.atoms[0][1]*ThisType.TaxCutIncFactor
-    TaxCutStatesIncShkDstn = [EmployedIncShkDstn] + [IncShkDstn_unemp]*UBspell_normal + [IncShkDstn_unemp_nobenefits] 
+    TaxCutStatesIncShkDstn = [EmployedIncShkDstn] + \
+        [IncShkDstn_unemp]*UBspell_normal + [IncShkDstn_unemp_nobenefits] 
     IncShkDstn_recessionTaxCut = deepcopy(IncShkDstn_recession)
     # Tax states are 2,3 (q1) 4,5 (q2) ... 16,17 (q8)
     for i in range(2*num_base_MrkvStates,18*num_base_MrkvStates,1):
@@ -55,21 +60,59 @@ for ThisType in BaseTypeList:
     ThisType.mMin = 1e-4
     ThisType.mMax = 10000
 
-agent3.DiscFac = .988    
-agent3.solve()
-agent3.define_distribution_grid(num_pointsP=110, timestonest=3)
+# set up sandbox agent
+testAgent = agent3
+testState = 0
 
-mGrid = agent3.dist_mGrid
+##################################################################################################
+# As far as I can tell, it's these 4 things that prevented the matrices from matching:
 
-agent3.neutral_measure = True
+# testAgent.Cgrid = np.linspace(0.6, 1.4, 10)
 
-agent3.update_income_process()
+# these matter a lot
+testAgent.PermGroFac = [[1.0, 1.0, 1.0, 1.0]] 
+testAgent.PermGroFac_base = 1.0
 
-# Problem: cFunc for this model is different
-# needs to be indexed and requires a second argument of cRatios
-agent3.calc_transition_matrix()
+# these very much matter
+testAgent.pLvlInitMean = 0
+testAgent.pLvlInitStd = 0
 
-agent3.compute_steady_state()
+# the one hack to rule them all, matters a lot
+# testAgent.IncShkDstn[0][0].atoms = testAgent.IncShkDstn[0][0].atoms * 0 + 1
 
-print(agent3.C_ss)
-print(agent3.A_ss)
+# these matter a lot, _base ones don't in this but might elsewhere
+testAgent.MrkvArray = [np.array([[1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]])]
+testAgent.CondMrkvArrays = [np.array([[1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]])]
+# testAgent.MrkvArray = [np.array([[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]])]
+# testAgent.CondMrkvArrays = [np.array([[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]])]
+# testAgent.MrkvArray = [np.array([[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]])]
+# testAgent.CondMrkvArrays = [np.array([[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]])]
+# testAgent.MrkvArray = [np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]])]
+# testAgent.CondMrkvArrays = [np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]])]
+##################################################################################################
+
+# Simulate with Monte Carlo
+testAgent.solve()
+testAgent.track_vars = ["aLvl"]
+testAgent.reset()
+testAgent.initialize_sim()
+testAgent.AggDemandFac = 1.0
+testAgent.RfreeNow = 1.01
+testAgent.CaggNow = 1.0
+testAgent.Cratio = 1.0
+testAgent.simulate()  
+print(np.mean(testAgent.state_now["cLvl"]))
+print(np.mean(testAgent.state_now["aLvl"]))
+
+# Transition Matrices
+testAgent.compute_steady_state(state = testState)
+print(testAgent.C_ss)
+print(testAgent.A_ss)
+
+# testAgent.calc_transition_matrix_base(state = testState)
+# mat1 = testAgent.tran_matrix
+
+# testAgent.calc_transition_matrix()
+# mat2 = testAgent.tran_matrix
+
+# print(mat2 - mat1)
