@@ -480,15 +480,16 @@ class AggFiscalType(MarkovConsumerType):
 
         ergodic_distr = ergodic_distr.real / np.sum(ergodic_distr.real)
         self.vec_erg_dstn = ergodic_distr
+        self.erg_dstn = ergodic_distr.reshape(len(self.MrkvArray[0]), self.mCount)
 
     def update_income_process_alt(self):
-        self.IncShkDstn_base_alt = deepcopy(self.IncShkDstn_base)
-        self.state_num = len(self.MrkvArray_base[0])
+        self.IncShkDstn = deepcopy(self.IncShkDstn)
+        self.state_num = len(self.MrkvArray[0])
         if self.neutral_measure == True:
             for u in range(self.state_num):
-                self.IncShkDstn_base_alt[0][u].pmv = self.IncShkDstn_base[0][u].pmv * self.IncShkDstn_base[0][u].atoms[0]
+                self.IncShkDstn[0][u].pmv = self.IncShkDstn[0][u].pmv * self.IncShkDstn[0][u].atoms[0]
 
-    def compute_steady_state(self, state):
+    def compute_steady_state(self, state = 0):
         self.cycles = 0
         self.solve()
 
@@ -712,20 +713,19 @@ class AggFiscalType(MarkovConsumerType):
             LivPrb = self.LivPrb[0][0] # Update probability of staying alive this period
             
             tran_matrix_ss = np.zeros((n_u, n_a, n_u, n_a))
-            mrkvh_array = self.MrkvArray[0].T #.reshape(self.state_num,self.state_num) # ( u,h,u_,h_)
+            mrkvh_array = self.MrkvArray[0]
             for u_ in range(self.state_num):
                 for u_tom in range(self.state_num):   
-                    if  mrkvh_array[u_tom,u_] > 0:  
-                        tran_mat = mrkvh_array[u_tom,u_] * gen_tran_matrix(dist_mGrid,
+                    if  mrkvh_array[u_,u_tom] > 0:  
+                        tran_mat = mrkvh_array[u_,u_tom] * gen_tran_matrix(dist_mGrid,
                                                                            bNext[u_],
                                                                            shk_prbs[u_tom],
                                                                            perm_shks[u_tom],
                                                                            tran_shks[u_tom], 
                                                                            LivPrb)
-                        tran_matrix_ss[u_tom, :, u_, :]  = tran_mat # (n_u,n_a n_u,n_a)
+                        tran_matrix_ss[u_, :, u_tom, :] = tran_mat
 
-            tran_matrix_ss = tran_matrix_ss.reshape(n_u * n_m, n_u * n_m)
-            self.tran_matrix = tran_matrix_ss
+            self.tran_matrix = tran_matrix_ss.reshape(n_u * n_a, n_u * n_a)
                                 
                        
 @numba.njit(parallel=True)

@@ -55,7 +55,7 @@ for ThisType in BaseTypeList:
     ThisType.IncShkDstn_recessionTaxCut = IncShkDstn_recessionTaxCut
         
     ThisType.IncShkDstn_recessionCheck = deepcopy(IncShkDstn_recession)
-    ThisType.mCount = 200
+    ThisType.mCount = 5
     ThisType.mFac = 3
     ThisType.mMin = 1e-4
     ThisType.mMax = 10000
@@ -65,30 +65,52 @@ testAgent = agent3
 testState = 0
 
 ##################################################################################################
-# As far as I can tell, it's these 4 things that prevented the matrices from matching:
+# These 3 things that prevented the matrices from matching:
 
-# testAgent.Cgrid = np.linspace(0.6, 1.4, 10)
-
-# these matter a lot
+# permanent growth factors to zero
 testAgent.PermGroFac = [[1.0, 1.0, 1.0, 1.0]] 
 testAgent.PermGroFac_base = 1.0
 
-# these very much matter
+# initial permanent income to zero
 testAgent.pLvlInitMean = 0
 testAgent.pLvlInitStd = 0
 
-# the one hack to rule them all, matters a lot
 # testAgent.IncShkDstn[0][0].atoms = testAgent.IncShkDstn[0][0].atoms * 0 + 1
+# testAgent.IncShkDstn[0][1].atoms = testAgent.IncShkDstn[0][1].atoms * 0 + 1
 
-# these matter a lot, _base ones don't in this but might elsewhere
-testAgent.MrkvArray = [np.array([[1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]])]
-testAgent.CondMrkvArrays = [np.array([[1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]])]
+# 1-state degenerate Markov arrays
+# testAgent.MrkvArray = [np.array([[1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]])]
+# testAgent.CondMrkvArrays = [np.array([[1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]])]
 # testAgent.MrkvArray = [np.array([[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]])]
 # testAgent.CondMrkvArrays = [np.array([[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]])]
 # testAgent.MrkvArray = [np.array([[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]])]
 # testAgent.CondMrkvArrays = [np.array([[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]])]
 # testAgent.MrkvArray = [np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]])]
 # testAgent.CondMrkvArrays = [np.array([[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]])]
+
+# 2-state Markov arrays
+# testAgent.MrkvArray = [np.array([[0.98150051, 0.01849949, 0, 0], 
+#                                  [0.66666667, 0.33333333, 0, 0], 
+#                                  [1, 0, 0, 0], [1, 0, 0, 0]])]
+# testAgent.CondMrkvArrays = [np.array([[0.98150051, 0.01849949, 0, 0], 
+#                                       [0.66666667, 0.33333333, 0, 0], 
+#                                  [1, 0, 0, 0], [1, 0, 0, 0]])]
+
+# testAgent.MrkvArray = [np.array([[1.0, 0.0], 
+#                                  [1.0, 0.0]])]
+# testAgent.CondMrkvArrays = [np.array([[1.0, 0.0], 
+#                                  [1.0, 0.0]])]
+
+# testAgent.MrkvArray = [np.array([[0.0, 1.0], 
+#                                  [0.0, 1.0]])]
+# testAgent.CondMrkvArrays = [np.array([[0.0, 1.0], 
+#                                  [0.0, 1.0]])]
+
+testAgent.MrkvArray = [np.array([[0.98150051, 0.01849949], 
+                                 [0.66666667, 0.33333333]])]
+testAgent.CondMrkvArrays = [np.array([[0.98150051, 0.01849949], 
+                                      [0.66666667, 0.33333333]])]
+
 ##################################################################################################
 
 # Simulate with Monte Carlo
@@ -105,14 +127,27 @@ print(np.mean(testAgent.state_now["cLvl"]))
 print(np.mean(testAgent.state_now["aLvl"]))
 
 # Transition Matrices
-testAgent.compute_steady_state(state = testState)
+testAgent.compute_steady_state()
 print(testAgent.C_ss)
 print(testAgent.A_ss)
 
+##################################################################################################
+
 # testAgent.calc_transition_matrix_base(state = testState)
-# mat1 = testAgent.tran_matrix
+mat1 = testAgent.tran_matrix
 
 # testAgent.calc_transition_matrix()
 # mat2 = testAgent.tran_matrix
+
+testAgent.MrkvArray = [np.array([[0.0, 1.0], 
+                                 [0.0, 1.0]])]
+testAgent.CondMrkvArrays = [np.array([[1.0, 0.0], 
+                                 [1.0, 0.0]])]
+
+testAgent.compute_steady_state(state = testState)
+# print(testAgent.C_ss)
+# print(testAgent.A_ss)
+mat2 = testAgent.tran_matrix
+
 
 # print(mat2 - mat1)
