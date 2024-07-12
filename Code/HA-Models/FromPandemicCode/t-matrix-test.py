@@ -55,7 +55,7 @@ for ThisType in BaseTypeList:
     ThisType.IncShkDstn_recessionTaxCut = IncShkDstn_recessionTaxCut
         
     ThisType.IncShkDstn_recessionCheck = deepcopy(IncShkDstn_recession)
-    ThisType.mCount = 5
+    ThisType.mCount = 200
     ThisType.mFac = 3
     ThisType.mMin = 1e-4
     ThisType.mMax = 10000
