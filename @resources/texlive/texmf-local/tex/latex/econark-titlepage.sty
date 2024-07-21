@@ -1,6 +1,5 @@
-% option to include a title page
-
-\newcommand{\forcedate}[1]{\newcommand{\@forcedate}{#1}}
+\providecommand{\forcedate}{}
+\renewcommand{\forcedate}[1]{\newcommand{\@forcedate}{#1}}
 
 % titlepage with title, author(s), and date
 
@@ -132,13 +131,14 @@
   {\mbox{\textsuperscript{\tiny\@thefnmark}}}
 }
 
-% \RequirePackage{perpage}
+
+\RequirePackage[multiple]{footmisc}
 \RequirePackage{manyfoot}
-\RequirePackage{footmisc}
-\RequirePackage{perpage}
-\DefineFNsymbols{blank}[text]{{} {} {} {} {}} \setfnsymbol{blank} \DeclareNewFootnote{B}[fnsymbol] \MakePerPage{footnoteB} \renewcommand{\thanks}{\footnoteB} \newcommand{\thanksFooter}{\footnoteB}
+\RequirePackage{perpage} \DefineFNsymbols{blank}[text]{{} {} {} {} {}} \setfnsymbol{blank} \DeclareNewFootnote{B}[fnsymbol] \MakePerPage{footnoteB} \renewcommand{\thanks}{\footnoteB} \newcommand{\thanksFooter}{\footnoteB}
 
 % 20170126: perpage package conflicts with something else so is removed in econtexMake.sh
+
+\hfuzz2pt % Don't bother to report over-full boxes if over-edge is < 2pt
 
 %%%%%%%%%% Added by Amy Hendrickson, TeXnology Inc.
 %% Amy change, Feb 28, 2011 ==>>
