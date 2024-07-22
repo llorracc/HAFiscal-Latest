@@ -309,8 +309,8 @@ Temporary Items
 # economics.bib will be nonexistent on local machine, but should exist and be of zero size on remote
 # This requires it to exist but be empty on first commit, and ignored thereafter 
 economics.bib
+system.bib	
 *.tmp
-
 
 #
 _region_.*
