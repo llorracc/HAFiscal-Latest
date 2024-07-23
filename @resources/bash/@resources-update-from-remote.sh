@@ -4,9 +4,7 @@
 # that do not have a counterpart in in the upstream
 # written by Claude, edited by CDC
 
-# script should live in directory of the @resources file to be updated
-
-# path to the directory the script lives in
+# script should live in the bash dir of the @resources dir
 
 # Set the GitHub repository URL and the desired subdirectory
 repo_url="https://github.com/econ-ark/econ-ark-tools.git"
