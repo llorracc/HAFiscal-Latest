@@ -1,6 +1,13 @@
 % -*- mode: LaTeX; TeX-PDF-mode: t; -*-     # Configure emacs auctex viewer
-\input{@resources/tex-add-search-paths}  % allow latex to find custom stuff
-\input{./.econtexRoot} % Set paths (like, \LaTeXInputs) to find resources
+
+% allow latex to find custom stuff
+\input{@resources/tex-add-search-paths}  
+
+% executeAllowed boolean true if able to run shell scripts
+\input{@resources/set-boolean-indicating-execute-permissions} 
+
+% Set paths (like, \LaTeXInputs) to find resources
+\input{./.econtexRoot} 
 
 % Document has title page and table of contents and header:
 \documentclass[titlepage, headings=optiontotocandhead]{econark}
