@@ -13,14 +13,8 @@ realpath() {
 
 # script lives in the bash dir of the @resources dir
 bash_src="$(realpath $(dirname $0))"
-echo bash_src="$bash_src"
-
 root_src="$(dirname $bash_src)"
-echo root_src="$root_src"
-
-# if this is being run from $targ/@resources/bash:
 dest_path="$(dirname $root_src)" 
-echo 'dest_path='$dest_path
 
 base_name="$(basename $dest_path)"
 
@@ -45,7 +39,6 @@ fi
 
 echo dest_path="$dest_path"
 
-# dest_path=/Volumes/Data/Papers/BufferStockTheory/BufferStockTheory-Latest
 # Set the GitHub repository URL and the desired subdirectory
 repo_url="https://github.com/econ-ark/econ-ark-tools"
 
@@ -93,19 +86,19 @@ opts=(
     --group # or group
     --human-readable
     --verbose
-    --delete
     --exclude="'old'"
     --exclude="'.DS_Store'"
     --exclude="'auto'"
     --exclude="'*~'"
     --checksum
+    --delete
     --itemize-changes
     --out-format="'%i %n%L'"
 )
 
-#cmd='rsync '"$dryrun"' --copy-links --recursive --perms --owner --group --human-readable --verbose --delete --exclude="'"old"'" --exclude='".DS_Store"' --exclude='"auto"' --exclude="'"*~"'" --checksum --itemize-changes --out-format='"'%i %n%L'"' '"$orig_path/@resources/"' '"$dest_path/@resources/"''
-#opts='--copy-links --recursive --perms --owner --group --human-readable --verbose --delete --exclude="'"old"'" --exclude='".DS_Store"' --exclude='"auto"' --exclude="'"*~"'" --checksum --itemize-changes --out-format='"'%i %n%L'"''
-deletions=$(rsync --dry-run "${opts[@]}" "$orig_path/@resources/" "$dest_path/@resources/" | grep deleting)
+cmd_dryrun='rsync --dry-run '"${opts[@]}"' '"$orig_path/@resources/"' '"$dest_path/@resources/"
+# echo $cmd_dryrun
+deletions=$(eval "$cmd_dryrun" | grep deleting)
 
 # Check if there are any deletions and print them
 if [[ -n "$deletions" ]]; then
@@ -117,19 +110,16 @@ if [[ -n "$deletions" ]]; then
     if [[ "$dryrun" == '' ]]; then # did not ask for dryrun
 	echo 'hit return to continue, C-c to abort'
 	say 'hit return to proceed'
+	read answer
     fi
-    read answer
 fi
-
-#rsync      "$dryrun" -r -p -o -g -t -vh --delete --exclude='old' --exclude='.DS_Store' --exclude='auto' --exclude='*~' --checksum --itemize-changes --out-format="%i %n%L" "$orig_path/@resources/" "$dest_path/@resources/" | grep '^>f.*c' | tee >(awk 'BEGIN {printf "\n"}; END { if (NR == 0) printf "\nno file(s) changed\n\n"; else printf "\nsome file(s) changed\n\n"}')
-
 
 cmd='rsync '"$dryrun"' '"${opts[@]}"' '"$orig_path/@resources/"' '"$dest_path/@resources/"
 
 echo $cmd
 eval "$cmd" | grep '^>f.*c' | tee >(awk 'BEGIN {printf "\n"}; END { if (NR == 0) printf "\nno file(s) changed\n\n"; else printf "\nsome file(s) changed\n\n"}')
 
-# Change to read-only; edits should be done upstream
+# Change target to read-only to remind self that edits should be done upstream
 chmod -Rf u-w "$dest_path/@resources"
 
 # Ensure temporary directory is removed on script exit
