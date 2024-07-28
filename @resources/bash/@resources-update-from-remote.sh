@@ -84,18 +84,50 @@ if [[ $# == 2 ]]; then # second argument
     fi
 fi
 
+# rsync options 
+#    --perms to copy perms
+opts=(
+    --copy-links
+    --recursive
+    --owner # or owner 
+    --group # or group
+    --human-readable
+    --verbose
+    --delete
+    --exclude="'old'"
+    --exclude="'.DS_Store'"
+    --exclude="'auto'"
+    --exclude="'*~'"
+    --checksum
+    --itemize-changes
+    --out-format="'%i %n%L'"
+)
 
-if [[ "$dryrun" != "dryrun" ]]; then # they did not ask for a dry run
-    echo nodryrun
+#cmd='rsync '"$dryrun"' --copy-links --recursive --perms --owner --group --human-readable --verbose --delete --exclude="'"old"'" --exclude='".DS_Store"' --exclude='"auto"' --exclude="'"*~"'" --checksum --itemize-changes --out-format='"'%i %n%L'"' '"$orig_path/@resources/"' '"$dest_path/@resources/"''
+#opts='--copy-links --recursive --perms --owner --group --human-readable --verbose --delete --exclude="'"old"'" --exclude='".DS_Store"' --exclude='"auto"' --exclude="'"*~"'" --checksum --itemize-changes --out-format='"'%i %n%L'"''
+deletions=$(rsync --dry-run "${opts[@]}" "$orig_path/@resources/" "$dest_path/@resources/" | grep deleting)
+
+# Check if there are any deletions and print them
+if [[ -n "$deletions" ]]; then
+    echo
+    echo "The following files would be deleted:"
+    echo "$deletions"
+    echo
+    # If they are not in dryrun mode, give them a chance to stop
+    if [[ "$dryrun" == '' ]]; then # did not ask for dryrun
+	echo 'hit return to continue, C-c to abort'
+	say 'hit return to proceed'
+    fi
+    read answer
 fi
 
-cmd='rsync '"$dryrun"' --copy-links --recursive --perms --owner --group --human-readable --verbose --delete --exclude="'"old"'" --exclude='".DS_Store"' --exclude='"auto"' --exclude="'"*~"'" --checksum --itemize-changes --out-format='"'%i %n%L'"' '"$orig_path/@resources/"' '"$dest_path/@resources/"''
-opts='--copy-links --recursive --perms --owner --group --human-readable --verbose --delete --exclude="'"old"'" --exclude='".DS_Store"' --exclude='"auto"' --exclude="'"*~"'" --checksum --itemize-changes --out-format='"'%i %n%L'"''
-dirs='"$orig_path/@resources/"' '"$dest_path/@resources/"'
-comb='rsync '"$dryrun"' '"$opts"' '"$dirs"
+#rsync      "$dryrun" -r -p -o -g -t -vh --delete --exclude='old' --exclude='.DS_Store' --exclude='auto' --exclude='*~' --checksum --itemize-changes --out-format="%i %n%L" "$orig_path/@resources/" "$dest_path/@resources/" | grep '^>f.*c' | tee >(awk 'BEGIN {printf "\n"}; END { if (NR == 0) printf "\nno file(s) changed\n\n"; else printf "\nsome file(s) changed\n\n"}')
 
-echo "$cmd"
-#eval "$cmd"
+
+cmd='rsync '"$dryrun"' '"${opts[@]}"' '"$orig_path/@resources/"' '"$dest_path/@resources/"
+
+echo $cmd
+eval "$cmd" | grep '^>f.*c' | tee >(awk 'BEGIN {printf "\n"}; END { if (NR == 0) printf "\nno file(s) changed\n\n"; else printf "\nsome file(s) changed\n\n"}')
 
 # Change to read-only; edits should be done upstream
 chmod -Rf u-w "$dest_path/@resources"
