@@ -187,7 +187,7 @@ def calcMPCbyEd(Agents):
     MPCsA = [0]*(num_types+1)   # Annual MPCs with splurge (each ed. type + population)
     for e in range(num_types):
         MPC_byEd_Q = []
-        MPC_byEd_Q = np.concatenate([ThisType.MPCnow for ThisType in \
+        MPC_byEd_Q = np.concatenate([ThisType.MPCNow for ThisType in \
                                        Agents[e*DiscFacCount:(e+1)*DiscFacCount]])
 
         MPC_byEd_A = Splurge + (1-Splurge)*MPC_byEd_Q
@@ -197,7 +197,7 @@ def calcMPCbyEd(Agents):
         MPCsQ[e] = np.mean(MPC_byEd_Q)
         MPCsA[e] = np.mean(MPC_byEd_A)
         
-    MPC_all_Q = np.concatenate([ThisType.MPCnow for ThisType in Agents])
+    MPC_all_Q = np.concatenate([ThisType.MPCNow for ThisType in Agents])
     MPC_all_A = Splurge + (1-Splurge)*MPC_all_Q
     for qq in range(3):
         MPC_all_A += (1-MPC_all_A)*MPC_all_Q
@@ -240,10 +240,10 @@ def calcMPCbyWealth(Agents):
         WealthQ = np.zeros(ThisType.AgentCount,dtype=int)
         for n in range(3):
             WealthQ[ThisType.state_now["aLvl"] > quartile_cuts[n]] += 1
-        ThisType(WealthQ = WealthQ)
+        ThisType.WealthQ = WealthQ
         WealthQsAll = np.concatenate([WealthQsAll, WealthQ])
     
-    MPC_agents_Q = np.concatenate([ThisType.MPCnow for ThisType in Agents])
+    MPC_agents_Q = np.concatenate([ThisType.MPCNow for ThisType in Agents])
     # Annual MPC: first Q includes Splurge, other three Qs do not
     MPC_agents_A = Splurge+(1-Splurge)*MPC_agents_Q
     for qq in range(3):
@@ -705,6 +705,7 @@ with open(df_resFileStr, 'a') as f:
           +', Splurge = '+str(Splurge) +'\n')
 
 #%% Read in estimates and calculate all results:
+printResultsToFile  = False
 if IncUnemp == 0.7 and IncUnempNoBenefits == 0.5:
     # Baseline unemployment system: 
     print('Calculating all results for CRRA = '+str(round(CRRA,1))+' and R = ' + str(round(Rfree_base[0],3))+':\n')
@@ -721,13 +722,15 @@ if Splurge == 0:
     ar_resFileStr = ar_resFileStr + '_Splurge0'
 df_resFileStr = df_resFileStr + '.txt'
 ar_resFileStr = ar_resFileStr + '.txt'
-print('Loading estimates from ' + df_resFileStr + ' and saving all model results in ' + ar_resFileStr)
+print('Loading estimates from ' + df_resFileStr + ' and calculating results. ')
 
-with open(ar_resFileStr, 'w') as resFile: 
-    resFile.write('Results for parameters:\n')
-    resFile.write('R = '+str(round(Rfree_base[0],2))+', CRRA = '+str(round(CRRA,2))
-          +', IncUnemp = '+str(round(IncUnemp,2))+', IncUnempNoBenefits = '+str(round(IncUnempNoBenefits,2))
-          +', Splurge = '+str(Splurge) +'\n\n')
+if printResultsToFile:
+    print('Saving all model results in ' + ar_resFileStr)
+    with open(ar_resFileStr, 'w') as resFile: 
+        resFile.write('Results for parameters:\n')
+        resFile.write('R = '+str(round(Rfree_base[0],2))+', CRRA = '+str(round(CRRA,2))
+              +', IncUnemp = '+str(round(IncUnemp,2))+', IncUnempNoBenefits = '+str(round(IncUnempNoBenefits,2))
+              +', Splurge = '+str(Splurge) +'\n\n')
            
 # Calculate results by education group    
 myEstim = [[],[],[]]
@@ -741,8 +744,8 @@ while readStr != '' :
     GICx = dictload['GICx']
     GICfactor = np.exp(GICx)/(1+np.exp(GICx))
     myEstim[edType] = [beta,nabla,GICx, GICfactor]
-    betasObjFuncEduc(beta, nabla, GICx, educ_type = edType, print_mode=True, print_file=True, filename=ar_resFileStr)
-    checkDiscFacDistribution(beta, nabla, GICfactor, edType, print_mode=True, print_file=True, filename=ar_resFileStr)
+    betasObjFuncEduc(beta, nabla, GICx, educ_type = edType, print_mode=True, print_file=printResultsToFile, filename=ar_resFileStr)
+    checkDiscFacDistribution(beta, nabla, GICfactor, edType, print_mode=True, print_file=printResultsToFile, filename=ar_resFileStr)
     readStr = betFile.readline().strip()
 betFile.close()
 
@@ -750,12 +753,12 @@ betFile.close()
 betasObjFunc([myEstim[0][0], myEstim[1][0], myEstim[2][0]], \
              [myEstim[0][1], myEstim[1][1], myEstim[2][1]], \
              [myEstim[0][3], myEstim[1][3], myEstim[2][3]], \
-             target_option = 1, print_mode=True, print_file=True, filename=ar_resFileStr)
+             target_option = 1, print_mode=True, print_file=printResultsToFile, filename=ar_resFileStr)
 
 
 
 #%% 
-run_additional_analysis = False
+run_additional_analysis = True
 
 #%%
 if run_additional_analysis:
