@@ -1,0 +1,143 @@
+\documentclass[12pt,letterpaper,english]{article}
+\usepackage[round, authoryear]{natbib}
+\usepackage{floatrow}
+\renewcommand{\floatpagefraction}{.99}
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+\usepackage{eurosym}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage[titletoc]{appendix}
+\usepackage{graphicx}
+\newcommand{\argmin}{\arg\!\min}
+\usepackage{amsmath, amssymb,amsthm,mathtools,dsfont}
+\usepackage{algorithmic}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage[flushleft]{threeparttable}
+\usepackage{rotating}
+\usepackage{float}
+\usepackage{tabulary}
+\usepackage{ragged2e}
+\usepackage{rotating}
+\usepackage{epstopdf}
+\usepackage[labelfont=bf]{caption}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{subfig}
+\usepackage{placeins}
+\usepackage{pxfonts}
+\usepackage{xcolor}
+\usepackage{svg}
+\usepackage{multirow}
+\usepackage{verbatim}
+\hypersetup{
+	colorlinks,
+	linkcolor={red!50!black},
+	citecolor={red!50!black},
+	urlcolor={blue!80!black}
+}
+\textheight=23cm \textwidth=16.5cm \oddsidemargin=0cm
+\evensidemargin=0cm \topmargin=-1.75cm
+\setcounter{MaxMatrixCols}{10}
+\makeatletter
+\g@addto@macro\@floatboxreset\centering
+\makeatother
+\setlength\floatsep{2\baselineskip plus 3pt minus 2pt}
+\setlength\textfloatsep{2\baselineskip plus 3pt minus 2pt}
+\setlength\intextsep{2\baselineskip plus 3pt minus 2 pt}
+\newcommand*{\MyIndent}{\hspace*{0.5cm}}%
+\usepackage[normalem]{ulem}
+\newtheorem{theorem}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumptions}
+\newtheorem{hypothesis}{Hypothesis}
+
+
+% Uncomment the next line to use the harvard package with bibtex
+%\usepackage[abbr]{harvard}
+
+% This command determines the leading (vertical space between lines) in draft mode
+% with 1.5 corresponding to "double" spacing.
+%\draftSpacing{1.5}
+%\newlength\TableWidth
+\usepackage{array}
+\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+\newcommand{\Figures}{Figures/}
+\newcommand{\Tables}{Tables/}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\title{\textbf{Response to Referee 3 \\ Quantitative Economics MS 2442 \\``Welfare and Spending Effects of \\ Consumption Stimulus Policies''}}
+\author{Christopher D. Carroll, Edmund Crawley, William Du, \\ Ivan Frankovic, and H\aa kon Tretvoll}
+\date{}
+
+\begin{document}
+	\onehalfspacing
+	\maketitle
+	
+	\noindent Thank you for your thoughtful comments and suggestions on our paper ``Welfare and Spending Effects of Consumption Stimulus Policies''. They were all very useful to us in revising the paper. We hope you agree that the paper has improved. In the following, we summarize the main changes we have made based on your, the other referees', and the editor's suggestions. Thereafter, we state each of your comments in italics and provide point-by-point responses to them.
+	
+	\section{Summary of Main Changes}
+	
+	\begin{enumerate}
+		\item We have \ldots 
+	\end{enumerate}
+	
+	\newpage 
+	
+\section{Essential points}
+\begin{itemize}
+	
+	\item \textit{\textbf{Results without the splurge factor.} The first half of the paper spends some time on motivating the splurge factor in consumption, but it is then taken for granted in the policy evaluations. Thus, the two sections appear somewhat disconnected. It would help me to see the policy results for a model calibrated	without the splurge factor, at least in an appendix. Is matching the initially very high MPC out of transitory shocks essential for the policy conclusions drawn in the paper, or would the same conclusions be obtained from a more standard heterogeneous agent model? I imagine a removal of the splurge factor will make stimulus checks and income tax cuts much less attractive, but the strength of the channel should be reported.}
+	
+	\paragraph{Response.} 
+
+	\item \textit{\textbf{Education specific transition rates, E to U vs. U to E.} In the model, transition rates from employment to unemployment (E to U) are calibrated	to different values across education groups, while job-finding rates out of unemployment (U to E) are constant across groups. The probability of transitioning out of unemployment also appears to not change over the cycle, while the separation rate does (this seems odd, as	the DMP literature tends to assume that separation rates are constant and job-finding rates move with the cycle (see, e.g., \citet{hagedorn2008cyclical}). This focus on E to U	rates is not motivated and the reader is left to wonder whether this is a crucial assumption or not. It appears that the model could be calibrated to match the same moments with heterogeneous U to E probabilities and constant separation rates, instead. I presume this would make recessions much worse for unemployed dropouts, boosting the welfare effects of a UI	extension. Given that the welfare results of the paper strongly favor UI benefit extensions, a discussion of the heterogeneous E to U rates assumption seems warranted.}	
+	
+	\paragraph{Response.} 
+
+	\item \textit{\textbf{The welfare criterion.} I had trouble understanding the welfare criterion used to evaluate the three different policies. My own intuition for comparing the policies would have been to simulate, for each policy, two recessions, one with the policy and one without, and then compare aggregate	welfare between the two; potentially also to an economy without a recession, to quantify the cost of business cycles. This approach is deemed not viable at the top of page 27, because		it would give the social planner incentive to redistribute outside of recessions. I think this point warrants additional explanation. Is the problem that recessions end stochastically, making it difficult to exclude welfare gains from, e.g., a UI extension after the recession is over? In this case, one could compute this measure for each recession length, not including the additional welfare gains from continuing policies after the recessions, and weight them by their probabilities. I’m sure the explanation is perfectly obvious to the authors, but a reader will strongly benefit from an additional discussion. It was also unclear to me why the recessionary policies investigated had fiscal costs in non-recessionary periods, as suggested	in equation (12). Relatedly, page 9 states that all policies have the same fiscal cost and are financed through taxes in the far future, but I could not find how $PV(policy,Rec)$ 	or $PV(policy, 0)$ are constructed. How can they be included in equation (12) without further	assumptions about the timing and implementation of taxation schemes? This also matters for the results presented on page 25—is $NPV(\infty,\Delta G)$ roughly constant across policies?}
+
+	\paragraph{Response.} 
+
+\end{itemize}
+
+\section{Suggestions}
+
+\begin{itemize}
+	\item \textit{\textbf{Robustness.} In my view, the robustness section can be relegated to an appendix. None of the exercises come close to changing the welfare ranking across policies. Further, in three of the four exercises
+		(risk aversion, interest rates and recession properties), the quantitative welfare results change only marginally.}
+	
+	\paragraph{Response.} 
+	
+	\item \textit{\textbf{Liquid wealth distribution in splurge estimation.} When estimating the splurge factor, the authors calibrate a model to the Norwegian economy to match marginal propensities to spend out of lottery winnings and the liquid wealth distribution. Unfortunately, they latter does not exist for Norway, hence the authors instead target the US liquid wealth distribution from the 2004 SCF. I think it would be prudent to target a liquid wealth distribution for a country whose labor market institutions more closely	match Norway’s, e.g., Germany or France. The European Union’s Household Finance and	Consumption Survey provides such a measure, the codes to compute the relevant metrics are provided with the Brookings Paper by \citet{kaplan2014wealthy}.}
+	
+	\paragraph{Response.} 
+	
+	\item \textit{\textbf{Targeted stimulus checks.} In the final paragraph of the introduction, the authors discuss the possibility of targeted stimulus checks (as opposed to the case discussed in the paper: means tested, but universal distribution). I think estimating this case would help readers benchmark the welfare results by providing an upper bound. As of now, it is clear that UI extensions in the model do most to increase welfare; but are they far away from this hypothetical upper bound?}
+	
+	\paragraph{Response.}
+	
+	\item \textit{\textbf{Effect of UI extensions on job-finding rates.} The model presented in the paper does not feature endogenous search, which precludes the UI extensions from having negative effects on job-finding, as proposed in, e.g., \citet{mitman2015optimal}. In this sense, the authors, in the name of tractability, stack the deck in favor of the UI extensions. I’m strongly sympathetic to the assumption, but it would be interesting to know how bad the negative incentive effects would need to be for the UI	extension to lose its effectiveness. For example, assuming that job-finding probabilities decrease linearly with benefit size, how negative would the function’s slope need to be for the	paper’s conclusions to revert? A back of the envelope calculation could provide an answer. My prior would be that the number is too high to be realistic, strengthening the conclusions in the paper.}
+	
+	\paragraph{Response.} 
+	
+\end{itemize}
+
+\bigskip
+
+\noindent Finally, we would like to thank you again for your careful advice on our paper. We hope you find our revision satisfactory.
+
+\bibliographystyle{econometrica}
+\bibliography{../../../../HAFiscal.bib, ../../../../Add-Refs.bib}
+\end{document}
