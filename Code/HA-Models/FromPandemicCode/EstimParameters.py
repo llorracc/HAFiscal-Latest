@@ -169,8 +169,8 @@ TranShkStd = [np.sqrt(0.12)]
 PermShkStd = [np.sqrt(0.003)]
 
 Rfree_base = [1.01]             #Baseline
-if len(sys.argv) >= 2:
-    Rfree_base = [float(sys.argv[1])]
+# if len(sys.argv) >= 2:
+#     Rfree_base = [float(sys.argv[1])]
 LivPrb_base = [1.0-1/160.0]     # 40 years (160 quarters) working life 
 
 # Calculate max beta values for each education group where GIC holds with equality: 

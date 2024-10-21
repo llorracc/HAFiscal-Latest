@@ -450,7 +450,259 @@ class AggFiscalType(MarkovConsumerType):
         self.state_now['cLvl'] = cNrmNow*self.state_now['pLvl']
         #self.cLvl_splurgeNow = (1.0-self.Splurge)*self.cLvlNow + self.Splurge*self.pLvlNow*self.TranShkNow
         self.state_now['cLvl_splurge'] = (1.0-self.Splurge)*self.state_now['cLvl'] + self.Splurge*self.state_now['pLvl']*self.shocks['TranShk']*self.AggDemandFac   #added last term relaive to Edmund's Version
+
+    def harmenberg_income_process(self):
+        self.state_num = len(self.MrkvArray[0])
+        self.dist_pGrid = np.array([1])
+        if self.neutral_measure == True:
+            for m in range(self.state_num):
+                self.IncShkDstn[0][m].pmv = self.IncShkDstn[0][m].pmv * self.IncShkDstn[0][m].atoms[0]
+
+    def calc_transition_matrix(self, shk_dstn = None): 
+
+        if self.cycles == 0: 
+            if shk_dstn == None:
+                shk_dstn = self.IncShkDstn[0]
         
+            dist_mGrid =  self.dist_mGrid
+            dist_pGrid = self.dist_pGrid
+            
+            n_p = len(dist_pGrid) # number of permanent shock points
+            n_m = len(self.MrkvArray[0]) # number of Markov states
+            n_a = self.dist_mGrid.size # number of cash on hand gridpoints
+
+            self.cPol_Grid = np.zeros((n_m, n_a))
+            self.aPol_Grid = np.zeros((n_m, n_a))
+                
+            self.tran_matrix = np.zeros((n_m, n_a, n_m, n_a))
+            
+            Rfree = self.Rfree[0]        
+            bNext = np.zeros((n_m, n_a))
+      
+            shk_prbs =  np.zeros((n_m, self.TranShkCount * self.PermShkCount))
+            tran_shks = np.zeros((n_m, self.TranShkCount * self.PermShkCount))
+            perm_shks = np.zeros((n_m, self.TranShkCount * self.PermShkCount))
+            
+            # produce C and A grids           
+            for m in range(n_m):
+                self.cPol_Grid[m] = self.solution[0].cFunc[m](dist_mGrid, dist_mGrid * 0 + 1)
+                self.aPol_Grid[m] = dist_mGrid - self.cPol_Grid[m]
+            
+                bNext[m] = Rfree * self.aPol_Grid[m]
+                shk_prbs[m] = shk_dstn[m].pmv
+                tran_shks[m] = shk_dstn[m].atoms[1]
+                perm_shks[m] = shk_dstn[m].atoms[0]
+    
+            LivPrb = self.LivPrb[0][0] # Update probability of staying alive this period
+
+            tran_matrix_ss = None
+            mrkv_array = self.MrkvArray[0]
+
+            if len(dist_pGrid) == 1:
+                tran_mat = np.zeros((n_m, n_a, n_m, n_a))
+                # 
+                for m in range(n_m):
+                    for mp in range(n_m):   
+                        if  mrkv_array[m, mp] > 0:  
+                            NewBornDist = jump_to_grid_1D(np.ones_like(tran_shks[mp]), 
+                                                          shk_prbs[mp], 
+                                                          dist_mGrid)
+                            t_mat = mrkv_array[m, mp] * gen_tran_matrix_1D(dist_mGrid,
+                                                                           bNext[m],
+                                                                           shk_prbs[mp],
+                                                                           perm_shks[mp],
+                                                                           tran_shks[mp],
+                                                                           LivPrb,
+                                                                           NewBornDist)
+                            tran_mat[m, :, mp, :] = t_mat
+
+                self.tran_matrix = tran_mat.reshape(n_m * n_a, n_m * n_a)
+
+            else:
+                # for each markov state, n_a * n_p possible states
+                tran_mat = np.zeros((n_m, n_a * n_p, n_m, n_a * n_p))
+
+                for m in range(n_m):
+                    for mp in range(n_m):   
+                        if  mrkv_array[m, mp] > 0:  
+                            NewBornDist = jump_to_grid_2D(np.ones_like(tran_shks[mp]), 
+                                                          np.ones_like(tran_shks[mp]), 
+                                                          shk_prbs[mp], 
+                                                          dist_mGrid, 
+                                                          dist_pGrid)
+                            t_mat = mrkv_array[m, mp] * gen_tran_matrix_2D(dist_mGrid,
+                                                                           dist_pGrid,
+                                                                           bNext[m],
+                                                                           shk_prbs[mp],
+                                                                           perm_shks[mp],
+                                                                           tran_shks[mp],
+                                                                           LivPrb,
+                                                                           NewBornDist)
+                            tran_mat[m, :, mp, :] = t_mat
+
+                self.tran_matrix = tran_mat.reshape(n_m * n_a * n_p, n_m * n_a * n_p)
+
+        elif self.cycles > 1:
+            print('calc_transition_matrix requires cycles = 0 or cycles = 1')
+        
+        elif self.T_cycle!= 0:
+
+            if shk_dstn == None:
+                shk_dstn = self.IncShkDstn
+        
+            dist_mGrid = self.dist_mGrid
+            dist_pGrid = self.dist_pGrid
+
+            n_p = len(dist_pGrid[0])
+            n_m = len(self.MrkvArray[0]) # number of Markov states
+            n_a = self.dist_mGrid.size # number of cash on hand gridpoints
+            bigT = self.T_cycle
+
+            self.cPol_Grid = np.zeros((bigT, n_m, n_a))
+            self.aPol_Grid = np.zeros((bigT, n_m, n_a))
+
+            self.tran_matrix = []
+
+            for t in range(bigT):
+                if type(self.dist_pGrid) == list:
+                    dist_pGrid = self.dist_pGrid[t] #Permanent income grid this period
+                else:
+                    dist_pGrid = self.dist_pGrid #If here then use prespecified permanent income grid
+
+                Rfree = self.Rfree[t][0]
+  
+                bNext = np.zeros((n_m, n_a))
+            
+                shk_prbs =  np.zeros((n_m, self.TranShkCount * self.PermShkCount))
+                tran_shks = np.zeros((n_m, self.TranShkCount * self.PermShkCount))
+                perm_shks = np.zeros((n_m, self.TranShkCount * self.PermShkCount))
+
+                # produce C and A grids
+                for m in range(n_m):
+                    self.cPol_Grid[t][m] = self.solution[t].cFunc[m](dist_mGrid, dist_mGrid * 0 + 1)
+                    self.aPol_Grid[t][m] = dist_mGrid - self.cPol_Grid[t][m]
+                        
+                    bNext[m] = Rfree * self.aPol_Grid[t][m]
+                    shk_prbs[m] = shk_dstn[t][m].pmv
+                    tran_shks[m] = shk_dstn[t][m].atoms[1]
+                    perm_shks[m] = shk_dstn[t][m].atoms[0]
+    
+                LivPrb = self.LivPrb[t][0] # Update probability of staying alive this period
+            
+                if len(dist_pGrid) == 1: 
+                    mrkv_array = self.MrkvArray[t]
+                    tran_mat = np.zeros((n_m, n_a, n_m, n_a))
+
+                    for m in range(n_m):
+                        for mp in range(n_m):   
+                            if  mrkv_array[m, mp] > 0:  
+                                NewBornDist = jump_to_grid_1D(np.ones_like(tran_shks[mp]), 
+                                                              shk_prbs[mp], 
+                                                              dist_mGrid)
+                                t_mat = mrkv_array[m, mp] * gen_tran_matrix_1D(dist_mGrid,
+                                                                               bNext[m],
+                                                                               shk_prbs[mp],
+                                                                               perm_shks[mp],
+                                                                               tran_shks[mp],
+                                                                               LivPrb,
+                                                                               NewBornDist)
+                                tran_mat[m, :, mp, :] = t_mat
+
+                    tran_mat = tran_mat.reshape(n_m * n_a, n_m * n_a)
+                    self.tran_matrix.append(deepcopy(tran_mat))
+
+                else:
+                    mrkv_array = self.MrkvArray[t]
+                    tran_mat = np.zeros((n_m, n_a * n_p, n_m, n_a * n_p))
+
+                    for m in range(n_m):
+                        for mp in range(n_m):   
+                            if  mrkv_array[m, mp] > 0:  
+                                NewBornDist = jump_to_grid_2D(np.ones_like(tran_shks[mp]),
+                                                              np.ones_like(tran_shks[mp]), 
+                                                              shk_prbs[mp], 
+                                                              dist_mGrid,
+                                                              dist_pGrid)
+                                t_mat = mrkv_array[m, mp] * gen_tran_matrix_2D(dist_mGrid,
+                                                                               dist_pGrid,
+                                                                               bNext[m],
+                                                                               shk_prbs[mp],
+                                                                               perm_shks[mp],
+                                                                               tran_shks[mp],
+                                                                               LivPrb,
+                                                                               NewBornDist)
+                                tran_mat[m, :, mp, :] = t_mat
+
+                    tran_mat = tran_mat.reshape(n_m * n_a * n_p, n_m * n_a * n_p)
+                    self.tran_matrix.append(deepcopy(tran_mat)) 
+
+    def compute_steady_state(self, harmenberg = True, num_pointsP = 25):
+        # Compute steady state to perturb around
+        self.cycles = 0
+        self.solve()
+
+        if(harmenberg):
+            self.neutral_measure = True
+            self.harmenberg_income_process()
+            self.define_distribution_grid()
+            self.calc_transition_matrix()
+            self.calc_ergodic_dist()
+
+            self.A_ss = np.dot(self.aPol_Grid.flatten(), self.vec_erg_dstn)[0]
+            self.C_ss = np.dot(self.cPol_Grid.flatten(), self.vec_erg_dstn)[0]
+        
+        else:
+            self.define_distribution_grid(num_pointsP = num_pointsP)
+            self.calc_transition_matrix()
+            self.calc_ergodic_dist()
+
+            pGrid = self.dist_pGrid
+
+            n_p = len(pGrid)
+            n_m = len(self.MrkvArray[0])
+            n_a = len(self.dist_mGrid)
+
+            self.gridc = np.zeros((n_m, n_a, n_p))
+            self.grida = np.zeros((n_m, n_a, n_p))
+
+            for m in range(n_m):
+                for j in range(n_p):
+                    self.gridc[m, :, j] = pGrid[j] * self.cPol_Grid[m]  # unnormalized Consumption policy grid
+                    self.grida[m, :, j] = pGrid[j] * self.aPol_Grid[m]  # unnormalized Asset policy grid
+
+            self.C_ss = np.dot(self.gridc.flatten(), self.vec_erg_dstn)[0]  # Aggregate Consumption
+            self.A_ss = np.dot(self.grida.flatten(), self.vec_erg_dstn)[0]  # Aggregate Assets
+        
+        return self.A_ss, self.C_ss
+    
+    def calc_ergodic_dist(self, transition_matrix=None):
+        """
+        Calculates the ergodic distribution across normalized market resources and
+        permanent income as the eigenvector associated with the eigenvalue 1.
+        The distribution is stored as attributes of self both as a vector and as a reshaped array with the ij'th element representing
+        the probability of being at the i'th point on the mGrid and the j'th
+        point on the pGrid.
+
+        Parameters
+        ----------
+        transition_matrix: List
+                    list with one transition matrix whose ergordic distribution is to be solved
+        Returns
+        -------
+        None
+        """
+
+        if not isinstance(transition_matrix, list):
+            transition_matrix = [self.tran_matrix]
+
+        eigen, ergodic_distr = sp.linalg.eigs(
+            transition_matrix[0], v0 = np.ones(len(transition_matrix[0])), k = 1, which = "LM"
+        )  # Solve for ergodic distribution
+
+        ergodic_distr = ergodic_distr.real / np.sum(ergodic_distr.real)
+        self.vec_erg_dstn = ergodic_distr
+
+
     def reset(self):
         return # do nothing
 
