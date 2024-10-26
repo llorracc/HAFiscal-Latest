@@ -9,7 +9,7 @@
 \ifHtmlOutput
   \let\originalincludegraphics\includegraphics
   \renewcommand{\includegraphics}[2][]{%
-    \originalincludegraphics[#1]{\string~/#2}%
+    \originalincludegraphics[#1]{#2}%
   }
 \fi
 
