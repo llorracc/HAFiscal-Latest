@@ -209,3 +209,32 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     print(NPV_AddInc_Check[-1])
     print(NPV_AddInc_UI[-1])
     print(NPV_AddInc_TaxCut[-1])
+    
+    #### METHOD 5 - suggested by referee 2 for QE
+    W_c = 1/(1-SP_discount_rate)*base_welfare.shape[1]
+    P_c = 1/(1-SP_discount_rate)*base_results['AggCons'][0]
+    
+    Check_consumption_welfare5   = (Check_welfare_impact_recession/W_c) / (NPV_AddInc_Rec_Check[-1]/P_c)   - (Check_welfare_impact/W_c) / (NPV_AddInc_Check[-1]/P_c) 
+    UI_consumption_welfare5      = (UI_welfare_impact_recession/W_c) / (NPV_AddInc_UI_Rec[-1]/P_c)      - (UI_welfare_impact/W_c     - NPV_AddInc_UI[-1]/P_c) 
+    TaxCut_consumption_welfare5  = (TaxCut_welfare_impact_recession/W_c) / (NPV_AddInc_Rec_TaxCut[-1]/P_c)  - (TaxCut_welfare_impact/W_c - NPV_AddInc_TaxCut[-1]/P_c) 
+    
+    Check_consumption_welfare_AD5   = (Check_welfare_impact_recession_AD/W_c) / (NPV_AddInc_Rec_Check[-1]/P_c)   - (Check_welfare_impact/W_c) / (NPV_AddInc_Check[-1]/P_c) 
+    UI_consumption_welfare_AD5      = (UI_welfare_impact_recession_AD/W_c) / (NPV_AddInc_UI_Rec[-1]/P_c)      - (UI_welfare_impact/W_c) / (NPV_AddInc_UI[-1]/P_c) 
+    TaxCut_consumption_welfare_AD5  = (TaxCut_welfare_impact_recession_AD/W_c) / (NPV_AddInc_Rec_TaxCut[-1]/P_c)  - (TaxCut_welfare_impact/W_c) / (NPV_AddInc_TaxCut[-1]/P_c) 
+    
+    #format as basis points
+    def mystr3bp(number):
+        if not np.isnan(number):
+            out = "{:.3f}".format(number*10000)
+        else:
+            out = ''
+        return out
+    output  ="\\begin{tabular}{@{}lccc@{}} \n"
+    output +="\\toprule \n"
+    output +="                          & Stimulus check      & UI extension    & Tax cut    \\\\  \\midrule \n"
+    output +="$\\mathcal{C}(Rec,\\text{policy})$ & "      + mystr3bp(Check_consumption_welfare5)     + "  & "+ mystr3bp(UI_consumption_welfare5)     +  "  & "+  mystr3bp(TaxCut_consumption_welfare5)  + "     \\\\ \n"
+    output +="$\\mathcal{C}(Rec, AD,\\text{policy})$ & "  + mystr3bp(Check_consumption_welfare_AD5)  + "  & "+ mystr3bp(UI_consumption_welfare_AD5)  +  "  & "+  mystr3bp(TaxCut_consumption_welfare_AD5)  + "     \\\\ \n"
+    output +="\\end{tabular}  \n"
+    with open(table_dir+'welfare5.tex','w') as f:
+        f.write(output)
+        f.close()
