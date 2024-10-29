@@ -215,8 +215,8 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     P_c = 1/(1-SP_discount_rate)*base_results['AggCons'][0]
     
     Check_consumption_welfare5   = (Check_welfare_impact_recession/W_c) / (NPV_AddInc_Rec_Check[-1]/P_c)   - (Check_welfare_impact/W_c) / (NPV_AddInc_Check[-1]/P_c) 
-    UI_consumption_welfare5      = (UI_welfare_impact_recession/W_c) / (NPV_AddInc_UI_Rec[-1]/P_c)      - (UI_welfare_impact/W_c     - NPV_AddInc_UI[-1]/P_c) 
-    TaxCut_consumption_welfare5  = (TaxCut_welfare_impact_recession/W_c) / (NPV_AddInc_Rec_TaxCut[-1]/P_c)  - (TaxCut_welfare_impact/W_c - NPV_AddInc_TaxCut[-1]/P_c) 
+    UI_consumption_welfare5      = (UI_welfare_impact_recession/W_c) / (NPV_AddInc_UI_Rec[-1]/P_c)      - (UI_welfare_impact/W_c) / (NPV_AddInc_UI[-1]/P_c) 
+    TaxCut_consumption_welfare5  = (TaxCut_welfare_impact_recession/W_c) / (NPV_AddInc_Rec_TaxCut[-1]/P_c)  - (TaxCut_welfare_impact/W_c) / (NPV_AddInc_TaxCut[-1]/P_c) 
     
     Check_consumption_welfare_AD5   = (Check_welfare_impact_recession_AD/W_c) / (NPV_AddInc_Rec_Check[-1]/P_c)   - (Check_welfare_impact/W_c) / (NPV_AddInc_Check[-1]/P_c) 
     UI_consumption_welfare_AD5      = (UI_welfare_impact_recession_AD/W_c) / (NPV_AddInc_UI_Rec[-1]/P_c)      - (UI_welfare_impact/W_c) / (NPV_AddInc_UI[-1]/P_c) 
