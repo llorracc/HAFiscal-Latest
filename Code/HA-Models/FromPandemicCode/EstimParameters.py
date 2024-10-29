@@ -56,7 +56,7 @@ UBspell_normal = 2           # Average duration of unemployment benefits in norm
 CRRA = 2.0                 # Coefficient of relative risk aversion (1, 2 or 3)
 f = open('../Target_AggMPCX_LiquWealth/Result_AllTarget.txt', 'r')
 dictload = eval(f.read())
-# Splurge = dictload['splurge'] 
+Splurge = dictload['splurge'] 
 # if len(sys.argv) >= 6:
 #     # Number of arguments indicates that Splurge is set manually 
 #     Splurge = float(sys.argv[5])
@@ -71,9 +71,9 @@ dictload = eval(f.read())
 #     dictload = eval(f.read())
 #     Splurge = dictload['splurge'] 
 
-# Temporary until Splurge estimation is finalized
-Splurge = 0.302
-# END Temporary
+# # Temporary until Splurge estimation is finalized
+# Splurge = 0
+# # END Temporary
     
 PopGroFac = 1.0         #1.01**0.25  # Population growth factor
 PermGroFacAgg = 1.0     #1.01**0.25 # Technological growth rate or aggregate productivity growth factor
