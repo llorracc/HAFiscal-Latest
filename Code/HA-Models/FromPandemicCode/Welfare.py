@@ -238,3 +238,48 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     with open(table_dir+'welfare5.tex','w') as f:
         f.write(output)
         f.close()
+        
+        
+    #### METHOD 6 
+    # Calculate the marginal utility of a dollar of spending for each household in the baseline.
+    # These will act as weights: under the baseline there is no benefit to the social planner to doing any marginal consumption transfers
+    base_MU = 1/base_results['cLvl_all_splurge'] 
+    NPV_AddCons_Rec_Check                = getSimulationDiff(recession_results,recession_Check_results,'NPV_AggCons') 
+    NPV_AddCons_UI_Rec                   = getSimulationDiff(recession_results,recession_UI_results,'NPV_AggCons') 
+    NPV_AddCons_Rec_TaxCut               = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggCons')
+    
+    NPV_AddCons_Check                = getSimulationDiff(base_results,check_results,'NPV_AggCons') 
+    NPV_AddCons_UI                   = getSimulationDiff(base_results,UI_results,'NPV_AggCons')
+    NPV_AddCons_TaxCut               = getSimulationDiff(base_results,TaxCut_results,'NPV_AggCons')
+
+    recession_Check_consumption_welfare6   = (np.sum(np.sum((recession_Check_welfare-recession_welfare)/base_MU,1)/NPV_AddInc_Rec_Check[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_Rec_Check[-1]-NPV_AddCons_Rec_Check[-1])/NPV_AddInc_Rec_Check[-1]
+    Check_consumption_welfare6   = (np.sum(np.sum((check_welfare-base_welfare)/base_MU,1)/NPV_AddInc_Check[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_Check[-1]-NPV_AddCons_Check[-1])/NPV_AddInc_Check[-1]
+
+    recession_UI_consumption_welfare6   = (np.sum(np.sum((recession_UI_welfare-recession_welfare)/base_MU,1)/NPV_AddInc_UI_Rec[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_UI_Rec[-1]-NPV_AddCons_UI_Rec[-1])/NPV_AddInc_UI_Rec[-1]
+    UI_consumption_welfare6   = (np.sum(np.sum((UI_welfare-base_welfare)/base_MU,1)/NPV_AddInc_UI[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_UI[-1]-NPV_AddCons_UI[-1])/NPV_AddInc_UI[-1]
+
+    recession_TaxCut_consumption_welfare6   = (np.sum(np.sum((recession_TaxCut_welfare-recession_welfare)/base_MU,1)/NPV_AddInc_Rec_TaxCut[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_Rec_TaxCut[-1]-NPV_AddCons_Rec_TaxCut[-1])/NPV_AddInc_Rec_TaxCut[-1]
+    TaxCut_consumption_welfare6   = (np.sum(np.sum((TaxCut_welfare-base_welfare)/base_MU,1)/NPV_AddInc_TaxCut[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_TaxCut[-1]-NPV_AddCons_TaxCut[-1])/NPV_AddInc_TaxCut[-1]
+
+    recession_Check_consumption_welfareAD6   = (np.sum(np.sum((recession_Check_welfare_AD -recession_welfare_AD)/base_MU,1)/NPV_AddInc_Rec_Check[-1] /Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_Rec_Check[-1] -NPV_AddCons_Rec_Check[-1]) /NPV_AddInc_Rec_Check[-1]
+    recession_UI_consumption_welfareAD6      = (np.sum(np.sum((recession_UI_welfare_AD    -recession_welfare_AD)/base_MU,1)/NPV_AddInc_UI_Rec[-1]    /Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_UI_Rec[-1]    -NPV_AddCons_UI_Rec[-1])    /NPV_AddInc_UI_Rec[-1]
+    recession_TaxCut_consumption_welfareAD6  = (np.sum(np.sum((recession_TaxCut_welfare_AD-recession_welfare_AD)/base_MU,1)/NPV_AddInc_Rec_TaxCut[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_Rec_TaxCut[-1]-NPV_AddCons_Rec_TaxCut[-1])/NPV_AddInc_Rec_TaxCut[-1]
+
+    #format as 2 decimal places
+    def mystr2dp(number):
+        if not np.isnan(number):
+            out = "{:.2f}".format(number)
+        else:
+            out = ''
+        return out
+    output  ="\\begin{tabular}{@{}lccc@{}} \n"
+    output +="\\toprule \n"
+    output +="                          & Stimulus check      & UI extension    & Tax cut    \\\\  \\midrule \n"
+    output +="$\\mathcal{C}(Rec,\\text{policy})$ & "      + mystr2dp(recession_Check_consumption_welfare6)     + "  & "+ mystr2dp(recession_UI_consumption_welfare6)     +  "  & "+  mystr2dp(recession_TaxCut_consumption_welfare6)  + "     \\\\ \n"
+    output +="$\\mathcal{C}(Rec, AD,\\text{policy})$ & "  + mystr2dp(recession_Check_consumption_welfareAD6)  + "  & "+ mystr2dp(recession_UI_consumption_welfareAD6)  +  "  & "+  mystr2dp(recession_TaxCut_consumption_welfareAD6)  + "     \\\\ \n"
+    output +="\\end{tabular}  \n"
+    with open(table_dir+'welfare6.tex','w') as f:
+        f.write(output)
+        f.close()  
+        
+        
