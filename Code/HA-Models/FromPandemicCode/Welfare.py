@@ -12,7 +12,7 @@ import pandas as pd
 def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     
     
-    [max_recession_duration, Rspell, Rfree_base, figs_dir_FullRun]  = returnParameters(Parametrization=Parametrization,OutputFor='_Output_Results.py')
+    [max_recession_duration, Rspell, Rfree_base, figs_dir_FullRun, CRRA]  = returnParameters(Parametrization=Parametrization,OutputFor='_Output_Results.py')
     
     
     folder_AD           = saved_results_dir
@@ -52,23 +52,30 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     NPV_AddInc_UI                   = getSimulationDiff(base_results,UI_results,'NPV_AggIncome') # Policy expenditure
     NPV_AddInc_TaxCut               = getSimulationDiff(base_results,TaxCut_results,'NPV_AggIncome')
     
-    #Assumes log utility
-    base_welfare   = np.log(base_results['cLvl_all_splurge'])
-    check_welfare  = np.log(check_results['cLvl_all_splurge'])
-    UI_welfare     = np.log(UI_results['cLvl_all_splurge'])
-    TaxCut_welfare = np.log(TaxCut_results['cLvl_all_splurge'])
+    def felicity(cons):
+        if CRRA==1:
+            out = np.log(cons)
+        else:
+            out = (cons**(1-CRRA))/(1-CRRA)
+        return out
+    
+    base_welfare   = felicity(base_results['cLvl_all_splurge'])
+    check_welfare  = felicity(check_results['cLvl_all_splurge'])
+    UI_welfare     = felicity(UI_results['cLvl_all_splurge'])
+    TaxCut_welfare = felicity(TaxCut_results['cLvl_all_splurge'])
+    
     
     R_persist = 1.-1./Rspell
     recession_prob_array = np.array([R_persist**t*(1-R_persist) for t in range(max_recession_duration)])
     
-    recession_welfare = np.log(np.sum(np.array([recession_all_results[t]['cLvl_all_splurge']*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0) )  
-    recession_welfare_AD = np.log(np.sum(np.array([recession_all_results_AD[t]['cLvl_all_splurge']*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0) )  
-    recession_UI_welfare = np.log(np.sum(np.array([recession_UI_all_results[t]['cLvl_all_splurge']*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0) )  
-    recession_UI_welfare_AD = np.log(np.sum(np.array([recession_UI_all_results_AD[t]['cLvl_all_splurge']*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0) )  
-    recession_TaxCut_welfare = np.log(np.sum(np.array([recession_TaxCut_all_results[t]['cLvl_all_splurge']*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0) )  
-    recession_TaxCut_welfare_AD = np.log(np.sum(np.array([recession_TaxCut_all_results_AD[t]['cLvl_all_splurge']*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0) )  
-    recession_Check_welfare = np.log(np.sum(np.array([recession_Check_all_results[t]['cLvl_all_splurge']*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0) )  
-    recession_Check_welfare_AD = np.log(np.sum(np.array([recession_Check_all_results_AD[t]['cLvl_all_splurge']*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0) )  
+    recession_welfare = np.sum(np.array([felicity(recession_all_results[t]['cLvl_all_splurge'])*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+    recession_welfare_AD = np.sum(np.array([felicity(recession_all_results_AD[t]['cLvl_all_splurge'])*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)  
+    recession_UI_welfare = np.sum(np.array([felicity(recession_UI_all_results[t]['cLvl_all_splurge'])*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)  
+    recession_UI_welfare_AD = np.sum(np.array([felicity(recession_UI_all_results_AD[t]['cLvl_all_splurge'])*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)  
+    recession_TaxCut_welfare = np.sum(np.array([felicity(recession_TaxCut_all_results[t]['cLvl_all_splurge'])*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)
+    recession_TaxCut_welfare_AD = np.sum(np.array([felicity(recession_TaxCut_all_results_AD[t]['cLvl_all_splurge'])*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0) 
+    recession_Check_welfare = np.sum(np.array([felicity(recession_Check_all_results[t]['cLvl_all_splurge'])*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0)  
+    recession_Check_welfare_AD = np.sum(np.array([felicity(recession_Check_all_results_AD[t]['cLvl_all_splurge'])*recession_prob_array[t]  for t in range(max_recession_duration)]), axis=0) 
     
     def SP_welfare(individual_welfare, SP_discount_rate):
         welfare = np.sum(np.sum(individual_welfare, axis=1)*np.array([SP_discount_rate**t for t in range(individual_welfare.shape[0])]))
@@ -140,10 +147,10 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     num_agents = base_results['cLvl_all_splurge'].shape[1]
     discount_array = np.transpose(np.array([[Rfree_base[0]**(-i) for i in range(periods)]]*num_agents))
     base_weights   = base_results['cLvl_all_splurge']*discount_array
-    base_welfare   = np.log(base_results['cLvl_all_splurge'])
-    check_welfare  = np.log(check_results['cLvl_all_splurge'])
-    UI_welfare     = np.log(UI_results['cLvl_all_splurge'])
-    TaxCut_welfare = np.log(TaxCut_results['cLvl_all_splurge'])
+    base_welfare   = felicity(base_results['cLvl_all_splurge'])
+    check_welfare  = felicity(check_results['cLvl_all_splurge'])
+    UI_welfare     = felicity(UI_results['cLvl_all_splurge'])
+    TaxCut_welfare = felicity(TaxCut_results['cLvl_all_splurge'])
     
     check_extra_welfare_ltd = np.sum((check_welfare - base_welfare)*base_weights)/np.sum((check_results['cLvl_all_splurge']-base_results['cLvl_all_splurge'])*discount_array)
     UI_extra_welfare_ltd    = np.sum((UI_welfare    - base_welfare)*base_weights)/np.sum((UI_results['cLvl_all_splurge']-base_results['cLvl_all_splurge'])*discount_array)
@@ -178,7 +185,7 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
         f.close()
         
     #### METHOD 3
-    W_c = 1/(1-SP_discount_rate)*base_welfare.shape[1]
+    W_c = 1/(1-SP_discount_rate)*base_welfare.shape[1]  #***************This assumes log utility. Need to fix this if we are going to use it
     P_c = 1/(1-SP_discount_rate)*base_results['AggCons'][0]
     
     Check_consumption_welfare   = (Check_welfare_impact_recession/W_c  - NPV_AddInc_Rec_Check[-1]/P_c)   - (Check_welfare_impact/W_c  - NPV_AddInc_Check[-1]/P_c) 
@@ -211,7 +218,7 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     print(NPV_AddInc_TaxCut[-1])
     
     #### METHOD 5 - suggested by referee 2 for QE
-    W_c = 1/(1-SP_discount_rate)*base_welfare.shape[1]
+    W_c = 1/(1-SP_discount_rate)*base_welfare.shape[1] #*************************This assumes log utility. Need to fix this if we are going to use it
     P_c = 1/(1-SP_discount_rate)*base_results['AggCons'][0]
     
     Check_consumption_welfare5   = (Check_welfare_impact_recession/W_c) / (NPV_AddInc_Rec_Check[-1]/P_c)   - (Check_welfare_impact/W_c) / (NPV_AddInc_Check[-1]/P_c) 
@@ -243,7 +250,7 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     #### METHOD 6 
     # Calculate the marginal utility of a dollar of spending for each household in the baseline.
     # These will act as weights: under the baseline there is no benefit to the social planner to doing any marginal consumption transfers
-    base_MU = 1/base_results['cLvl_all_splurge'] 
+    base_MU = (base_results['cLvl_all_splurge'] )**(-CRRA)
     NPV_AddCons_Rec_Check                = getSimulationDiff(recession_results,recession_Check_results,'NPV_AggCons') 
     NPV_AddCons_UI_Rec                   = getSimulationDiff(recession_results,recession_UI_results,'NPV_AggCons') 
     NPV_AddCons_Rec_TaxCut               = getSimulationDiff(recession_results,recession_TaxCut_results,'NPV_AggCons')
