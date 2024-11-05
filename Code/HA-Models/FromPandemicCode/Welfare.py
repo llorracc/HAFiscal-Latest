@@ -258,6 +258,10 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     NPV_AddCons_Check                = getSimulationDiff(base_results,check_results,'NPV_AggCons') 
     NPV_AddCons_UI                   = getSimulationDiff(base_results,UI_results,'NPV_AggCons')
     NPV_AddCons_TaxCut               = getSimulationDiff(base_results,TaxCut_results,'NPV_AggCons')
+    
+    # In the AD model, the cost of the tax cut is increased by 2% of the increase in income relative to the 
+    NPV_AddInc_Rec_TaxCut_AD               = NPV_AddInc_Rec_TaxCut + 0.02*getSimulationDiff(recession_results_AD,recession_TaxCut_results_AD,'NPV_AggIncome')
+
 
     recession_Check_consumption_welfare6   = (np.sum(np.sum((recession_Check_welfare-recession_welfare)/base_MU,1)/NPV_AddInc_Rec_Check[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_Rec_Check[-1]-NPV_AddCons_Rec_Check[-1])/NPV_AddInc_Rec_Check[-1]
     Check_consumption_welfare6   = (np.sum(np.sum((check_welfare-base_welfare)/base_MU,1)/NPV_AddInc_Check[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_Check[-1]-NPV_AddCons_Check[-1])/NPV_AddInc_Check[-1]
@@ -282,8 +286,9 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     output  ="\\begin{tabular}{@{}lccc@{}} \n"
     output +="\\toprule \n"
     output +="                          & Stimulus check      & UI extension    & Tax cut    \\\\  \\midrule \n"
-    output +="$\\mathcal{C}(Rec,\\text{policy})$ & "      + mystr2dp(recession_Check_consumption_welfare6)     + "  & "+ mystr2dp(recession_UI_consumption_welfare6)     +  "  & "+  mystr2dp(recession_TaxCut_consumption_welfare6)  + "     \\\\ \n"
-    output +="$\\mathcal{C}(Rec, AD,\\text{policy})$ & "  + mystr2dp(recession_Check_consumption_welfareAD6)  + "  & "+ mystr2dp(recession_UI_consumption_welfareAD6)  +  "  & "+  mystr2dp(recession_TaxCut_consumption_welfareAD6)  + "     \\\\ \n"
+    output +="$\\mathcal{W}(\\text{policy}, Rec=0, AD=0)$ & "    + mystr2dp(Check_consumption_welfare6)               + "  & "+ mystr2dp(UI_consumption_welfare6)               +  "  & "+  mystr2dp(TaxCut_consumption_welfare6)  + "     \\\\ \n"
+    output +="$\\mathcal{W}(\\text{policy}, Rec=1, AD=0)$ & "      + mystr2dp(recession_Check_consumption_welfare6)     + "  & "+ mystr2dp(recession_UI_consumption_welfare6)     +  "  & "+  mystr2dp(recession_TaxCut_consumption_welfare6)  + "     \\\\ \n"
+    output +="$\\mathcal{W}(\\text{policy}, Rec=1, AD=0)$ & "  + mystr2dp(recession_Check_consumption_welfareAD6)  + "  & "+ mystr2dp(recession_UI_consumption_welfareAD6)  +  "  & "+  mystr2dp(recession_TaxCut_consumption_welfareAD6)  + "     \\\\ \n"
     output +="\\end{tabular}  \n"
     with open(table_dir+'welfare6.tex','w') as f:
         f.write(output)
