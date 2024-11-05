@@ -274,7 +274,7 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
 
     recession_Check_consumption_welfareAD6   = (np.sum(np.sum((recession_Check_welfare_AD -recession_welfare_AD)/base_MU,1)/NPV_AddInc_Rec_Check[-1] /Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_Rec_Check[-1] -NPV_AddCons_Rec_Check[-1]) /NPV_AddInc_Rec_Check[-1]
     recession_UI_consumption_welfareAD6      = (np.sum(np.sum((recession_UI_welfare_AD    -recession_welfare_AD)/base_MU,1)/NPV_AddInc_UI_Rec[-1]    /Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_UI_Rec[-1]    -NPV_AddCons_UI_Rec[-1])    /NPV_AddInc_UI_Rec[-1]
-    recession_TaxCut_consumption_welfareAD6  = (np.sum(np.sum((recession_TaxCut_welfare_AD-recession_welfare_AD)/base_MU,1)/NPV_AddInc_Rec_TaxCut[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_Rec_TaxCut[-1]-NPV_AddCons_Rec_TaxCut[-1])/NPV_AddInc_Rec_TaxCut[-1]
+    recession_TaxCut_consumption_welfareAD6  = (np.sum(np.sum((recession_TaxCut_welfare_AD-recession_welfare_AD)/base_MU,1)/NPV_AddInc_Rec_TaxCut_AD[-1]/Rfree_base[0]**np.arange(periods))) + (NPV_AddInc_Rec_TaxCut_AD[-1]-NPV_AddCons_Rec_TaxCut[-1])/NPV_AddInc_Rec_TaxCut[-1]
 
     #format as 2 decimal places
     def mystr2dp(number):
