@@ -1,0 +1,1062 @@
+ 
+/* start css.sty */
+.cmex-10{font-size:83%;}
+.cmr-5{font-size:41%;}
+.cmr-7{font-size:58%;}
+.cmr-10{font-size:83%;}
+.cmmi-5{font-size:41%;font-style: italic;}
+.cmmi-7{font-size:58%;font-style: italic;}
+.cmmi-10{font-size:83%;font-style: italic;}
+.cmsy-5{font-size:41%;}
+.cmsy-7{font-size:58%;}
+.cmsy-10{font-size:83%;}
+.ecrm-0600{font-size:50%;}
+.ecbx-2074{font-size:166%; font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecbx-2074{ font-weight: bold;}
+.ecrm-1440{font-size:116%;}
+.ecrm-1095{font-size:83%;}
+.ecrm-1000{font-size:83%;}
+.ectt-1000{font-size:83%; font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.ectt-1000{ font-family: monospace,monospace;}
+.cmr-8{font-size:66%;}
+.cmr-6{font-size:50%;}
+.cmmi-12{font-style: italic;}
+.cmmi-8{font-size:66%;font-style: italic;}
+.cmmi-6{font-size:50%;font-style: italic;}
+.cmsy-8{font-size:66%;}
+.cmsy-6{font-size:50%;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ectt-1200{ font-family: monospace,monospace;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.ecti-1200{ font-style: italic;}
+.cmbx-12{ font-weight: bold;}
+.ecrm-0800{font-size:66%;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1200{ font-weight: bold;}
+.ecbx-1095{font-size:83%; font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecbx-1095{ font-weight: bold;}
+.ecti-1000{font-size:83%; font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.ecti-1000{ font-style: italic;}
+.cmsy-10x-x-109{font-size:90%;}
+.ecrm-0700{font-size:58%;}
+.tcrm-1095{font-size:83%;}
+.small-caps{font-variant: small-caps; }
+p{margin-top:0;margin-bottom:0}
+p.indent{text-indent:0;}
+p + p{margin-top:1em;}
+p + div, p + pre {margin-top:1em;}
+div + p, pre + p {margin-top:1em;}
+a { overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; hyphens: auto; }
+@media print {div.crosslinks {visibility:hidden;}}
+table.tabular{border-collapse: collapse; border-spacing: 0;}
+a img { border-top: 0; border-left: 0; border-right: 0; }
+center { margin-top:1em; margin-bottom:1em; }
+td center { margin-top:0em; margin-bottom:0em; }
+.Canvas { position:relative; }
+img.math{vertical-align:middle;}
+div.par-math-display, div.math-display{text-align:center;}
+body{ margin:1em auto; max-width:80ch; padding:0 .62em; }
+h1,h2,h3,h4,h5 { line-height:1.2; }
+@media print{ body{ max-width:none } }
+.partHead, likepartHead { font-size: 2em; }
+.chapterHead, likechapterHead { font-size: 1.7411em; }
+.sectionHead, likesectionHead { font-size: 1.5157em; }
+.subsectionHead, likesubsectionHead { font-size: 1.3195em; }
+.subsubsectionHead, likesubsubsectionHead { font-size: 1.1487em; }
+ @media (prefers-color-scheme: dark) { img[src^="HAFiscal"]{filter: invert(1); } } 
+li p.indent { text-indent: 0em }
+li p:first-child{ margin-top:0em; }
+li p:last-child, li div:last-child { margin-bottom:0.5em; }
+li p:first-child{ margin-bottom:0; }
+li p~ul:last-child, li p~ol:last-child{ margin-bottom:0.5em; }
+.enumerate1 {list-style-type:decimal;}
+.enumerate2 {list-style-type:lower-alpha;}
+.enumerate3 {list-style-type:lower-roman;}
+.enumerate4 {list-style-type:upper-alpha;}
+div.newtheorem { margin-bottom: 2em; margin-top: 2em;}
+div.newtheorem .head{font-weight: bold;}
+.obeylines-h,.obeylines-v {white-space: nowrap; }
+div.obeylines-v p { margin-top:0; margin-bottom:0; }
+.overline{ text-decoration:overline; }
+.overline img{ border-top: 1px solid black; }
+td.displaylines {text-align:center; white-space:nowrap;}
+.centerline {text-align:center;}
+.rightline {text-align:right;}
+pre.verbatim {font-family: monospace,monospace; text-align:left; clear:both; }
+.fbox {padding-left:3.0pt; padding-right:3.0pt; text-indent:0pt; border:solid black 0.4pt; }
+div.fbox {display:table}
+div.center div.fbox {text-align:center; clear:both; padding-left:3.0pt; padding-right:3.0pt; text-indent:0pt; border:solid black 0.4pt; }
+div.minipage{width:100%;}
+div.center, div.center div.center {text-align: center; margin-left:1em; margin-right:1em;}
+div.center div {text-align: left;}
+div.flushright, div.flushright div.flushright {text-align: right;}
+div.flushright div {text-align: left;}
+div.flushleft {text-align: left;}
+.underline{ text-decoration:underline; }
+.underline img{ border-bottom: 1px solid black; margin-bottom:1pt; }
+.framebox-c, .framebox-l, .framebox-r { padding-left:3.0pt; padding-right:3.0pt; text-indent:0pt; border:solid black 0.4pt; }
+.framebox-c {text-align:center;}
+.framebox-l {text-align:left;}
+.framebox-r {text-align:right;}
+span.thank-mark{ vertical-align: super }
+span.footnote-mark sup.textsuperscript, span.footnote-mark a sup.textsuperscript{ font-size:80%; }
+div.tabular, div.center div.tabular {text-align: center; margin-top:0.5em; margin-bottom:0.5em; }
+table.tabular td p{margin-top:0em;}
+table.tabular {margin-left: auto; margin-right: auto;}
+td p:first-child{ margin-top:0em; }
+td p:last-child{ margin-bottom:0em; }
+div.td00{ margin-left:0pt; margin-right:0pt; }
+div.td01{ margin-left:0pt; margin-right:5pt; }
+div.td10{ margin-left:5pt; margin-right:0pt; }
+div.td11{ margin-left:5pt; margin-right:5pt; }
+table[rules] {border-left:solid black 0.4pt; border-right:solid black 0.4pt; }
+td.td00{ padding-left:0pt; padding-right:0pt; }
+td.td01{ padding-left:0pt; padding-right:5pt; }
+td.td10{ padding-left:5pt; padding-right:0pt; }
+td.td11{ padding-left:5pt; padding-right:5pt; }
+table[rules] {border-left:solid black 0.4pt; border-right:solid black 0.4pt; }
+.hline hr, .cline hr{ height : 0px; margin:0px; }
+.hline td, .cline td{ padding: 0; }
+.hline hr, .cline hr{border:none;border-top:1px solid black;}
+.hline {border-top: 1px solid black;}
+.hline + .vspace:last-child{display:none;}
+.hline:first-child{border-bottom:1px solid black;border-top:none;}
+.tabbing-right {text-align:right;}
+div.float, div.figure {margin-left: auto; margin-right: auto;}
+div.float img {text-align:center;}
+div.figure img {text-align:center;}
+.marginpar,.reversemarginpar {width:20%; float:right; text-align:left; margin-left:auto; margin-top:0.5em; font-size:85%; text-decoration:underline;}
+.marginpar p,.reversemarginpar p{margin-top:0.4em; margin-bottom:0.4em;}
+.reversemarginpar{float:left;}
+table.equation {width:100%;}
+.equation td{text-align:center; }
+td.equation { margin-top:1em; margin-bottom:1em; } 
+td.equation-label { width:5%; text-align:center; }
+td.eqnarray4 { width:5%; white-space: normal; }
+td.eqnarray2 { width:5%; }
+table.eqnarray-star, table.eqnarray {width:100%;}
+div.eqnarray{text-align:center;}
+div.array {text-align:center;}
+div.pmatrix {text-align:center;}
+table.pmatrix {width:100%;}
+span.pmatrix img{vertical-align:middle;}
+div.pmatrix {text-align:center;}
+table.pmatrix {width:100%;}
+span.bar-css {text-decoration:overline;}
+img.cdots{vertical-align:middle;}
+.partToc a, .partToc, .likepartToc a, .likepartToc {line-height: 200%; font-weight:bold; font-size:110%;}
+.index-item, .index-subitem, .index-subsubitem {display:block}
+div.caption {text-indent:-2em; margin-left:3em; margin-right:1em; text-align:left;}
+div.caption span.id{font-weight: bold; white-space: nowrap; }
+h1.partHead{text-align: center}
+p.bibitem { text-indent: -2em; margin-left: 2em; margin-top:0.6em; margin-bottom:0.6em; }
+p.bibitem-p { text-indent: 0em; margin-left: 2em; margin-top:0.6em; margin-bottom:0.6em; }
+.subsubsectionHead, .likesubsubsectionHead { font-size: 1em; }
+.paragraphHead, .likeparagraphHead { margin-top:2em; font-weight: bold;}
+.subparagraphHead, .likesubparagraphHead { font-weight: bold;}
+.verse{white-space:nowrap; margin-left:2em}
+div.maketitle {text-align:center;}
+h2.titleHead{text-align:center;}
+div.maketitle{ margin-bottom: 2em; }
+div.author, div.date {text-align:center;}
+div.thanks{text-align:left; margin-left:10%; font-size:85%; font-style:italic; }
+div.author{white-space: nowrap;}
+div.abstract p {margin-left:5%; margin-right:5%;}
+div.abstract {width:100%;}
+.abstracttitle{text-align:center;margin-bottom:1em;}
+figure.float, div.figure {margin-left: auto; margin-right: auto;}
+figure.figure {text-align:center;}
+figcaption.caption {text-indent:-2em; margin-left:3em; margin-right:1em; text-align:center;}
+figcaption.caption span.id{font-weight: bold; white-space: nowrap; }
+p + figcaption, img + figcaption{margin-top: 1em;}
+.abstract{margin:1em;}
+span.footnote-mark sup.textsuperscript, span.footnote-mark a sup.textsuperscript{ font-size:80%; }
+figure.float, div.figure {margin-left: auto; margin-right: auto;}
+figure.figure {text-align:center;}
+figcaption.caption {text-indent:-2em; margin-left:3em; margin-right:1em; text-align:center;}
+figcaption.caption span.id{font-weight: bold; white-space: nowrap; }
+p + figcaption, img + figcaption{margin-top: 1em;}
+.equation td{text-align:center; }
+.equation-star td{text-align:center; }
+table.equation-star { width:100%; }
+table.equation { width:100%; }
+div.align {text-align: center;}
+table.multline, table.multline-star {width:100%;}
+td.gather {text-align:center; }
+table.gather {width:100%;}
+div.gather-star {text-align:center;}
+.cancel{background: linear-gradient(to left top, transparent 47.75%, currentColor 49.5%, currentColor 50.5%, transparent 52.25%);}
+.bcancel{background: linear-gradient(to bottom left, transparent 47.75%, currentColor 49.5%, currentColor 50.5%, transparent 52.25%);}
+.xcancel{background: linear-gradient(to bottom left, transparent 47.75%, currentColor 49.5%, currentColor 50.5%, transparent 52.25%), linear-gradient(to left top, transparent 47.75%, currentColor 49.5%, currentColor 50.5%, transparent 52.25%);}
+div.verbatiminput {font-family: monospace,monospace; white-space: nowrap; }
+div.tabular, div.center div.tabular {text-align: center; margin-top:0.5em; margin-bottom:0.5em; }
+table.tabular td p{margin-top:0em;}
+table.tabular {margin-left: auto; margin-right: auto;}
+td p:first-child{ margin-top:0em; }
+td p:last-child{ margin-bottom:0em; }
+div.td00{ margin-left:0pt; margin-right:0pt; }
+div.td01{ margin-left:0pt; margin-right:5pt; }
+div.td10{ margin-left:5pt; margin-right:0pt; }
+div.td11{ margin-left:5pt; margin-right:5pt; }
+table[rules] {border-left:solid black 0.4pt; border-right:solid black 0.4pt; }
+td.td00{ padding-left:0pt; padding-right:0pt; }
+td.td01{ padding-left:0pt; padding-right:5pt; }
+td.td10{ padding-left:5pt; padding-right:0pt; }
+td.td11{ padding-left:5pt; padding-right:5pt; }
+table[rules] {border-left:solid black 0.4pt; border-right:solid black 0.4pt; }
+.hline hr, .cline hr{ height : 0px; margin:0px; }
+.hline td, .cline td{ padding: 0; }
+.hline hr, .cline hr{border:none;border-top:1px solid black;}
+.hline {border-top: 1px solid black;}
+.hline + .vspace:last-child{display:none;}
+.hline:first-child{border-bottom:1px solid black;border-top:none;}
+div.array {text-align:center;}
+span.accentset span.accent{font-size:80%; position:relative; top:-1.7ex; left:-0.6em;}
+span.underaccent span.accent{font-size:80%; position:relative; top:1.6ex; left:-0.6em;}
+table.boxedverbatim {width:100%;}
+ pre.boxedverbatim{border:solid 1px; padding-right:1em;} 
+table.boxedverbatim {text-align:center;}
+.listinginput p{ margin-bottom:0em; margin-top:0em; }
+pre.fancyvrb {white-space: pre-wrap; margin:0em;font-family:monospace,monospace;}
+.rotatebox{display: inline-block;}
+div.subfigure {text-align:center;display:inline-block; max-width:45%;}
+.equation{ display: table; width: 1.0; margin-top: 1.5em; margin-bottom: 1.5em; }
+.equation td:first-child{ width: 0.99; text-align: center; vertical-align: middle; }
+.equation td:last-child{ width: 0.01; text-align: right; vertical-align: middle; }
+.equation-star{ display: block; text-align: center; margin-top: 1.5em; margin-bottom: 1.5em; }
+.math-display img{ /* Targets images within elements with class math-display */ display: block; /* Makes the image a block element */ margin-left: auto; /* These two margin settings together */ margin-right: auto; /* center the image horizontally */ width: 1.0; } 
+img[src="HAFiscal0x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal1x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal2x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal3x.svg"]{vertical-align:-45.14284638069663%;}
+img[src="HAFiscal4x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal6x.svg"]{vertical-align:-38.6189420002002%;}
+img[src="HAFiscal7x.svg"]{vertical-align:-38.6189420002002%;}
+img[src="HAFiscal8x.svg"]{vertical-align:-38.6189420002002%;}
+img[src="HAFiscal10x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal12x.svg"]{vertical-align:-23.98029938783202%;}
+img[src="HAFiscal13x.svg"]{vertical-align:-21.8748614188705%;}
+img[src="HAFiscal14x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal15x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal16x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal17x.svg"]{vertical-align:-38.6189420002002%;}
+img[src="HAFiscal19x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal20x.svg"]{vertical-align:-38.6189420002002%;}
+img[src="HAFiscal22x.svg"]{vertical-align:-28.70721018848861%;}
+img[src="HAFiscal23x.svg"]{vertical-align:-32.04430438972081%;}
+img[src="HAFiscal24x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal25x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal26x.svg"]{vertical-align:-25.38306433437407%;}
+img[src="HAFiscal27x.svg"]{vertical-align:-32.96301196149863%;}
+img[src="HAFiscal28x.svg"]{vertical-align:-28.70721018848861%;}
+img[src="HAFiscal30x.svg"]{vertical-align:-28.70721018848861%;}
+img[src="HAFiscal31x.svg"]{vertical-align:-32.96301196149863%;}
+img[src="HAFiscal32x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal33x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal34x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal35x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal36x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal37x.svg"]{vertical-align:-19.82381119949344%;}
+img[src="HAFiscal38x.svg"]{vertical-align:-9.211426196584562%;}
+img[src="HAFiscal39x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal40x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal41x.svg"]{vertical-align:-25.83717176230433%;}
+img[src="HAFiscal42x.svg"]{vertical-align:-18.88103717338242%;}
+img[src="HAFiscal44x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal45x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal47x.svg"]{vertical-align:-38.6189420002002%;}
+img[src="HAFiscal48x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal49x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal50x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal51x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal52x.svg"]{vertical-align:-0%;}
+tr#TBL-2-1- {border-top:0.13156em solid #000;} 
+tr#TBL-2-2- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal53x.svg"]{vertical-align:-17.61415299466298%;}
+img[src="HAFiscal54x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal55x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal56x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal57x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal58x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal59x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal60x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal61x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal62x.svg"]{vertical-align:-30.2604854689564%;}
+img[src="HAFiscal63x.svg"]{vertical-align:-30.2604854689564%;}
+img[src="HAFiscal64x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal65x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal66x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal67x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal68x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal69x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal70x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal71x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal72x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal73x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal74x.svg"]{vertical-align:-13.10853139803418%;}
+img[src="HAFiscal75x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal76x.svg"]{vertical-align:-0%;}
+tr#TBL-4-1- {border-top:0.13156em solid #000;} 
+tr#TBL-4-1- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal79x.svg"]{vertical-align:-0%;}
+tr#TBL-4-2- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal80x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal83x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal84x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal85x.svg"]{vertical-align:-18.42090680646941%;}
+img[src="HAFiscal88x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal89x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal90x.svg"]{vertical-align:-10.86956882296647%;}
+img[src="HAFiscal93x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal94x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal95x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal98x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal99x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal100x.svg"]{vertical-align:-39.37408685936918%;}
+img[src="HAFiscal103x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal104x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal105x.svg"]{vertical-align:-39.37408685936918%;}
+img[src="HAFiscal108x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal109x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal110x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal113x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal114x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal115x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal118x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal119x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal122x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal125x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal126x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal127x.svg"]{vertical-align:-25.83717176230433%;}
+img[src="HAFiscal130x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal131x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal132x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal135x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal136x.svg"]{vertical-align:-0%;}
+tr#TBL-4-2- {border-bottom:0.13156em solid #000}
+tr#TBL-5-1- {border-top:0.13156em solid #000;} 
+tr#TBL-5-1- {border-bottom:0.08223em solid #000}
+tr#TBL-5-2- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal137x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal138x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal139x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal140x.svg"]{vertical-align:-27.55590012812809%;}
+tr#TBL-5-8- {border-bottom:0.13156em solid #000}
+tr#TBL-6-1- {border-top:0.13156em solid #000;} 
+tr#TBL-6-1- {border-bottom:0.08223em solid #000}
+tr#TBL-6-2- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal141x.svg"]{vertical-align:-11.45039635046571%;}
+tr#TBL-6-12- {border-bottom:0.13156em solid #000}
+img[src="HAFiscal142x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal143x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal144x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal145x.svg"]{vertical-align:-30.2604854689564%;}
+img[src="HAFiscal146x.svg"]{vertical-align:-30.2604854689564%;}
+img[src="HAFiscal147x.svg"]{vertical-align:-32.04430438972081%;}
+img[src="HAFiscal148x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal149x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal150x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal151x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal152x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal153x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal154x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal155x.svg"]{vertical-align:-23.03821077902779%;}
+img[src="HAFiscal156x.svg"]{vertical-align:-23.03821077902779%;}
+img[src="HAFiscal157x.svg"]{vertical-align:-27.55590012812809%;}
+img[src="HAFiscal158x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal159x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal160x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal161x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal162x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal163x.svg"]{vertical-align:-17.99993286112323%;}
+img[src="HAFiscal164x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal165x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal166x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal167x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal168x.svg"]{vertical-align:-25%;}
+tr#TBL-8-2- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal169x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal170x.svg"]{vertical-align:-0%;}
+tr#TBL-8-4- {border-bottom:0.08223em solid #000}
+tr#TBL-9-1- {border-bottom:0.08223em solid #000}
+tr#TBL-9-2- {border-bottom:0.08223em solid #000}
+tr#TBL-9-4- {border-bottom:0.08223em solid #000}
+tr#TBL-10-2- {border-bottom:0.08223em solid #000}
+tr#TBL-10-5- {border-bottom:0.13156em solid #000}
+img[src="HAFiscal171x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal172x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal173x.svg"]{vertical-align:-17.99993286112323%;}
+img[src="HAFiscal174x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal175x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal176x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal177x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal178x.svg"]{vertical-align:-17.99993286112323%;}
+img[src="HAFiscal179x.svg"]{vertical-align:-18.70662117884699%;}
+img[src="HAFiscal180x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal181x.svg"]{vertical-align:-22.83112022151092%;}
+img[src="HAFiscal182x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal183x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal184x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal185x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal186x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal187x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal188x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal190x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal191x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal192x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal193x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal194x.svg"]{vertical-align:-36.11127790442295%;}
+tr#TBL-11-1- {border-top:0.13156em solid #000;} 
+tr#TBL-11-1- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal195x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal197x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal198x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal199x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal200x.svg"]{vertical-align:-38.6189420002002%;}
+img[src="HAFiscal201x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal202x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal203x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal204x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal205x.svg"]{vertical-align:-32.89517764351903%;}
+img[src="HAFiscal207x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal208x.svg"]{vertical-align:-26.0945621655117%;}
+img[src="HAFiscal209x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal210x.svg"]{vertical-align:-26.0945621655117%;}
+img[src="HAFiscal211x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal214x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal215x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal216x.svg"]{vertical-align:-29.51893520493909%;}
+img[src="HAFiscal217x.svg"]{vertical-align:-11.45039635046571%;}
+tr#TBL-12-1- {border-top:0.13156em solid #000;} 
+tr#TBL-12-1- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal218x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal219x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal220x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal221x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal223x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal224x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal225x.svg"]{vertical-align:-18.42090680646941%;}
+img[src="HAFiscal226x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal227x.svg"]{vertical-align:-0%;}
+#TBL-13-2{border-right:1px solid black;}
+tr#TBL-13-1- {border-top:0.13156em solid #000;} 
+tr#TBL-13-1- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal228x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal229x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal230x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal231x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal232x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal233x.svg"]{vertical-align:-0%;}
+tr#TBL-13-2- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal234x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal235x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal236x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal237x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal238x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal239x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal240x.svg"]{vertical-align:-0%;}
+tr#TBL-13-5- {border-bottom:0.13156em solid #000}
+img[src="HAFiscal245x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal246x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal247x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal248x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal249x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal250x.svg"]{vertical-align:-17.99993286112323%;}
+img[src="HAFiscal251x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal252x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal253x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal254x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal255x.svg"]{vertical-align:-17.99993286112323%;}
+tr#TBL-14-1- {border-top:0.13156em solid #000;} 
+td#TBL-14-2-5{border-bottom:0.04933em solid #000}
+img[src="HAFiscal256x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal257x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal258x.svg"]{vertical-align:-0%;}
+td#TBL-14-6-5{border-bottom:0.04933em solid #000}
+img[src="HAFiscal259x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal260x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal261x.svg"]{vertical-align:-0%;}
+td#TBL-14-10-5{border-bottom:0.04933em solid #000}
+img[src="HAFiscal263x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal264x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal265x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal266x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal267x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal268x.svg"]{vertical-align:-0%;}
+#TBL-15-2{border-right:1px solid black;}
+tr#TBL-15-1- {border-top:0.13156em solid #000;} 
+tr#TBL-15-1- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal269x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal270x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal271x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal272x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal273x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal274x.svg"]{vertical-align:-0%;}
+tr#TBL-15-2- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal275x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal276x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal277x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal278x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal279x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal280x.svg"]{vertical-align:-0%;}
+tr#TBL-15-5- {border-bottom:0.13156em solid #000}
+img[src="HAFiscal286x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal287x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal288x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal289x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal290x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal291x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal292x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal293x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal294x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal295x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal296x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal297x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal298x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal299x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal300x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal301x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal302x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal303x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal304x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal305x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal306x.svg"]{vertical-align:-17.99993286112323%;}
+img[src="HAFiscal307x.svg"]{vertical-align:-17.99993286112323%;}
+img[src="HAFiscal308x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal309x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal310x.svg"]{vertical-align:-17.99993286112323%;}
+img[src="HAFiscal311x.svg"]{vertical-align:-17.99993286112323%;}
+img[src="HAFiscal312x.svg"]{vertical-align:-23.17879710571981%;}
+img[src="HAFiscal313x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal314x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal315x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal316x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal317x.svg"]{vertical-align:-17.99993286112323%;}
+tr#TBL-16-1- {border-bottom:0.08223em solid #000}
+tr#TBL-16-2- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal318x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal319x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal320x.svg"]{vertical-align:-23.17867845336025%;}
+tr#TBL-16-6- {border-bottom:0.13156em solid #000}
+img[src="HAFiscal322x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal323x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal324x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal325x.svg"]{vertical-align:-23.17867845336025%;}
+tr#TBL-17-1- {border-top:0.13156em solid #000;} 
+td#TBL-17-2-5{border-bottom:0.04933em solid #000}
+img[src="HAFiscal326x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal327x.svg"]{vertical-align:-23.17867845336025%;}
+td#TBL-17-5-5{border-bottom:0.04933em solid #000}
+img[src="HAFiscal328x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal329x.svg"]{vertical-align:-23.17867845336025%;}
+td#TBL-17-8-5{border-bottom:0.04933em solid #000}
+img[src="HAFiscal331x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal332x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal333x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal334x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal335x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal336x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal337x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal338x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal339x.svg"]{vertical-align:-17.99989379837439%;}
+img[src="HAFiscal340x.svg"]{vertical-align:-23.17867845336025%;}
+#TBL-18-3{border-right:1px solid black;}
+tr#TBL-18-1- {border-top:0.13156em solid #000;} 
+tr#TBL-18-1- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal341x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal342x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal343x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal344x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal345x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal346x.svg"]{vertical-align:-0%;}
+tr#TBL-18-2- {border-bottom:0.08223em solid #000}
+img[src="HAFiscal347x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal348x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal349x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal350x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal351x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal352x.svg"]{vertical-align:-0%;}
+tr#TBL-18-4- {border-bottom:0.13156em solid #000}
+img[src="HAFiscal358x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal359x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal360x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal361x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal362x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal363x.svg"]{vertical-align:-31.11090313904447%;}
+tr#TBL-19-1- {border-top:0.13156em solid #000;} 
+td#TBL-19-2-5{border-bottom:0.04933em solid #000}
+img[src="HAFiscal364x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal365x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal366x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal367x.svg"]{vertical-align:-23.17867845336025%;}
+td#TBL-19-5-5{border-bottom:0.04933em solid #000}
+img[src="HAFiscal368x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal369x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal370x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal371x.svg"]{vertical-align:-23.17867845336025%;}
+td#TBL-19-8-5{border-bottom:0.04933em solid #000}
+img[src="HAFiscal372x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal373x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal374x.svg"]{vertical-align:-0%;}
+tr#TBL-20-1- {border-top:0.13156em solid #000;} 
+td#TBL-20-2-5{border-bottom:0.04933em solid #000}
+td#TBL-20-6-5{border-bottom:0.04933em solid #000}
+td#TBL-20-10-5{border-bottom:0.04933em solid #000}
+img[src="HAFiscal375x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal376x.svg"]{vertical-align:-29.03840465651838%;}
+img[src="HAFiscal377x.svg"]{vertical-align:-29.03840465651838%;}
+img[src="HAFiscal378x.svg"]{vertical-align:-29.03840465651838%;}
+img[src="HAFiscal379x.svg"]{vertical-align:-25%;}
+img[src="HAFiscal380x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal381x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal382x.svg"]{vertical-align:-29.03840465651838%;}
+img[src="HAFiscal383x.svg"]{vertical-align:-29.03840465651838%;}
+img[src="HAFiscal384x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal386x.svg"]{vertical-align:-39.37408685936918%;}
+img[src="HAFiscal387x.svg"]{vertical-align:-29.03840465651838%;}
+img[src="HAFiscal388x.svg"]{vertical-align:-22.87473466438692%;}
+img[src="HAFiscal390x.svg"]{vertical-align:-22.87473466438692%;}
+img[src="HAFiscal393x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal395x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal396x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal397x.svg"]{vertical-align:-17.76309449236255%;}
+img[src="HAFiscal398x.svg"]{vertical-align:-29.03840465651838%;}
+img[src="HAFiscal401x.svg"]{vertical-align:-33.32436054003019%;}
+img[src="HAFiscal402x.svg"]{vertical-align:-29.03840465651838%;}
+img[src="HAFiscal403x.svg"]{vertical-align:-29.03840465651838%;}
+img[src="HAFiscal405x.svg"]{vertical-align:-37.37573005516025%;}
+img[src="HAFiscal406x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal407x.svg"]{vertical-align:-17.76309449236255%;}
+img[src="HAFiscal408x.svg"]{vertical-align:-25.83717176230433%;}
+img[src="HAFiscal409x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal414x.svg"]{vertical-align:-25.83717176230433%;}
+img[src="HAFiscal415x.svg"]{vertical-align:-25.83717176230433%;}
+img[src="HAFiscal416x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal417x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal418x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal421x.svg"]{vertical-align:-38.52195052195053%;}
+img[src="HAFiscal423x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal424x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal425x.svg"]{vertical-align:-23.03821077902779%;}
+img[src="HAFiscal426x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal427x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal428x.svg"]{vertical-align:-10.59689565571732%;}
+img[src="HAFiscal429x.svg"]{vertical-align:-23.17867845336025%;}
+img[src="HAFiscal432x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal434x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal436x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal437x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal438x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal439x.svg"]{vertical-align:-17.99990539536346%;}
+img[src="HAFiscal440x.svg"]{vertical-align:-27.39131888550807%;}
+img[src="HAFiscal441x.svg"]{vertical-align:-30.9665537011699%;}
+img[src="HAFiscal442x.svg"]{vertical-align:-27.39131888550807%;}
+img[src="HAFiscal443x.svg"]{vertical-align:-27.39131888550807%;}
+img[src="HAFiscal444x.svg"]{vertical-align:-27.39131888550807%;}
+img[src="HAFiscal446x.svg"]{vertical-align:-32.43707934554753%;}
+img[src="HAFiscal447x.svg"]{vertical-align:-32.43707934554753%;}
+img[src="HAFiscal448x.svg"]{vertical-align:-32.43707934554753%;}
+img[src="HAFiscal450x.svg"]{vertical-align:-26.33446294556837%;}
+img[src="HAFiscal452x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal453x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal454x.svg"]{vertical-align:-39.37408685936918%;}
+img[src="HAFiscal455x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal456x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal457x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal458x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal459x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal460x.svg"]{vertical-align:-41.0712182600876%;}
+img[src="HAFiscal461x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal462x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal463x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal464x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal465x.svg"]{vertical-align:-31.11090313904447%;}
+img[src="HAFiscal466x.svg"]{vertical-align:-6.896394962949493%;}
+img[src="HAFiscal467x.svg"]{vertical-align:-6.896394962949493%;}
+img[src="HAFiscal468x.svg"]{vertical-align:-21.87489271123013%;}
+img[src="HAFiscal469x.svg"]{vertical-align:-0%;}
+img[src="HAFiscal470x.svg"]{vertical-align:-31.91481588344844%;}
+/* end css.sty */
+
+/* Econ-ARK Basic HTML Theme styles 1.01						 */
+/* path: econ-ark-tools/Web/Styling/REMARKs-HTML/					 */
+/* prior git commit 219bf537a01b96629fd51df690e48d97727664c8				 */
+/* Updates from version 1.0:								 */
+/* - asked Claude to document what each command does					 */
+/*											 */
+/* ====== Normalize.css v1.1.3 - Makes browsers render elements more consistently ====== */
+/*! normalize.css v1.1.3 | MIT License | git.io/normalize				 */
+
+/* Make block elements display as blocks */
+article, aside, details, figcaption, figure, footer, header, 
+hgroup, main, nav, section, summary {
+    display: block;
+}
+
+/* Make media elements display inline-block with IE7 fallback */
+audio, canvas, video {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+/* Hide audio without controls */
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+/* Hide elements with hidden attribute */
+[hidden] {
+    display: none;
+}
+
+/* Base font settings */
+html {
+    font-size: 100%;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Set default font family */
+html, button, input, select, textarea {
+    font-family: sans-serif;
+}
+
+/* Remove default body margin */
+body {
+    margin: 0;
+}
+
+/* Link focus styles */
+a:focus {
+    outline: thin dotted;
+}
+a:active, a:hover {
+    outline: 0;
+}
+
+/* Heading sizes and margins */
+h1 {
+    font-size: 2em;
+    margin: .67em 0;
+}
+h2 {
+    font-size: 1.5em;
+    margin: .83em 0;
+}
+h3 {
+    font-size: 1.17em;
+    margin: 1em 0;
+}
+h4 {
+    font-size: 1em;
+    margin: 1.33em 0;
+}
+h5 {
+    font-size: .83em;
+    margin: 1.67em 0;
+}
+h6 {
+    font-size: .67em;
+    margin: 2.33em 0;
+}
+
+/* Text formatting */
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+b, strong {
+    font-weight: bold;
+}
+blockquote {
+    margin: 1em 40px;
+}
+dfn {
+    font-style: italic;
+}
+
+/* Horizontal rule styling */
+hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 0;
+}
+
+/* Highlight mark styling */
+mark {
+    background: #ff0;
+    color: #000;
+}
+
+/* Paragraph and preformatted text */
+p, pre {
+    margin: 1em 0;
+}
+
+/* Code and monospace text */
+code, kbd, pre, samp {
+    font-family: monospace, serif;
+    _font-family: 'courier new', monospace;
+    font-size: 1em;
+}
+
+/* Lists styling */
+dl, menu, ol, ul {
+    margin: 1em 0;
+}
+li {
+    margin: 0.25em 0;
+}
+dd {
+    margin: 0 0 0 40px;
+}
+menu, ol, ul {
+    padding: 0 0 0 40px;
+}
+nav ul, nav ol {
+    list-style: none;
+    list-style-image: none;
+}
+
+/* Image handling */
+img {
+    border: 0;
+    -ms-interpolation-mode: bicubic;
+}
+
+/* Form elements */
+fieldset {
+    border: 1px solid #f5f5f5;
+    margin: 0 2px;
+    padding: .35em .625em .75em;
+}
+
+/* ====== Main Theme Styles ====== */
+
+/* Page background and layout */
+html {
+    background-color: #f7f7f7;
+}
+
+/* Main body layout and styling */
+body {
+    color: #444;
+    max-width: 800px;
+    margin: 0 auto;        /* Center the content */
+    padding: 2rem 4rem;    /* Add padding around content */
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-width: 4px 1px; /* Thicker top/bottom borders */
+}
+
+/* Responsive design for smaller screens */
+@media screen and (max-width: 600px) {
+    body {
+        padding: 2rem 2rem; /* Reduce padding on mobile */
+    }
+}
+
+/* Equation table styling */
+table.equation {
+    margin: 1rem 0;
+}
+
+/* ====== Print Styles ====== */
+@media print {
+    /* Remove backgrounds and shadows when printing */
+    * {
+        background: transparent !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    /* Link handling in print */
+    a, a:visited {
+        text-decoration: underline;
+        border: 0;
+    }
+
+    /* Add titles after abbreviations in print */
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /* Hide certain links in print */
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    /* Page break rules */
+    blockquote, pre {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    img, tr {
+        page-break-inside: avoid;
+    }
+
+    /* Image sizing in print */
+    img {
+        max-width: 100% !important;
+    }
+
+    /* Page margins for print */
+    @page {
+        margin: .5cm;
+    }
+
+    /* Typography for print */
+    h2, h3, p {
+        orphans: 3;  /* Minimum lines at bottom of page */
+        widows: 3;   /* Minimum lines at top of page */
+    }
+
+    h2, h3 {
+        page-break-after: avoid;
+    }
+}
+
+/* ====== Utility Classes ====== */
+
+/* Hide elements but maintain layout */
+.invisible {
+    visibility: hidden;
+}
+
+/* Completely hide elements */
+.hidden {
+    display: none !important;
+    visibility: hidden;
+}
+
+/* Hide elements visually but keep them available for screen readers */
+.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+/* Make visually hidden elements focusable */
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+    width: auto;
+}
+
+/* Clearfix for containing floats */
+.clearfix:before,
+.clearfix:after {
+    content: " ";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+/* IE6/7 clearfix */
+.clearfix {
+    *zoom: 1;
+}
