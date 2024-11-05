@@ -1,0 +1,171 @@
+\documentclass[12pt,letterpaper,english]{article}
+\usepackage[round, authoryear]{natbib}
+\usepackage{floatrow}
+\renewcommand{\floatpagefraction}{.99}
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+\usepackage{eurosym}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage[titletoc]{appendix}
+\usepackage{graphicx}
+\newcommand{\argmin}{\arg\!\min}
+\usepackage{amsmath, amssymb,amsthm,mathtools,dsfont}
+\usepackage{algorithmic}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage[flushleft]{threeparttable}
+\usepackage{rotating}
+\usepackage{float}
+\usepackage{tabulary}
+\usepackage{ragged2e}
+\usepackage{rotating}
+\usepackage{epstopdf}
+\usepackage[labelfont=bf]{caption}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{subfig}
+\usepackage{placeins}
+\usepackage{pxfonts}
+\usepackage{xcolor}
+\usepackage{svg}
+\usepackage{multirow}
+\usepackage{verbatim}
+\hypersetup{
+	colorlinks,
+	linkcolor={red!50!black},
+	citecolor={red!50!black},
+	urlcolor={blue!80!black}
+}
+\textheight=23cm \textwidth=16.5cm \oddsidemargin=0cm
+\evensidemargin=0cm \topmargin=-1.75cm
+\setcounter{MaxMatrixCols}{10}
+\makeatletter
+\g@addto@macro\@floatboxreset\centering
+\makeatother
+\setlength\floatsep{2\baselineskip plus 3pt minus 2pt}
+\setlength\textfloatsep{2\baselineskip plus 3pt minus 2pt}
+\setlength\intextsep{2\baselineskip plus 3pt minus 2 pt}
+\newcommand*{\MyIndent}{\hspace*{0.5cm}}%
+\usepackage[normalem]{ulem}
+\newtheorem{theorem}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumptions}
+\newtheorem{hypothesis}{Hypothesis}
+
+
+% Uncomment the next line to use the harvard package with bibtex
+%\usepackage[abbr]{harvard}
+
+% This command determines the leading (vertical space between lines) in draft mode
+% with 1.5 corresponding to "double" spacing.
+%\draftSpacing{1.5}
+%\newlength\TableWidth
+\usepackage{array}
+\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+\newcommand{\Figures}{Figures/}
+\newcommand{\Tables}{Tables/}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\title{\textbf{Response to Editor\\ Quantitative Economics MS 2442 \\``Welfare and Spending Effects of \\ Consumption Stimulus Policies''}}
+\author{Christopher D. Carroll, Edmund Crawley, William Du, \\ Ivan Frankovic, and H\aa kon Tretvoll}
+\date{}
+
+\begin{document}
+	\onehalfspacing
+	\maketitle
+	
+	\noindent Thank you for giving us the chance to resubmit our paper ``Welfare and Spending Effects of Consumption Stimulus Policies'' to Quantitative Economics. And thank you for your thoughtful comments and suggestions for how to improve our paper. They were all very useful to us in revising it. We believe the paper has improved greatly through the revision and we hope you agree. 
+	
+	In the following, we first summarize the main changes we have made based on your and the referees' suggestions. Thereafter, we go through how we have dealt with the specific requests from you. For each request, we first repeat your comment in italics and then respond how we have dealt with them.
+	
+	\section{Summary of Main Changes}
+	
+	\begin{enumerate}
+		\item We have \ldots 
+	\end{enumerate}
+	
+	\newpage 
+	
+\section{Comments}
+\begin{enumerate}
+	
+\item \textit{\textbf{Motivation.} I think the paper needs a stronger motivation in the sense that it is a bit unclear why I need to introduce splurge consumption and other features of your model. In particular, incomplete markets/HANK models with liquid and	illiquid assets, and/or models with spreads between borrowing ans savings rates, can potentially account for both MPCs and for the relevant features of the (liquid)	wealth distribution. So why go the way you choose in the paper? Do you have empirical evidence in favor of this alternative model or are there other reasons for exploring this?}
+
+\textit{Let me quote from the feedback I got from another editorial board member:}
+
+\textit{``Perhaps the authors want to argue that a HA model + fully constrained agents	cannot match their data targets, so that one needs something else, and splurge	consumption is a natural solution that also seems intuitive. But then they need to make this argument explicit: they need to compare a version of their model with a fraction of fully constrained agents (which would be the natural first place to go)	to their benchmark model and argue how the data rejects this alternative model. They should also discuss why other alternatives to matching iMPCs that have been	introduced in the literature are not good enough for what they want to do.''}	
+
+\noindent \textbf{Response.} 
+
+\item \textit{\textbf{Splurge consumption.} A key aspect of your paper is the introduction of splurge consumption. I find this an interesting idea. However, I have issues with your modeling on page 8 contained in equations (1)-(4). Here you assume that	splurge  consumption is a constant fraction of income which enters the budget constraint, but does not impact on the marginal utility of consumers' optimal choice of consumption. The latter is crucial since a moderate level of splurge otherwise would have no or little impact on the economy. In the other extreme, suppose you had assumed that consumers get utility from splurge goods in exactly the same way as $c_{opt,i,t}$ so preferences are given as $\sum_{t=0}^{\infty} \beta^i_t (1 - D)^{t} \mathbb{E}_0 u(c_{opt,i,t} + c_{sp,i,t})$, which would seem a natural starting point. In this case, splurge would have no effects on total consumption unless $c_{opt,i,t} < 0$ (which you could rule out, I guess).} 
+
+\textit{You present your assumptions without defending them, but I think you need to have a convincing story about this as it otherwise looks arbitrary. Your simplest defense, of course would be that preferences are given as $\sum_{t=0}^{\infty} \beta^i_t (1 - D)^{t} \mathbb{E}_0\left(u_1(c_{opt,i,t}) + u_2(c_{sp,i,t})\right)$, but in this case you would need to have a good ``story'' about what type of goods these splurge goods are and why you can treat preferences this way.}
+
+\textit{Moreover, as also pointed out by Referee 1, your current set-up is equivalent to a model in which there is a constant average tax rate, $\xi$, but you then count tax	payments as consumption. Again, this seems inconsistent. Referee 2 points out that your assumptions alternatively can be thought of as each household having some buffer stock members and some hand-to-mouth members. This also seems arbitrary and it is hard to accept that these different branches of the family cannot insure amongst themselves.}
+
+\textit{In a footnote you mention that splurge might be close to rational in a model with small durables. However, this would seem to me to contradict your calibration (that	30 percent of net income is spent on splurges).}
+
+\textit{In summary, I think you need a convincing story about splurge consumption, otherwise this seems too arbitrary and also implies that your analysis cannot be used for	welfare analyses.}
+
+\noindent \textbf{Response.} 
+
+\item \textit{\textbf{Choice setting.} You present your analysis as partial equilibrium, but it really is simply a choice setting (with some choices not modelled). I do not have a problem	with this as such since such models can be used for many interesting purposes.}
+
+\textit{However, I do think that this means that some of your results may be questioned,	and that you need to be very careful with your analysis and perhaps rethink parts of it. Here are my issues:}
+
+\begin{itemize}
+	\item \textit{Clearly, not all of the policies that you consider are equally affected by the lack of (general) equilibrium effects. Tax cuts work mainly through supply		side effects which you exclude. I think it is important to point this out and be less dismissive about tax policy. Unemployment insurance is also sensitive to the lack of a supply side modeling as one usually would think of these as potentially hampering job creation. Stimulus checks are more direct demand policies. Hence, in the end, if you extended your analysis to GE, it is unclear to me whether there would be a clear winner.}
+	
+\noindent \textbf{Response.} In reponse to these comments, we have introduced a new section of the paper that analyses the three fiscal policies in a canonical HANK model with search and matching. Despite this new section, we have a strong preference for our partial equilibrium analysis. As state in the paper:
+
+``First, general equilibrium models often struggle to adequately capture the feedback mechanisms between consumption and income, particularly the asymmetric nature of these relationships during recessionary versus expansionary periods. Additionally, a complete general equilibrium treatment would necessitate the analysis of numerous complex channels including investment dynamics, firm ownership structures and dividend distribution policies, inventory management, and international trade flows—elements that, while important in their own right, would potentially obscure the core mechanisms we aim to investigate.''
+
+Nevertheless, we agree that in principle some of the general equilibrium effects could change our results: ``fiscal policies can generate labor market responses that our partial equilibrium
+analysis does not address. Employee tax cuts, for instance, may increase employment through changes in workers’ incentives. These supply-side channels can affect both the welfare implications and the fiscal multipliers of different policy interventions.'' 
+
+We demonstrate that the qualitative features of the partial equilibrium model pass through to our general equilibrium approach: the consumption impulse response functions are similar and the difference between the consumption multipliers under the three fiscal policies leads to the same conclusion that the tax cut is significantly less effective at stimulating consumption than either the unemployment insurance policy or the stimulus check policy.
+	
+	\item \textit{I find it very misleading to talk about multipliers in the choice setting. Your model leaves out equilibrium mechanisms that create the potential for such multipliers (the standard Keynesian cross mechanism for example). You do provide the consumption externality feature as an extension, but it was ``unclear'' to me that this really allows one to interpret results in terms of multipliers. Indeed, since multiplier effects come from general equilibrium effects, one could seriously question why you look at multipliers at all in your paper.}
+	
+\noindent \textbf{Response.} 
+	
+	\item \textit{In continuation of these points, showing impulse responses at long forecast horizons and calculating present value multipliers seems a bit odd to me (in	the pure choice framework, all of the transfers will be spent sooner or later and	the multiplier will go to one; anything you get different from that comes from the ad hoc externality). It is still interesting to see how fast this happens, but why not focus on shorter horizons?}
+	
+\noindent \textbf{Response.} 
+	
+\end{itemize}
+
+
+
+\item \textit{\textbf{Calibration.} I found it odd that the calibration mixes up targets/parameters from the US and from Norway. Why not use targets from Norwegian data (or US data) as far as you can and then simply add to this insights from other papers/data
+(which might be US related of course). Referees 1 and 3 make comments amounting to the same concern.}	
+
+\noindent \textbf{Response.} 
+
+\item \textit{\textbf{Welfare Criterion.} Referees 2 and 3 complain about the welfare measure that you use. I agree with them, it is somewhat murky. Moreover, how should one	actually think about welfare in this choice set-up? I think it is fine to examine some	measure of ``bang for the buck'' but is that really the same as welfare?} 
+
+\textit{Given these comments, one option would be to leave the multiplier and welfare	analyses to another (general equilibrium) paper and simply focus on how ``splurge''	consumption can help account for iMPCs and use the model for the analysis of the impact of some selected fiscal policies. If you choose not to go this way, you need to argue your case carefully.}	
+
+\noindent \textbf{Response.} 
+
+\end{enumerate}
+
+\bigskip
+
+\noindent Finally, we would like to thank you again for your careful advice on our paper. We hope you find our revision satisfactory.
+
+%\bibliographystyle{econometrica}
+%\bibliography{../../../../HAFiscal.bib, ../../../../Add-Refs.bib}
+
+\end{document}
