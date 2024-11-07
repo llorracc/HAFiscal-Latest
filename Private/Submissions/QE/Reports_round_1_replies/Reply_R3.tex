@@ -89,9 +89,7 @@
 	
 	\section{Summary of Main Changes}
 	
-	\begin{enumerate}
-		\item We have \ldots 
-	\end{enumerate}
+\input{MainChanges.tex}
 	
 	\newpage 
 	
@@ -118,7 +116,13 @@
 
 	\item \textit{\textbf{The welfare criterion.} I had trouble understanding the welfare criterion used to evaluate the three different policies. My own intuition for comparing the policies would have been to simulate, for each policy, two recessions, one with the policy and one without, and then compare aggregate	welfare between the two; potentially also to an economy without a recession, to quantify the cost of business cycles. This approach is deemed not viable at the top of page 27, because		it would give the social planner incentive to redistribute outside of recessions. I think this point warrants additional explanation. Is the problem that recessions end stochastically, making it difficult to exclude welfare gains from, e.g., a UI extension after the recession is over? In this case, one could compute this measure for each recession length, not including the additional welfare gains from continuing policies after the recessions, and weight them by their probabilities. I’m sure the explanation is perfectly obvious to the authors, but a reader will strongly benefit from an additional discussion. It was also unclear to me why the recessionary policies investigated had fiscal costs in non-recessionary periods, as suggested	in equation (12). Relatedly, page 9 states that all policies have the same fiscal cost and are financed through taxes in the far future, but I could not find how $PV(policy,Rec)$ 	or $PV(policy, 0)$ are constructed. How can they be included in equation (12) without further	assumptions about the timing and implementation of taxation schemes? This also matters for the results presented on page 25—is $NPV(\infty,\Delta G)$ roughly constant across policies?}
 
-	\noindent \textbf{Response.} 
+	\noindent \textbf{Response.} We have overhauled the welfare section as described in the ``Summary of Main Changes.'' In the paper we explain why a standard aggregation of household welfare gives rise to welfare benefits and costs to redistribution policies even in normal times:
+	
+	`` Under our model, some households consume much less than other households, and a social planner with equal weights on each household could significantly increase welfare through redistribution across households even in normal times. We are interested in the benefit of carrying out fiscal policies in a recession, so we do not want our results to reflect the benefits of redistribution inherent in our model in normal times.''
+	
+	As a consequence, our new welfare measure weights are chosen such that, in normal times, there is no welfare benefit to \textit{any} redistribution policy. We believe this new measure best captures the welfare benefits of each policy in a recession without biasing policies (such as extended UI) that redistribute wealth even in normal times.
+	
+	In the description of the model, we are now clear that: ``To keep our analysis as simple as possible, we do not model the debt repayment.'' The exact fiscal rule that is chosen to pay for the policies will not alter our conclusions about which policies are more effective as this will be the same for all three policies. Given that, we think the exposition is clearer if we do not model the debt repayment. As such, the net present value of each policy is equal to the total cost of policy at time zero. For example, the NPV of the stimulus check policy is simply the total value of all the stimulus checks that are sent out. \colorbox{yellow}{Ivan -perhaps you can add something about the NPV presented on page 25 that is mentioned.}
 
 \end{itemize}
 
@@ -128,7 +132,7 @@
 	\item \textit{\textbf{Robustness.} In my view, the robustness section can be relegated to an appendix. None of the exercises come close to changing the welfare ranking across policies. Further, in three of the four exercises
 		(risk aversion, interest rates and recession properties), the quantitative welfare results change only marginally.}
 	
-	\noindent \textbf{Response.} Thank you for this suggestion. The robustness section now lives in an appendix.
+	\noindent \textbf{Response.} Thank you for this suggestion. We have removed the robustness section as and we are happy to add it as an appendix if that is thought to be useful.
 	
 	\item \textit{\textbf{Liquid wealth distribution in splurge estimation.} When estimating the splurge factor, the authors calibrate a model to the Norwegian economy to match marginal propensities to spend out of lottery winnings and the liquid wealth distribution. Unfortunately, they latter does not exist for Norway, hence the authors instead target the US liquid wealth distribution from the 2004 SCF. I think it would be prudent to target a liquid wealth distribution for a country whose labor market institutions more closely	match Norway’s, e.g., Germany or France. The European Union’s Household Finance and	Consumption Survey provides such a measure, the codes to compute the relevant metrics are provided with the Brookings Paper by \citet{kaplan2014wealthy}.}
 	
