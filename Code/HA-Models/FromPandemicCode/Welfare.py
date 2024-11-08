@@ -5,7 +5,7 @@ Created on Wed Dec 15 16:44:33 2021
 @author: edmun
 """
 from Parameters import returnParameters
-from OtherFunctions import loadPickle, getSimulationDiff
+from OtherFunctions import loadPickle, getSimulationDiff, saveAsPickleUnderVarName
 import numpy as np
 import pandas as pd
 
@@ -293,5 +293,40 @@ def Welfare_Results(saved_results_dir,table_dir,Parametrization='Baseline'):
     with open(table_dir+'welfare6.tex','w') as f:
         f.write(output)
         f.close()  
+        
+    # Save multiplier values for comparison
+    if Parametrization=='Baseline':
+        Welfare_Baseline_Results = {  
+        'Check_consumption_welfare6':     mystr2dp(Check_consumption_welfare6),  
+        'UI_consumption_welfare6':        mystr2dp(UI_consumption_welfare6),  
+        'TaxCut_consumption_welfare6':    mystr2dp(TaxCut_consumption_welfare6),
+        'recession_Check_consumption_welfare6':     mystr2dp(recession_Check_consumption_welfare6),  
+        'recession_UI_consumption_welfare6':        mystr2dp(recession_UI_consumption_welfare6),  
+        'recession_TaxCut_consumption_welfare6':    mystr2dp(recession_TaxCut_consumption_welfare6),
+        'recession_Check_consumption_welfareAD6':  mystr2dp(recession_Check_consumption_welfareAD6),  
+        'recession_UI_consumption_welfareAD6':     mystr2dp(recession_UI_consumption_welfareAD6),  
+        'recession_TaxCut_consumption_welfareAD6': mystr2dp(recession_TaxCut_consumption_welfareAD6),
+        }
+        saveAsPickleUnderVarName(Welfare_Baseline_Results,table_dir,locals())
+
+    # Comparison chart with baseline for Splurge = 0
+    if Parametrization == 'Splurge0':
+        import os
+        Abs_Path              = os.getcwd()   
+        Welfare_Baseline_Results = loadPickle('Welfare_Baseline_Results',Abs_Path+'/Tables/CRRA2/',locals())
+
+        output  ="\\begin{tabular}{@{}lccc@{}} \n"
+        output +="\\toprule \n"
+        output +="                          & Stimulus check      & UI extension    & Tax cut    \\\\  \\midrule \n"
+        output +="$\\mathcal{W}(\\text{policy}, Rec=0, AD=0)$ & "    + mystr2dp(Check_consumption_welfare6)             + "(" + Welfare_Baseline_Results['Check_consumption_welfare6']  + ")"  + "  & "+ mystr2dp(UI_consumption_welfare6)     + "(" + Welfare_Baseline_Results['UI_consumption_welfare6']  + ")"          +  "  & "+  mystr2dp(TaxCut_consumption_welfare6) + "(" + Welfare_Baseline_Results['TaxCut_consumption_welfare6'] + ")" + "     \\\\ \n"
+        output +="$\\mathcal{W}(\\text{policy}, Rec=1, AD=0)$ & "      + mystr2dp(recession_Check_consumption_welfare6) + "(" + Welfare_Baseline_Results['recession_Check_consumption_welfare6']  + ")"    + "  & "+ mystr2dp(recession_UI_consumption_welfare6)   + "(" + Welfare_Baseline_Results['recession_UI_consumption_welfare6'] + ")"   +  "  & "+  mystr2dp(recession_TaxCut_consumption_welfare6) + "(" + Welfare_Baseline_Results['recession_TaxCut_consumption_welfare6'] + ")"  + "     \\\\ \n"
+        output +="$\\mathcal{W}(\\text{policy}, Rec=1, AD=0)$ & "  + mystr2dp(recession_Check_consumption_welfareAD6)   + "(" + Welfare_Baseline_Results['recession_Check_consumption_welfareAD6'] + ")"   + "  & "+ mystr2dp(recession_UI_consumption_welfareAD6) + "(" + Welfare_Baseline_Results['recession_UI_consumption_welfareAD6'] + ")" +  "  & "+  mystr2dp(recession_TaxCut_consumption_welfareAD6) +  "(" + Welfare_Baseline_Results['recession_TaxCut_consumption_welfareAD6']  + ")"  + "     \\\\ \n"
+        output +="\\end{tabular}  \n"
+        
+        with open(table_dir+'welfare6_SplurgeComp.tex','w') as f:
+            f.write(output)
+            f.close()  
+             
+        
         
         
