@@ -17,7 +17,7 @@ Despite the advantages of our partial equilibrium approach, here we complement o
 
 
 
-We embed the consumption choices of our households—--with heterogeneity over education type and discount factors—--in a New Keynesian model with search and matching. Aside from the consumption block of the model, the framework closely follows \cite{Du2024}, with complete details provided in appendix \ref{sec:hank_appendix}.\footnote{\cite{Du2024} in turn builds off \cite{Gornemann2021} and \cite{Auclert2020}} The general equilibrium structure generates fiscal multipliers through a Keynesian cross mechanism, which becomes particularly pronounced when monetary policy is passive. Moreover, the search and matching framework allows for a supply-side response to policy interventions, allowing us to capture both demand and supply effects of fiscal policies.
+We embed the consumption choices of our households—--with heterogeneity over education type and discount factors—--in a New Keynesian model with search and matching. Aside from the consumption block of the model, the framework closely follows \cite{Du2024}, with complete details provided in appendix \ref{sec:hank_appendix}.\footnote{\cite{Du2024} in turn builds off \cite{Gornemann2021} and \cite{Auclert2020}} The general equilibrium structure generates fiscal multipliers through an intertemporal Keynesian cross mechanism, which becomes particularly pronounced when monetary policy is passive. Moreover, the search and matching framework allows for a supply-side response to policy interventions, allowing us to capture both demand and supply effects of fiscal policies.
 
 
 
@@ -41,14 +41,14 @@ Overall, the IRFs from this model are similar to those from the partial equilibr
 
 \begin{figure}[th]
 	\begin{center}
-		\includegraphics[width=.9\textwidth]{../Figures/HANK_multipliers.pdf}
+		\includegraphics[width=.9\textwidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/Cummulative_multipliers_withHank.pdf}
 		\caption{Consumption Multipliers over Different Horizons in the HANK Model}
 		\notinsubfile{\label{fig:HANK_multipliers}}
 	\end{center}
 \end{figure}
 
 
-Figure \ref{fig:HANK_multipliers} shows the consumption multipliers over different horizons under a fixed real rate rule. This figure can be compared to figure \ref{fig:cumulativemultipliers} which shows a similar figure in our partial equilibrium analysis. In both versions of the model, the consumption multipliers over time horizons are similar, with the effect of the tax cut substantially smaller than the stimulus check or UI extension policies, despite the inclusion of supply-side effects in this HANK model.
+Figure \ref{fig:HANK_multipliers} shows the consumption multipliers over different horizons under a fixed real rate rule, alongside those in our primary partial equilibrium model. In both models, the consumption multipliers over time horizons are similar, with the effect of the tax cut substantially smaller than the stimulus check or UI extension policies, despite the inclusion of supply-side effects in this HANK model. However, this differences are somewhat muted because the aggregate demand effects in our partial equilibrium model do not continue beyond the recession, giving an extra boost the the stimulus check and extended UI policies in which spending occurs quickly.
 
 
 \ifthenelse{\boolean{Web}}{}{
