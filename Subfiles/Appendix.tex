@@ -41,21 +41,16 @@ Figure~\ref{fig:LorenzPtsrobustnessR} shows the fit of the liquid wealth distrib
 \end{figure}
 
 
+
+\FloatBarrier
+
 \hypertarget{Model_without_splurge}{}\par\section{Results in a model without the splurge}
 \notinsubfile{\label{app:Model_without_splurge}}
 
-
-Introduction:
-- Splurge used in the model to match empirical spending patterns, in particular the dynamics of spending in response to transitory income shocks.
-- The splurge acts in the model as a stand-in for competing theories for why agents tend to exhibit measured IMPC patterns.
-- One may worry, however, whether the splurge is ncessary to match the empirical evidence. 
-
-Since we have the splurge in the model, we can now assess its relevance for our results
-
-Hence, in this appendix section we reestimate the model without the splurge and simulate the three fiscal policies in that model. 
+In this appendix, we reestimate the model in the absence of the splurge. We discuss that model's ability to match (targeted and untargeted) empirical targets in the Norwegian and US setting. We then use the reestimated model to asses the relevance of the splurge for the effectiveness of the three policies. 
 
 
-\subsection{Estimating discount factor distributions}
+\subsection{Estimating discount factor distributions in the absence of the splurge}
 
 For the purpose of evaluating the results in the model without the splurge we do not require the reestimation of our Norwegian model, as the purpose of the latter is the estimation of the splurge. Nevertheless, we test wether we match the IMPC as reported by \citet{fagereng_mpc_2021} when the splurge is zero. Figure \ref{splurge0_Norwayestimation} illustrates the fit when we impose the splurge to be zero in comparison to our baseline estimation. 
 
@@ -78,17 +73,15 @@ For the purpose of evaluating the results in the model without the splurge we do
 	\parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Panel (a) shows the fit of the model to the dynamic consumption response estimated in \citet{fagereng_mpc_2021}; see their figure~A5. Panel (b) shows the fit of the model to the distribution of liquid wealth (see Section~\ref{sec:SCFdata} for the definition) from the 2004 SCF.\normalsize}
 \end{figure}
 
-While the splurge helps in matching the empirical evidence on the IMPC, the model without the splurge performs also relatively well. This is because the model without the splurge is able to generate a high initial marginal propensity to consume through a wider distribution of discount factors ($\beta = 0.921$ and $\nabla=0.116$) relative to the model with a splurge ($\beta = 0.968$ and $\nabla=0.0578$). This ensures that sufficiently many agents are at the borrowing constraint and thus sensitive to transitory income shocks. However, this comes at the cost of a loss in the fit of the distribution of liquid wealth, which is now more unequal relative to the baseline case with a positive splurge and the data. The model without the splurge also does not perfectly match the dynamics of the marginal propensity to consume over time. Specifically, the model exhibits a higher spending propensity in the first year after the shock as borrowing-constrained agents spend the additional income quicker. Overall, the model fit with the data deteriorates roughly by a factor of two measured by the Euclidean norm of the targeting error.\footnote{Specifically, the Euclidean norm of the targeting error increases from 0.04 to 0.08 for the time-profile of the marginal propensity to consume when the splurge is removed, from 0.16 to 0.29 for the marginal propensity to consume across wealth quartiles and from 0.027 to 0.032 for the Lorentz curve.} Also, the fit with respect to untargeted moments deterioriates. While the model with the splurge can account for empirically-observed initial MPCs among the wealthiest, the model without the splurge exhibits near-zero MPCs among that group. 
-
-We now turn to the estimation of the discount factor distributions in the US calibration of the model when the splurge is absent. 
-
-XXX
-FOR HAKON
-estimation of discout factors when splurge = 0
-liquid wealth when splurge = 0
-iMPC when splurge = 0
-XXX
-
+While the splurge helps in matching the empirical evidence on the IMPC, the model without the splurge performs also relatively well. This is because the model without the splurge is able to generate a high initial marginal propensity to consume through a wider distribution of discount factors ($\beta = 0.921$ and $\nabla=0.116$) relative to the model with a splurge ($\beta = 0.968$ and $\nabla=0.0578$). This ensures that sufficiently many agents are at the borrowing constraint and thus sensitive to transitory income shocks. However, this comes at the cost of a loss in the fit of the distribution of liquid wealth, which is now more unequal relative to the baseline case with a positive splurge and the data. The model without the splurge also does not perfectly match the dynamics of the marginal propensity to consume over time. Specifically, the model exhibits a higher spending propensity in the first year after the shock as borrowing-constrained agents spend the additional income quicker. Overall, the model fit with the data deteriorates roughly by a factor of two measured by the Euclidean norm of the targeting error.\footnote{Specifically, the Euclidean norm of the targeting error increases from 0.04 to 0.08 for the time-profile of the marginal propensity to consume when the splurge is removed, from 0.16 to 0.29 for the marginal propensity to consume across wealth quartiles and from 0.027 to 0.032 for the Lorentz curve.} Also, the fit with respect to untargeted moments deterioriates. While the model with the splurge can account for empirically-observed initial MPCs among the wealthiest, the model without the splurge exhibits near-zero MPCs among that group.\\
+\\
+We now turn to the estimation of the discount factor distributions in the US calibration of the model when the splurge is absent. \\
+\\
+XXX\\
+FOR HAKON\\
+estimation results of discout factors when splurge = 0\\
+discuss initial MPCs and iMPC / liquid wealth fit when splurge = 0 relative to splurge > 0\\
+XXX\\
 
 
 It is also instructive to compare the consumption dynamics of agents experiencing longer spells of unemployment in the model with and without the splurge. This can be seen in figure \ref{fig:UIextension_CompSplurge0}, which plots the evolution of income, consumption and share of agents at the borrowing limit among those that stay unemployed for at least five quarters. In this simulation there is no recession and none of the fiscal policies are implemented. While the consumption dynamics across the models with and without the splurge are fairly similar, the underlying drivers of the consumption drop upon expiry of unemployment benefits are different. In the model with the splurge, the drop in income translates directly in lower consumption via the splurge itself. In the model without the splurge it is the sharp rise in agents hitting the borrowing constraint which accounts for the consumption drop after UI benefits expire. This is due to the wider distribution of discount factors in the model without the splurge, which leads to a greater number of agents close the borrowing constraint. 
@@ -102,13 +95,14 @@ It is also instructive to compare the consumption dynamics of agents experiencin
 \end{figure}
 
 
-\subsection{Comparing the policies}
+\FloatBarrier
+\subsection{Multipliers in the absence of the splurge}
 
 In this section we simulate the three fiscal policies from the main text in the estimated model without the splurge. The shape of the impulse response functions only marginally change relative to the model with the splurge. Hence, we focus on the quantitative changes as summarized by the cummulative multipliers in Figure \ref{fig:cumulativemultipliers_SplurgeComp}. The figure shows the multipliers when AD effects are switched on for the model with and without the splurge. Table \ref{tab:Multiplier_SplurgeComp} shows the 10y-horizon multiplier across the two models.
 
-The absence of the splurge entails a calibration with a lower average MPC in the population. Hence, the check and tax cut exhibit lower multipliers when there is no splurge. For the UI extension we observe the opposite pattern, as the multiplier is larger in the model without the splurge. This due to the consumption patters around expiry of UI benefits described in the previous section. In the model without the splurge more agents hit the borrowing constraint. Providing those agents with an extension of UI benefits is thus relatively powerful. 
+The absence of the splurge entails a calibration with a lower average MPC in the population. Hence, the check and tax cut exhibit lower multipliers when there is no splurge. For the UI extension we observe the opposite pattern, as the multiplier is larger in the model without the splurge. This due to the consumption dynamics around the expiry of UI benefits described in the previous section. In the model without the splurge more agents hit the borrowing constraint upon the expiry. Providing those agents with an extension of UI benefits thus turns out slightly more powerful. 
 
-The policy ranking in terms of the multiplier shifts slighlty. While viewed from the model with the splurge the check policy delivers multiplier effects much more rapidly than the UI extension and has similar implications at longer horizons, the UI extension appears more clearly superior to the check in the model without the splurge. Both models agree on the tax cut being the least effective policy. 
+The policy ranking in terms of the multiplier shifts slighlty. While viewed from the model with the splurge, the check policy delivers multiplier effects much more rapidly than the UI extension, the UI extension appears superior to the check in the model without the splurge, both at shorter as well as longer horizons. Both models agree on the tax cut being the least effective policy. 
 
 \begin{figure}[t]
 	\centering
@@ -121,21 +115,12 @@ The policy ranking in terms of the multiplier shifts slighlty. While viewed from
 \begin{table}[t]
 	\center
 	\input{\econtexRoot/Code/HA-Models/FromPandemicCode/Tables/Splurge0/Multiplier_SplurgeComp.tex}
-	\caption{Multipliers, calculated for policies implemented in a recession with and without aggregate demand effects. The values outside of the brackets capture the multipliers in the model without the splurge, while those inside the brackets are mulitiplier with the splurge.}
+	\caption{Multipliers, calculated for policies implemented in a recession with and without aggregate demand effects. The values outside of the brackets capture the multipliers in the model without the splurge, while those inside the brackets are the corresponding mulitipliers with the splurge.}
 	\notinsubfile{\label{tab:Multiplier_SplurgeComp}}
 \end{table}
 
 
-Table \ref{tab:welfare6_SplurgeComp} compares the welfare implications of the two models. 
 
-
-
-\begin{table}[ht] 
-	\center
-	\input{\econtexRoot/Code/HA-Models/FromPandemicCode/Tables/Splurge0/welfare6_SplurgeComp.tex}
-	\caption{Welfare measure, calculated for policies implemented both out of and in a recession with and without aggregate demand effects. The values outside of the brackets capture the multipliers in the model without the splurge, while those inside the brackets are mulitiplier with the splurge.}
-	\notinsubfile{\label{tab:welfare6_SplurgeComp}}
-\end{table}
 
 
 %\subfile{Robustness}
