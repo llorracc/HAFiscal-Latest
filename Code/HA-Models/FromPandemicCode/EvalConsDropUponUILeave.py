@@ -100,6 +100,17 @@ make_figs('UIextension_CompSplurge0', True , False, target_dir=Abs_Path+'/Figure
 plt.show()  
 
 
+# Plot the results  
+plt.figure(figsize=(6, 6))    
+plt.plot(range(0, 6), avg_consumption_levels, label='Consumption', color='blue', linestyle='-')      
+plt.plot(range(0, 6), avg_income_levels, label='Income', color='green', linestyle='-')       
+plt.xlabel('quarters since last period of employment')    
+plt.ylabel('1 = permanent income in last period of employment')    
+plt.legend()    
+plt.grid(True)  
+make_figs('UnempSpell_Dynamics', True , False, target_dir=Abs_Path+'/Figures/')  
+plt.show()  
+
 
 
 print('Mean reduction in consumption upon entering unemployment benefits state: ', 100*(1-avg_consumption_levels[1]/avg_consumption_levels[0]), '%.')
