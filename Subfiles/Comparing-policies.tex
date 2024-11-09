@@ -135,52 +135,11 @@ While it is clear from the analysis that the extended unemployment benefits shou
 
 
 \FloatBarrier
-\hypertarget{comparing-the-policies-splurge}{}\par\subsection{Comparing the policies in model without the splurge} 
+\hypertarget{Model_without_splurge}{}\par\subsection{Results in a model without the splurge} 
+
+Appendix \ref{app:Model_without_splurge}
 
 
-\begin{figure}[t]
-	\centering
-	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/Splurge0/Cummulative_multipliers_SplurgeComp}
-	\caption{Cumulative multiplier as a function of the horizon for the three policies with and without the splurge. Note: Policies are implemented during a recession with AD effect active.}
-	\notinsubfile{\label{fig:cumulativemultipliers_SplurgeComp}}
-\end{figure}
-
-\begin{figure}[t]
-	\centering
-	\includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/Splurge0/UIextension_CompSplurge0}
-	\caption{Consumption and income levels for agents staying unemployed for at least five quarters and the share of those agents at the borrowing limit, in the model with and without the splurge. Note: No policy nor the recession are active.}
-	\notinsubfile{\label{fig:UIextension_CompSplurge0}}
-\end{figure}
-
-\begin{itemize}
-	\item Figure \ref{fig:cumulativemultipliers_SplurgeComp} shows the cumulative multipliers over time when AD effects are switched on for the model with and without the splurge. Table \ref{tab:Multiplier_SplurgeComp} shows the 10y-horizon multiplier across the two models.
-	\item The absence of the splurge entails a calibration with more agents near the liquidity constraint. Nevertheless, the average MPC is lower in the model without the splurge. [Is this right Håkon?] Hence, the check and tax cut exhibit lower multipliers when there is no splurge.
-	\item For the UI extension we observe the opposite pattern, as the multiplier is larger in the model without the splurge.
-	\begin{itemize}
-		\item When agents receive the UI extension, they have already spent two quarters with diminished incomes. In the calibration without the splurge, this pushes more agents to the liqudity constraint as the number of agents close to the liquidity constraint is higher compared to the model with the splurge. 
-		\item This can be seen in figure \ref{fig:UIextension_CompSplurge0}, which plots the evolution of income, consumption and share of agents at the borrowing limit among those that stay unemployed for at least five quarters. In this simulation, there is no recession and none of the fiscal policies are implemented. Agents becoming unemployed receive UI payments equal to 70\% of their permanent income. In the third quarter, they lose UI eligibility. The number of agents hitting the borrowing constraint in that period disproportionally increases in the model without the splurge. The decline in consumption is, however, similar across the model.
-		\item Hence, in the model without the splurge the MPC among the UI extension beneficiaries will be high because there are many liquidity-constrained agents, while in the model with the splurge, the splurge itself will lead to high MPCs. Overall, the multipliers for the UI extension policy ends up slightly higher in the absence of the splurge. 
-	\end{itemize}
-	\item The policy ranking in terms of the multiplier changes: While viewed from the model with the splurge the check policy delivers multiplier effects much more rapidly than the UI extension and has similar implications at longer horizons, the UI extension appears superior to the check in the model without the splurge. 
-	\item Table \ref{tab:welfare6_SplurgeComp} compares the welfare implications of the two models. 
-
-\end{itemize}
-
-\begin{table}[t]
-	\center
-	\input{\econtexRoot/Code/HA-Models/FromPandemicCode/Tables/Splurge0/Multiplier_SplurgeComp.tex}
-	\caption{Multipliers, calculated for policies implemented in a recession with and without aggregate demand effects. The values outside of the brackets capture the multipliers in the model without the splurge, while those inside the brackets are mulitiplier with the splurge.}
-	\notinsubfile{\label{tab:Multiplier_SplurgeComp}}
-\end{table}
-
-
-
-\begin{table}[ht] 
-	\center
-	\input{\econtexRoot/Code/HA-Models/FromPandemicCode/Tables/Splurge0/welfare6_SplurgeComp.tex}
-	\caption{Welfare measure, calculated for policies implemented both out of and in a recession with and without aggregate demand effects. The values outside of the brackets capture the multipliers in the model without the splurge, while those inside the brackets are mulitiplier with the splurge.}
-	\notinsubfile{\label{tab:welfare6_SplurgeComp}}
-\end{table}
 
 \ifthenelse{\boolean{Web}}{}{
   \end{document} \endinput
