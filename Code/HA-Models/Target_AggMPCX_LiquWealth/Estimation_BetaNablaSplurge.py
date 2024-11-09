@@ -588,13 +588,24 @@ if Plot_Output:
     plt.figure()
     LorenzAxis = np.arange(101,dtype=float)
     plt.plot(LorenzAxis,SplurgeNot0_Sol['Lorenz_Data_Adj'] ,'b-',linewidth=2)
+    plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
+    plt.xlabel('Liquid wealth percentile',fontsize=12)
+    plt.ylabel('Cumulative liquid wealth share',fontsize=12)
+    plt.legend(['Model','Data'])
+    make_figs('LiquWealth_Distribution_comparison', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show()  
+    
+    # Plot Lorentz curve
+    plt.figure()
+    LorenzAxis = np.arange(101,dtype=float)
+    plt.plot(LorenzAxis,SplurgeNot0_Sol['Lorenz_Data_Adj'] ,'b-',linewidth=2)
     plt.plot(LorenzAxis,Splurge0_Sol['Lorenz_Data_Adj']    ,'r:',linewidth=2)
     plt.scatter(np.array([20,40,60,80,100]),np.hstack([lorenz_target,1]),c='black', marker='o')
     plt.xlabel('Liquid wealth percentile',fontsize=12)
     plt.ylabel('Cumulative liquid wealth share',fontsize=12)
     plt.legend(['Model, splurge $\geq$ 0','Model, splurge = 0','Data'])
-    make_figs('LiquWealth_Distribution_comparison', True , False, target_dir=Abs_Path+'/Figures/')
-    plt.show()  
+    make_figs('LiquWealth_Distribution_comparison_splurge0', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show() 
     
     # Plot Agg MPCx
     plt.figure()
@@ -606,8 +617,20 @@ if Plot_Output:
     plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
     plt.xlabel('year')
     plt.ylabel('% of lottery win spent')
-    make_figs('AggMPC_LotteryWin_comparison', True , False, target_dir=Abs_Path+'/Figures/')
+    make_figs('AggMPC_LotteryWin_comparison_splurge0', True , False, target_dir=Abs_Path+'/Figures/')
     plt.show()  
+    
+    # Plot Agg MPCx
+    plt.figure()
+    xAxis = np.arange(0,5)
+    plt.plot(xAxis,SplurgeNot0_Sol['simulated_MPC_mean_add_Lottery_Bin'] ,'b-',linewidth=2)
+    plt.scatter(xAxis,Agg_MPCX_target,c='black', marker='o')
+    plt.legend(['Model','Fagereng, Holm and Natvik (2021)'])
+    plt.xticks(np.arange(min(xAxis), max(xAxis)+1, 1.0))
+    plt.xlabel('year')
+    plt.ylabel('% of lottery win spent')
+    make_figs('AggMPC_LotteryWin_comparison', True , False, target_dir=Abs_Path+'/Figures/')
+    plt.show() 
     
     # Table initial MPCs along wealth q
     
