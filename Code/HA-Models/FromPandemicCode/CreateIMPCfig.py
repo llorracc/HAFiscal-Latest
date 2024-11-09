@@ -50,7 +50,7 @@ for line in resFileSplZero:
             IMPCsSplZero.append(float(theIMPCstr[ii]))
 
 for thePlots in plotToMake:
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6,6))
     xAxis = np.arange(0,5)
     
     theLegend = []
@@ -67,6 +67,7 @@ for thePlots in plotToMake:
     plt.xlabel('Year')
     plt.ylabel('% of lottery win spent')
     plt.legend(theLegend, loc='upper right', fontsize=12)
+    plt.grid(True)
 
     if thePlots==0:
         make_figs('IMPCs_wSplZero', True , False, target_dir=figs_dir)
