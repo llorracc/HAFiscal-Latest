@@ -85,7 +85,7 @@ def calc_C_I_paths_for_Unemp(result_var):
 
 
 # Plot the results  
-plt.figure(figsize=(6, 6))    
+plt.figure(figsize=(7, 6))    
 plt.plot(range(0, 6), avg_consumption_levels, label='Consumption', color='blue', linestyle='-')  
 plt.plot(range(0, 6), avg_consumption_levels_splurge0, label='Consumption, splurge=0', color='blue', linestyle='--')     
 plt.plot(range(0, 6), avg_income_levels, label='Income', color='green', linestyle='-')    
@@ -101,7 +101,7 @@ plt.show()
 
 
 # Plot the results  
-plt.figure(figsize=(6, 6))    
+plt.figure(figsize=(7, 6))    
 plt.plot(range(0, 6), avg_consumption_levels, label='Consumption', color='blue', linestyle='-')      
 plt.plot(range(0, 6), avg_income_levels, label='Income', color='green', linestyle='-')       
 plt.xlabel('quarters since last period of employment')    
