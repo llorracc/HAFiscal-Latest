@@ -543,15 +543,18 @@ def calcMPCbyWealthQ(Agents,lotterySize):
     betaByWQ = np.zeros(5)
     PIbyWQ = np.zeros(5)
     wealthByWQ = np.zeros(5)
+    pctWealthByWQ = np.zeros(5)
     UnempByWQ = np.zeros(5)
     UnempAll = UnempAll > 0
     educByWQ = np.zeros(5)
     numWQ = np.zeros(5)
+    totalWealth = np.sum(wealth_list)
     for qq in range(4):
         MPCbyWQ[qq] = np.mean(MPC_list[WealthQsAll==qq])
         betaByWQ[qq] = np.mean(betasAll[WealthQsAll==qq])
         PIbyWQ[qq] = np.mean(PIsAll[WealthQsAll==qq])
         wealthByWQ[qq] = np.mean(wealth_list[WealthQsAll==qq])
+        pctWealthByWQ[qq] = np.sum(wealth_list[WealthQsAll==qq])/totalWealth*100
         UnempByWQ[qq] = np.sum(UnempAll[WealthQsAll==qq])/np.sum(WealthQsAll==qq)
         educByWQ[qq] = np.mean(educAll[WealthQsAll==qq])
         numWQ[qq] = np.sum(WealthQsAll==qq)
@@ -559,6 +562,7 @@ def calcMPCbyWealthQ(Agents,lotterySize):
     betaByWQ[4] = np.mean(betasAll)
     PIbyWQ[4] = np.mean(PIsAll)
     wealthByWQ[4] = np.mean(wealth_list)
+    pctWealthByWQ[4] = np.sum(wealth_list)/totalWealth*100
     UnempByWQ[4] = np.sum(UnempAll)/len(UnempAll)
     educByWQ[4] = np.mean(educAll)
     numWQ[4] = len(WealthQsAll)
@@ -613,6 +617,8 @@ def calcMPCbyWealthQ(Agents,lotterySize):
     sMPCs = simulated_MPC_means_smoothed
     print('Wealth by WQ = ['+str(round(wealthByWQ[0],4))+', '+str(round(wealthByWQ[1],4))+', '+str(round(wealthByWQ[2],4))+', '
               +str(round(wealthByWQ[3],4))+', '+str(round(wealthByWQ[4],4))+']')
+    print('Wealth share by WQ = ['+str(round(pctWealthByWQ[0],4))+', '+str(round(pctWealthByWQ[1],4))+
+          ', '+str(round(pctWealthByWQ[2],4))+', '+str(round(pctWealthByWQ[3],4))+']')
     print('sMPCs = ['+str(round(sMPCs[0],3))+', '+str(round(sMPCs[1],3))+', '+str(round(sMPCs[2],3))+', '
                   +str(round(sMPCs[3],3))+', '+str(round(sMPCs[4],3))+']')
     print('betas by WQ = ['+str(round(betaByWQ[0],4))+', '+str(round(betaByWQ[1],4))+', '+str(round(betaByWQ[2],4))+', '

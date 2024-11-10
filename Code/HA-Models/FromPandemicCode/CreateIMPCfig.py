@@ -50,7 +50,7 @@ for line in resFileSplZero:
             IMPCsSplZero.append(float(theIMPCstr[ii]))
 
 for thePlots in plotToMake:
-    fig = plt.figure(figsize=(6,6))
+    fig = plt.figure(figsize=(7,6))
     xAxis = np.arange(0,5)
     
     theLegend = []
