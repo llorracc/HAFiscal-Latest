@@ -73,8 +73,25 @@ For the purpose of evaluating the results in the model without the splurge we do
 	\parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Panel (a) shows the fit of the model to the dynamic consumption response estimated in \citet{fagereng_mpc_2021}; see their figure~A5. Panel (b) shows the fit of the model to the distribution of liquid wealth (see Section~\ref{sec:SCFdata} for the definition) from the 2004 SCF.\normalsize}
 \end{figure}
 
-While the splurge helps in matching the empirical evidence on the IMPC, the model without the splurge performs also relatively well. This is because the model without the splurge is able to generate a high initial marginal propensity to consume through a wider distribution of discount factors ($\beta = 0.921$ and $\nabla=0.116$) relative to the model with a splurge ($\beta = 0.968$ and $\nabla=0.0578$). This ensures that sufficiently many agents are at the borrowing constraint and thus sensitive to transitory income shocks. However, this comes at the cost of a loss in the fit of the distribution of liquid wealth, which is now more unequal relative to the baseline case with a positive splurge and the data. The model without the splurge also does not perfectly match the dynamics of the marginal propensity to consume over time. Specifically, the model exhibits a higher spending propensity in the first year after the shock as borrowing-constrained agents spend the additional income quicker. Overall, the model fit with the data deteriorates roughly by a factor of two measured by the Euclidean norm of the targeting error.\footnote{Specifically, the Euclidean norm of the targeting error increases from 0.04 to 0.08 for the time-profile of the marginal propensity to consume when the splurge is removed, from 0.16 to 0.29 for the marginal propensity to consume across wealth quartiles and from 0.027 to 0.032 for the Lorentz curve.} Also, the fit with respect to untargeted moments deterioriates. While the model with the splurge can account for empirically-observed initial MPCs among the wealthiest, the model without the splurge exhibits near-zero MPCs among that group.\\
-\\
+While the splurge helps in matching the empirical evidence on the IMPC, the model without the splurge performs also relatively well. This is because the model without the splurge is able to generate a high initial marginal propensity to consume through a wider distribution of discount factors ($\beta = 0.921$ and $\nabla=0.116$) relative to the model with a splurge ($\beta = 0.968$ and $\nabla=0.0578$). This ensures that sufficiently many agents are at the borrowing constraint and thus sensitive to transitory income shocks. However, this comes at the cost of a loss in the fit of the distribution of liquid wealth, which is now more unequal relative to the baseline case with a positive splurge and the data. The model without the splurge also does not perfectly match the dynamics of the marginal propensity to consume over time. Specifically, the model exhibits a higher spending propensity in the first year after the shock as borrowing-constrained agents spend the additional income quicker. 
+
+Also, the fit with respect to other moments deterioriates. While the model with the splurge can account for empirically-observed initial MPCs among the wealthiest, the model without the splurge exhibits much lower MPCs among that group, see Table \ref{tab:Comparison_Splurge_Table}. Overall, the model fit with the data deteriorates roughly by a factor of two measured by the Euclidean norm of the targeting error.\footnote{Specifically, the Euclidean norm of the targeting error increases from 0.04 to 0.08 for the time-profile of the marginal propensity to consume when the splurge is removed, from 0.16 to 0.29 for the marginal propensity to consume across wealth quartiles and from 0.027 to 0.032 for the Lorentz curve.} 
+
+
+
+\begin{table}[t]
+	\center
+	\input{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/Comparison_Splurge_Table}
+	\caption{Marginal propensities to consume across wealth quartiles and the total population as well as the wealth to income ratio, in the model with and without the splurge and according to the data}
+	\notinsubfile{\label{tab:Comparison_Splurge_Table}}
+\end{table}
+
+
+
+
+
+
+
 We now turn to the estimation of the discount factor distributions in the US calibration of the model when the splurge is absent. \\
 \\
 XXX\\
