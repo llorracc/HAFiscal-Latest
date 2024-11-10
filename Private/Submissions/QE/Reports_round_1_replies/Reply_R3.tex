@@ -34,6 +34,8 @@
 \usepackage{svg}
 \usepackage{multirow}
 \usepackage{verbatim}
+\usepackage{soul}
+\sethlcolor{yellow}
 \hypersetup{
 	colorlinks,
 	linkcolor={red!50!black},
@@ -98,13 +100,13 @@
 	
 	\item \textit{\textbf{Results without the splurge factor.} The first half of the paper spends some time on motivating the splurge factor in consumption, but it is then taken for granted in the policy evaluations. Thus, the two sections appear somewhat disconnected. It would help me to see the policy results for a model calibrated	without the splurge factor, at least in an appendix. Is matching the initially very high MPC out of transitory shocks essential for the policy conclusions drawn in the paper, or would the same conclusions be obtained from a more standard heterogeneous agent model? I imagine a removal of the splurge factor will make stimulus checks and income tax cuts much less attractive, but the strength of the channel should be reported.}
 	
-	\noindent \textbf{Response.} As described above in the "Summary of Main Changes," we now include a section that discusses the relevance of the splurge for our results. We show that with a wider distribution of discount factors even a model without the splurge is able to account for the relevant empirical evidence. Also our main results, including the ranking of the polices in terms of welfare impact, are robust to removing the splurge from the model. 
+	\noindent \textbf{Response.} As described above in the "Summary of Main Changes," we now include Appendix~\colorbox{yellow}{XX} that discusses the relevance of the splurge for our results. We show that with a wider distribution of discount factors even a model without the splurge is able to account for the relevant empirical evidence. Also our main results, including the ranking of the polices in terms of welfare impact, are robust to removing the splurge from the model. 
 
 	\item \textit{\textbf{Education specific transition rates, E to U vs. U to E.} In the model, transition rates from employment to unemployment (E to U) are calibrated to different values across education groups, while job-finding rates out of unemployment (U to E) are constant across groups. The probability of transitioning out of unemployment also appears to not change over the cycle, while the separation rate does (this seems odd, as	the DMP literature tends to assume that separation rates are constant and job-finding rates move with the cycle (see, e.g., \citet{hagedorn2008cyclical}). This focus on E to U	rates is not motivated and the reader is left to wonder whether this is a crucial assumption or not. It appears that the model could be calibrated to match the same moments with heterogeneous U to E probabilities and constant separation rates, instead. I presume this would make recessions much worse for unemployed dropouts, boosting the welfare effects of a UI extension. Given that the welfare results of the paper strongly favor UI benefit extensions, a discussion of the heterogeneous E to U rates assumption seems warranted.}	
 	
 	\noindent \textbf{Response.} In response to your comment and some questions/comments from another referee, we have updated our presentation of the calibration of the transition probabilities between employment and unemployment in section~3.3.1 in the paper. 
 	
-	As you point out, our strategy is to calibrate the same probability of transitioning from unemployment to employment for each education group and education-specific probabilities of transitioning from employment to unemployment. This allows to fit our calibration targets which are the average duration of unemployment and the education-specific unemployment rates in normal times. As we are using the 2004 wave of the SCF, we use numbers for 2004 from the Bureau of Labor Statistics for the average duration of unemployment of 1.5 quarters and for the education-specific unemployment rates. 
+	As you point out, our strategy is to calibrate the same probability of transitioning from unemployment to employment for each education group and education-specific probabilities of transitioning from employment to unemployment. This enables us to fit our calibration targets which are the average duration of unemployment and the education-specific unemployment rates in normal times. As we are using the 2004 wave of the SCF, we use numbers for 2004 from the Bureau of Labor Statistics for the average duration of unemployment of 1.5 quarters and for the education-specific unemployment rates. 
 	
 	Note that this calibration strategy is consistent with the results in \citet{mincer1991education} who finds that the main difference between education groups is in the incidence of unemployment, and not its duration. He states that ``the reduction of the incidence of unemployment [at higher education levels] is found to be far more important than the reduced duration of unemployment in creating the educational differentials in unemployment rates'' (page 1).
 	
@@ -136,9 +138,9 @@
 	
 	\noindent \textbf{Response.} Thank you for this suggestion. We have removed the robustness section as and we are happy to add it as an appendix if that is thought to be useful.
 	
-	\item \textit{\textbf{Liquid wealth distribution in splurge estimation.} When estimating the splurge factor, the authors calibrate a model to the Norwegian economy to match marginal propensities to spend out of lottery winnings and the liquid wealth distribution. Unfortunately, they latter does not exist for Norway, hence the authors instead target the US liquid wealth distribution from the 2004 SCF. I think it would be prudent to target a liquid wealth distribution for a country whose labor market institutions more closely	match Norway’s, e.g., Germany or France. The European Union’s Household Finance and	Consumption Survey provides such a measure, the codes to compute the relevant metrics are provided with the Brookings Paper by \citet{kaplan2014wealthy}.}
+	\item \textit{\textbf{Liquid wealth distribution in splurge estimation.} When estimating the splurge factor, the authors calibrate a model to the Norwegian economy to match marginal propensities to spend out of lottery winnings and the liquid wealth distribution. Unfortunately, they latter does not exist for Norway, hence the authors instead target the US liquid wealth distribution from the 2004 SCF. I think it would be prudent to target a liquid wealth distribution for a country whose labor market institutions more closely match Norway’s, e.g., Germany or France. The European Union’s Household Finance and Consumption Survey provides such a measure, the codes to compute the relevant metrics are provided with the Brookings Paper by \citet{kaplan2014wealthy}.}
 	
-	\noindent \textbf{Response.} 
+	\noindent \textbf{Response.} As mentioned above, we now include Appendix~\colorbox{yellow}{XX} that discusses the relevance of the splurge for our results. There we show that our main conclusions are not driven by the inclusion of the splurge in the model. The approach you suggest may provide an improved estimate of the splurge, but the new appendix indicates that our overall results would not be sensitive to such an improved estimate. \hl{For now, we, therefore, leave it up to the editor whether we should keep the splurge in the paper at all with the resulting improvements in the empirical fit, or present our ranking of stimulus policies in a more standard model.}
 	
 	\item \textit{\textbf{Targeted stimulus checks.} In the final paragraph of the introduction, the authors discuss the possibility of targeted stimulus checks (as opposed to the case discussed in the paper: means tested, but universal distribution). I think estimating this case would help readers benchmark the welfare results by providing an upper bound. As of now, it is clear that UI extensions in the model do most to increase welfare; but are they far away from this hypothetical upper bound?}
 	
@@ -151,7 +153,7 @@
 	
 	\item \textit{\textbf{Effect of UI extensions on job-finding rates.} The model presented in the paper does not feature endogenous search, which precludes the UI extensions from having negative effects on job-finding, as proposed in, e.g., \citet{mitman2015optimal}. In this sense, the authors, in the name of tractability, stack the deck in favor of the UI extensions. I’m strongly sympathetic to the assumption, but it would be interesting to know how bad the negative incentive effects would need to be for the UI	extension to lose its effectiveness. For example, assuming that job-finding probabilities decrease linearly with benefit size, how negative would the function’s slope need to be for the	paper’s conclusions to revert? A back of the envelope calculation could provide an answer. My prior would be that the number is too high to be realistic, strengthening the conclusions in the paper.}
 	
-	\noindent \textbf{Response.} 
+	\noindent \textbf{Response.} \colorbox{yellow}{XX}
 	
 \end{itemize}
 

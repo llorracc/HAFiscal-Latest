@@ -34,6 +34,8 @@
 \usepackage{svg}
 \usepackage{multirow}
 \usepackage{verbatim}
+\usepackage{soul}
+\sethlcolor{yellow}
 \hypersetup{
 	colorlinks,
 	linkcolor={red!50!black},
@@ -113,11 +115,10 @@
 		
 	\textit{To be clear, this is not a “robustness check” since the result is interesting and informative regardless of the outcome. Either (i) the splurge factor is useful for matching the liquid-wealth distribution, but does not matter for policy evaluation or (ii) the splurge factor changes the	quantitative results quite a bit. Since the splurge factor is a novelty	of the paper and the paper’s ambition is quantitative, it behooves the authors to explore and report how the splurge factor affects the results. }
 	
-	\paragraph{Response to 1. and 2.}  As described above in the "Summary of Main Changes," we now include a section that discusses the relevance of the splurge for our results. We show that with a wider distribution of discount factors even a model without the splurge is able to account for the relevant empirical evidence. (A chart illustrating the fit in that case, i.e. a counterpart to Figure 1 as you have suggested, is now included in the new appendix.) Our main results, including the ranking of the polices in terms of welfare impact, are robust to removing the splurge from the model. 
+	\paragraph{Response to 1. and 2.}  As described above in the "Summary of Main Changes," we now include a section that discusses the relevance of the splurge for our results. We show that with a wider distribution of discount factors a model without the splurge is able to account fairly well for the empirical evidence on the dynamics of spending after an temporary income shock and the distribution of liquid wealth. (A chart illustrating the fit in that case, i.e. a counterpart to Figure 1 as you have suggested, is now included in the new appendix.) The main moment the model cannot generate without the splurge is the high MPC for the wealthiest quartile, which it turns out is not so important for our evaluation of consumption stimulus policies. Our main results, including the ranking of the polices in terms of welfare impact, are thus unchanged when removing the splurge from the model. In terms of the multipliers, the main effect of removing the splurge is to reduce the short-term multipliers for the stimulus check.
 	
-	While the splurge does not matter for our ultimate policy conclusions, we agree that this is an interesting result in itself. As furthermore the empirical fit of the model is slighlty better with the splurge, we have opted to keep the model with the splurge as our baseline.
+	While the splurge does not matter for our ultimate policy conclusions, we agree that this is an interesting result in itself. We have opted to keep the splurge in our baseline version of the model since this provides a better fit to the dynamics of spending after a temporary income shock and since we view the timing of spending induced by the different policies as an important distinguishing characteristic in our comparison.
 	
-
 
 	\item \textit{\textbf{Motivate the introduction of the aggregate-demand externality.}  In the model with an aggregate-demand externality, an increase in spending leads to an increase in everyone’s income. One can easily imagine a world where aggregate spending instead reduces unemployment, primarily benefitting the unemployed (with higher MPCs etc.). More broadly, one of the main purported goals of fiscal stimulus is to shorten the duration of a recession, something which the model setup does not allow for. Qualitative, these distinctions may not matter but the ambition	of the paper is quantitative.}
 	
@@ -145,7 +146,7 @@
 \setcounter{enumi}{3}
 	\item \textit{\textbf{Why not report stimulated consumption during recession?} In Table 3, ``Share of policy expenditure during recession'' is reported for the three policies. The policy-relevant object is, however, ``share of consumption increase during recession'' and it would be informative to report this number as well.} 
 	 
-	\paragraph{Response.} Indeed, the share of the consumption induced by the policy is a relevant metric when explaining the multiplier when aggregate demand effects are present. We have therefore added a fourth line to Table 3 (which is now Table \colorbox{yellow}{5}) showing that share. Interestingly, the UI extension features the highest share of induced consumption during the recession among the three policies, slightly higher than the share of the check stimulus. This is because while the check occurs early it also is paid out to agents with low MPCs who spend the additional income very slowly. In contrast, the UI extension is paid out slightly later, but once its target population has high MPCs and spend the additional income more quickly. Given those insights, we have adjusted the language slightly when explaining the cumulative multipliers. Our main conclusions are, however, unaffected.
+	\paragraph{Response.} Indeed, the share of the consumption induced by the policy is a relevant metric when explaining the multiplier when aggregate demand effects are present. We have therefore added a fourth line to Table 3 (which is now Table \colorbox{yellow}{5}) showing that share. Interestingly, the UI extension features the highest share of induced consumption during the recession among the three policies, slightly higher than the share of the check stimulus. This is because while the check occurs early it also is paid out to agents with low MPCs who spend the additional income very slowly. In contrast, the UI extension is paid out slightly later, but at that point  its target population has high MPCs and spend the additional income more quickly. Given those insights, we have adjusted the language slightly when explaining the cumulative multipliers. Our main conclusions are, however, unaffected.
 
 	\item \textit{\textbf{Welfare criterion – weak inequality or equality?} When introducing the desired properties of the welfare criterion, the authors write (p. 26): ``There is no social benefit to implementing any of the policies outside of the recession.'' This way of phrasing it invites the interpretation of a weak inequality when the correct interpretation	is an equality. The phrasing should be changed to something along the	lines of ``There is no social benefit or cost to implementing any of the policies outside of the recession.''}
 
@@ -175,5 +176,5 @@
 	\noindent Finally, we would like to thank you again for your careful advice on our paper. We hope you find our revision satisfactory.
 	
 	\bibliographystyle{econometrica}
-	\bibliography{../../../../HAFiscal.bib, ../../../../Add-Refs.bib}
+	\bibliography{../../../../HAFiscal.bib}
 \end{document}
