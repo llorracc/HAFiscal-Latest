@@ -661,6 +661,24 @@ if Plot_Output:
     with open(Abs_Path+'/Figures/Comparison_Splurge_Table.tex','w') as f:
         f.write(output)
         f.close()   
+        
+    
+    output  ="\\begin{tabular}{@{}lcccccc@{}} \n"
+    output +="\\toprule \n"
+    output +="                  & \multicolumn{5}{c}{MPC} &   \\\\   \n"
+    output +="                  &  1st WQ  & 2nd WQ  & 3rd WQ & 4th WQ  & Agg  &  K/Y  \\\\  \\midrule \n"
+    output +="Model &"+mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][3])      + " & "+ mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][2])+ " & "+  \
+                                mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][1])      + " & "+ mystr2(SplurgeNot0_Sol['simulated_MPC_means_smoothed'][0]) + " & "+  \
+                                mystr2(SplurgeNot0_Sol['simulated_MPC_mean_add_Lottery_Bin'][0])+ " & "+ mystr2(SplurgeNot0_Sol['KY_Model'])  + " \\\\ \n"
+    output +="Data &"+          mystr2(MPC_target[2,3])                                         + " & "+ mystr2(MPC_target[2,2])+ " & "+  \
+                                mystr2(MPC_target[2,1])                                         + " & "+ mystr2(MPC_target[2,0]) + " & "+  \
+                                mystr2(Agg_MPCX_target[0])                                      + " & "+ mystr2(KY_target)  + " \\\\ \n"
+    output +="\\end{tabular}  \n"
+    
+    
+    with open(Abs_Path+'/Figures/MPC_WealthQuartiles_Table.tex','w') as f:
+        f.write(output)
+        f.close()   
     
     
     

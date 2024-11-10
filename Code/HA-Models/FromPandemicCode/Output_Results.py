@@ -340,19 +340,43 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     def ShareOfPolicyDuringRec(rec,TaxCut,UI,Check,recession_prob_array,max_T):  
         # considers runs different recession lengths and calculates expenditure share within those runs
         # then sums it up weighing by probability of that recession length
-        ShareExpDuringRecession= np.zeros(3)
+        ShareDuringRecession = dict()
+        ShareDuringRecession['Tax_Inc']     = 0
+        ShareDuringRecession['Tax_Cons']    = 0
+        ShareDuringRecession['UI_Inc']      = 0
+        ShareDuringRecession['UI_Cons']     = 0
+        ShareDuringRecession['Check_Inc']   = 0
+        ShareDuringRecession['Check_Cons']  = 0
              
         for i in range(max_recession_duration):      
-            NPV_TaxCut              = getSimulationDiff(rec[i],TaxCut[i],'NPV_AggIncome') 
-            ShareExpDuringRecession[0] += NPV_TaxCut[i]/NPV_TaxCut[-1]*recession_prob_array[i]
+            NPV_TaxCut                      = getSimulationDiff(rec[i],TaxCut[i],'NPV_AggIncome') 
+            ShareDuringRecession['Tax_Inc'] += NPV_TaxCut[i]/NPV_TaxCut[-1]*recession_prob_array[i]
             
-            NPV_UI                  = getSimulationDiff(rec[i],UI[i],'NPV_AggIncome') 
-            ShareExpDuringRecession[1] += NPV_UI[i]/NPV_UI[-1]*recession_prob_array[i]
+            NPV_Cons_TaxCut                 = getSimulationDiff(rec[i],TaxCut[i],'NPV_AggCons') 
+            ShareDuringRecession['Tax_Cons']+= NPV_Cons_TaxCut[i]/NPV_Cons_TaxCut[-1]*recession_prob_array[i]
             
-            NPV_Check               = getSimulationDiff(rec[i],Check[i],'NPV_AggIncome') 
-            ShareExpDuringRecession[2] += NPV_Check[i]/NPV_Check[-1]*recession_prob_array[i]
+            
+            NPV_UI                          = getSimulationDiff(rec[i],UI[i],'NPV_AggIncome') 
+            ShareDuringRecession['UI_Inc']  += NPV_UI[i]/NPV_UI[-1]*recession_prob_array[i]
+            
+            NPV_Cons_UI                     = getSimulationDiff(rec[i],UI[i],'NPV_AggCons') 
+            ShareDuringRecession['UI_Cons'] += NPV_Cons_UI[i]/NPV_Cons_UI[-1]*recession_prob_array[i]
+            
+            
+            NPV_Check                           = getSimulationDiff(rec[i],Check[i],'NPV_AggIncome') 
+            ShareDuringRecession['Check_Inc']   += NPV_Check[i]/NPV_Check[-1]*recession_prob_array[i]
+            
+            NPV_Cons_Check                      = getSimulationDiff(rec[i],Check[i],'NPV_AggCons') 
+            ShareDuringRecession['Check_Cons']  += NPV_Cons_Check[i]/NPV_Cons_Check[-1]*recession_prob_array[i]
              
-        return 100*ShareExpDuringRecession
+        # times 100
+        ShareDuringRecession = {key: value * 100 for key, value in ShareDuringRecession.items()} 
+        
+        # output
+        for key, value in ShareDuringRecession.items():  
+            print(f"Key: {key}, Value: {value}")  
+            
+        return ShareDuringRecession
         
              
     recession_all_results        = loadPickle('recession_all_results',folder_nonPVSame,locals())   
@@ -360,14 +384,10 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     recession_all_results_TaxCut = loadPickle('recessionTaxCut_all_results',saved_results_dir,locals())
     recession_all_results_Check  = loadPickle('recessionCheck_all_results',saved_results_dir,locals())
         
-    [Share_TaxCut,Share_UI,ShareCheck]=ShareOfPolicyDuringRec(recession_all_results,recession_all_results_TaxCut,\
+    ShareDuringRecession=ShareOfPolicyDuringRec(recession_all_results,recession_all_results_TaxCut,\
                            recession_all_results_UI,recession_all_results_Check,\
                            recession_prob_array,max_recession_duration)
-    
-    print('Share of Tax cut policy expenditure occuring during recession: ', mystr(Share_TaxCut)    )
-    print('Share of UI policy expenditure occuring during recession: ', mystr(Share_UI) ) 
-    print('Share of Check policy expenditure occuring during recession: ', mystr(ShareCheck) ) 
-    
+            
     
     def mystr3(number):
         if not np.isnan(number):
@@ -389,7 +409,8 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     output +="10y-horizon Multiplier (no AD effect) &"   + mystr3(NPV_Multiplier_Rec_Check[-1])             + "  & "+ mystr3(NPV_Multiplier_UI_Rec[-1])               +  "  & "+  mystr3(NPV_Multiplier_Rec_TaxCut[-1])  + "     \\\\ \n"
     output +="10y-horizon Multiplier (AD effect) &"      + mystr3(NPV_Multiplier_Rec_Check_AD[-1])             + "  & "+ mystr3(NPV_Multiplier_UI_Rec_AD[-1])               +  "  & "+  mystr3(NPV_Multiplier_Rec_TaxCut_AD[-1])  + "     \\\\ \n"
     output +="10y-horizon (1st round AD effect only) &"  + mystr3(NPV_Multiplier_Rec_Check_firstRoundAD[-1])   + "  & "+ mystr3(NPV_Multiplier_UI_Rec_firstRoundAD[-1])     +  "  & "+  mystr3(NPV_Multiplier_Rec_TaxCut_firstRoundAD[-1])  + "     \\\\ \n"
-    output +="Share of policy expenditure during recession &" + mystr1(ShareCheck)   + "\%  & "+ mystr1(Share_UI)  +  "\%  & "+  mystr1(Share_TaxCut)  + " \%    \\\\ \n"
+    output +="Share of policy expenditure during recession &" + mystr1(ShareDuringRecession['Check_Inc'])   + "\%  & "+ mystr1(ShareDuringRecession['UI_Inc'])  +  "\%  & "+  mystr1(ShareDuringRecession['Tax_Inc'])  + " \%    \\\\ \n"
+    output +="Share of policy cons. stimulus during recession &" + mystr1(ShareDuringRecession['Check_Cons'])   + "\%  & "+ mystr1(ShareDuringRecession['UI_Cons'])  +  "\%  & "+  mystr1(ShareDuringRecession['Tax_Cons'])  + " \%    \\\\ \n"
     output +="\\end{tabular}  \n"
 
     
@@ -529,4 +550,4 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         
     #%% Output welfare tables
         
-    Welfare_Results(saved_results_dir,table_dir,Parametrization=Parametrization)
+    # Welfare_Results(saved_results_dir,table_dir,Parametrization=Parametrization)
