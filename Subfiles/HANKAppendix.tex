@@ -11,7 +11,7 @@
 
 \subsection{Households}
 
-The household block follows closely to the main text with a few exceptions. First, the splurge only occurs out of equilbrium---that is, the steady state of the model is calculated without the splurge behavior. Second, the level of permanent income of all newborns is equal to one. Finally, all households face the same employment to unemployment and unemployment to employment probabilities. The probabilities are calibrated to the transition probabilities of high school graduates from the main text.
+The household block follows closely to the main text with a few exceptions. First, the splurge only occurs out of equilibrium---that is, the steady state of the model is calculated without the splurge behavior. Second, the level of permanent income of all newborns is equal to one. Furthermore, all households face the same employment to unemployment and unemployment to employment probabilities. The probabilities are calibrated to the transition probabilities of high school graduates from the main text. Lastly, following the notation of \cite{Auclert2020}, $r^{a}_{t}$ will denote the economy wide ex-ante real interest rate.
 
 
 \subsection{Goods Market}
@@ -110,7 +110,7 @@ where $\phi_{\pi}$ is the coefficient on inflation. Inflation is given by $\pi_t
 An equilibrium in this economy is a sequence of: 
 \begin{itemize}[label=--]
 	\item Policy Functions $\left( c_{it}(m) \right )_{t=0}^{\infty}$ normalized by permanent income.
-	\item Prices $ \left(r_{t},  r^{a}_{t+1}, i_{t}, q^{b}_{t},  w_{t}, h_{t} , \pi_{t} , \tau_{t} \right) _{t=0}^{\infty}$.
+	\item Prices $ \left( r^{a}_{t+1}, i_{t}, q^{b}_{t},  w_{t}, h_{t} , \pi_{t} , \tau_{t} \right) _{t=0}^{\infty}$.
 	\item Aggregates $ \left(C_{t}, Y_{t} , N_{t},   \Theta_{t},  B_{t} , A_{t}  \right)_{t=0}^{\infty}$.
 \end{itemize}
 
@@ -143,7 +143,7 @@ Price Adjustment Costs & $\varphi$ & 96.9 & \cite{Ravn2017} \\
 Vacancy Cost & $\kappa$ & 0.056 & $\frac{\kappa}{w\phi} = 0.071$ \\
 Job Separation Rate & $\omega$ & 0.092 & To match $\pi(eu)$ for Highschool group \\
 Matching Elasticity & $\alpha$ & 0.65 & \cite{Ravn2017} \\
-Job Finding Probability & $\eta_{ss}$ & .67 & $\pi(ue)$ in section~\ref{sec:calib} \\
+Job Finding Probability & $\eta_{ss}$ & 0.67 & $\pi(ue)$ in section~\ref{sec:calib} \\
 Vacancy Filling Rate & $\phi_{ss}$ & 0.71 & \cite{DenHaan2000} \\
 Real Wage Rigidity parameter & $\phi_{w}$ & 0.837 & \cite{Gornemann2021} \\
 Government Spending & $G$ & 0.38 & Gov. budget constraint \\
