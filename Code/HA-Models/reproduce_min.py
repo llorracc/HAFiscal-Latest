@@ -20,7 +20,7 @@ import os
 print('Step 4: Comparing policies\n')
 script_path = "AggFiscalMAIN_reduced.py"
 os.chdir('./Code/HA-Models/FromPandemicCode')
-# exec(open(script_path).read())
+exec(open(script_path).read())
 os.chdir('../')
 print('Concluded Step 4. \n')
 
