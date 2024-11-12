@@ -64,9 +64,10 @@ The final impulse response graph, figure \ref{fig:recessiontaxcutrelrecession}, 
 \notinsubfile{\label{sec:multipliers}}
 
 In this section, we compare the fiscal multipliers across the three stimulus policies. Specifically, we employ the cumulative multiplier, which captures the ratio between the net present value (NPV) of stimulated consumption up to horizon $t$ and the full-horizon NPV of the cost of the policy. We thus define the cumulative multiplier up to horizon $t$ as
-\begin{equation*}
+\begin{equation}
+	\label{eqn:cumMultiplier}
   M(t) = \frac{NPV(t,\Delta C)}{NPV (\infty,\Delta G)},
-\end{equation*}
+\end{equation}
 where $\Delta C$ is the additional aggregate consumption spending up to time $t$ in the policy scenario relative to the baseline and $\Delta G$ is the total government expenditure caused by the policy. The NPV of a variable $X_t$ is given by 
 $NPV(t,X) = \sum_{s=0}^{t} \left( \prod_{i=1}^{s} \frac{1}{R_i} \right) X_s$. 
 The multiplier hence captures the amount of induced consumption at different horizons relative to the total (i.e. full-horizon) cost of the policies. 
