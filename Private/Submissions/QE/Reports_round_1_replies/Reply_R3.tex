@@ -154,7 +154,34 @@
 	
 	\item \textit{\textbf{Effect of UI extensions on job-finding rates.} The model presented in the paper does not feature endogenous search, which precludes the UI extensions from having negative effects on job-finding, as proposed in, e.g., \citet{mitman2015optimal}. In this sense, the authors, in the name of tractability, stack the deck in favor of the UI extensions. I’m strongly sympathetic to the assumption, but it would be interesting to know how bad the negative incentive effects would need to be for the UI	extension to lose its effectiveness. For example, assuming that job-finding probabilities decrease linearly with benefit size, how negative would the function’s slope need to be for the	paper’s conclusions to revert? A back of the envelope calculation could provide an answer. My prior would be that the number is too high to be realistic, strengthening the conclusions in the paper.}
 	
-	\noindent \textbf{Response.} \colorbox{yellow}{XX}
+	\noindent \textbf{Response.} We have undertaken the following back-of-the-envelope calculation.
+	
+	
+	
+	\begin{enumerate}
+		
+		\item We define the cost associated with a reduced job finding rate as consisting of two components: a) loss in economic activity due to additionally unemployed agents and b) fiscal cost due to UI benefits to additionally unemployed agents.
+		
+		\begin{itemize}
+			
+			\item The number of additionally unemployed agents is calculated as AU = 4 x N x JFR x (1-x/100), where N is the number of unemployed agents affected by the reduction in the job-finding rate, JFR the job-finding rate during a recession (calibrated to 0.25 in our model) and x is the \%-reduction in the job-finding rate due to the UI extension. In our model results, N x JFR many agents find a job in each period. In the back-of-the-envelope calculation we assume that number reduces by a factor of x/100. As the UI extension policy is in place over 4 quarters, we furthermore multiply the number by 4.
+			
+			\item The loss in economic activity is assumed to be given by the reduction in labor income due to the lower job finding rates, i.e. the product of the number of additionally unemployed agents and their average permanent income.
+			
+			\item The fiscal cost is assumed to be given by the replaced labor income.
+			
+			\item Hence, the total cost is given by AU x perm. income x 1.2 (as the replacement rate provided by the government is 0.2)
+			
+		\end{itemize}
+		
+		\item Next, we determine the additional cost, which the UI extension policy would need to cause, such that its welfare benefit equals that of the second-ranked policy, the check stimulus. We then determine x (the reduction in the job-finding rate) such that additional costs as defined above equal the amount necessary to equate welfare benefits between the UI extension and the check.
+		
+		\item Finally, we translate the increase in the job finding rate ton an increase in job search time to allow for a literature comparison.
+		
+	\end{enumerate}
+	
+	
+	We find that the job search time in response to the UI extension would need to increase by more than 1.3-2.3 quarters (depending on whether AD effects are switched on or off) in order for our welfare ranking to flip. The empirical literature surveyed in \citet{hagedorn2019unemployment} finds that “a one week increase in potential benefit duration increases the average duration of the unemployment spells of UI recipients by 0.1 to 0.2 weeks.” Hence, based on that empirical literature, our extension of UI benefits for 2 quarters should yield an increase in the job search time by around 0.2 to 0.4 quarters, well below the 1.3-2.3 quarters needed to overturn our results.
 	
 \end{itemize}
 
