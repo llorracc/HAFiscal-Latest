@@ -1,5 +1,5 @@
+\input{@resources/tex-add-search-paths}  % allow latex to find custom stuff
 \input{./.econtexRoot}
-\input{\econtexRoot/@resources/tex-add-search-paths}  % allow latex to find custom stuff
 \documentclass[\econtexRoot/HAFiscal]{subfiles}
 
 % \onlyinsubfile{\renewcommand{\econtexRoot}{..}} % 
@@ -27,26 +27,75 @@ First, we take from \citet{fagereng_mpc_2021} the marginal propensity to consume
 Second, we match the steady-state distribution of liquid wealth in the model to its empirical counterpart. Because of the lack of data on the liquid wealth distribution in Norway, we use the corresponding data from the United States, assuming that liquid wealth inequality is comparable across these countries.\footnote{Data from the Norwegian tax registry contains information on liquid assets, but not liquid debt. Only total debt is reported -- which is mainly mortgage debt. Therefore, we cannot construct liquid wealth as \citet{kaplan2014model} can for the U.S. \notinsubfile{\label{foot:liqwealth}}} 
 Specifically, we impose as targets the cumulative liquid wealth shares for the entire population at the 20th, 40th, 60th, and 80th income percentiles, which, in data from the Survey of Consumer Finances (SCF) in 2004 (see section~\ref{sec:SCFdata} for further details), equal $0.03$ percent, $0.35$ percent, $1.84$ percent, and $7.42$ percent, respectively. Hence, $92.6$ percent of the total liquid wealth is held by the top income quintile. We also target the mean liquid wealth to income ratio of 6.60. The data are plotted in figure \ref{fig:liquwealthdistribution}.
 
+%% Old figure did not work well with make4ht
+%% \begin{figure}[htb]
+%%   \centering
+%%   \begin{subfigure}[b]{.48\linewidth}
+%%     \centering
+%%     \includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin_comparison}
+%%     \caption{Share of lottery win spent}
+%%     \notinsubfile{\label{fig:aggmpclotterywin}}
+%%   \end{subfigure}
+%%   \begin{subfigure}[b]{.48\linewidth}
+%%     \centering
+%%     \includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/LiquWealth_Distribution_comparison}
+%%     \caption{Distribution of liquid wealth}
+%%     \notinsubfile{\label{fig:liquwealthdistribution}}
+%%   \end{subfigure}%
+%%   \caption{Targets and model moments from the estimation}
+%%   \notinsubfile{\label{fig:splurge_estimation}}
+%%   \parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Panel (a) shows the fit of the model to the dynamic consumption response estimated in \citet{fagereng_mpc_2021}; see their figure~A5. Panel (b) shows the fit of the model to the distribution of liquid wealth (see Section~\ref{sec:SCFdata} for the definition) from the 2004 SCF.\normalsize}
+%% \end{figure}
+
+
+\newcommand{\iMPC}{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin_comparison}
+\newcommand{\LiqDist}{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/LiquWealth_Distribution_comparison}
 \begin{figure}[htb]
+  \ifdefined\HCode
+    \HCode{<div style="text-align: center;">}
+  \fi
   \centering
-  \begin{subfigure}[b]{.48\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/AggMPC_LotteryWin_comparison}
-    \caption{Share of lottery win spent}
-    \notinsubfile{\label{fig:aggmpclotterywin}}
-  \end{subfigure}
-  \begin{subfigure}[b]{.48\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/LiquWealth_Distribution_comparison}
-    \caption{Distribution of liquid wealth}
-    \notinsubfile{\label{fig:liquwealthdistribution}}
-  \end{subfigure}%
+  \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}cc@{}}
+    \ifdefined\HCode
+      \HCode{<div style="display: flex; flex-direction: column; align-items: center; width: 48\%;">}
+    \fi
+    \subfloat[Share of lottery win spent\label{fig:aggmpclotterywin}]{%
+      \ifdefined\HCode
+        \includegraphics[width=\linewidth]{\iMPC}
+      \else
+        \includegraphics[width=0.48\textwidth]{\iMPC}
+      \fi
+    }
+    \ifdefined\HCode
+      \HCode{</div>}
+    \fi
+    &
+    \ifdefined\HCode
+      \HCode{<div style="display: flex; flex-direction: column; align-items: center; width: 48\%;">}
+    \fi
+    \subfloat[Distribution of liquid wealth\label{fig:liquwealthdistribution}]{%
+      \ifdefined\HCode
+        \includegraphics[width=\linewidth]{\LiqDist}
+      \else
+        \includegraphics[width=0.48\textwidth]{\LiqDist}
+      \fi
+    }
+    \ifdefined\HCode
+      \HCode{</div>}
+    \fi
+  \end{tabular*}
+  \ifdefined\HCode
+    \HCode{<figcaption style="text-align: center; width: auto; max-width: 800px;">}
+  \fi
   \caption{Targets and model moments from the estimation}
   \notinsubfile{\label{fig:splurge_estimation}}
-  \parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Panel (a) shows the fit of the model to the dynamic consumption response estimated in \citet{fagereng_mpc_2021}; see their figure~A5. Panel (b) shows the fit of the model to the distribution of liquid wealth (see Section~\ref{sec:SCFdata} for the definition) from the 2004 SCF.\normalsize}
+  \ifdefined\HCode
+    \HCode{<div style="text-align: justify; width: 16cm;  margin: 1em auto 0 auto;">}
+  \fi
+
+\parbox{14cm}{
+  \footnotesize \vspace{.15cm} Panel (a) shows the fit of the model to the dynamic consumption response estimated in \citet{fagereng_mpc_2021}; see their figure~A5. Panel (b) shows the fit of the model to the distribution of liquid wealth (see Section~\ref{sec:SCFdata} for the definition) from the 2004 SCF.\normalsize}
 \end{figure}
-
-
 
 \begin{table}[t]
   \center
@@ -99,8 +148,10 @@ Panel~A of table~\ref{tab:calibration}, lists parameters that are calibrated equ
 \afterpage{
   \thispagestyle{empty}
   \begin{table}[p]
-    \begin{center}
-      \begin{tabular}{l}
+    \caption{Model Parameters and Recession Configuration}
+    \center
+%    \begin{center}
+      \begin{tabular}{c}
         \begin{tabular}{lcd{3}} 
           \toprule
           \multicolumn{3}{l}{Panel (A) Parameters that apply to all types} \\ \midrule
@@ -132,7 +183,10 @@ Panel~A of table~\ref{tab:calibration}, lists parameters that are calibrated equ
           Probability of entering unemployment ($\pi_{eu}^{e}$, percent) & \phantom{0}6.2 & \phantom{0}3.1 & \phantom{0}1.8 
           \\ \bottomrule 
         \end{tabular} \\
-        \parbox{16cm}{\small \vspace{.25cm} \textbf{Note}: The first three rows show numbers from the 2004 SCF. The fourth row are averages of growth rates from \cite{carroll2020modeling}. The fifth row are numbers for 2004 from statista.com, and the sixth row are calculated from these unemployment rates.\normalsize}
+        \ifdefined\HCode
+        \HCode{<div style="text-align: justify; width: 16cm;  margin: 1em auto 0 auto;">}
+        \fi
+        \parbox{16cm}{\footnotesize \vspace{.25cm} \textbf{Note}: The first three rows show numbers from the 2004 SCF. The fourth row are averages of growth rates from \cite{carroll2020modeling}. The fifth row are numbers for 2004 from statista.com, and the sixth row are calculated from these unemployment rates.\normalsize}
         \\ \\
 
         \begin{tabular}{lc}
@@ -153,8 +207,13 @@ Panel~A of table~\ref{tab:calibration}, lists parameters that are calibrated equ
         \end{tabular} 
 
       \end{tabular}
-    \end{center}
-    \caption{Panel (A) shows parameters calibrated the same for all types. Panel (B) shows parameters calibrated for each education group. Panel (C) shows the numbers describing how we model a recession and the three policies we consider. ``PI'' refers to permanent income.}
+%    \end{center}
+    \begin{tabular}{p{16cm}}
+%      \parbox{16cm}{
+      \medskip
+      \small Panel (A) shows parameters calibrated the same for all types. Panel (B) shows parameters calibrated for each education group. Panel (C) shows the numbers describing how we model a recession and the three policies we consider. ``PI'' refers to permanent income.
+      % }
+      \end{tabular}
     \notinsubfile{\label{tab:calibration}}
   \end{table}
   \clearpage
@@ -267,24 +326,24 @@ Finally, we consider the implications of our model for two different patterns of
 The second pattern concerns the dynamics of income and spending for households that become unemployed and remain unemployed long enough for unemployment benefits to expire. Figure~\ref{fig:expiryUI} shows the pattern of income and spending for such households.  \citet{ganongConsumer2019} report the empirical result that nondurable spending drops by 12 percent the month when benefits expire. Our quarterly model is broadly consistent with this, and the drop in spending the quarter after the expiry of UI benefits is 18 percent. 
 
 \begin{figure}[htb]
-	\centering
-	\begin{subfigure}[b]{.48\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{\econtexRoot/Figures/IMPCs_wSplEstimated}
-		\caption{Share of lottery win spent}
-		\notinsubfile{\label{fig:USaggmpclotterywin}}
-	\end{subfigure}
-	\begin{subfigure}[b]{.48\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/UnempSpell_Dynamics}
-		\caption{Spending upon expiry of UI benefits}
-		\notinsubfile{\label{fig:expiryUI}}
-	\end{subfigure}%
-	\caption{Untargeted moments}
-	\notinsubfile{\label{fig:untargetedMoments}}
-	\parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Panel (a) compares the dynamic consumption response in the model to the estimates in \citet{fagereng_mpc_2021}; see their Figure~A5. Panel (b) shows the evolution of income and spending for households who remain unemployed long enough for UI benefits to expire; see Figure~2 in \citet{ganongConsumer2019}.\normalsize}
+    \centering
+    \begin{minipage}[b]{.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{\econtexRoot/Figures/IMPCs_wSplEstimated}
+        \caption{Share of lottery win spent}
+        \notinsubfile{\label{fig:USaggmpclotterywin}}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[b]{.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/UnempSpell_Dynamics}
+        \caption{Spending upon expiry of UI benefits}
+        \notinsubfile{\label{fig:expiryUI}}
+    \end{minipage}
+    \caption{Untargeted moments}
+    \notinsubfile{\label{fig:untargetedMoments}}
+    \parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Panel (a) compares the dynamic consumption response in the model to the estimates in \citet{fagereng_mpc_2021}; see their Figure~A5. Panel (b) shows the evolution of income and spending for households who remain unemployed long enough for UI benefits to expire; see Figure~2 in \citet{ganongConsumer2019}.\normalsize}
 \end{figure}
-
 
 \ifthenelse{\boolean{Web}}{}{
   \end{document} \endinput

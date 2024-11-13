@@ -7,7 +7,6 @@
 \begin{document}
 % Attempted to make all lines used for Web version contain {Web} (or version with only single curly brace at end) so can be removed with sed
 \ifthenelse{\boolean{Web}}{\newcommand{\versn}{Web}}{}  % {Web}
-\hfill{\tiny \href{https://github.com/llorracc/HAFiscal/blob/master/Resources/.git-public-commit}{latest-public-commit}}
 
 \title{Welfare and Spending Effects \\ of Consumption Stimulus Policies}
 
@@ -43,7 +42,7 @@
       \texttt{~~~~~~~~~~~} \= \=  \\ 
 %      \texttt{~~~\REMARK:~} \= \= \texttt{\url{https://econ-ark.org/materials/hafiscal}} \\ 
 %      \texttt{Dashboard:~} \> \> \texttt{\href{https://econ-ark.org/materials/hafiscal}{Click `Launch Dashboard' Button}} \\
-      \texttt{~~~~~html:~} \> \> \texttt{\href{https://\owner.github.io/HAFiscal/}{https://\owner.github.io/HAFiscal/}} \\ % Owner is defined in Resources/owner.tex
+      \texttt{~~~~~html:~} \> \> \texttt{\href{https://\owner.github.io/HAFiscal/}{https://\owner.github.io/HAFiscal/}} \\ % Owner is defined in @local/owner.tex
       \texttt{~~~~~~PDF:~} \> \> \texttt{\href{https://github.com/\owner/HAFiscal/blob/master/HAFiscal.pdf}{HAFiscal.pdf}} \\ 
 %      \texttt{~~~Slides:~} \> \> \texttt{\href{https://github.com/\owner/HAFiscal/blob/master/HAFiscal-Slides.pdf}{HAFiscal-Slides.pdf}} \\
       \texttt{~~~GitHub:~} \> \> \texttt{\href{https://github.com/\owner/HAFiscal}{https://github.com/\owner/HAFiscal}} \\
@@ -86,7 +85,7 @@
 % \end{minipage}
 } % {Web}
 
-%\input{\LaTeXInputs/bibliography_blend}
+%\input{bibliography_blend}
 % Do not include appendix figures and tables in ToC unless for Web version
 \ifthenelse{\boolean{Web}}{}{
   \onlyinsubfile{\captionsetup[figure]{list=no}}
@@ -94,10 +93,10 @@
 }
 
 
-% \input{\LaTeXInputs/bibliography_blend}
+% \input{bibliography_blend}
 
 \onlyinsubfile{
-  \input{\LaTeXInputs/bibliography_blend}}
+  \input{bibliography_blend}}
 
 \end{document}
 
