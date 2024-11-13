@@ -1,3 +1,8 @@
+% -*- mode: LaTeX; TeX-PDF-mode: t; -*-  # Config emacs auctex
+
+% allow latex to find custom stuff
+\input{@resources/tex-add-search-paths}  
+
 \documentclass[12pt,letterpaper,english]{article}
 \usepackage[round, authoryear]{natbib}
 \usepackage{floatrow}
@@ -199,6 +204,6 @@ In response to referees 2 and 3, we have overhauled the welfare section as descr
 \noindent Finally, we would like to thank you again for your careful advice on our paper. We hope you find our revision satisfactory.
 
 \bibliographystyle{econark}
-\bibliography{../../../../HAFiscal.bib}
+\bibliography{../../../../HAFiscal.bib,references}
 
 \end{document}
