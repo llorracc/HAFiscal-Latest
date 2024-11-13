@@ -1,1 +1,0 @@
-/Volumes/Sync/GitHub/econ-ark/econ-ark-tools/@resources/texlive/texmf-local/scripts/make4ht/tex4htMakeCFG.sh
