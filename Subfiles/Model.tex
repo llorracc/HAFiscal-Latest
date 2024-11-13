@@ -1,4 +1,9 @@
-\input{./.econtexRoot}
+% allow latex to find custom stuff
+\input{@resources/tex-add-search-paths}  
+
+% Set paths (like, \LaTeXInputs) to find resources
+\input{./.econtexRoot} 
+
 \documentclass[\econtexRoot/HAFiscal]{subfiles}
 \onlyinsubfile{\externaldocument{\econtexRoot/HAFiscal}} % Get xrefs -- esp to apndx -- from main file; only works if main file has already been compiled
 
@@ -90,7 +95,7 @@ where $\tilde{C}$ is the level of consumption in the steady state. Idiosyncratic
 \end{align}
 The series $\mathbf{y}_{AD,i,t}$ is then used for each consumer's budget constraint.
 
-\onlyinsubfile{\input{\LaTeXInputs/bibliography_blend}}
+\onlyinsubfile{\input{bibliography_blend}}
 
 \ifthenelse{\boolean{Web}}{}{
   \onlyinsubfile{\captionsetup[figure]{list=no}}
