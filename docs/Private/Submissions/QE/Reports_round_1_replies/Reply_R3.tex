@@ -34,6 +34,8 @@
 \usepackage{svg}
 \usepackage{multirow}
 \usepackage{verbatim}
+\usepackage{soul}
+\sethlcolor{yellow}
 \hypersetup{
 	colorlinks,
 	linkcolor={red!50!black},
@@ -89,9 +91,7 @@
 	
 	\section{Summary of Main Changes}
 	
-	\begin{enumerate}
-		\item We have \ldots 
-	\end{enumerate}
+\input{MainChanges.tex}
 	
 	\newpage 
 	
@@ -100,13 +100,13 @@
 	
 	\item \textit{\textbf{Results without the splurge factor.} The first half of the paper spends some time on motivating the splurge factor in consumption, but it is then taken for granted in the policy evaluations. Thus, the two sections appear somewhat disconnected. It would help me to see the policy results for a model calibrated	without the splurge factor, at least in an appendix. Is matching the initially very high MPC out of transitory shocks essential for the policy conclusions drawn in the paper, or would the same conclusions be obtained from a more standard heterogeneous agent model? I imagine a removal of the splurge factor will make stimulus checks and income tax cuts much less attractive, but the strength of the channel should be reported.}
 	
-	\noindent \textbf{Response.} 
+	\noindent \textbf{Response.} As described above in the "Summary of Main Changes," we now include Appendix~A\hl{XX} that discusses the relevance of the splurge for our results. We show that with a wider distribution of discount factors even a model without the splurge is able to account for the relevant empirical evidence. Also our main results, including the ranking of the polices in terms of welfare impact, are robust to removing the splurge from the model. 
 
 	\item \textit{\textbf{Education specific transition rates, E to U vs. U to E.} In the model, transition rates from employment to unemployment (E to U) are calibrated to different values across education groups, while job-finding rates out of unemployment (U to E) are constant across groups. The probability of transitioning out of unemployment also appears to not change over the cycle, while the separation rate does (this seems odd, as	the DMP literature tends to assume that separation rates are constant and job-finding rates move with the cycle (see, e.g., \citet{hagedorn2008cyclical}). This focus on E to U	rates is not motivated and the reader is left to wonder whether this is a crucial assumption or not. It appears that the model could be calibrated to match the same moments with heterogeneous U to E probabilities and constant separation rates, instead. I presume this would make recessions much worse for unemployed dropouts, boosting the welfare effects of a UI extension. Given that the welfare results of the paper strongly favor UI benefit extensions, a discussion of the heterogeneous E to U rates assumption seems warranted.}	
 	
-	\noindent \textbf{Response.} In response to your comment and some questions/comments from another referee, we have updated our presentation of the calibration of the transition probabilities between employment and unemployment in section~3.3.1 in the paper. 
+	\noindent \textbf{Response.} In response to your comment and some questions/comments from another referee, we have updated our presentation of the calibration of the transition probabilities between employment and unemployment in section~3.3.1\hl{XX} in the paper. 
 	
-	As you point out, our strategy is to calibrate the same probability of transitioning from unemployment to employment for each education group and education-specific probabilities of transitioning from employment to unemployment. This allows to fit our calibration targets which are the average duration of unemployment and the education-specific unemployment rates in normal times. As we are using the 2004 wave of the SCF, we use numbers for 2004 from the Bureau of Labor Statistics for the average duration of unemployment of 1.5 quarters and for the education-specific unemployment rates. 
+	As you point out, our strategy is to calibrate the same probability of transitioning from unemployment to employment for each education group and education-specific probabilities of transitioning from employment to unemployment. This enables us to fit our calibration targets which are the average duration of unemployment and the education-specific unemployment rates in normal times. As we are using the 2004 wave of the SCF, we use numbers for 2004 from the Bureau of Labor Statistics for the average duration of unemployment of 1.5 quarters and for the education-specific unemployment rates. 
 	
 	Note that this calibration strategy is consistent with the results in \citet{mincer1991education} who finds that the main difference between education groups is in the incidence of unemployment, and not its duration. He states that ``the reduction of the incidence of unemployment [at higher education levels] is found to be far more important than the reduced duration of unemployment in creating the educational differentials in unemployment rates'' (page 1).
 	
@@ -118,7 +118,15 @@
 
 	\item \textit{\textbf{The welfare criterion.} I had trouble understanding the welfare criterion used to evaluate the three different policies. My own intuition for comparing the policies would have been to simulate, for each policy, two recessions, one with the policy and one without, and then compare aggregate	welfare between the two; potentially also to an economy without a recession, to quantify the cost of business cycles. This approach is deemed not viable at the top of page 27, because		it would give the social planner incentive to redistribute outside of recessions. I think this point warrants additional explanation. Is the problem that recessions end stochastically, making it difficult to exclude welfare gains from, e.g., a UI extension after the recession is over? In this case, one could compute this measure for each recession length, not including the additional welfare gains from continuing policies after the recessions, and weight them by their probabilities. I’m sure the explanation is perfectly obvious to the authors, but a reader will strongly benefit from an additional discussion. It was also unclear to me why the recessionary policies investigated had fiscal costs in non-recessionary periods, as suggested	in equation (12). Relatedly, page 9 states that all policies have the same fiscal cost and are financed through taxes in the far future, but I could not find how $PV(policy,Rec)$ 	or $PV(policy, 0)$ are constructed. How can they be included in equation (12) without further	assumptions about the timing and implementation of taxation schemes? This also matters for the results presented on page 25—is $NPV(\infty,\Delta G)$ roughly constant across policies?}
 
-	\noindent \textbf{Response.} 
+	\noindent \textbf{Response.} We have overhauled the welfare section as described in the ``Summary of Main Changes.'' In the paper we explain why a standard aggregation of household welfare gives rise to welfare benefits and costs to redistribution policies even in normal times:
+	
+	``In our model, some households consume much less than other households, and a social planner with equal weights on each household could significantly increase welfare through redistribution across households even in normal times. We are interested in the benefit of carrying out fiscal policies in a recession, so we do not want our results to reflect the benefits of redistribution inherent in our model in normal times.'' (see section~4.3\hl{XX})
+	
+	As a consequence, our new welfare measure weights are chosen such that, in normal times, there is no welfare benefit to \textit{any} redistribution policy. We believe this new measure best captures the welfare benefits of each policy in a recession without biasing policies (such as extended UI) that redistribute wealth even in normal times.
+	
+	In the description of the model, we are now clear that: ``To keep our analysis as simple as possible, we do not model the debt repayment.'' The exact fiscal rule that is chosen to pay for the policies will not alter our conclusions about which policies are more effective as this will be the same for all three policies. Given that, we think the exposition is clearer if we do not model the debt repayment. As such, the net present value of each policy is equal to the total cost of policy at time zero. For example, the NPV of the stimulus check policy is simply the total value of all the stimulus checks that are sent out. 
+	
+	In equation~(9)\hl{XX}, $NPV(\infty,\Delta G)$ is not equal across policies. For the example the total cost of stimulus checks by far exceeds the total cost of the UI extension, since the latter applies only to a subset of the population. Dividing by $NPV(\infty,\Delta G)$ in the definition of the multiplier serves the purpose to assess the amount of induced consumption \textit{relative} to the total cost of the policy. We have added a sentence to further clarify this when the multiplier is first introduced.
 
 \end{itemize}
 
@@ -128,11 +136,12 @@
 	\item \textit{\textbf{Robustness.} In my view, the robustness section can be relegated to an appendix. None of the exercises come close to changing the welfare ranking across policies. Further, in three of the four exercises
 		(risk aversion, interest rates and recession properties), the quantitative welfare results change only marginally.}
 	
-	\noindent \textbf{Response.} Thank you for this suggestion. The robustness section now lives in an appendix.
+	\noindent \textbf{Response.} Thank you for this suggestion. We have removed the robustness section as and we are happy to add it as an appendix if that is thought to be useful.
 	
-	\item \textit{\textbf{Liquid wealth distribution in splurge estimation.} When estimating the splurge factor, the authors calibrate a model to the Norwegian economy to match marginal propensities to spend out of lottery winnings and the liquid wealth distribution. Unfortunately, they latter does not exist for Norway, hence the authors instead target the US liquid wealth distribution from the 2004 SCF. I think it would be prudent to target a liquid wealth distribution for a country whose labor market institutions more closely	match Norway’s, e.g., Germany or France. The European Union’s Household Finance and	Consumption Survey provides such a measure, the codes to compute the relevant metrics are provided with the Brookings Paper by \citet{kaplan2014wealthy}.}
+	\item \textit{\textbf{Liquid wealth distribution in splurge estimation.} When estimating the splurge factor, the authors calibrate a model to the Norwegian economy to match marginal propensities to spend out of lottery winnings and the liquid wealth distribution. Unfortunately, the latter does not exist for Norway, hence the authors instead target the US liquid wealth distribution from the 2004 SCF. I think it would be prudent to target a liquid wealth distribution for a country whose labor market institutions more closely match Norway’s, e.g., Germany or France. The European Union’s Household Finance and Consumption Survey provides such a measure, the code to compute the relevant metrics are provided with the Brookings Paper by \citet{kaplan2014wealthy}.}
 	
-	\noindent \textbf{Response.} 
+	\noindent \textbf{Response.} As mentioned above, we now include Appendix~A\hl{XX} that discusses the relevance of the splurge for our results. There we show that our main conclusions are not driven by the inclusion of the splurge. The approach you suggest may provide an improved estimate of the splurge, but the new appendix indicates that our overall results would not be sensitive to such an improved estimate. \hl{For now, we, therefore, leave it up to the editor whether we should keep the splurge in the paper at all with the resulting improvements in the empirical fit, or present our ranking of stimulus policies in a more standard model.}
+	% [x] CDC to review: This 
 	
 	\item \textit{\textbf{Targeted stimulus checks.} In the final paragraph of the introduction, the authors discuss the possibility of targeted stimulus checks (as opposed to the case discussed in the paper: means tested, but universal distribution). I think estimating this case would help readers benchmark the welfare results by providing an upper bound. As of now, it is clear that UI extensions in the model do most to increase welfare; but are they far away from this hypothetical upper bound?}
 	
@@ -145,7 +154,34 @@
 	
 	\item \textit{\textbf{Effect of UI extensions on job-finding rates.} The model presented in the paper does not feature endogenous search, which precludes the UI extensions from having negative effects on job-finding, as proposed in, e.g., \citet{mitman2015optimal}. In this sense, the authors, in the name of tractability, stack the deck in favor of the UI extensions. I’m strongly sympathetic to the assumption, but it would be interesting to know how bad the negative incentive effects would need to be for the UI	extension to lose its effectiveness. For example, assuming that job-finding probabilities decrease linearly with benefit size, how negative would the function’s slope need to be for the	paper’s conclusions to revert? A back of the envelope calculation could provide an answer. My prior would be that the number is too high to be realistic, strengthening the conclusions in the paper.}
 	
-	\noindent \textbf{Response.} 
+	\noindent \textbf{Response.} We have undertaken the following back-of-the-envelope calculation.
+	
+	
+	
+	\begin{enumerate}
+		
+		\item We define the cost associated with a reduced job finding rate as consisting of two components: a) loss in economic activity due to additionally unemployed agents and b) fiscal cost due to UI benefits to additionally unemployed agents.
+		
+		\begin{itemize}
+			
+			\item The number of additionally unemployed agents is calculated as AU = 4 x N x JFR x (1-x/100), where N is the number of unemployed agents affected by the reduction in the job-finding rate, JFR the job-finding rate during a recession (calibrated to 0.25 in our model) and x is the \%-reduction in the job-finding rate due to the UI extension. In our model results, N x JFR many agents find a job in each period. In the back-of-the-envelope calculation we assume that number reduces by a factor of x/100. As the UI extension policy is in place over 4 quarters, we furthermore multiply the number by 4.
+			
+			\item The loss in economic activity is assumed to be given by the reduction in labor income due to the lower job finding rates, i.e. the product of the number of additionally unemployed agents and their average permanent income.
+			
+			\item The fiscal cost is assumed to be given by the replaced labor income.
+			
+			\item Hence, the total cost is given by AU x perm. income x 1.2 (as the replacement rate provided by the government is 0.2)
+			
+		\end{itemize}
+		
+		\item Next, we determine the additional cost, which the UI extension policy would need to cause, such that its welfare benefit equals that of the second-ranked policy, the check stimulus. We then determine x (the reduction in the job-finding rate) such that additional costs as defined above equal the amount necessary to equate welfare benefits between the UI extension and the check.
+		
+		\item Finally, we translate the increase in the job finding rate ton an increase in job search time to allow for a literature comparison.
+		
+	\end{enumerate}
+	
+	
+	We find that the job search time in response to the UI extension would need to increase by more than 1.3-2.3 quarters (depending on whether AD effects are switched on or off) in order for our welfare ranking to flip. The empirical literature surveyed in \citet{hagedorn2019unemployment} finds that “a one week increase in potential benefit duration increases the average duration of the unemployment spells of UI recipients by 0.1 to 0.2 weeks.” Hence, based on that empirical literature, our extension of UI benefits for 2 quarters should yield an increase in the job search time by around 0.2 to 0.4 quarters, well below the 1.3-2.3 quarters needed to overturn our results.
 	
 \end{itemize}
 
