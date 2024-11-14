@@ -21,4 +21,6 @@ eval "$cmd"
 pdflatex responses-cites-bib
 pdflatex responses-cites-bib
 
+latexmk -C
+
 
