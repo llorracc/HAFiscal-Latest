@@ -609,7 +609,7 @@ response of consumption to the income shock, but also the subsequent effect on c
 response in the cross-section, i.e. across the quartiles of the liquid wealth distribution,
 for which empirical estimates are also provided. The shares of lottery winnings expended
 at different time horizons, as found in Fagereng, Holm, and Natvik (2021), are plotted
-in figure 10a. Table 1 (second row) shows the initial consumption response across liquid
+in figure 1a. Table 1 (second row) shows the initial consumption response across liquid
 wealth quartiles.
 Second, we match the steady-state distribution of liquid wealth in the model to its
 empirical counterpart. Because of the lack of data on the liquid wealth distribution in
@@ -620,7 +620,7 @@ targets the cumulative liquid wealth shares for the entire population at the 20t
 (SCF) in 2004 (see section 3.2 for further details), equal 0.03 percent, 0.35 percent, 1.84
 percent, and 7.42 percent, respectively. Hence, 92.6 percent of the total liquid wealth is
 held by the top income quintile. We also target the mean liquid wealth to income ratio
-of 6.60. The data are plotted in figure 10b.
+of 6.60. The data are plotted in figure 1b.
 For this estimation exercise, the remaining model parameters are calibrated to reflect
 the Norwegian economy. Specifically, we set the real interest rate to 2 percent annually
 and the unemployment rate to 4.4 percent, in line with Aursland, Frankovic, Kanik,
@@ -3183,7 +3183,7 @@ Matthew N. White (2017): “The distribution of wealth and the marginal
 propensity to consume,” Quantitative Economics, 8(3), 977–1020, At
 https://www.econ2.jhu.edu/people/ccarroll/papers/cstwMPC.
 Carroll, Christopher D (2022): “Theoretical Foundations of Buffer Stock Saving,”
-Working paper.
+Department of Economics, Working paper.
 Carroll, Christopher D, Edmund Crawley, Jiri Slacalek, Kiichi
 Tokuoka, and Matthew N White (2020): “Sticky Expectations and
 Consumption Dynamics,” American Economic Journal: Macroeconomics, 12(3), 40–
@@ -3267,7 +3267,7 @@ cost of consumption fluctuations in the presence of memorable goods,” Quantita
 economics, 11(4), 1177–1214.
 Indarte, Sasha, Raymond Kluender, Ulrike Malmendier, and Michael
 Stepner (2024): “What Explains the Consumption Decisions of Low-Income
-Households?,” .
+Households?,” Department of Economics.
 Kaplan, Greg, and Giovanni L Violante (2014): “A model of the consumption
 response to fiscal stimulus payments,” Econometrica, 82(4), 1199–1239.
 (2022): “The Marginal Propensity to Consume in Heterogeneous Agent Models,”
