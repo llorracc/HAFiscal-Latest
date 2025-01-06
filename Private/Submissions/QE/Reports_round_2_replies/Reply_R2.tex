@@ -22,6 +22,7 @@
 \usepackage{booktabs}
 \usepackage{setspace}
 \usepackage{enumerate}
+\usepackage{enumitem}
 \usepackage[flushleft]{threeparttable}
 \usepackage{rotating}
 \usepackage{float}
@@ -100,88 +101,49 @@
 
 \newpage 
 	
-\section{Essential points}
-\begin{enumerate}
+\section{Comments}
+\begin{itemize}
+
+	\item \textit{\textbf{Welfare measure.} The new welfare measure is quite elegant and satisfies nice properties, but it also makes some strong ethical choices.}
+		
+	\textit{Here is one way to explain the welfare measure in words: we take a revealed preference approach to policy, keeping individual-specific welfare weights fixed.}
+		
+	\textit{Since the policy maker is letting an unemployed individual $i$ suffer in an expansion, the policy maker must attach little weight to $i$. However, when an individual $j$ becomes unemployed in a recession who would have been	employed otherwise, then there is scope for policy.}
 	
-%	\item \textit{\textbf{``Splurge''.} To be able to match the \citet{fagereng_mpc_2021}
-%		evidence on intertemporal MPCs, the authors introduce a model novelty which	they call `splurge'. The problem that the FHN2021 evicence pose for standard	models is that the marginal propensity to consume is disproportionally high in the period of receipt. The proposed solution is to postulate that a fixed share of income is consumed immediately, and only the remaining share enters the consumption-savings problem of the household. This assumption is as if the household consists of one hand-to-mouth individual and one buffer-stock-savings individual who share the income brotherly but have separate consumption problems.
-%		
-%		The authors need the splurge to jointly match the intertemporal MPC, the fact that also high-liquidity households have a high MPC, and the actual liquidity distribution. In footnote 2, they argue that the utility cost from ``irrational'' splurge may not be so large and that may even be fully rational	in a model with small durables – in such a model, the splurge is simply the spending on durables which are consumed over a longer period.
-%		
-%		Since the splurge is a novelty, it is warranted to explore further whether/how
-%		it drives the subsequent results.}
-%		
-%	\paragraph{Response.} 
+	\textit{The welfare measure attaches a larger weight to individuals who become unemployed because of the recession, and it becomes more attractive to extend unemployment insurance. On layman ethical grounds I find this welfare measure somewhat repulsive. We put a larger welfare measure on some unemployed than other unemployed because of the fact that they became unemployed due to the recession.}
 	
-	\item \textit{\textbf{How badly does a model without the splurge factor actually match the	data?} As far as I can tell, the need for the splurge factor is asserted (p. 14), but not shown. I believe the authors but would like them to show the best fit of the model without the splurge, for example the counterpart of Figure 1. }
+	\textit{Contrast this with the previous version’s welfare measure (at least in the ‘bang for the buck’ version suggested by me). With such a welfare measure, the value of extending unemployment insurance is the utilitarian amount of misery it alleviates per dollar spent, benchmarked against the misery it alleviates in an expansion. Personally, I find such a formulation of welfare more appealing.}
+
+	\begin{enumerate}
+		\item \textit{I am not necessarily suggesting changing the welfare measure (although I would!) but I do think the authors should highlight that these are complicated ethical issues, perhaps by explaining that the welfare measure implicitly makes a distinction between unemployed because of the recession (‘deserving poor’) and unemployed regardless (‘undeserving poor’).}
+	\end{enumerate}
 	
-	\noindent \textbf{Response.} See joint response below. 
+	\noindent \textbf{Response.} 
  
 	
-	\item \textit{\textbf{Does the splurge factor matter?} A heuristic, right or wrong, is that the distribution of (intertemporal) MPCs is all that matters for consumption	dynamics.\footnote{This heuristic is clearly not exactly right since it ignores precautionary saving responses,	but it is a useful starting point.} If we calibrate the model to evidence on marginal propensities to consume but allow ourselves to miss the liquid-wealth distribution, how does that affect the results?}
+	\item \textit{\textbf{General equilibrium HANK-SAM.} Overall, the exercise seems fine but
+		could benefit from a bit more polishing, see below.}
 		
-	\textit{To be clear, this is not a “robustness check” since the result is interesting and informative regardless of the outcome. Either (i) the splurge factor is useful for matching the liquid-wealth distribution, but does not matter for policy evaluation or (ii) the splurge factor changes the	quantitative results quite a bit. Since the splurge factor is a novelty	of the paper and the paper’s ambition is quantitative, it behooves the authors to explore and report how the splurge factor affects the results. }
-	
-	\noindent \textbf{Response to 1. and 2.}  As described above in the "Summary of Main Changes," we now include Appendix~A that discusses the relevance of the splurge for our results. We show that with a wider distribution of discount factors a model without the splurge is able to account fairly well for the empirical evidence on the dynamics of spending after an temporary income shock and the distribution of liquid wealth. (A chart illustrating the fit in that case, i.e. a counterpart to Figure 1 as you have suggested, is now included in the new appendix.) The main moment the model cannot generate without the splurge is the high MPC for the wealthiest quartile, which it turns out is not so important for our evaluation of consumption stimulus policies. Our main results, including the ranking of the polices in terms of welfare impact, are thus unchanged when removing the splurge from the model. In terms of the multipliers, the main effect of removing the splurge is to reduce the short-term multipliers for the stimulus check.
-	
-	While the splurge does not matter for our ultimate policy conclusions, we agree that this is an interesting result in itself. We have opted to keep the splurge in our baseline version of the model since this provides a better fit to the dynamics of spending after a temporary income shock and since we view the timing of spending induced by the different policies as an important distinguishing characteristic in our comparison.
+	\begin{enumerate}[start=2]
+		\item \textit{Why are the consumption deviations in Figure 8 of such different orders			of magnitude? For example, the stimulus effect has an impact effect on consumption of 2-3\% in Figure~4 but 0.10\% in Figure~8. Some necessary details for interpreting Figure~8 is missing, e.g., the sizes of the quantitative experiments.}
+
+		\noindent \textbf{Response.}  
+		
+		\item \textit{The captions for Figure~7 and Figure~9 should be written so that it is clear that they are referring to the same experiment. Further, it would be nice if the line features in the plots were such that it is easy for a color-blind reader to tell the tax cut and the check apart.}
+		
+		\noindent \textbf{Response.}  	
+			
+	\end{enumerate}
 	
 
-	\item \textit{\textbf{Motivate the introduction of the aggregate-demand externality.}  In the model with an aggregate-demand externality, an increase in spending leads to an increase in everyone’s income. One can easily imagine a world where aggregate spending instead reduces unemployment, primarily benefitting the unemployed (with higher MPCs etc.). More broadly, one of the main purported goals of fiscal stimulus is to shorten the duration of a recession, something which the model setup does not allow for. Qualitative, these distinctions may not matter but the ambition	of the paper is quantitative.}
 	
-	\noindent \textbf{Response.} We have expanded on the motivation for the aggregate demand effects in section 2.3:
-	
-	``The motivation for this specification comes from the idea that spending in an economy with substantial slack and in which the central bank is unable to prevent a recession will result in higher utilization rates and greater output. By contrast, government spending in an economy running at potential with an active monetary policy will not succeed in increasing output. The recent inflation experience of the U.S. provides some evidence that output responds highly non-linearly to aggregate demand. This idea is explored in a recent revival of research into non-linear Phillips curves, such as \cite{benigno2023baaack} and \cite{blanco2024nonlinear}.''
-	
-	We agree that there are different ways of modeling these effects and that it might be the case that one channel could be through lower unemployment. Our modeling choice is primarily for simplicity. While our model is quantitative, there are a broad range of estimates for the size of aggregate demand effects and this is partly why we have chosen to present results both in a model with and without these effects. 
-	
-	\textit{Further, the aggregate-demand externality they have introduced implies,	by construction, that promised fiscal stimulus in the future has no effect on output today. This is stark, in my opinion too stark to be introduced without further motivation! It cannot be dismissed out-of-hand that promised stimulus in the future spurs investment (and hiring etc.) already today. Further, by analogy with forward guidance (with respect to monetary policy), I conjecture that a new-Keynesian model would have an effect of promised fiscal stimulus in the future on output today (perhaps even a ``too strong'' effect!). The aggregate demand externality introduced in the paper, and the sharp distinction	between stimulus in and out of a recession, is thus not consistent with	the workhorse model.}
-	
-	\paragraph{Response.} In our model, fiscal spending promised in the future causes increased spending today through the usual channels---households are forward looking and many are on an interior solution of their Euler equation. As such, future fiscal spending will activate the aggregate-demand effects today.
-	
-	\textit{The sharp dichotomy behind spending in a recession and outside of a recession lies behind their support of stimulus checks (since the spending	associated with them arrives during the recession).\footnote{In footnote 3, they argue that a conventional new-Keynesian aggregate-demand externality would ``bring in too many other confounding and confusing elements what would be likelier to obscure than to illuminate our points.'' Confounding and confusing elements aside, a main qualitative difference between the two conceptualizations of aggregate demand is whether future stimulus affects output today.} The way they model the aggregate-demand externality therefore matters for their bottom-line results.}
-	
-	\textit{Given the partial-equilibrium focus of the paper, it is to me unclear what role the aggregate-demand externality serves. The particular	aggregate-demand externality they introduced needs to be motivated and contrasted with alternatives such as a new-Keynesian aggregate demand externality. If the authors simply want to distinguish consumption	during vs. after the recession, they can do so without this	reduced-form way of introducing an aggregate-demand externality. The	authors should then, with or without a theoretical framework, make a plausibility argument for why spending during recessions is likely to be more robustly stimulative than promised spending after recessions.}
-	
-	\paragraph{Response.} We have now included a section in which we embed our households in a simple general equilibrium HANK and SAM model. In this model, fiscal spending increases output through the intertemporal Keynesian cross. This HANK model is a linear model and, as such, the aggregate demand effect endogenous to the model is in effect at all times. This is part of the reason we prefer our partial equilibrium approach---we think it is better able to capture differences in the effects of fiscal stimulus in a recession. Nevertheless, the impulse response and consumption multipliers are qualitatively similar in this HANK model, even though the tax cuts---which are slower acting than the other policies---have a relatively greater stimulative effect over a long horizon.
+\end{itemize}
 
-\end{enumerate}
-
-\section{Suggestions}
-
-\begin{enumerate}
-\setcounter{enumi}{3}
-	\item \textit{\textbf{Why not report stimulated consumption during recession?} In Table 3, ``Share of policy expenditure during recession'' is reported for the three policies. The policy-relevant object is, however, ``share of consumption increase during recession'' and it would be informative to report this number as well.} 
-	 
-	\paragraph{Response.} Indeed, the share of the consumption induced by the policy is a relevant metric when explaining the multiplier when aggregate demand effects are present. We have therefore added a fourth line to Table 3 (which is now Table 5) showing that share. Interestingly, the UI extension features the highest share of induced consumption during the recession among the three policies, slightly higher than the share of the check stimulus. This is because while the check occurs early it also is paid out to agents with low MPCs who spend the additional income very slowly. In contrast, the UI extension is paid out slightly later, but at that point  its target population has high MPCs and spend the additional income more quickly. Given those insights, we have adjusted the language slightly when explaining the cumulative multipliers. Our main conclusions are, however, unaffected.
-
-	\item \textit{\textbf{Welfare criterion – weak inequality or equality?} When introducing the desired properties of the welfare criterion, the authors write (p. 26): ``There is no social benefit to implementing any of the policies outside of the recession.'' This way of phrasing it invites the interpretation of a weak inequality when the correct interpretation	is an equality. The phrasing should be changed to something along the	lines of ``There is no social benefit or cost to implementing any of the policies outside of the recession.''}
-
-	\paragraph{Response.} Thanks for this suggestion - in our overhaul of the welfare section we have taken care to describe the welfare measure as having ``no social benefit or cost'' in normal times.
-
-	\item \textit{\textbf{Welfare criterion – measure in ``bang for the buck''.} There is a mechanical reason why the UI extensions program will yield a larger welfare gain in recessions than in expansions: since twice as many households are unemployed, twice as many receive unemployment benefits. The programs are thus comparable in an expansion	but not in a recession (since they are of different fiscal size in recessions).	For a fair comparison of the programs, it would be helpful to compute ``bang for the buck'' numbers (i.e., dollars of consumption equivalent per dollars spent). In particular, I would suggest} 
-	
-	\[ \underbrace{\left( \frac{\mathcal{W}(\text{policy, recession}) - \mathcal{W}(\text{none, recession})}{\mathcal{W}^c} \middle/ \frac{\text{PV}(\text{policy, recession})}{\mathcal{P}^c} \right)}_{\text{``bang for the buck'' in recession}} \]
-	
-	\[ \underbrace{\left( \frac{\mathcal{W}(\text{policy, expansion}) - \mathcal{W}(\text{none, expansion})}{\mathcal{W}^c} \middle/ \frac{\text{PV}(\text{policy, expansion})}{\mathcal{P}^c} \right)}_{\text{``bang for the buck'' in expansion}} \]
-
-	\paragraph{Response.} Thanks for this suggestion and in particular the observation that our previous measure gave a mechanical advantage to the extended UI benefits policy because of the size change during a recession. Our new welfare measure briefly described above and in more detail in section~4.3 is a ``bang-for-the-buck'' measure in that we divide by the net present value of the policy when calculating the welfare measure. Our new welfare measure also has the property that it more naturally accounts for redistribution in normal times and thus we think it is the more appropriate measure to use for our analysis.
-
-	\item \textit{\textbf{Explaining the nuances of the welfare measure.} Relatedly, I would work through the text and make sure that the explanations	match the fairly nuanced welfare measure used. Concretely, on p. 29 it says ``The extended UI payments are well targeted to consumers with high MPCs and high marginal utility, giving rise to large multipliers and welfare improvements''. This is a true statement but this is also a true statement in expansions, and the welfare measure is about the difference between the two. One could instead write (for the welfare calculations) that ``the extended UI payments are well targeted to the households who are particularly severly hit by the recession, giving rise to large welfare improvements relative to pursuing the policy in an expansion.''} 
-	
-	\paragraph{Response.} Thanks for highlighting the importance of getting the nuance right in this section. In our overhaul of this section, we have taken care to make sure we accurately describe why the extended UI insurance policy has the greatest welfare benefits.
-
-	\item \textit{\textbf{Robustness: changing real interest rate changes the discounting of the social planner.} In the robustness section, the authors (i) change the real interest rate and (ii) change the risk-aversion parameter. As far as I can tell, when they do this, they change the parameters entering the welfare calculations (i.e., the social planner’s preferences) and the behavior of households. These are two conceptually distinct robustness exercises and it would be clearer to change them one by one. Report the effect of changing household preferences, without changing the social planner’s preferences, and vice versa. The authors suggest (p. 31) that		changing the interest rate primarily affects the results by changing the preferences of the social planner, I think it would be clearer to spell	this out.}
-	
-	\paragraph{Response.} Following the suggestion of another referee, we have removed the robustness section. We would be happy to add it as an appendix if that is thought to be useful.
-
-\end{enumerate}
-	
 	
 	\bigskip
 	
-	\noindent Finally, we would like to thank you again for your careful advice on our paper. We hope you find our revision satisfactory.
+	\noindent Thank you again for your careful advice on our paper. We hope you find our revision satisfactory.
 	
-\bibliographystyle{econark}
-\bibliography{../../../../HAFiscal.bib,response}
+%\bibliographystyle{econark}
+%\bibliography{../../../../HAFiscal.bib,response}
 \end{document}
