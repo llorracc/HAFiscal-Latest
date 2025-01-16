@@ -1,0 +1,138 @@
+\documentclass[12pt,letterpaper,english]{article}
+\usepackage[round, authoryear]{natbib}
+\usepackage{floatrow}
+\renewcommand{\floatpagefraction}{.99}
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+\usepackage{eurosym}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage[titletoc]{appendix}
+\usepackage{graphicx}
+\newcommand{\argmin}{\arg\!\min}
+\usepackage{amsmath, amssymb,amsthm,mathtools,dsfont}
+\usepackage{algorithmic}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage[flushleft]{threeparttable}
+\usepackage{rotating}
+\usepackage{float}
+\usepackage{tabulary}
+\usepackage{ragged2e}
+\usepackage{rotating}
+\usepackage{epstopdf}
+\usepackage[labelfont=bf]{caption}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{subfig}
+\usepackage{placeins}
+\usepackage{pxfonts}
+\usepackage{xcolor}
+\usepackage{svg}
+\usepackage{multirow}
+\usepackage{verbatim}
+\usepackage{soul}
+\sethlcolor{yellow}
+\hypersetup{
+	colorlinks,
+	linkcolor={red!50!black},
+	citecolor={red!50!black},
+	urlcolor={blue!80!black}
+}
+\textheight=23cm \textwidth=16.5cm \oddsidemargin=0cm
+\evensidemargin=0cm \topmargin=-1.75cm
+\setcounter{MaxMatrixCols}{10}
+\makeatletter
+\g@addto@macro\@floatboxreset\centering
+\makeatother
+\setlength\floatsep{2\baselineskip plus 3pt minus 2pt}
+\setlength\textfloatsep{2\baselineskip plus 3pt minus 2pt}
+\setlength\intextsep{2\baselineskip plus 3pt minus 2 pt}
+\newcommand*{\MyIndent}{\hspace*{0.5cm}}%
+\usepackage[normalem]{ulem}
+\newtheorem{theorem}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumptions}
+\newtheorem{hypothesis}{Hypothesis}
+
+
+% Uncomment the next line to use the harvard package with bibtex
+%\usepackage[abbr]{harvard}
+
+% This command determines the leading (vertical space between lines) in draft mode
+% with 1.5 corresponding to "double" spacing.
+%\draftSpacing{1.5}
+%\newlength\TableWidth
+\usepackage{array}
+\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+\newcommand{\Figures}{Figures/}
+\newcommand{\Tables}{Tables/}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\title{\textbf{Response to Referee 1\\ Quantitative Economics MS 2442 \\``Welfare and Spending Effects of \\ Consumption Stimulus Policies''}}
+\author{Christopher D. Carroll, Edmund Crawley, William Du, \\ Ivan Frankovic, and H\aa kon Tretvoll}
+\date{}
+
+\begin{document}
+	\onehalfspacing
+	\maketitle
+	
+\noindent Thank you for your thoughtful comments and suggestions on our paper ``Welfare and Spending Effects of Consumption Stimulus Policies''. They were all very useful to us in revising the paper. We hope you agree that the paper has improved. In the following, we summarize the main changes we have made based on your, the other referees', and the editor's suggestions. Thereafter, we state each of your comments in italics and provide point-by-point responses to them.
+
+\section{Summary of Main Changes}
+
+\input{MainChanges.tex}
+
+\newpage 
+
+\section*{Main comments}
+\begin{enumerate}[label=(\alph*)]
+	\item \textit{\textbf{Long-run multipliers in partial equilibrium.} This is a new comment, so
+		may be discarded: I wonder how interesting the long-run multipliers	in Table 5 are. Without any supply effects, as $t \rightarrow \infty$, these just converge to $1$ as all income is eventually consumed, unless I am mistaken. This is perhaps worth stating in the discussion of Figure~7 to help the interpretation.}
+	
+	\noindent \textbf{Response.} 
+	
+	\item \textit{\textbf{The new general-equilibrium analysis.} What is not standard in the GE analysis is perhaps the labor agency - does this give rise to the non-zero profits from vacancy posting? More importantluy, the authors consider in this analysis the policies in steady state, not conditional	on a recession with high unemployment. I don't understand the reason for this: the method the authors use for model-solution (based on the sequence-space Jacobian following Auclert et al) limit the analysis to small shocks around the stationary distribution in the absence of aggregate shocks. But the benefit of that method is	limited here (since the authors essentially only compute the model once, so speed is not of the essence). So why not consider the same jump in unemployment at the beginning of a non-linear transition computed using \citet{boppart2018exploiting}'s method? They should also be able to compute the welfare effects in this case.}
+	
+	\noindent \textbf{Response.} 
+\end{enumerate}
+
+\bigskip
+\newpage
+
+\section*{Additional comments}
+
+	\begin{enumerate}[label=(\alph*)]
+		\item \textit{``Furthermore, the HANK and SAM model incorporates many other confounding and confusing elements that do more to obscure than to illuminate our points.'' (Intro). This comment seems to indicate that the authors do not think their own analysis is useful.}
+		
+		\noindent \textbf{Response.} 
+	\end{enumerate}
+
+\bigskip
+
+\section*{Additional References}
+	
+	\begin{itemize}
+		\item Broer, Tobias, Jeppe Druedahl, Karl Harmenberg and Erik \"Oberg, ``Stimulus effects of common fiscal policies'', mimeo. 
+	\end{itemize}
+
+	\noindent \textbf{Response.} 
+
+\bigskip
+
+\noindent Finally, we would like to thank you again for your careful advice on our paper. We hope you find our revision satisfactory.
+
+\bibliographystyle{econark}
+\bibliography{../../../../HAFiscal.bib,response}
+\end{document}
