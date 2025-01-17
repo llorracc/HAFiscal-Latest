@@ -1,0 +1,149 @@
+% -*- mode: LaTeX; TeX-PDF-mode: t; -*-  # Config emacs auctex
+
+% allow latex to find custom stuff
+\input{@resources/tex-add-search-paths}  
+
+\documentclass[12pt,letterpaper,english]{article}
+\usepackage[round, authoryear]{natbib}
+\usepackage{floatrow}
+\renewcommand{\floatpagefraction}{.99}
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+\usepackage{eurosym}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage[titletoc]{appendix}
+\usepackage{graphicx}
+\newcommand{\argmin}{\arg\!\min}
+\usepackage{amsmath, amssymb,amsthm,mathtools,dsfont}
+\usepackage{algorithmic}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage[flushleft]{threeparttable}
+\usepackage{rotating}
+\usepackage{float}
+\usepackage{tabulary}
+\usepackage{ragged2e}
+\usepackage{rotating}
+\usepackage{epstopdf}
+\usepackage[labelfont=bf]{caption}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{subfig}
+\usepackage{placeins}
+\usepackage{pxfonts}
+\usepackage{xcolor}
+\usepackage{svg}
+\usepackage{multirow}
+\usepackage{verbatim}
+\usepackage{soul}
+\sethlcolor{yellow}
+\hypersetup{
+	colorlinks,
+	linkcolor={red!50!black},
+	citecolor={red!50!black},
+	urlcolor={blue!80!black}
+}
+\textheight=23cm \textwidth=16.5cm \oddsidemargin=0cm
+\evensidemargin=0cm \topmargin=-1.75cm
+\setcounter{MaxMatrixCols}{10}
+\makeatletter
+\g@addto@macro\@floatboxreset\centering
+\makeatother
+\setlength\floatsep{2\baselineskip plus 3pt minus 2pt}
+\setlength\textfloatsep{2\baselineskip plus 3pt minus 2pt}
+\setlength\intextsep{2\baselineskip plus 3pt minus 2 pt}
+\newcommand*{\MyIndent}{\hspace*{0.5cm}}%
+\usepackage[normalem]{ulem}
+\newtheorem{theorem}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumptions}
+\newtheorem{hypothesis}{Hypothesis}
+
+
+% Uncomment the next line to use the harvard package with bibtex
+%\usepackage[abbr]{harvard}
+
+% This command determines the leading (vertical space between lines) in draft mode
+% with 1.5 corresponding to "double" spacing.
+%\draftSpacing{1.5}
+%\newlength\TableWidth
+\usepackage{array}
+\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+\newcommand{\Figures}{Figures/}
+\newcommand{\Tables}{Tables/}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\title{\textbf{Response to Referee 2\\ Quantitative Economics MS 2442 \\``Welfare and Spending Effects of \\ Consumption Stimulus Policies''}}
+\author{Christopher D. Carroll, Edmund Crawley, William Du, \\ Ivan Frankovic, and H\aa kon Tretvoll}
+\date{}
+
+\begin{document}
+\onehalfspacing
+\maketitle
+	
+\noindent Thank you for your thoughtful comments and suggestions on our paper ``Welfare and Spending Effects of Consumption Stimulus Policies''. They were all very useful to us in revising the paper. We hope you agree that the paper has improved. In the following, we summarize the main changes we have made based on your, the other referees', and the editor's suggestions. Thereafter, we state each of your comments in italics and provide point-by-point responses to them.
+	
+\section{Summary of Main Changes}
+
+\input{MainChanges.tex}
+
+\newpage 
+	
+\section{Comments}
+\begin{itemize}
+
+	\item \textit{\textbf{Welfare measure.} The new welfare measure is quite elegant and satisfies nice properties, but it also makes some strong ethical choices.}
+		
+	\textit{Here is one way to explain the welfare measure in words: we take a revealed preference approach to policy, keeping individual-specific welfare weights fixed.}
+		
+	\textit{Since the policy maker is letting an unemployed individual $i$ suffer in an expansion, the policy maker must attach little weight to $i$. However, when an individual $j$ becomes unemployed in a recession who would have been	employed otherwise, then there is scope for policy.}
+	
+	\textit{The welfare measure attaches a larger weight to individuals who become unemployed because of the recession, and it becomes more attractive to extend unemployment insurance. On layman ethical grounds I find this welfare measure somewhat repulsive. We put a larger welfare measure on some unemployed than other unemployed because of the fact that they became unemployed due to the recession.}
+	
+	\textit{Contrast this with the previous version’s welfare measure (at least in the ‘bang for the buck’ version suggested by me). With such a welfare measure, the value of extending unemployment insurance is the utilitarian amount of misery it alleviates per dollar spent, benchmarked against the misery it alleviates in an expansion. Personally, I find such a formulation of welfare more appealing.}
+
+	\begin{enumerate}
+		\item \textit{I am not necessarily suggesting changing the welfare measure (although I would!) but I do think the authors should highlight that these are complicated ethical issues, perhaps by explaining that the welfare measure implicitly makes a distinction between unemployed because of the recession (‘deserving poor’) and unemployed regardless (‘undeserving poor’).}
+	\end{enumerate}
+	
+	\noindent \textbf{Response.} 
+ 
+	
+	\item \textit{\textbf{General equilibrium HANK-SAM.} Overall, the exercise seems fine but
+		could benefit from a bit more polishing, see below.}
+		
+	\begin{enumerate}[start=2]
+		\item \textit{Why are the consumption deviations in Figure 8 of such different orders			of magnitude? For example, the stimulus effect has an impact effect on consumption of 2-3\% in Figure~4 but 0.10\% in Figure~8. Some necessary details for interpreting Figure~8 is missing, e.g., the sizes of the quantitative experiments.}
+
+		\noindent \textbf{Response.}  
+		
+		\item \textit{The captions for Figure~7 and Figure~9 should be written so that it is clear that they are referring to the same experiment. Further, it would be nice if the line features in the plots were such that it is easy for a color-blind reader to tell the tax cut and the check apart.}
+		
+		\noindent \textbf{Response.}  	
+			
+	\end{enumerate}
+	
+
+	
+\end{itemize}
+
+	
+	\bigskip
+	
+	\noindent Thank you again for your careful advice on our paper. We hope you find our revision satisfactory.
+	
+%\bibliographystyle{econark}
+%\bibliography{../../../../HAFiscal.bib,response}
+\end{document}
