@@ -31,12 +31,33 @@ We then take the sum of the results across all recession lengths weighted by the
 
 \subsubsection{Stimulus check} 
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
-  \caption{Impulse responses of aggregate income and consumption to a \textbf{stimulus check} during recessions with and without aggregate demand effects}
-  \notinsubfile{\label{fig:recessioncheckrelrecession}}
+
+
+\begin{figure}[htb]
+	\centering
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
+		\caption{stimulus check}
+		\notinsubfile{\label{fig:recessioncheckrelrecession}}
+	\end{subfigure}%
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_UI_relrecession}
+		\caption{UI extension}
+		\notinsubfile{\label{fig:recessionuirelrecession}}
+	\end{subfigure}%
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_taxcut_relrecession}
+		\caption{payroll tax cut}
+		\notinsubfile{\label{fig:recessiontaxcutrelrecession}}
+	\end{subfigure}
+	\caption{Impulse responses of aggregate income and consumption to policy shocks during recessions with and without aggregate demand effects{\label{fig:Policyrelrecession}}}
+	%\parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: \normalsize}
 \end{figure}
+
+
 
 Figure \ref{fig:recessioncheckrelrecession} shows the impulse response of income and consumption when stimulus checks are issued in the first quarter of a recession.
 In the model without a multiplier, the stimulus checks account for 5 percent of the first quarter's income.
@@ -49,12 +70,6 @@ After a couple of years, when the recession is most likely over and aggregate de
 
 \subsubsection{UI extension}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_UI_relrecession}
-  \caption{Impulse responses of aggregate income and consumption to a \textbf{UI extension} during recessions with and without aggregate demand effects}
-  \notinsubfile{\label{fig:recessionuirelrecession}}
-\end{figure}
 
 The impulse responses in figure \ref{fig:recessionuirelrecession} show the response to a policy that extends unemployment benefits from 6 months to 12 months for a period of a year.
 In the model without aggregate demand effects, the path for income now depends on the number of consumers who receive the extended unemployment benefits.
@@ -69,12 +84,7 @@ As this extra aggregate demand induced income goes to employed consumers, more o
 
 \subsubsection{Payroll tax cut}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_taxcut_relrecession}
-  \caption{Impulse responses of aggregate income and consumption to a \textbf{payroll tax cut} lasting eight quarters during recessions with and without aggregate demand effects}
-  \notinsubfile{\label{fig:recessiontaxcutrelrecession}}
-\end{figure}
+
 
 The final impulse response graph, figure \ref{fig:recessiontaxcutrelrecession}, shows the impulse response for a payroll tax cut that persists for two years (eight quarters).
 In the model without aggregate demand effects, income rises by close to 2 percent as the take-home pay for employed consumers goes up.
@@ -106,7 +116,8 @@ full-horizon) cost of the policies.
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/Cummulative_multipliers}
-  \caption{Cumulative multiplier as a function of the horizon for the three policies. Note: Policies are implemented during a recession with AD effect active.}
+  \caption{Cumulative multiplier as a function of the horizon for the three policies.}
+  \parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Policies are implemented during a recession with aggregate demand effect active.\normalsize}
   \notinsubfile{\label{fig:cumulativemultipliers}}
 \end{figure}
 
