@@ -1,0 +1,181 @@
+% -*- mode: LaTeX; TeX-PDF-mode: t; -*-  # Config emacs auctex
+
+% allow latex to find custom stuff
+\input{@resources/tex-add-search-paths}  
+
+\documentclass[12pt,letterpaper,english]{article}
+\usepackage[round, authoryear]{natbib}
+\usepackage{floatrow}
+\renewcommand{\floatpagefraction}{.99}
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+\usepackage{eurosym}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage[titletoc]{appendix}
+\usepackage{graphicx}
+\newcommand{\argmin}{\arg\!\min}
+\usepackage{amsmath, amssymb,amsthm,mathtools,dsfont}
+\usepackage{algorithmic}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage[flushleft]{threeparttable}
+\usepackage{rotating}
+\usepackage{float}
+\usepackage{tabulary}
+\usepackage{ragged2e}
+\usepackage{rotating}
+\usepackage{epstopdf}
+\usepackage[labelfont=bf]{caption}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{subfig}
+\usepackage{placeins}
+\usepackage{pxfonts}
+\usepackage{xcolor}
+\usepackage{svg}
+\usepackage{multirow}
+\usepackage{verbatim}
+\usepackage{soul}
+\sethlcolor{yellow}
+\hypersetup{
+	colorlinks,
+	linkcolor={red!50!black},
+	citecolor={red!50!black},
+	urlcolor={blue!80!black}
+}
+\textheight=23cm \textwidth=16.5cm \oddsidemargin=0cm
+\evensidemargin=0cm \topmargin=-1.75cm
+\setcounter{MaxMatrixCols}{10}
+\makeatletter
+\g@addto@macro\@floatboxreset\centering
+\makeatother
+\setlength\floatsep{2\baselineskip plus 3pt minus 2pt}
+\setlength\textfloatsep{2\baselineskip plus 3pt minus 2pt}
+\setlength\intextsep{2\baselineskip plus 3pt minus 2 pt}
+\newcommand*{\MyIndent}{\hspace*{0.5cm}}%
+\usepackage[normalem]{ulem}
+\newtheorem{theorem}{Proposition}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumptions}
+\newtheorem{hypothesis}{Hypothesis}
+
+
+% Uncomment the next line to use the harvard package with bibtex
+%\usepackage[abbr]{harvard}
+
+% This command determines the leading (vertical space between lines) in draft mode
+% with 1.5 corresponding to "double" spacing.
+%\draftSpacing{1.5}
+%\newlength\TableWidth
+\usepackage{array}
+\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+\newcommand{\Figures}{Figures/}
+\newcommand{\Tables}{Tables/}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\title{\textbf{Response to Editor\\ Quantitative Economics MS 2442 \\``Welfare and Spending Effects of \\ Consumption Stimulus Policies''}}
+\author{Christopher D. Carroll, Edmund Crawley, William Du, \\ Ivan Frankovic, and H\aa kon Tretvoll}
+\date{}
+
+\begin{document}
+	\onehalfspacing
+	\maketitle
+	
+	\noindent Thank you for giving us the chance to resubmit our paper ``Welfare and Spending Effects of Consumption Stimulus Policies'' to Quantitative Economics. And thank you for your thoughtful comments and suggestions for how to improve our paper. They were all very useful to us in revising it. We believe the paper has improved greatly through the revision and we hope you agree. 
+	
+	In the following, we first summarize the main changes we have made based on your and the referees' suggestions. Thereafter, we go through how we have dealt with the specific requests from you. For each request, we first repeat your comment in italics and then respond how we have dealt with them.
+	
+	\section{Summary of Main Changes}
+	
+\input{MainChanges.tex}
+	
+	\newpage 
+	
+\section{Remaining issues}
+\begin{enumerate}
+	
+\item \textit{\textbf{Splurge.} Reading the current draft of the paper, one feels almost as if there is	no reason for including the ``splurge'' consumption component in the analysis. But I think this is unfair and maybe you should highlight this a bit more. For example, the model without splurge requires unreasonably low, in my opinion, discount factors	for some agents while the distribution looks a lot more reasonable when you allow for splurge.}
+
+\textit{I also wonder how the splurge consumption approach compares to the ``infrequent'' consumption component introduced in \citet{melcangi2024stock}? On the surface, the two approaches look very different, but both can generate very	high MPCs. A very short discussion would suffice.}
+
+\noindent \textbf{Response to first question} 
+
+\textbf{Response to second question, drafted by Ivan, please review, maybe too lengthy?} \textbf{Should we cite the paper in the intro?} 
+
+\textbf{Edmund: I think the reply is OK. I tried a footnote in the introduction, but it doesn't fit super nicely. I've added a sentence about that below.}
+
+Thank you for pointing us to \citet{melcangi2024stock} paper. They include in their an infrequent consumption good, which provides utility at certain periods in times, with those times occurring randomly. The preference parameters are calibrated such that the infrequent consumption good is a luxury good and is purchased predominatly by wealthy agents. The inclusion of the infrequent good is motivated by such expenses that empircally tend to be incurred predominantly by the wealthy, such as high-end health care, elderly care, education and bequests.
+
+In their model the infrequent consumption goods serves as a device to generate higher savings rates for highest-income households (in line with the empirical evidence presented in the paper). Hence, in contrast to the precautionary saving motive, i.e. the saving for times of low income, the infrequent consumption good prompts high-income agents to save for times of additional consumption opportunities.
+
+The splurge model and the infrequent consumption model thus differ quite strongly conceptually. The former aims to account for the high MPCs from transitory income shocks, which all agents, i.e. also high-income/high-wealth individuals, empirically exhibit, as shown by \citet{fagereng_mpc_2021}. The latter aims to account for higher saving rates among the wealthy during normal times (i.e. in the absence of income shocks).
+
+The model in \citet{melcangi2024stock} can account for consumption spikes among the wealthy. However, those occur in specific life situations which trigger the availability of the infrequent consumption good. In that case agents liquidate a large share of their savings and purchase the infrequent consumption good. Their paper makes no statements about how transitory shocks would affect wealthy agents, but we believe, the additional income would - at least in periods where the infrequent consumption good is not available - be used to save rather than to splurge as in our framework. Hence, while \citet{melcangi2024stock} can account well for the high saving rates wealth individuals exhibit on average, they cannot account for the MPCs significantly larger than zero that those wealthy individuals should also exhibit.
+
+We have added a footnote in the `Related Literature' section of the introduction: ``Our modeling focus is to match the micro evidence on the intertemporal MPC. Other aspects of household behavior---such as stock market participation examined in \cite{melcangi2024stock}---are less directly relevant to the questions addressed in this paper.''
+
+\item \textit{\textbf{Computation.} Referee 1 (the report that starts ``In this revision,'') asks why you do not use the non-linear transition method of \citet{boppart2018exploiting} to accommodate a large shock? I think a short sentence in the paper on this is ok.}
+
+\noindent \textbf{Response.} 
+
+\item \textit{\textbf{The welfare measure.} Referee 2 (the report that starts ``Overall, I view'' would like you to discuss your welfare measure and motivate better why you do not use a ``simple'' utilitarian measure. I agree with the referee. I was initially thinking that	your measure would be similar to using Negishi weights, but I do not think this is true (and it would also be odd to use Negishi weights under incomplete markets). I am not sure either whether your measure allows one to figure whether the policies are PPI (Potentially Pareto Improving) when allowing for redistribution, but I don't think so either. I do not want you to change the welfare measure, but just to include a paragraph discussing the reasons for your choice.}
+	
+\noindent \textbf{Response.} 
+
+Thank you for this suggestion and for drawing our attention to Negishi weights which we were not familiar with. As per your suggestion with have added a paragraph (with 2 footnotes) to the welfare section:
+
+``As with all social welfare measures, ours is not without ethical issues.  We have chosen our welfare measure over one with equal weights because an equal-weights measure would be increasing with the size of any redistributive policy.$^1$ However, similar to Negishi weights, our welfare measure gives greater weight to households that are well off.$^2$  Furthermore, our welfare measure distinguishes between households that would have suffered unemployment in normal times and households that are made unemployed as a result of the recession—--giving the later a higher weight in the social welfare function.''
+
+Footnote 1: Using a version of an equal-weights measure results in an even greater welfare benefit to extended unemployment insurance---see the previously distributed draft of this paper, \cite{carroll2023welfare}.  However, because the size of the extended unemployment benefits policy is much larger in a recession compared to normal times, while the size of the other two policies does not change significantly in a recession, this equal-weights measure almost mechanically favored the extended unemployment benefits policy.
+
+Footnote 2: Negishi weights have been used in the climate literature as a way to separate the welfare benefits of climate mitigation policies from broader questions about global income redistribution. Our problem of separating the welfare benefits of recession mitigation policies from income redistribution in normal times is similar, but complicated by our incomplete markets setup. With complete markets, under which there is no potential benefit to redistributing consumption across time for any individual household, our measure is identical to Negishi weights.
+
+\item \textit{\textbf{The HANK\&SAM model} All three referees and myself appreciate the introduction of the HANK\&SAM model, but some issues also come up:}
+	\begin{itemize}
+		\item \textit{I think most readers would struggle to get much out of the model description in Section~5. Please extend it a bit.}
+		
+		\noindent \textbf{Response.} 
+		
+		\item \textit{When comparing Figures 4 and 8, the size of the effects in the PE and the GE models seem very different, but I think this is due to a scaling issue. Please check.}
+		
+		\noindent \textbf{Response.} 
+		
+		\item \textit{Referee 1 suggests that the HANK\&SAM model should have been the baseline model and, in comment Additional (a), points out that you seem to dismiss the model for no reason. I do not want you to change the baseline model, but	the sentence in the introduction highlighted by the referee seems odd having read the paper.}
+		
+		\noindent \textbf{Response.} We agree and we have removed the offending sentence.
+		
+		\item \textit{I found the citation/credit for the HANK\&SAM model a bit odd since Vincent Sterk and I were pushing this line of work for many years in our 2017 JME	paper as well as in our JEEA 2021 paper. But you can keep the citations as they are, I am probably just over-sensitive to the issue because it took us 6 years to publish the 2017 paper.}
+		
+		\noindent \textbf{Response.} 
+	\end{itemize}
+	
+\item \textit{\textbf{Fiscal policy evaluation.} There is by now a lot of work on fiscal multipliers, their determinants, interpretation etc. It would thus be unreasonable to expect you to fully relate your paper to extant work. However, one paper that I have seen presented which shares a lot of similarities with your's is \citet{broer2024stimulus}. These authors seem to find somewhat different results from you. It would be good	to have a very short discussion of this.}	
+
+\noindent \textbf{Response.} 
+
+\item \textit{\textbf{Tables and Figures.} Please make sure all tables and figures are self-explanatory.} 
+
+\noindent \textbf{Response.} 
+
+\end{enumerate}
+
+\bigskip
+
+\noindent Thank you again for your careful advice on our paper. We hope you find our revision satisfactory.
+
+\bibliographystyle{econark}
+\bibliography{../../../../HAFiscal.bib,response}
+
+\end{document}
