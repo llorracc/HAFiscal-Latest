@@ -348,3 +348,6 @@ ls-R
 *.csv
 *.dat
 make4ht-trials_private
+
+# cursor
+.specstory/**
