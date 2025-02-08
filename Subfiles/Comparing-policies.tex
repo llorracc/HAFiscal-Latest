@@ -38,23 +38,41 @@ We then take the sum of the results across all recession lengths weighted by the
 	\begin{subfigure}[b]{.33\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/recession_Check_relrecession}
-		\caption{stimulus check}
+		\caption{stimulus check - IRF}
 		\notinsubfile{\label{fig:recessioncheckrelrecession}}
 	\end{subfigure}%
 	\begin{subfigure}[b]{.33\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_UI_relrecession}
-		\caption{UI extension}
+		\caption{UI extension - IRF}
 		\notinsubfile{\label{fig:recessionuirelrecession}}
 	\end{subfigure}%
 	\begin{subfigure}[b]{.33\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{Code/HA-Models/FromPandemicCode/Figures/recession_taxcut_relrecession}
-		\caption{payroll tax cut}
+		\caption{payroll tax cut - IRF}
 		\notinsubfile{\label{fig:recessiontaxcutrelrecession}}
+	\end{subfigure}\\
+		\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/Cummulative_multiplier_Check}
+		\caption{stimulus check - cumulative multiplier}
+		\notinsubfile{\label{fig:recessioncheckrelrecession_Mult}}
+	\end{subfigure}%
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Code/HA-Models/FromPandemicCode/Figures/Cummulative_multiplier_UI}
+		\caption{UI extension - cumulative multiplier}
+		\notinsubfile{\label{fig:recessionuirelrecession_Mult}}
+	\end{subfigure}%
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Code/HA-Models/FromPandemicCode/Figures/Cummulative_multiplier_TaxCut}
+		\caption{payroll tax cut - cumulative multiplier}
+		\notinsubfile{\label{fig:recessiontaxcutrelrecession_Mult}}
 	\end{subfigure}
-	\caption{Impulse responses of aggregate income and consumption to policy shocks during recessions with and without aggregate demand effects{\label{fig:Policyrelrecession}}}
-	%\parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: \normalsize}
+	\caption{Impulse responses of aggregate income and consumption to policy shocks during recessions with and without aggregate demand effects as well as cumulative multipliers as a function of the horizon for the tree policies. {\label{fig:Policyrelrecession}}}
+	\parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: For the cumulative multiplier plots, policies are implemented during a recession with aggregate demand effect active.\normalsize}
 \end{figure}
 
 
@@ -113,15 +131,7 @@ The multiplier hence captures the amount of induced consumption at different hor
 full-horizon) cost of the policies.\footnote{In the case that there is no aggregate demand effect, these multipliers converge to 1 as $t$ goes to infinity.}
 
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.8\linewidth]{Code/HA-Models/FromPandemicCode/Figures/Cummulative_multipliers}
-  \caption{Cumulative multiplier as a function of the horizon for the three policies.}
-  \parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Policies are implemented during a recession with aggregate demand effect active.\normalsize}
-  \notinsubfile{\label{fig:cumulativemultipliers}}
-\end{figure}
-
-Figure \ref{fig:cumulativemultipliers} plots the cumulative multipliers at different horizons, and table \ref{tab:Multiplier} shows the 10y-horizon multiplier for each policy.
+The second row in Figure \ref{fig:Policyrelrecession} plots the cumulative multipliers at different horizons, and table \ref{tab:Multiplier} shows the 10y-horizon multiplier for each policy.
 The stimulus check, which is paid out in quarter one, exhibits the largest multiplier on impact.
 About 50 percent of the total policy expenditure is immediately spent by consumers.
 After two years, and because of the aggregate demand effects, consumption has increased cumulatively by more than the cost of the stimulus check.

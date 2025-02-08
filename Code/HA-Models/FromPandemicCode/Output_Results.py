@@ -248,7 +248,10 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     
     
     
-    #Cumulative
+    
+    
+    
+    #Cumulative, common plot
     C_Multiplier_UI_Rec_AD                = getNPVMultiplier(recession_results_AD,            recession_UI_results_AD,            NPV_AddInc_UI_Rec[-1])
     C_Multiplier_Rec_TaxCut_AD            = getNPVMultiplier(recession_results_AD,            recession_TaxCut_results_AD,        NPV_AddInc_Rec_TaxCut[-1])
     C_Multiplier_Rec_Check_AD             = getNPVMultiplier(recession_results_AD,            recession_Check_results_AD,         NPV_AddInc_Rec_Check[-1])
@@ -272,6 +275,30 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         }
         
         saveAsPickleUnderVarName(C_Multiplier_Baseline_Results,fig_dir,locals())
+        
+    #Cumulative, single plots
+    if Parametrization=='Baseline':
+        x_axis = np.arange(1,max_T2+1)
+        plt.plot(x_axis,C_Multiplier_Rec_Check_AD[0:max_T2],                  color='blue')
+        plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1))
+        plt.xlabel('quarter')
+        plt.ylim(0, 1.25)
+        make_figs('Cummulative_multiplier_Check', True , False, target_dir=fig_dir)
+        plt.show()
+        
+        plt.plot(x_axis,C_Multiplier_UI_Rec_AD[0:max_T2],                  color='blue')
+        plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1))
+        plt.xlabel('quarter')
+        plt.ylim(0, 1.25)
+        make_figs('Cummulative_multiplier_UI', True , False, target_dir=fig_dir)
+        plt.show()
+        
+        plt.plot(x_axis,C_Multiplier_Rec_TaxCut_AD[0:max_T2],                  color='blue')
+        plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1))
+        plt.xlabel('quarter')
+        plt.ylim(0, 1.25)
+        make_figs('Cummulative_multiplier_TaxCut', True , False, target_dir=fig_dir)
+        plt.show()
         
         
 
