@@ -19,9 +19,10 @@ Our approach in this section relies on linearizing the macro dynamics of the mod
 
 
 
-The consumption response in this general equilibrium model to each of the three policies is shown in Figure~\ref{fig:HANK_IRFs}. For each of the three fiscal policies, we have shown the consumption response under three different monetary policy rules: 1) an active Taylor rule with a coefficient of 1.5 on inflation; 2) a fixed nominal rate (simulating an effective lower bound); and 3) a fixed real rate (closest in spirit to our partial equilibrium analysis).
+The consumption response in this general equilibrium model to each of the three policies is shown in the top row of Figure~\ref{fig:HANK_IRFs}. For each of the three fiscal policies, we have shown the consumption response under three different monetary policy rules: 1) an active Taylor rule with a coefficient of 1.5 on inflation; 2) a fixed nominal rate (simulating an effective lower bound); and 3) a fixed real rate (closest in spirit to our partial equilibrium analysis).
 
-
+%Old figure with just the impulse response
+\begin{comment}
 \begin{figure}[th]
 	\begin{center}
 		\includegraphics[width=.9\textwidth]{../Figures/HANK_IRFs_w_splurge}
@@ -29,10 +30,54 @@ The consumption response in this general equilibrium model to each of the three 
 		\notinsubfile{\label{fig:HANK_IRFs}}
 	\end{center}
 \end{figure}
+\end{comment}
 
 
-Overall, the IRFs from this model are similar to those from the partial equilibrium analysis, especially under the fixed real-rate rule.\footnote{Note that the dynamics of the UI extension IRF are somewhat faster acting.
-This is because, under the recession that we study in the partial equilibrium analysis, the large mass of newly-unemployed households do not start receiving extended UI for six months. Furthermore, the magnitude of the UI policy is lower because fewer people are unemployed in steady state---the initial condition for our HANK shocks.
+\begin{figure}[htb]
+	\centering
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/HANK_transfer_irf}
+		\caption{stimulus check - IRF}
+		\notinsubfile{\label{fig:hank_stimulus_irf}}
+	\end{subfigure}%
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Code/HA-Models/FromPandemicCode/Figures/HANK_UI_irf}
+		\caption{UI extension - IRF}
+		\notinsubfile{\label{fig:hank_UI_irf}}
+	\end{subfigure}%
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Code/HA-Models/FromPandemicCode/Figures/HANK_tax_irf}
+		\caption{payroll tax cut - IRF}
+		\notinsubfile{\label{fig:hank_tax_irf}}
+	\end{subfigure}\\
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/HANK_transfer_multiplier}
+		\caption{stimulus check - cumulative multiplier}
+		\notinsubfile{\label{fig:HANK_transfer_multiplier}}
+	\end{subfigure}%
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Code/HA-Models/FromPandemicCode/Figures/HANK_UI_multiplier}
+		\caption{UI extension - cumulative multiplier}
+		\notinsubfile{\label{fig:HANK_UI_multiplier}}
+	\end{subfigure}%
+	\begin{subfigure}[b]{.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{Code/HA-Models/FromPandemicCode/Figures/HANK_tax_multiplier}
+		\caption{payroll tax cut - cumulative multiplier}
+		\notinsubfile{\label{fig:HANK_tax_multiplier}}
+	\end{subfigure}
+	\caption{Impulse responses of aggregate consumption to policy shocks as well as cumulative multipliers as a function of the horizon for the three policies. {\label{fig:Policyrelrecession}}}
+\end{figure}
+
+
+
+Overall, the IRFs from this model are similar to those from the partial equilibrium analysis, especially under the fixed real-rate rule. Note that the magnitude of the consumption response to the UI extension is lower than in our main analysis---a consequence of lower long-term unemployment in this HANK exercise of deviating from the steady state.\footnote{By contrast, our main analysis considers deviations from a recessionary scenario. Note that the dynamics of the UI extension IRF are also somewhat faster acting.
+This is because, under the recession that we study in the partial equilibrium analysis, the large mass of newly-unemployed households do not start receiving extended UI for six months.
 } Furthermore, although we are unable to repeat our welfare analysis under a recession in this model, the distributional effects of the policies are similar.
 Most importantly, the mechanism leading to far greater welfare benefits for the UI extension, namely that the newly unemployed have high marginal utility, are robust to the supply-side effects of a general equilibrium HANK and SAM model.
 
@@ -46,7 +91,7 @@ Most importantly, the mechanism leading to far greater welfare benefits for the 
 \end{figure}
 
 
-Figure \ref{fig:HANK_multipliers} shows the consumption multipliers over different horizons under a fixed real rate rule, alongside those in our baseline partial equilibrium model.
+The bottom row of Figure~\ref{fig:HANK_IRFs} shows the corresponding cumulative multipliers for each policy and monetary policy rule. Figure \ref{fig:HANK_multipliers} compares these consumption multipliers over different horizons under a fixed real rate rule to those in our baseline partial equilibrium model.
 The multipliers are bigger in the HANK and SAM model.
 Nevertheless, in both models, the relative ranking of the consumption multipliers over time horizons are similar, with the effect of the tax cut substantially smaller than the stimulus check or UI extension policies, despite the inclusion of supply-side effects in this HANK model.
 However, towards the end of the period shown the tax cut consumption multiplier is near that of the stimulus check.
