@@ -24,7 +24,6 @@ exec(open(script_path).read())
 print('Concluded Step 4. \n')
 
 print('Step 5: HANK Robustness Check\n')
-os.chdir('./FromPandemicCode')
 script_path = 'HA-Fiscal-HANK-SAM-to-python.py'
 exec(open(script_path).read())
 os.chdir('../')
