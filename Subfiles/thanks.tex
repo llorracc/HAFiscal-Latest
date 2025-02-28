@@ -1,5 +1,30 @@
-The authors would like to thank workshop audiences at the University of Pennsylvania, West Virginia University, Vanderbilt University, the Society for Computational Economics in 2024, the Board of Governors of the Federal Reserve System, 
+\input{./.econtexRoot}
+\documentclass[\econtexRoot/HAFiscal]{subfiles}
+\onlyinsubfile{\externaldocument{\econtexRoot/HAFiscal}} % Get xrefs -- esp to apndx -- from main file; only works if main file has already been compiled
 
-- indarte
-- sakellaris
-- monninger
+% Define the \thanksInput macro
+\newcommand{\thanksInput}[1]{%
+  \IfFileExistsAndNotEmpty{\econtexRoot/Subfiles/#1.tex}
+    {\ignorespaces\input{\econtexRoot/Subfiles/#1.tex}\unskip} % doiftrue: add comma and input file
+    {\null} % doiffalse: do nothing
+}
+
+\begin{document}
+
+The authors would like to thank workshop audiences at \input{\econtexRoot/Subfiles/thanks-talks_CDC},%
+\thanksInput{thanks-talks_DuW}%
+\thanksInput{thanks-talks_EC}%
+\thanksInput{thanks-talks_HT}%
+\IfFileExistsAndNotEmpty{\econtexRoot/Subfiles/thanks-talks_IF}{ and }{}%
+\thanksInput{\econtexRoot/Subfiles/thanks-talks_IF}%
+ for valuable feedback on the paper during presentations.  We would also like to thank  \input{\econtexRoot/Subfiles/thanks-persons_CDC},%
+\thanksInput{thanks-persons_DuW}%
+\thanksInput{thanks-persons_EC}%
+\thanksInput{thanks-persons_HT}\IfFileExistsAndNotEmpty{\econtexRoot/Subfiles/thanks-persons_IF}{ and }{}%
+\thanksInput{\econtexRoot/Subfiles/thanks-persons_IF}% 
+for insightful comments on drafts of the paper.
+
+\end{document}\endinput
+
+\input{\econtexRoot/Subfiles/thanks-talks_DuW},\input{\econtexRoot/Subfiles/thanks-talks_HT},\input{\econtexRoot/Subfiles/thanks-talks_IF}  We would also like to thank \input{\econtexRoot/Subfiles/thanks-persons_CDC},\input{\econtexRoot/Subfiles/thanks-persons_DuW},\input{\econtexRoot/Subfiles/thanks-persons_EC},\input{\econtexRoot/Subfiles/thanks-persons_HT},\input{\econtexRoot/Subfiles/thanks-persons_IF} reading the paper and providing comments.  We would also like to thank Matt White for coming up with the word ``splurge'' to describe what we now more formally identify as the excess initial Marginal Propensity to Consume, and Kenneth Eva for invaluable research assistance.
+
