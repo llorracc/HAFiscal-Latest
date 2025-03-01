@@ -2,6 +2,7 @@
 \input{@resources/tex-add-search-paths}  % allow latex to find custom stuff
 \input{./.econtexRoot}\documentclass[HAFiscal]{subfiles}
 \externaldocument{\econtexRoot/HAFiscal}
+%\usepackage{catchfile}
 
 \begin{document}
 % Attempted to make all lines used for Web version contain {Web} (or version with only single curly brace at end) so can be removed with sed
@@ -48,7 +49,6 @@
 } % end \parbox{\textwidth}
 \end{footnotesize}
 
-
 \begin{authorsinfo}
   \noindent \name{\href{https://www.econ2.jhu.edu/people/ccarroll}{Carroll: Department of Economics, Johns Hopkins University}, \href{mailto:ccarroll@jhu.edu}{\texttt{ccarroll@jhu.edu}}, and \href{https://nber.org}{NBER}}. \newline
   \name{Crawley: Federal Reserve Board, \href{mailto:edmund.s.crawley@frb.gov}{\texttt{edmund.s.crawley@frb.gov}} } \newline
@@ -59,14 +59,51 @@
 
 \pagenumbering{gobble} % Prevent numbering for pages including the TOC and title page
 
+% 3) Wrapper to conditionally \input a file if it exists & isn’t empty.
+\newcommand{\thanksInput}[1]{%
+  \IfFileExists{\econtexRoot/Subfiles/#1.tex}%
+    {\ignorespaces\input{\econtexRoot/Subfiles/#1.tex}\unskip}%  % if exists
+    {}%                                                     % if empty/nonexistent
+  }%
+  
 
-\ifthenelse{\boolean{Web}}{
-}{
-  \begin{minipage}{0.9\textwidth}
-    \footnotesize The views expressed in this paper are those of the authors and do not necessarily represent those of the Federal Reserve Board, the Deutsche Bundesbank and the Eurosystem, or Statistics Norway. This project has received funding from the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No. 851891).
-  \end{minipage}
+\hypertarget{abstract}{}
+%\begin{verbatimwrite}{\econtexRoot/Subfiles/thanks.vrb}
+\footnotesize The views expressed in this paper are those of the authors and do not necessarily represent those of the Federal Reserve Board, the Deutsche Bundesbank and the Eurosystem, or Statistics Norway. This project has received funding from the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No. 851891).
 
-}
+\input{acknowledgments-snippets.tex}
+
+% The authors would like to thank workshop audiences at \input{\econtexRoot/Subfiles/thanks-talks_CDC},%
+% \thanksInput{thanks-talks_DuW}\thanksInput{thanks-talks_EC}\thanksInput{thanks-talks_HT}\thanksInput{thanks-talks_IF}%
+%  for valuable feedback on the paper during presentations.  We would also like to thank  \input{\econtexRoot/Subfiles/thanks-persons_CDC},%
+% \thanksInput{thanks-persons_DuW}%
+% \thanksInput{thanks-persons_EC}%
+% \thanksInput{thanks-persons_HT}%\IfFileExistsAndNotEmpty{\econtexRoot/Subfiles/thanks-persons_IF}{ and }{}%
+% \thanksInput{thanks-persons_IF}% 
+% for insightful comments on drafts of the paper.
+%\end{verbatimwrite}
+%\input{\econtexRoot/Subfiles/thanks.vrb}
+
+% \ifthenelse{\boolean{Web}}{
+% }{
+%   \begin{minipage}{0.9\textwidth}
+%     \footnotesize The views expressed in this paper are those of the authors and do not necessarily represent those of the Federal Reserve Board, the Deutsche Bundesbank and the Eurosystem, or Statistics Norway. This project has received funding from the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No. 851891).
+% The authors would like to thank workshop audiences at \input{\econtexRoot/Subfiles/thanks-talks_CDC},%
+% \thanksInput{thanks-talks_DuW}%
+% \thanksInput{thanks-talks_EC}%
+% \thanksInput{thanks-talks_HT}%
+% \IfFileExistsAndNotEmpty{\econtexRoot/Subfiles/thanks-talks_IF}{ and }{}%
+% \thanksInput{thanks-talks_IF}%
+%  for valuable feedback on the paper during presentations.  We would also like to thank  \input{\econtexRoot/Subfiles/thanks-persons_CDC},%
+% \thanksInput{thanks-persons_DuW}%
+% \thanksInput{thanks-persons_EC}%
+% \thanksInput{thanks-persons_HT}\IfFileExistsAndNotEmpty{\econtexRoot/Subfiles/thanks-persons_IF}{ and }{}%
+% \thanksInput{thanks-persons_IF}% 
+% for insightful comments on drafts of the paper.
+
+%   \end{minipage}
+% }
+
 \titlepagefinish
 
 \end{document}\endinput
