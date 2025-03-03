@@ -8,7 +8,7 @@
 
 % Document has title page and table of contents and header:
 \documentclass[titlepage, headings=optiontotocandhead]{econark}
-
+\usepackage{catchfile}
 \newcommand{\texname}{HAFiscal} % Keyname for paper (optional)
 \usepackage{econark-bibfilesfind}
 \bibfilesfind{\texname}
@@ -69,6 +69,7 @@
 
 \nocite{parker2017don}
 
+%\setboolean{Appendix}{false}
 \input{Subfiles.texinput} % Paper is composed of subfiles enumerated here
 
 \pagebreak

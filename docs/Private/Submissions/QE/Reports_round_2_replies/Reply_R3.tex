@@ -93,24 +93,35 @@
 	\onehalfspacing
 	\maketitle
 	
-	\noindent Thank you for your thoughtful comments and suggestions on our paper ``Welfare and Spending Effects of Consumption Stimulus Policies''. They were all very useful to us in revising the paper. We hope you agree that the paper has improved. In the following, we summarize the main changes we have made based on your, the other referees', and the editor's suggestions. Thereafter, we state each of your comments in italics and provide point-by-point responses to them.
-	
-	\section{Summary of Main Changes}
-	
-\input{MainChanges.tex}
-	
-	\newpage 
+	\noindent Thank you for your thoughtful comments and suggestions on our paper ``Welfare and Spending Effects of Consumption Stimulus Policies''. They were all very useful to us in revising the paper. We hope you agree that the paper has improved. In the following, we state each of your comments in italics and provide point-by-point responses to them.
+
 	
 \section{Comments}
 \begin{itemize}
 	
 	\item \textit{I thank the authors for computing a model without the splurge factor. The results reported in the appendix suggest that such a model performs remarkably well in matching the most important features in the data, with the minor exception of the highest liquid wealth quartile. Therefore, I believe the paper could benefit from a more thorough motivation for including the splurge factor. For instance, is the distribution of $\beta$s in a model without the splurge factor unreasonable? It seems to me that the authors’ stated goal in the abstract (to ``assess the effectiveness of three fiscal stimulus policies'') could be achieved without the somewhat ad-hoc inclusion of the splurge parameter.}
 	
-	\noindent \textbf{Response.} 
+	\noindent \textbf{Response.} A virtue of QE, compared to many other journals, is the importance QE attaches to getting \textit{quantitative} things right.  The original Krusell-Smith (1998) paper, for example, concluded that heterogeneity didn't make much difference to macroeconomics -- but that's because they got things \textit{quantitatively} wrong by calibrating their model without reference to the microeconomic facts (in particular, the distribution of wealth).
+	
+	We implicitly highlight this point in our emphasis on the importance of using a \href{https://llorracc.github.io/HAFiscal/#microeconomically-credible}{\textbf{microeconomically credible}} model. We also agree that the model without splurge implies unreasonable low discount rates for some households and we now point this out at the end of the first paragraph of section 3.1 and also in appendix A.1.
+	
+	Since our last submission this fall, four new papers (incorporated in our revised lit review) have appeared (or come to our attention) measuring and theorizing about the phenomenon of what we now dub the `excess initial MPC.'  Several of these papers propose or speculate that incorporating the excess initial MPC might substantially change macro dynamics.
+	
+	In our particular context, if we had a model that did not match the `excess initial MPC,' any reader familiar with this hot topic in the consumption literature could reasonably wonder whether our results might be \textit{quantitatively} off (maybe substantially so) just as Krusell-Smith's were.
+	
+	We show that the answer to the question turns out to be that while the splurge that we introduced to match the excess initial MPC makes some difference, incorporating it does not turn out to fundamentally change the results.
+	
+	But that's an interesting point in itself: Maybe it means that, however robust the phenomenon, it may not be of first-order importance for macro dynamics.
 	
 	\item \textit{In my previous report, I raised a point regarding the calibration of labor market transition rates across different educational groups. The authors convincingly argue that heterogeneous $E$ to $U$ transitions fit the steady-state data best, as shown by \citet{elsby2010labor}. However, the same reference also indicates that while separation rates vary across educational groups, they are relatively unaffected by business cycles, whereas job-finding rates exhibit significant variation. From the manuscript, it is unclear to me whether the model reflects this characteristic. On page 9, it is stated that ``the employment transition matrix is adjusted so that unemployment remains at the new high level and the expected length of time for an unemployment spell increases,'' but it is unclear to what extent this adjustment	is driven by changes in $E$ to $U$ versus $U$ to $E$. Clarifying this would enhance the reader’s understanding.}	
 	
-	\noindent \textbf{Response.} 
+	\noindent \textbf{Response.} To clarify how the transition matrix changes in a recession we have added subsection 3.3.2, including table~3, that presents the details, and we have added a reference to this subsection to our discussion of how we model a recession in section~2.2. 
+	
+	The main change in the transition probabilities follows from the assumption that the average duration of unemployment increases from $1.5$ quarters to $4$ quarters for each education group in a recession. This implies that the transition probability from unemployment to employment $\pi_{ue}$ drops from $0.667$ to $0.25$, and this is consistent with the left panel of the last row of Figure~8 in \citet{elsby2010labor} which shows a large drop in the outflow from unemployment for all education groups in a recession. 
+	
+	When we combine this with the assumption that the unemployment rate for each education group doubles at the start of a recession, the implication for each group is that the probability of transitioning into unemployment ($\pi_{eu}$) actually decreases slightly in a recession. \citet{elsby2010labor} instead find a small increase in these probabilities in recessions (right panel of the last row of Figure~8). With the small changes that our calibration strategy implies, however, we would still argue that these probabilities are ``relatively unaffected by business cycles'' when we view the change relative to the change in $\pi_{ue}$. We thus describe our calibration as ``broadly in line with the results of \citet{elsby2010labor}''. 
+	
+	Finally, in case it is of interest, we would like to take this opportunity to market our Github repo with the replication codes for the paper. It is available at \url{https://github.com/llorracc/HAFiscal/}. An interested reader could change the calibration of the relevant parameters governing the transition matrix in a recession (in lines 185 to 189 in the file Parameters.py) and investigate the implications for the comparisons of the consumption stimulus policies. 
 
 	\item \textit{I very much appreciate the addition of the full HANK model as a robustness exercise. This	addition effectively demonstrates that the results are not merely an artifact of the partial equilibrium nature of the initial model, while still allowing readers to draw valuable insights from the latter.}
 
