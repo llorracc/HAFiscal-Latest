@@ -22,7 +22,7 @@
 \setboolean{Appendix}{true}
 \provideboolean{TOC}\setboolean{TOC}{false}
 
-\provideboolean{draftmode}\setboolean{draftmode}{true}
+\provideboolean{draftmode}\setboolean{draftmode}{false}
 %\setboolean{draftmode}{false}
 \newcommand{\Draft}{\ifthenelse{\boolean{draftmode}}}
 \Draft{\usepackage{showlabels}
@@ -32,7 +32,7 @@
 % Standard useful packages for economics
 \usepackage{pdforhtml}         % allow compile as pdf or html
 \ifdvi
-  \setboolean{Web}{true}   
+  \setboolean{Web}{false}   
 \fi
 
 %\usepackage{econark-multibib}  % Only use bib files that exist
@@ -69,8 +69,8 @@
 
 \nocite{parker2017don}
 
-\setboolean{Appendix}{false}
-%\input{Subfiles.texinput} % Paper is composed of subfiles enumerated here
+\setboolean{Appendix}{true}
+\input{Subfiles.texinput} % Paper is composed of subfiles enumerated here
 
 \pagebreak
 
