@@ -2,7 +2,6 @@
 \input{./.econtexRoot}
 \documentclass[\econtexRoot/HAFiscal]{subfiles}
 
-% \onlyinsubfile{\renewcommand{\econtexRoot}{..}} % 
 \onlyinsubfile{\externaldocument{\econtexRoot/HAFiscal}} % Get xrefs -- esp to apndx -- from main file; only works if main file
 \begin{document}
 
@@ -555,27 +554,6 @@ Figure~\ref{fig:expiryUI} shows the pattern of income and spending for such hous
 \citet{ganongConsumer2019} report the empirical result that nondurable spending drops by 12 percent the month when benefits expire.
 Our quarterly model is broadly consistent with this, and the drop in spending the quarter after the expiry of UI benefits is 18 percent.
 
-
-% \begin{figure}[htb]
-%     \centering
-%     \begin{minipage}[b]{.48\linewidth}
-%         \centering
-%         \includegraphics[width=\linewidth]{\econtexRoot/Figures/iMPCs_wSplEstimated}
-%         \caption{Share of lottery win spent}
-%         \notinsubfile{\label{fig:USaggmpclotterywin}}
-%     \end{minipage}%
-%     \hfill
-%     \begin{minipage}[b]{.48\linewidth}
-%         \centering
-%         \includegraphics[width=\linewidth]{\econtexRoot/Code/HA-Models/FromPandemicCode/Figures/UnempSpell_Dynamics}
-%         \caption{Spending upon expiry of UI benefits}
-%         \notinsubfile{\label{fig:expiryUI}}
-%     \end{minipage}
-%     \caption{Untargeted moments}
-%     \notinsubfile{\label{fig:untargetedMoments}}
-%     \parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Panel (a) compares the dynamic consumption response in the model to the estimates in \citet{fagereng_mpc_2021}; see their Figure~A5. Panel (b) shows the evolution of income and spending for households who remain unemployed long enough for UI benefits to expire; see Figure~2 in \citet{ganongConsumer2019}.\normalsize}
-% \end{figure}
-
 \begin{figure}[htb]
     \centering
     \begin{subfigure}[b]{.48\linewidth}
@@ -646,6 +624,8 @@ Panel (b) shows the evolution of income and spending for households who remain u
 %     \HCode{</figcaption></div>}
 %   \fi
 % \end{figure}
+
+  \onlyinsubfile{\bibliography{\bibfilesfound}}
 
 \ifthenelse{\boolean{Web}}{}{
   \end{document} \endinput
