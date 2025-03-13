@@ -1,7 +1,5 @@
 import os
 
-os.chdir('./FromPandemicCode')
-
 import numpy as np
 from HARK.distribution import DiscreteDistribution
 from ConsMarkovModel import MarkovConsumerType
