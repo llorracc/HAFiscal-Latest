@@ -4,4 +4,4 @@
 # cd /path/to/python_script_directory
 
 # Run the Python script
-python reproduce_min.py
+python Code/HA-Models/do_all.py
