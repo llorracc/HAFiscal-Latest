@@ -8,7 +8,7 @@
 % Set paths (like, \LaTeXInputs) to find resources
 \input{./.econtexRoot} 
 
-\documentclass[pdflatex,aspectratio=169, handout]{beamer}
+\documentclass[pdflatex,aspectratio=169]{beamer}
 
 \usepackage{pdfsuppressruntime}
 
@@ -128,7 +128,7 @@
 
 \begin{frame}
 	\frametitle{Motivation}
-	\begin{itemize}
+	\begin{itemize}[<+->]
 		\itemsep = .5\bigskipamount 
 		\item Fiscal policies that aim to boost consumption spending in recessions have been tried in many countries in recent decades 
 		\item A lot of variation in such policies --- may be due to little guidance from traditional macroeconomic models on which policies most effectively\ldots 
@@ -171,7 +171,9 @@
     \item ... about the differences that make a difference
     \begin{itemize}[<+->]
     \itemsep = .25\bigskipamount 
-    \item Unemployment is not Calvo! And this makes a big difference quantitatively
+  \item UI benefits (normally last 2 quarter)
+\begin{itemize}    \item not forever as conveniently assumed in many models
+\end{itemize}
 %      \begin{itemize}[<+->]
 %      \item Is not Calvo!
 %        \item Makes a big difference quantitatively
@@ -937,7 +939,7 @@ Relatively large change in $\mathbf{c}_{it}$ for small number of households
 
 		\begin{figure}
 			\centering
-			\includegraphics[width=0.3\linewidth]{Presentations/qr-code}
+			\includegraphics[width=0.3\linewidth]{HAFiscal-Slides-qr-code}
 		\end{figure}
 	
 \end{frame}
