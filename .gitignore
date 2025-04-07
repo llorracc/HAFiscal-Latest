@@ -351,3 +351,5 @@ make4ht-trials_private
 
 # cursor
 .specstory/**
+
+.codegpt
