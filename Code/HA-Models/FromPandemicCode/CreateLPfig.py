@@ -1,4 +1,3 @@
-
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
@@ -7,6 +6,7 @@ import pandas as pd
 import os
 import sys 
 from HARK.utilities import make_figs
+from matplotlib_config import show_plot
 
 cwd             = os.getcwd()
 folders         = cwd.split(os.path.sep)
@@ -239,3 +239,5 @@ elif len(sys.argv) >= 2:
         fig.set_facecolor(color="white")
         
         make_figs('LorenzPoints_dataOnly', True , False, target_dir=figs_dir)
+
+show_plot()

@@ -24,6 +24,7 @@ import numpy as np
 from copy import deepcopy
 import scipy.sparse as sp
 import matplotlib.pyplot as plt
+from matplotlib_config import show_plot
 import time
 from HARK.utilities import make_figs
 
@@ -601,7 +602,7 @@ if do_splurge:
 
 #plt.plot(Jacobian_Dict['C']['tau'].T[10])
 #plt.xlim(-1,15)
-#plt.show()
+#show_plot()
 
 
 # # Create HANK and SAM models
@@ -1012,13 +1013,10 @@ plt.ylabel('C mulitpliers')
 plt.xlabel('quarters $t$')
 plt.xlim(.5,12.5)
 plt.title('Consumption Multipliers across horizon')
-"""
-plt.savefig("figures/HANK_multipliers_w_splurge.pdf")
-plt.savefig("figures/HANK_multipliers_w_splurge.svg")
-plt.savefig("figures/HANK_multipliers_w_splurge.jpg")
-plt.savefig("figures/HANK_multipliers_w_splurge.png")
-"""
-plt.show()
+show_plot(save_path="figures/HANK_multipliers_w_splurge.pdf")
+show_plot(save_path="figures/HANK_multipliers_w_splurge.svg")
+show_plot(save_path="figures/HANK_multipliers_w_splurge.jpg")
+show_plot(save_path="figures/HANK_multipliers_w_splurge.png")
 
 
 # # Multipliers across horizon fixed nominal rate
@@ -1072,7 +1070,7 @@ plt.ylabel('C mulitpliers')
 plt.xlabel('quarters $t$')
 plt.xlim(.5,12.5)
 plt.title('Consumption Multipliers across horizon')
-plt.show()
+show_plot()
 """
 
 # In[33]:
@@ -1159,7 +1157,7 @@ def plot_consumption_irf(irf1, irf2, irf3, y_max, filename, legend = False):
         
     #make_figs(filename, True , False, target_dir=fig_dir) , don't want to save figures for this notebook
     
-    plt.show() 
+    show_plot() 
 
 
 # In[36]:
@@ -1184,7 +1182,7 @@ def plot_consumption_multipliers(multiplier1, multiplier2, multiplier3, y_max, f
     if legend:
         plt.legend(loc='best')
     #make_figs(filename, True , False, target_dir=fig_dir), don't want to save figures for this notebook
-    plt.show() 
+    show_plot() 
 
 
 # In[37]:

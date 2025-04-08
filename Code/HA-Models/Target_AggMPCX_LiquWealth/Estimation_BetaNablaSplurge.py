@@ -16,6 +16,7 @@ from SetupParamsCSTW import init_infinite
 
 # for plotting
 import matplotlib.pyplot as plt
+from matplotlib_config import show_plot
 
 # for output
 cwd             = os.getcwd()
@@ -593,7 +594,7 @@ if Plot_Output:
     plt.ylabel('Cumulative liquid wealth share',fontsize=12)
     plt.legend(['Model','Data'])
     make_figs('LiquWealth_Distribution_comparison', True , False, target_dir=Abs_Path+'/Figures/')
-    plt.show()  
+    show_plot()  
     
     # Plot Lorentz curve
     plt.figure()
@@ -605,7 +606,7 @@ if Plot_Output:
     plt.ylabel('Cumulative liquid wealth share',fontsize=12)
     plt.legend(['Model, splurge $\geq$ 0','Model, splurge = 0','Data'])
     make_figs('LiquWealth_Distribution_comparison_splurge0', True , False, target_dir=Abs_Path+'/Figures/')
-    plt.show() 
+    show_plot() 
     
     # Plot Agg MPCx
     plt.figure()
@@ -618,7 +619,7 @@ if Plot_Output:
     plt.xlabel('year')
     plt.ylabel('% of lottery win spent')
     make_figs('AggMPC_LotteryWin_comparison_splurge0', True , False, target_dir=Abs_Path+'/Figures/')
-    plt.show()  
+    show_plot()  
     
     # Plot Agg MPCx
     plt.figure()
@@ -630,7 +631,7 @@ if Plot_Output:
     plt.xlabel('year')
     plt.ylabel('% of lottery win spent')
     make_figs('AggMPC_LotteryWin_comparison', True , False, target_dir=Abs_Path+'/Figures/')
-    plt.show() 
+    show_plot() 
     
     # Table initial MPCs along wealth q
     
@@ -800,7 +801,7 @@ if Plot_other_CRRA_values:
     plt.ylabel('Cumulative liquid wealth share',fontsize=12)
     plt.legend(['CRRA=1','CRRA = 3','Data'])
     make_figs('LiquWealth_Distribution_comparison_CRRA', True , False, target_dir=Abs_Path+'/Figures/')
-    plt.show()  
+    show_plot()  
     
     # Plot Agg MPCx
     plt.figure()
@@ -813,7 +814,7 @@ if Plot_other_CRRA_values:
     plt.xlabel('year')
     plt.ylabel('% of lottery win spent')
     make_figs('AggMPC_LotteryWin_comparison_CRRA', True , False, target_dir=Abs_Path+'/Figures/')
-    plt.show()  
+    show_plot()  
     
     # Table initial MPCs along wealth q
     
@@ -907,7 +908,7 @@ if Run_3D_Plot:
     fig.colorbar(surf, ax=ax, shrink=0.5, aspect=10)
      
     # Show the plot
-    plt.show()
+    show_plot()
 
 
 

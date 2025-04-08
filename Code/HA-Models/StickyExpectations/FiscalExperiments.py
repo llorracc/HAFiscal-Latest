@@ -13,6 +13,7 @@ from StickyEmodel import StickyEmarkovConsumerType, StickySmallOpenMarkovEconomy
 import matplotlib.pyplot as plt
 import StickyEparams as Params
 from StickyEtools import runParkerExperiment, runTaxCutExperiment
+from matplotlib_config import show_plot
 
 mystr = lambda number : "{:.3f}".format(number)
 results_dir = Params.results_dir
@@ -73,7 +74,7 @@ if __name__ == '__main__':
         plt.ylim([0.,None])
         if verbose_main:
             print(my_new_title)
-            plt.show()
+            show_plot()
         plt.close()
 
         # Simulate the sticky small open Markov economy
@@ -106,7 +107,7 @@ if __name__ == '__main__':
                 plt.plot(cLvl_StickyBonus/cLvl_StickyNone_parker, label="Sticky")
                 plt.plot(cLvl_FrictionlessBonus/cLvl_FrictionlessNone_parker, label="Frictionless")
                 plt.legend(loc="upper right")
-                plt.show()
+                show_plot()
     #       Run the "Tax Cut experiment"
             if run_tax_cut:
                 num_agg_sims =100
@@ -119,7 +120,7 @@ if __name__ == '__main__':
                 plt.plot(cLvl_StickyTaxCut/cLvl_StickyNone, label="Sticky")
                 plt.plot(cLvl_FrictionlessTaxCut/cLvl_FrictionlessNone, label="Frictionless")
                 plt.legend(loc="upper right")
-                plt.show()
+                show_plot()
                 
     #       Make pretty plot
             if run_parker and run_tax_cut:
@@ -130,4 +131,4 @@ if __name__ == '__main__':
                 plt.ylabel('Percentage Consumption Increase',fontsize=12)
                 plt.title('Fiscal Experiments')
                 plt.savefig('./Figures/FiscalExperiments.png')
-                plt.show()
+                show_plot()
