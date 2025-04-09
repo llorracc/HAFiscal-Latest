@@ -45,10 +45,6 @@ def show_plot(block=False, save_path=None):
     """
     try:
         if save_path:
-            # Convert to absolute path if relative
-            if not os.path.isabs(save_path):
-                save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), save_path)
-            
             # Ensure the directory exists
             ensure_dir_exists(save_path)
             

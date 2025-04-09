@@ -24,10 +24,26 @@ import numpy as np
 from copy import deepcopy
 import scipy.sparse as sp
 import matplotlib.pyplot as plt
+import sys
+import os
+import pickle
+
+# Get the absolute path to the script's directory and its parent
+script_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(script_dir)  # This is Code/HA-Models/
+
+# Add the parent directory to sys.path if it's not already there
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)  # Insert at beginning to ensure it's checked first
+    
 from matplotlib_config import show_plot
 import time
 from HARK.utilities import make_figs
 
+# Create figures directory if it doesn't exist
+figures_dir = os.path.join(script_dir, 'Figures')
+if not os.path.exists(figures_dir):
+    os.makedirs(figures_dir)
 
 # # Calibrate job transition probabilities
 
@@ -519,10 +535,8 @@ SteadyState_Dict = SteadyStateDict({ "asset_mkt":0.0,
 # In[8]:
 
 
-import pickle # Import Jacobians
-
-
-obj = open('HA_Fiscal_Jacs.obj', 'rb')
+# Update pickle file paths to use absolute paths
+obj = open(os.path.join(script_dir, 'HA_Fiscal_Jacs.obj'), 'rb')
 HA_fiscal_JAC = pickle.load(obj)
 obj.close()
 
@@ -536,8 +550,8 @@ AJACs_by_educ = HA_fiscal_JAC['A_by_educ']
 
 
 
-obj = open('HA_Fiscal_Jacs_UI_extend_real.obj', 'rb')
-UI_extend_realized_Jacs= pickle.load(obj)
+obj = open(os.path.join(script_dir, 'HA_Fiscal_Jacs_UI_extend_real.obj'), 'rb')
+UI_extend_realized_Jacs = pickle.load(obj)
 obj.close()
 
 
@@ -1013,10 +1027,10 @@ plt.ylabel('C mulitpliers')
 plt.xlabel('quarters $t$')
 plt.xlim(.5,12.5)
 plt.title('Consumption Multipliers across horizon')
-show_plot(save_path="figures/HANK_multipliers_w_splurge.pdf")
-show_plot(save_path="figures/HANK_multipliers_w_splurge.svg")
-show_plot(save_path="figures/HANK_multipliers_w_splurge.jpg")
-show_plot(save_path="figures/HANK_multipliers_w_splurge.png")
+show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.pdf"))
+show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.svg"))
+show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.jpg"))
+show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.png"))
 
 
 # # Multipliers across horizon fixed nominal rate
@@ -1148,16 +1162,17 @@ def plot_consumption_irf(irf1, irf2, irf3, y_max, filename, legend = False):
 
     plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
     plt.xlabel('quarter')
-    #plt.ylabel('% difference relative to recession')
-    #plt.savefig(fig_dir +'recession_taxcut_relrecession.pdf')
     plt.ylim(0, y_max)
     if legend:
         plt.legend(loc='best')
         plt.ylabel('% consumption deviation')
-        
-    #make_figs(filename, True , False, target_dir=fig_dir) , don't want to save figures for this notebook
     
-    show_plot() 
+    # Save the figure if a filename is provided
+    if filename:
+        save_path = os.path.join(figures_dir, f"{filename}.pdf")
+        show_plot(save_path=save_path)
+    else:
+        show_plot()
 
 
 # In[36]:
@@ -1181,14 +1196,19 @@ def plot_consumption_multipliers(multiplier1, multiplier2, multiplier3, y_max, f
     plt.ylim(0, y_max)
     if legend:
         plt.legend(loc='best')
-    #make_figs(filename, True , False, target_dir=fig_dir), don't want to save figures for this notebook
-    show_plot() 
+    
+    # Save the figure if a filename is provided
+    if filename:
+        save_path = os.path.join(figures_dir, f"{filename}.pdf")
+        show_plot(save_path=save_path)
+    else:
+        show_plot()
 
 
 # In[37]:
 
 
-fig_dir = "figures/"
+fig_dir = figures_dir
 y_max =  1.9
 plot_consumption_multipliers( multipliers_transfers,multipliers_transfers_fixed_nominal_rate,multipliers_transfers_fixed_real_rate, y_max, "HANK_transfer_multiplier")
 plot_consumption_multipliers( multipliers_UI_extend,multipliers_UI_extensions_fixed_nominal_rate,multipliers_UI_extensions_fixed_real_rate, y_max, "HANK_UI_multiplier")

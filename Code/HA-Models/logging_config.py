@@ -1,8 +1,11 @@
 import logging
 import os
 
+# Get the absolute path to the script's directory
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
 # Create logs directory if it doesn't exist
-logs_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+logs_dir = os.path.join(script_dir, 'logs')
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 
