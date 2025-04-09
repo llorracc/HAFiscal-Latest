@@ -8,6 +8,16 @@ def ensure_dir_exists(filepath):
     if directory and not os.path.exists(directory):
         os.makedirs(directory)
 
+def get_version_suffix():
+    """Get the version suffix from the version file if it exists."""
+    version_file = os.path.join(os.path.dirname(__file__), 'version')
+    if os.path.exists(version_file):
+        with open(version_file, 'r') as f:
+            content = f.read().strip()
+            if content:  # If file is not empty
+                return content
+    return ''  # Return empty string if file doesn't exist or is empty
+
 # Check if display is available
 def has_display():
     try:
@@ -45,6 +55,20 @@ def show_plot(block=False, save_path=None):
     """
     try:
         if save_path:
+            # Get version suffix
+            version_suffix = get_version_suffix()
+            
+            # Modify save path if version suffix exists
+            if version_suffix:
+                # Split path into directory, filename, and extension
+                directory = os.path.dirname(save_path)
+                filename = os.path.basename(save_path)
+                name, ext = os.path.splitext(filename)
+                
+                # Add version suffix before extension
+                new_filename = f"{name}{version_suffix}{ext}"
+                save_path = os.path.join(directory, new_filename)
+            
             # Ensure the directory exists
             ensure_dir_exists(save_path)
             
@@ -56,5 +80,6 @@ def show_plot(block=False, save_path=None):
             plt.show(block=block)
         plt.close()  # Clean up the figure
     except Exception as e:
-        logger.error(f"Error showing/saving plot: {str(e)}")
+        logger.error(f"Error in show_plot: {str(e)}")
         plt.close()  # Clean up the figure even if there's an error
+        raise
