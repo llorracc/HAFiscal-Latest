@@ -923,10 +923,7 @@ irfs_transfers_lagged_nominal_rate = HANK_SAM_lagged_taylor_rule.solve_impulse_l
 irfs_transfer_fixed_real_rate = HANK_SAM_fixed_real_rate.solve_impulse_linear(SteadyState_Dict_transfer, unknowns_fixed_real_rate, targets_fixed_real_rate, shocks_transfers)  # solve for IRFs
 
 
-# In[24]:
 
-
-#plot_irfs_three_fixed_real_rate(irfs_transfer,irfs_transfer_fixed_nominal_rate,irfs_transfer_fixed_real_rate,'active taylor rule' , 'fixed nominal rate', 'fixed real rate')
 
 
 # In[25]:
@@ -1026,12 +1023,7 @@ show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.svg"))
 show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.jpg"))
 show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.png"))
 
-"""
-plt.savefig("figures/HANK_multipliers_w_splurge.pdf")
-plt.savefig("figures/HANK_multipliers_w_splurge.svg")
-plt.savefig("figures/HANK_multipliers_w_splurge.jpg")
-plt.savefig("figures/HANK_multipliers_w_splurge.png")
-"""
+
 plt.show()
 
 
