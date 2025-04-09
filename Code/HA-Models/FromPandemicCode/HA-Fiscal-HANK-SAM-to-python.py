@@ -1024,7 +1024,6 @@ show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.jpg"))
 show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.png"))
 
 
-plt.show()
 
 
 # ## Multipliers under fixed nominal rate
@@ -1153,7 +1152,6 @@ def plot_consumption_irf(irf1, irf2, irf3, y_max, filename, legend = False):
         show_plot()
     # make_figs(filename, True , False, target_dir=fig_dir) 
     
-    plt.show() 
 
 
 # In[34]:
@@ -1195,7 +1193,6 @@ def plot_consumption_multipliers(multiplier1, multiplier2, multiplier3, y_max, f
     else:
         show_plot()
     
-    plt.show() 
 
 
 # In[36]:
