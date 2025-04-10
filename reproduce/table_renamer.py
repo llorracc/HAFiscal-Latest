@@ -5,16 +5,23 @@ import shutil
 from pathlib import Path
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python table_renamer.py <action> <file1> [file2 ...]")
+    if len(sys.argv) < 4:
+        print("Usage: python table_renamer.py <script_dir> <action> <file1> [file2 ...]")
         print("Actions: backup, rename_min, restore")
         sys.exit(1)
 
-    action = sys.argv[1]
-    files = sys.argv[2:]
+    script_dir = sys.argv[1]
+    action = sys.argv[2]
+    files = sys.argv[3:]
+
+    # Convert script_dir to absolute path
+    script_dir = os.path.abspath(script_dir)
 
     for file_path in files:
-        path = Path(file_path)
+        # Convert file path to absolute path relative to script_dir
+        abs_path = os.path.join(script_dir, file_path)
+        path = Path(abs_path)
+        
         if action == "backup":
             # Create backup with _orig suffix
             backup_path = path.parent / f"{path.stem}_orig{path.suffix}"
