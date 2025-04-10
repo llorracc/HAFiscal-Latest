@@ -44,7 +44,6 @@ from HARK.utilities import make_figs
 figures_dir = os.path.join(script_dir, 'Figures')
 if not os.path.exists(figures_dir):
     os.makedirs(figures_dir)
-
 # # Calibrate job transition probabilities
 
 # In[2]:
@@ -122,6 +121,7 @@ for s in range(bigT):
             dstn = np.dot(mrkv_temp_for_will,dstn)
     
         UJAC[:,i,s] = (dstn - ss_dstn) / dx
+
 
 # # Calibration for General equilibrium parameters
 
@@ -534,9 +534,9 @@ SteadyState_Dict = SteadyStateDict({ "asset_mkt":0.0,
 
 # In[8]:
 
-
 # Update pickle file paths to use absolute paths
 obj = open(os.path.join(script_dir, 'HA_Fiscal_Jacs.obj'), 'rb')
+
 HA_fiscal_JAC = pickle.load(obj)
 obj.close()
 
@@ -552,6 +552,7 @@ AJACs_by_educ = HA_fiscal_JAC['A_by_educ']
 
 obj = open(os.path.join(script_dir, 'HA_Fiscal_Jacs_UI_extend_real.obj'), 'rb')
 UI_extend_realized_Jacs = pickle.load(obj)
+
 obj.close()
 
 
@@ -611,17 +612,9 @@ if do_splurge:
                            
 
 
-# In[10]:
-
-
-#plt.plot(Jacobian_Dict['C']['tau'].T[10])
-#plt.xlim(-1,15)
-#show_plot()
-
-
 # # Create HANK and SAM models
 
-# In[11]:
+# In[10]:
 
 
 HANK_SAM = create_model([Jacobian_Dict, 
@@ -762,10 +755,9 @@ HANK_SAM_tax_cut_fixed_real_rate = create_model([Jacobian_Dict,
 
 
 
-
 # # Different stimulus policies
 
-# In[13]:
+# In[11]:
 
 
 def NPV(irf,length): # to compute Net present value
@@ -779,7 +771,7 @@ def NPV(irf,length): # to compute Net present value
     return NPV
 
 
-# In[14]:
+# In[12]:
 
 
 unknowns = ['theta', 'r_ante' ]
@@ -791,7 +783,7 @@ T = bigT
 
 # # UI extensions
 
-# In[15]:
+# In[13]:
 
 
 dUI_extension = np.zeros(bigT)
@@ -824,7 +816,7 @@ green = 'green'
 
 # # Lag in the taylor rule
 
-# In[16]:
+# In[14]:
 
 
 SteadyState_Dict_UI_extend_lagged_nominal_rate = deepcopy(SteadyState_Dict_UI_extend)
@@ -837,24 +829,24 @@ irfs_UI_extend_lagged_nominal_rate = HANK_SAM_lagged_taylor_rule.solve_impulse_l
 
 # ## Fixed Real Rate
 
-# In[17]:
+# In[15]:
 
 
 unknowns_fixed_real_rate = ['theta' ]
 targets_fixed_real_rate = ['asset_mkt' ]
 
 
-# In[18]:
+# In[16]:
 
 
 irfs_UI_extension_fixed_real_rate = HANK_SAM_fixed_real_rate.solve_impulse_linear(SteadyState_Dict_UI_extend, unknowns_fixed_real_rate, targets_fixed_real_rate, shocks_UI_extension)  # solve for IRFs
 
 
 
-# # Fixed real rate
 
 
-# In[20]:
+
+# In[18]:
 
 
 print('multiplier out of 2Q UI extension (active taylor rule)', NPV(irfs_UI_extend['Y'], bigT)/NPV(irfs_UI_extend['UI_extension_cost'],bigT))
@@ -864,7 +856,7 @@ print('multiplier out of 2Q UI extension (fixed real rate)',NPV(irfs_UI_extensio
 
 
 
-# In[21]:
+# In[19]:
 
 
 irf_UI_extend_realizations = HANK_SAM_fixed_real_rate_UI_extend_real.solve_impulse_linear(SteadyState_Dict_UI_extend, unknowns_fixed_real_rate, targets_fixed_real_rate, shocks_UI_extension)  # solve for IRFs
@@ -873,7 +865,7 @@ irf_UI_extend_realizations = HANK_SAM_fixed_real_rate_UI_extend_real.solve_impul
 # # Transfers
 # 
 
-# In[22]:
+# In[20]:
 
 
 dtransfers = np.zeros(bigT)
@@ -900,7 +892,7 @@ irfs_transfer_fixed_nominal_rate = HANK_SAM.solve_impulse_linear(SteadyState_Dic
 
 
 
-# In[23]:
+# In[21]:
 
 
 print('multiplier out of transfers', NPV(irfs_transfer['Y'], bigT)/NPV(irfs_transfer['transfers'],bigT))
@@ -912,7 +904,7 @@ print('multiplier out of transfers (fixed nominal rate)', NPV(irfs_transfer_fixe
 # 
 # Fed does not react for a certain number of periods.
 
-# In[24]:
+# In[22]:
 
 
 SteadyState_Dict_transfers_lagged_nominal_rate = deepcopy(SteadyState_Dict_transfer)
@@ -925,7 +917,7 @@ irfs_transfers_lagged_nominal_rate = HANK_SAM_lagged_taylor_rule.solve_impulse_l
 
 # ## Fixed Real Rate
 
-# In[25]:
+# In[23]:
 
 
 irfs_transfer_fixed_real_rate = HANK_SAM_fixed_real_rate.solve_impulse_linear(SteadyState_Dict_transfer, unknowns_fixed_real_rate, targets_fixed_real_rate, shocks_transfers)  # solve for IRFs
@@ -933,7 +925,8 @@ irfs_transfer_fixed_real_rate = HANK_SAM_fixed_real_rate.solve_impulse_linear(St
 
 
 
-# In[27]:
+
+# In[25]:
 
 
 print('multiplier out of transfers (active taylor rule)', NPV(irfs_transfer['Y'], bigT)/NPV(irfs_transfer['transfers'],bigT))
@@ -943,7 +936,7 @@ print('multiplier out of transfers (fixed real rate)'   ,    NPV(irfs_transfer_f
 
 # # Tax cut
 
-# In[28]:
+# In[26]:
 
 
 dtau = np.zeros(bigT)
@@ -974,7 +967,7 @@ irfs_tau_fixed_nominal_rate = HANK_SAM_tax_rate_shock.solve_impulse_linear(Stead
 
 
 
-# In[29]:
+# In[27]:
 
 
 irfs_tau_fixed_real_rate = HANK_SAM_tax_cut_fixed_real_rate.solve_impulse_linear(SteadyState_Dict_tax_shock, unknowns_fixed_real_rate, targets_fixed_real_rate, shocks_tau)
@@ -984,7 +977,7 @@ irfs_tau_fixed_real_rate = HANK_SAM_tax_cut_fixed_real_rate.solve_impulse_linear
 
 
 
-# In[30]:
+# In[28]:
 
 
 print('multiplier out of tax cut', NPV(irfs_tau['Y'], bigT)/NPV(irfs_tau['tax_cost'],bigT))
@@ -995,7 +988,7 @@ print('multiplier out of tax cut (fixed nominal rate)', NPV(irfs_tau_fixed_nomin
 
 # # multipliers across the horizon
 
-# In[31]:
+# In[29]:
 
 
 horizon_length = 20
@@ -1019,23 +1012,23 @@ for i in range(horizon_length):
 plt.plot(np.arange(horizon_length) +1,multipliers_transfers , label = 'Stimulus Check', color = 'green')
 plt.plot(np.arange(horizon_length) +1,multipliers_UI_extensions , label = 'UI extensions' , color = 'blue')
 plt.plot(np.arange(horizon_length) +1,multipliers_tax_cut , label = 'Tax cut', color = 'red')
-
-#plt.plot(np.arange(15) +1,multipliers_tax_cut , label = 'tax cut')
-
 plt.legend(loc = 'lower right')
 plt.ylabel('C mulitpliers')
 plt.xlabel('quarters $t$')
 plt.xlim(.5,12.5)
 plt.title('Consumption Multipliers across horizon')
+
 show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.pdf"))
 show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.svg"))
 show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.jpg"))
 show_plot(save_path=os.path.join(figures_dir, "HANK_multipliers_w_splurge.png"))
 
 
-# # Multipliers across horizon fixed nominal rate
 
-# In[32]:
+
+# ## Multipliers under fixed nominal rate
+
+# In[30]:
 
 
 horizon_length = 20
@@ -1058,7 +1051,6 @@ for i in range(horizon_length):
 
     multipliers_transfers_fixed_nominal_rate[i] =  NPV(irfs_transfer_fixed_nominal_rate['C'], i + 1)/NPV(irfs_transfer_fixed_nominal_rate['transfers'],300)
     multipliers_UI_extensions_fixed_nominal_rate[i] =  NPV(irfs_UI_extend_fixed_nominal_rate['C'], i + 1)/NPV(irfs_UI_extend_fixed_nominal_rate['UI_extension_cost'],300)
-    #multipliers_UI_extensions_no_anticipation[i] =  NPV(irf_UI_extend_realizations['C'], i + 1)/NPV(irf_UI_extend_realizations['UI_extension_cost'],300)
     multipliers_tax_cut_fixed_nominal_rate[i] =  -NPV(irfs_tau_fixed_nominal_rate['C'], i + 1)/NPV(irfs_tau_fixed_nominal_rate['tax_cost'],300)
 
     multipliers_transfers[i] =  NPV(irfs_transfer['C'], i + 1)/NPV(irfs_transfer['transfers'],300)
@@ -1070,24 +1062,7 @@ for i in range(horizon_length):
     multipliers_tax_cut_fixed_real_rate[i] =  -NPV(irfs_tau_fixed_real_rate['C'], i + 1)/NPV(irfs_tau_fixed_real_rate['tax_cost'],300)
 
 
-"""
-
-plt.plot(np.arange(horizon_length) +1,multipliers_transfers_fixed_nominal_rate , label = 'transfers', color = 'green')
-plt.plot(np.arange(horizon_length) +1,multipliers_UI_extensions_fixed_nominal_rate , label = 'UI extensions' , color = 'blue')
-plt.plot(np.arange(horizon_length) +1,multipliers_tax_cut_fixed_nominal_rate , label = 'tax cut', color = 'red')
-
-#plt.plot(np.arange(horizon_length) +1,multipliers_UI_extensions_no_anticipation , label = 'UI extensions (households never learn of UI extensions)')
-#plt.plot(np.arange(15) +1,multipliers_tax_cut , label = 'tax cut')
-
-plt.legend(loc = 'lower right')
-plt.ylabel('C mulitpliers')
-plt.xlabel('quarters $t$')
-plt.xlim(.5,12.5)
-plt.title('Consumption Multipliers across horizon')
-show_plot()
-"""
-
-# In[33]:
+# In[31]:
 
 
 def plot_consumption_irfs_three_experiments(irf_UI1,irf_UI2,irf_UI3, irf_SC1,irf_SC2,irf_SC3, irf_TC1,irf_TC2,irf_TC3):
@@ -1137,14 +1112,15 @@ def plot_consumption_irfs_three_experiments(irf_UI1,irf_UI2,irf_UI3, irf_SC1,irf
     fig.tight_layout()
 
 
-# In[34]:
+# In[32]:
 
 
 plot_consumption_irfs_three_experiments(irfs_UI_extend,irfs_UI_extend_fixed_nominal_rate,irfs_UI_extension_fixed_real_rate, irfs_transfer,irfs_transfer_fixed_nominal_rate,irfs_transfer_fixed_real_rate, irfs_tau,irfs_tau_fixed_nominal_rate,irfs_tau_fixed_real_rate)
+plt.savefig("figures/HANK_IRFs_w_splurge.pdf")
 
 
 
-# In[35]:
+# In[33]:
 
 
 # Make each plot individually to match what Ivan does in the main code
@@ -1166,16 +1142,29 @@ def plot_consumption_irf(irf1, irf2, irf3, y_max, filename, legend = False):
     if legend:
         plt.legend(loc='best')
         plt.ylabel('% consumption deviation')
-    
-    # Save the figure if a filename is provided
+        
+        
+        # Save the figure if a filename is provided
     if filename:
         save_path = os.path.join(figures_dir, f"{filename}.pdf")
         show_plot(save_path=save_path)
     else:
         show_plot()
+    # make_figs(filename, True , False, target_dir=fig_dir) 
+    
 
 
-# In[36]:
+# In[34]:
+
+
+fig_dir = "figures/"
+y_max =  max(100*irfs_tau_fixed_nominal_rate['C'][:12]/C_ss)*1.05
+plot_consumption_irf( irfs_transfer,irfs_transfer_fixed_nominal_rate,irfs_transfer_fixed_real_rate, y_max, "HANK_transfer_IRF", legend=True)
+plot_consumption_irf( irfs_UI_extend,irfs_UI_extend_fixed_nominal_rate,irfs_UI_extension_fixed_real_rate, y_max, "HANK_UI_IRF")
+plot_consumption_irf( irfs_tau,irfs_tau_fixed_nominal_rate,irfs_tau_fixed_real_rate, y_max, "HANK_tax_IRF")
+
+
+# In[35]:
 
 
 # Make each plot individually to match what Ivan does in the main code
@@ -1196,16 +1185,17 @@ def plot_consumption_multipliers(multiplier1, multiplier2, multiplier3, y_max, f
     plt.ylim(0, y_max)
     if legend:
         plt.legend(loc='best')
-    
-    # Save the figure if a filename is provided
+        
+        # Save the figure if a filename is provided
     if filename:
         save_path = os.path.join(figures_dir, f"{filename}.pdf")
         show_plot(save_path=save_path)
     else:
         show_plot()
+    
 
 
-# In[37]:
+# In[36]:
 
 
 fig_dir = figures_dir
@@ -1213,7 +1203,4 @@ y_max =  1.9
 plot_consumption_multipliers( multipliers_transfers,multipliers_transfers_fixed_nominal_rate,multipliers_transfers_fixed_real_rate, y_max, "HANK_transfer_multiplier")
 plot_consumption_multipliers( multipliers_UI_extend,multipliers_UI_extensions_fixed_nominal_rate,multipliers_UI_extensions_fixed_real_rate, y_max, "HANK_UI_multiplier")
 plot_consumption_multipliers( multipliers_tax_cut,multipliers_tax_cut_fixed_nominal_rate,multipliers_tax_cut_fixed_real_rate, y_max, "HANK_tax_multiplier")
-
-
-
 
