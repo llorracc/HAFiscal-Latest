@@ -21,7 +21,8 @@ print('Concluded Step 1.\n\n')
 print('Step 2: Estimating discount factor distributions (this takes a while!)\n')
 os.chdir('FromPandemicCode')
 exec(open("EstimAggFiscalMAIN.py").read())
-exec(open("createLPfig.py").read()) # No argument -> create baseline figure
+exec(open("CreateLPfig.py").read()) # No argument -> create baseline figure
+os.system("python3 CreateLPfig.py 2") # creates robustness_CRRA variant
 os.chdir('../')
 print('Concluded Step 2.\n\n')
 

@@ -1,9 +1,13 @@
 # filename: do_all.py
 
+# Import matplotlib configuration before any other imports
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from matplotlib_config import show_plot
+
 # Import the exec function
 from builtins import exec
-import sys 
-import os
 
 
 #%% This script is a reduced version of do_all.py

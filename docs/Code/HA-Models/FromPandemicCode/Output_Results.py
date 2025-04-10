@@ -1,6 +1,8 @@
 import os
 from Welfare import Welfare_Results
 from HARK.utilities import make_figs
+import matplotlib.pyplot as plt
+from matplotlib_config import show_plot
 
 def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline'):
 
@@ -24,8 +26,8 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     
     from Parameters import returnParameters
     import numpy as np
-    import matplotlib.pyplot as plt
     from OtherFunctions import getSimulationDiff, getSimulationPercentDiff, getNPVMultiplier, loadPickle, saveAsPickleUnderVarName
+
     mystr = lambda x : '{:.2f}'.format(x)
     
     
@@ -106,7 +108,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     #plt.savefig(fig_dir +'recession_taxcut_relrecession.pdf')
     plt.ylim(-0.2, 6.5)
     make_figs('recession_taxcut_relrecession', True , False, target_dir=fig_dir)
-    plt.show()   
+    show_plot()   
     
     
     
@@ -144,7 +146,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     #plt.savefig(fig_dir +'recession_UI_relrecession.pdf')
     plt.ylim(-0.2, 6.5)
     make_figs('recession_UI_relrecession', True , False, target_dir=fig_dir)
-    plt.show() 
+    show_plot() 
     
     
     #Check stimulus    
@@ -182,7 +184,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     plt.ylim(-0.2, 6.5)
     #plt.savefig(fig_dir +'recession_Check_relrecession.pdf')
     make_figs('recession_Check_relrecession', True , False, target_dir=fig_dir)
-    plt.show()        
+    show_plot()        
     
     
     #########################################################################
@@ -264,7 +266,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
     plt.xlabel('quarter')
     #plt.savefig(fig_dir +'Cummulative_multipliers.pdf')
     make_figs('Cummulative_multipliers', True , False, target_dir=fig_dir)
-    plt.show()
+    show_plot()
     
     # Save multiplier values for comparison
     if Parametrization=='Baseline':
@@ -284,21 +286,21 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         plt.xlabel('quarter')
         plt.ylim(0, 1.25)
         make_figs('Cummulative_multiplier_Check', True , False, target_dir=fig_dir)
-        plt.show()
+        show_plot()
         
         plt.plot(x_axis,C_Multiplier_UI_Rec_AD[0:max_T2],                  color='#377eb8')
         plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1))
         plt.xlabel('quarter')
         plt.ylim(0, 1.25)
         make_figs('Cummulative_multiplier_UI', True , False, target_dir=fig_dir)
-        plt.show()
+        show_plot()
         
         plt.plot(x_axis,C_Multiplier_Rec_TaxCut_AD[0:max_T2],                  color='#377eb8')
         plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1))
         plt.xlabel('quarter')
         plt.ylim(0, 1.25)
         make_figs('Cummulative_multiplier_TaxCut', True , False, target_dir=fig_dir)
-        plt.show()
+        show_plot()
         
         
 
@@ -333,7 +335,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         make_figs('Cummulative_multipliers_withHank', True , False, target_dir=fig_dir)
           
         # Show the plot  
-        plt.show()
+        show_plot()
         
         
         HANK_results_dir = Abs_Path_Results+'Results_HANK/multipliers_across_horizon.obj' 
@@ -360,7 +362,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         make_figs('Cummulative_multipliers_withHanknoSpluge', True , False, target_dir=fig_dir)
           
         # Show the plot  
-        plt.show()
+        show_plot()
     
     # Comparison chart with baseline for Splurge = 0
     if Parametrization == 'Splurge0':
@@ -386,7 +388,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         make_figs('Cummulative_multipliers_SplurgeComp', True , False, target_dir=fig_dir)
           
         # Show the plot  
-        plt.show()
+        show_plot()
         
     
 
@@ -576,7 +578,7 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
                 plt.xticks(np.arange(min(x_axis), max(x_axis)+1, 1.0))
                 plt.xlabel('quarter', fontsize=18)
                 plt.ylabel('% diff. rel. to recession', fontsize=16)
-                plt.show() 
+                show_plot() 
                 
             
             return Multipliers
