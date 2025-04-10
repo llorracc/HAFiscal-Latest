@@ -365,9 +365,10 @@ class AggFiscalType(MarkovConsumerType):
         '''
         # Check whether MrkvArray has changed (and whether they exist at all!)
         try: 
-            same_MrkvArray = distance_metric(self.MrkvArray, self.MrkvArray_prev) == 0.
-            if (same_MrkvArray):
-                return
+            if self.MrkvArray[0].size == self.MrkvArray_prev[0].size:
+                same_MrkvArray = distance_metric(self.MrkvArray, self.MrkvArray_prev) == 0.
+                if (same_MrkvArray):
+                    return
         except:
             pass
         
