@@ -27,6 +27,7 @@ from StickyEmodel import StickyEmarkovConsumerType, StickyEmarkovRepAgent,\
         StickyCobbDouglasMarkovEconomy, StickySmallOpenMarkovEconomy
 from HARK.utilities import plotFuncs
 import matplotlib.pyplot as plt
+from matplotlib_config import show_plot
 import StickyEparams as Params
 from StickyEtools import makeStickyEdataFile, runStickyEregressions, makeResultsTable,\
                   runStickyEregressionsInStata, makeParameterTable, makeEquilibriumTable,\
@@ -139,7 +140,7 @@ if __name__ == '__main__':
             plt.ylim([0.,None])
             if verbose_main:
                 print(my_new_title)
-                plt.show()
+                show_plot()
             plt.close()
 
             # Simulate the sticky small open Markov economy

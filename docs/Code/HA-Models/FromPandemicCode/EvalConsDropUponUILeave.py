@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import matplotlib.pyplot as plt  
+from matplotlib_config import show_plot
 from OtherFunctions import loadPickle
 from HARK.utilities import make_figs
 
@@ -97,7 +98,7 @@ plt.ylabel('1 = permanent income in last period of employment')
 plt.legend()    
 plt.grid(True)  
 make_figs('UIextension_CompSplurge0', True , False, target_dir=Abs_Path+'/Figures/Splurge0/')  
-plt.show()  
+show_plot()  
 
 
 # Plot the results  
@@ -109,7 +110,7 @@ plt.ylabel('1 = permanent income in last period of employment')
 plt.legend()    
 plt.grid(True)  
 make_figs('UnempSpell_Dynamics', True , False, target_dir=Abs_Path+'/Figures/')  
-plt.show()  
+show_plot()  
 
 
 

@@ -1,5 +1,6 @@
 """Simple plotting functions for time series"""
 import matplotlib.pyplot as plt
+from matplotlib_config import show_plot
 import numpy as np
 
 
@@ -12,6 +13,7 @@ def plot_timeseries(data_dict, dims, xlabel='Quarters', **kwargs):
         plt.xlabel(xlabel)
         plt.axhline(y=0, color='#808080', linestyle=':')
     plt.tight_layout()
+    show_plot()
 
 
 def plot_impulses(dict_of_impulsedicts, labels, series, dims, xlabel='Quarters', T=None, **kwargs):
@@ -26,6 +28,7 @@ def plot_impulses(dict_of_impulsedicts, labels, series, dims, xlabel='Quarters',
         if i == 0:
             plt.legend()
     plt.tight_layout()
+    show_plot()
 
 
 def plot_decomp(Ds, data, shocks, series, xaxis, **kwargs):
@@ -53,4 +56,4 @@ def plot_decomp(Ds, data, shocks, series, xaxis, **kwargs):
         plt.title(o)
 
     plt.tight_layout()
-    plt.show()
+    show_plot()

@@ -16,6 +16,7 @@ from HARK.distribution import DiscreteDistribution, Uniform
 from HARK import multi_thread_commands, multi_thread_commands_fake
 from HARK.utilities import get_percentiles, get_lorenz_shares
 from HARK.estimation import minimize_nelder_mead
+from matplotlib_config import show_plot
 
 cwd             = os.getcwd()
 folders         = cwd.split(os.path.sep)
@@ -1184,19 +1185,19 @@ if run_additional_analysis:
 if run_additional_analysis:
     mpcs = calcMPCbyEdSimple(AggDemandEconomy.agents)
     
-    plt.plot(range(len(mpcs[0])), np.sort(mpcs[0]))
+    show_plot(range(len(mpcs[0])), np.sort(mpcs[0]))
     plt.xlabel('Agents')
     plt.ylabel('MPCs')
     plt.title('Dropout')
     plt.show()
     
-    plt.plot(range(len(mpcs[1])), np.sort(mpcs[1]))
+    show_plot(range(len(mpcs[1])), np.sort(mpcs[1]))
     plt.xlabel('Agents')
     plt.ylabel('MPCs')
     plt.title('Highschool')
     plt.show()
     
-    plt.plot(range(len(mpcs[2])), np.sort(mpcs[2]))
+    show_plot(range(len(mpcs[2])), np.sort(mpcs[2]))
     plt.xlabel('Agents')
     plt.ylabel('MPCs')
     plt.title('College')
