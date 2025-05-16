@@ -73,11 +73,9 @@ Place these .dta files in the same directory as **make_liquid_wealth.do** before
 
 ## Computational requirements
 
-A current(2025) laptop or equivalent is sufficient to reproduce the results.
+A current (2025) laptop or equivalent is sufficient to reproduce the results.
 
 ### Software Requirements
-
-> INSTRUCTIONS: List all of the software requirements, up to and including any operating system requirements, for the entire set of code. It is suggested to distribute most dependencies together with the replication package if allowed, in particular if sourced from unversioned code repositories, Github repos, and personal webpages. In all cases, list the version *you* used. 
 
 - Stata (code was last run with version MP/18.0, but older versions should be fine too)
 
@@ -124,6 +122,7 @@ line: xxx
 
 ## References
 
+Board of Governors of the Federal Reserve System. 2007. Survey of Consumer Finances (SCF), 2004 Summary Extract Public Data DatasetDataset. Washington, DC. https://www.federalreserve.gov/econres/scf_2004.htm
 
 ## Acknowledgements
 
