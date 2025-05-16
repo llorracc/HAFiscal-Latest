@@ -346,6 +346,9 @@ ls-R
 
 # Avoid adding large data files to repo
 *.csv
+!Code/Empirical/rscfp2004.csv   # …except this one file
+!Code/Empirical/ccbal_answer.csv   # …except this one file
+
 *.dat
 make4ht-trials_private
 

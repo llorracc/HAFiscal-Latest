@@ -5,8 +5,11 @@
 - **make_liquid_wealth.do**: The Stata file that produces the numbers we use in the paper from the 2004 wave of the Survey of Consumer Finance.
 
 - **rscfp2004.dta**: The summary extract data for SCF 2004 in Stata format. 
+- **rscfp2004.csv**: The summary extract data for SCF 2004 in csv format. 
 
-- **ccbal_answer.dta**: Small file created from the full public data set (main survey data). 
+- **ccbal_answer.dta**: Small file created from the full public data set (main survey data) in Stata format. 
+- **ccbal_answer.csv**: Small file created from the full public data set (main survey data) in csv format. 
+
 
 The data is also available from the website of the Board of Governors of the Federal Reserve System at this link:
 
