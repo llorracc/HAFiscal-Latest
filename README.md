@@ -15,7 +15,7 @@ Using a heterogeneous agent model calibrated to match measured spending dynamics
 To reproduce all the computational results of the paper (several days):
 
 ```
-	/bin/bash repreoduce/reproduce_computed.sh
+	/bin/bash reproduce/reproduce_computed.sh
 ```
 
 To produce pdf version of the paper from a unix (macOS/linux) command line:
@@ -122,7 +122,7 @@ line: xxx
 
 ## References
 
-Board of Governors of the Federal Reserve System. 2007. Survey of Consumer Finances (SCF), 2004 Summary Extract Public Data DatasetDataset. Washington, DC. https://www.federalreserve.gov/econres/scf_2004.htm
+Board of Governors of the Federal Reserve System. 2007. Survey of Consumer Finances (SCF), 2004 Summary Extract Public Data Dataset. Washington, DC. https://www.federalreserve.gov/econres/scf_2004.htm
 
 ## Acknowledgements
 
