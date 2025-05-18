@@ -105,19 +105,71 @@ The full results take several days to reproduce on a modern laptop. We recommend
 `Code/HA-Models/do_all.py'
 
 
-## List of tables and figures
+## List of tables 
 
 Table 1 create in
-file: Code\HA-Models\FromPandemicCode\XXXX.py
-line: xxx
+file: Code/HA-Models/Target_AggMPCX_LiquWealth/Estimation_BetaNablaSplurge.py
+line: 680
 
-.
-.
-.
+Table 2 create in
+file: Hakon
+line: Hakon
+
+Table 3 create in
+file: Hakon
+line: Hakon
+
+Table 4 create in
+file: Hakon
+line: Hakon
+
+Table 5 create in
+file: Hakon
+line: Hakon
+
+Table 6 create in
+file: Code/HA-Models/FromPandemicCode/AggFiscalMAIN.py
+line: 56 (calling function Code/HA-Models/FromPandemicCode/Output_Results.py, where line 479 creates the table)
+
+Table 7 create in
+file: Code/HA-Models/FromPandemicCode/AggFiscalMAIN.py
+line: 56 (calling function Code/HA-Models/FromPandemicCode/Output_Results.py, 
+which calls Code/HA-Models/FromPandemicCode/Welfare.py, where line 293 creates the table)
+
+Table 8 create in
+file: Code/HA-Models/FromPandemicCode/AggFiscalMAIN.py
+line: 166 (calling function Code/HA-Models/FromPandemicCode/Output_Results.py, 
+which calls Code/HA-Models/FromPandemicCode/Welfare.py, where line 326 creates the table)
+
+Table 9: parametrization table, no results
+
+## List of figures
 
 Figure 1 create in
-file: Code\HA-Models\FromPandemicCode\XXXX.py
-line: xxx
+file: Code/HA-Models/Target_AggMPCX_LiquWealth/Estimation_BetaNablaSplurge.py
+line: 596 and 633
+
+Table 2 create in
+file: Hakon
+line: Hakon
+
+Figure 3 create in
+file: Code/HA-Models/FromPandemicCode/EvalConsDropUponUILeave.py
+line: 112 
+and ??? (Hakon, Figure 3a is from you, please add)
+
+Figure 4 create in
+file: Code/HA-Models/FromPandemicCode/AggFiscalMAIN.py
+line: 56 (calling function Code/HA-Models/FromPandemicCode/Output_Results.py, where lines 108, 148, 186, 288, 295 and 301 create the six subfigures)
+
+Figure 5 create in
+file: Will
+line: Will
+
+Figure 6 create in
+file: Code/HA-Models/FromPandemicCode/AggFiscalMAIN.py
+line: 56 (calling function Code/HA-Models/FromPandemicCode/Output_Results.py, where line 335 will create the figure)
+
 
 
 ## References
