@@ -191,8 +191,8 @@ file: Code/HA-Models/FromPandemicCode/AggFiscalMAIN.py
 line: 56 (calling function Code/HA-Models/FromPandemicCode/Output_Results.py, where lines 108, 148, 186, 288, 295 and 301 create the six subfigures)
 
 Figure 5 create in
-file: Will
-line: Will
+file: Code/HA-Models/FromPandemicCode/HA-Fiscal-HANK-SAM-to-python.py
+line: 1162, 1163, 1164, 1203, 1204, 1205 for panels a, b, c, d, e, f respectively.
 
 Figure 6 create in
 file: Code/HA-Models/FromPandemicCode/AggFiscalMAIN.py
