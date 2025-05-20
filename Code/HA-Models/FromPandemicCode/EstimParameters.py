@@ -25,7 +25,7 @@ data_WealthShares = np.array([0.008, 0.179, 0.812])*100 # Percentage of total we
 
 # Parameters concerning the distribution of discount factors
 # Initial values for estimation, taken from pandemic paperCondMrkvArrays_base
-# Note: not really using these anymore
+# Note: only using these values for initialization, they are overwritten by estimation 
 num_types = 3
 DiscFacMeanD = 0.9647   # Mean intertemporal discount factor for dropout types
 DiscFacMeanH = 0.98051  # Mean intertemporal discount factor for high school types
