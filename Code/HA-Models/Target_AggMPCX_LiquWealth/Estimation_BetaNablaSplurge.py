@@ -497,7 +497,7 @@ for j in range(TypeCount):
 Run_estimation      = True
 Run_SplurgeZero     = True
 
-RunLoopofStarpoints = True 
+RunLoopofStarpoints = False 
 # Running the Loop of startpoints shows that that the algorithm converges to the same
 # solution independent of startpoint and thus strongly suggests that the global minimum was found
 
@@ -721,7 +721,7 @@ print('Splurge = 0:', error_two_arrays(KY_target, Splurge0_Sol['KY_Model']))
 
 
 #%%
-Run_other_CRRA_values = True
+Run_other_CRRA_values = False
 if Run_other_CRRA_values:
     CRRA_values = [1,3]
     
