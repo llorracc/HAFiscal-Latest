@@ -120,7 +120,7 @@ The full results take several days to reproduce on a modern laptop. We recommend
 Table 1 create in
 file: Code/HA-Models/Target_AggMPCX_LiquWealth/Estimation_BetaNablaSplurge.py
 line: 680
-output saved: 
+output saved: Code/HA-Models/Target_AggMPCX_LiquWealth/Figures/MPC_WealthQuartiles_Table.tex
 
 Table 2, Panel A: not generated in code, summarizes parameters mentioned in the text
 Parameters are used in the file: Code/HA-Models/FromPandemicCode/EstimParameters.py
@@ -156,16 +156,19 @@ Line 3: from the file Code/HA-Models/Results/AllResults_CRRA_2.0_R_1.01.txt, lin
 Table 6 create in
 file: Code/HA-Models/FromPandemicCode/AggFiscalMAIN.py
 line: 56 (calling function Code/HA-Models/FromPandemicCode/Output_Results.py, where line 479 creates the table)
+output: Code/HA-Models/FromPandemicCode/Tables/CRRA2/Multiplier.tex
 
 Table 7 create in
 file: Code/HA-Models/FromPandemicCode/AggFiscalMAIN.py
 line: 56 (calling function Code/HA-Models/FromPandemicCode/Output_Results.py, 
 which calls Code/HA-Models/FromPandemicCode/Welfare.py, where line 293 creates the table)
+output: Code/HA-Models/FromPandemicCode/Tables/CRRA2/welfare6.tex
 
 Table 8 create in
 file: Code/HA-Models/FromPandemicCode/AggFiscalMAIN.py
 line: 166 (calling function Code/HA-Models/FromPandemicCode/Output_Results.py, 
 which calls Code/HA-Models/FromPandemicCode/Welfare.py, where line 326 creates the table)
+output: Code/HA-Models/FromPandemicCode/Tables/Splurge0/welfare6_SplurgeComp.tex
 
 Table 9: parametrization table, no results
 
