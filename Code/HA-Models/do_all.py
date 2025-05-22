@@ -10,8 +10,10 @@ import os
 # This file replicates the results from section 3.1 in the paper, creates Figure 1 (in Target_AggMPCX_LiquWealth/Figures),
 # and saves results in Target_AggMPCX_LiquWealth as .txt files to be used in the later steps.
 print('Step 1: Estimating the splurge factor\n')
-script_path = "Target_AggMPCX_LiquWealth/Estimation_BetaNablaSplurge.py"
-exec(open(script_path).read())
+os.chdir('Target_AggMPCX_LiquWealth')
+script_path = "Estimation_BetaNablaSplurge.py"
+os.system("python " + script_path)
+os.chdir('../')
 print('Concluded Step 1.\n\n')
 
 

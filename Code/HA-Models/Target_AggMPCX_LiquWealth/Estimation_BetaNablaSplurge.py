@@ -1,4 +1,5 @@
 # Import python tools
+import sys 
 import os
 import numpy as np
 import random
@@ -16,7 +17,11 @@ from SetupParamsCSTW import init_infinite
 
 # for plotting
 import matplotlib.pyplot as plt
-from matplotlib_config import show_plot
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+from matplotlib_config import show_plot     # located in the parent directory
 
 # for output
 cwd             = os.getcwd()
