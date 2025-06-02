@@ -1,4 +1,5 @@
 import os
+import sys
 
 import numpy as np
 from HARK.distribution import DiscreteDistribution
@@ -8,6 +9,10 @@ from Parameters import returnParameters
 import scipy.sparse as sp
 import matplotlib.pyplot as plt
 import time
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 from matplotlib_config import show_plot
 
 
