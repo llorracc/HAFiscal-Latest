@@ -16,6 +16,10 @@ from HARK.distribution import DiscreteDistribution, Uniform
 from HARK import multi_thread_commands, multi_thread_commands_fake
 from HARK.utilities import get_percentiles, get_lorenz_shares
 from HARK.estimation import minimize_nelder_mead
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 from matplotlib_config import show_plot
 
 cwd             = os.getcwd()
@@ -1037,7 +1041,7 @@ if estimateDiscFacs:
         if edType == 0:
             initValues = [0.75, 0.3, 6]       # Dropouts
         elif edType == 1:
-            initValues = [0.93, 0.12, 5]      # HighSchool
+            initValues = [0.93, 0.1, 5]      # HighSchool
         elif edType == 2:
             initValues = [0.98, 0.015, 6]     # College
         else:
@@ -1086,7 +1090,7 @@ if calcAllResults:
     print('Loading estimates from ' + df_resFileStr + '\n')
     
     if printResToFile:
-        with open(ar_resFileStr, 'a') as resFile: 
+        with open(ar_resFileStr, 'w') as resFile: 
             print('Saving all model results in ' + ar_resFileStr + '\n')
             resFile.write('Results for parameters:\n')
             resFile.write('R = '+str(round(Rfree_base[0],2))+', CRRA = '+str(round(CRRA,2))

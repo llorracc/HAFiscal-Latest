@@ -302,7 +302,7 @@ frictionless_changes = {
 # Parameters for AggregateDemandEconomy economy
 intercept_prev = np.ones((num_base_MrkvStates,num_base_MrkvStates ))    # Intercept of aggregate savings function
 slope_prev = np.zeros((num_base_MrkvStates,num_base_MrkvStates ))       # Slope of aggregate savings function
-ADelasticity = 0.75                                                     # Elasticity of productivity to consumption
+ADelasticity = 0.30                                                     # Elasticity of productivity to consumption
 
 num_max_iterations_solvingAD = 30
 convergence_tol_solvingAD = 1E-6
