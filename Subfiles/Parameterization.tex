@@ -352,9 +352,7 @@ Panel~A of table~\ref{tab:estimBetas} shows the estimated values of $(\beta_e, \
 The panel also shows the minimum and maximum values of the discount factors we actually use in the model when we use a discrete approximation with seven values to approximate the uniform distribution of discount factors.
 Panel~B of table~\ref{tab:estimBetas} shows that with these estimated distributions, we can exactly match the median liquid-wealth-to-permanent-income ratios for each education group.
 Figure~\ref{fig:LorenzPts} shows that with the estimated distributions, the model quite closely matches the distribution of liquid wealth within each education group as well as for the population as a whole.
-Thus, our model does not suffer from the ``missing middle'' problem, identified in \cite{kaplanMPC2022}, in which the middle of the wealth distribution has too little wealth.
-
-%Our model avoids this problem for two reasons: (1) The splurge pushes up MPCs relative to wealth, and (2) we calibrate to liquid wealth rather than total wealth.
+Thus, our model does not suffer from the ``missing middle'' problem, identified in \cite{kaplanMPC2022}, in which the middle of the wealth distribution has too little wealth.\footnote{One technical point to note about our estimation, is that we impose the constraint that the Growth Impatience Condition (GIC), discussed in \cite{carroll2022theoretical}, is never violated. (The GIC is required to prevent the ratio of total wealth to total income of any group from approaching infinity. It does this by making sure that the growth of wealth of the group is less than or equal to the growth of income.) The constraint is imposed by calculating an upper bound for the discount factors $\beta^{\text{GIC}}$ where the GIC holds with equality. The estimation procedure ensures that no type ends up with a discount factor higher than this upper bound.} 
 
 \begin{table}[th]
   \begin{center}
@@ -362,8 +360,8 @@ Thus, our model does not suffer from the ``missing middle'' problem, identified 
       \begin{tabular}{lccc}
         \multicolumn{4}{l}{Panel (A) Estimated discount factor distributions} \\ \midrule
         & Dropout & Highschool & College \\ \midrule
-        $(\beta_e, \nabla_e)$ & (0.719, 0.318) & (0.911, 0.137) & (0.983, 0.014) \\
-        (Min, max) in approximation & (0.447, 0.991) & (0.793, $0.990^*$) & (0.971, 0.995) \\
+        $(\beta_e, \nabla_e)$ & (0.719, 0.318) & (0.925, 0.077) & (0.983, 0.014) \\
+        (Min, max) in approximation & (0.447, 0.991) & (0.859, 0.990) & (0.971, 0.995) \\
         \midrule 
       \end{tabular} \\ \\ 
       
@@ -380,24 +378,11 @@ Thus, our model does not suffer from the ``missing middle'' problem, identified 
     \caption{Estimated discount factor distributions and estimation targets}
     \notinsubfile{\label{tab:estimBetas}}
     \parbox{16cm}{\small \vspace{.15cm} \textbf{Note}: Panel (A) shows the estimated parameters of the discount distributions for each education group.
-It also shows the minimum and maximum values we use in our discrete approximation to the uniform distribution of discount factors for each group.
-The $*$ indicates that the highest value in the uniform distribution of discount factor values violates the growth impatience condition (GIC) and has been replaced.
-Panel (B) shows the weighted median ratio of liquid wealth to permanent income from the 2004 SCF and in the model.
+It also shows the minimum and maximum values we use in our discrete approximation to the uniform distribution of discount factors for each group. Panel (B) shows the weighted median ratio of liquid wealth to permanent income from the 2004 SCF and in the model.
 In the annual data from the SCF, the annual PI is divided by 4 to obtain a quarterly number.\normalsize}
   \end{center}
 \end{table}
 
-One point we should note concerns the estimated discount factor distribution for the Highschool group.
-Panel~A of table~\ref{tab:estimBetas} reports values of $\beta_h=0.911$ and $\nabla_h=0.137$.
-With these values, the largest discount factors in our discrete approximation of the uniform distribution in the range $[\beta_h-\nabla_h, \beta_h+\nabla_h]$ would be greater than $1$.
-More importantly, the value would violate the Growth Impatience Condition (GIC), discussed in \cite{carroll2022theoretical}.
-(The GIC is required to prevent the ratio of total wealth to total income of any group from approaching infinity.
-It does this by making sure that the growth of wealth of the group is less than or equal to the growth of income.)
-We replace values violating the GIC with values close to the upper bound on $\beta$ imposed by the GIC.
-In panel~A of table~\ref{tab:estimBetas} the largest value is marked by a $*$ to indicate that it has been replaced to avoid violating the GIC.
-We always impose that the GIC is satisfied in the estimation of the discount factor distributions, but for the baseline parameter values it is only binding for the Highschool group.
-Thus, the estimation can select a large value of $\nabla_h$ without violating the constraint.\footnote{The constraint is imposed by calculating a discount factor $\beta^{\text{GIC}}$ where the GIC holds with equality.
-Then the estimation can pick how close to this value the largest discount factor is by estimating $x$ and setting the largest discount factor to $\exp(x)/(1+\exp(x)) \beta^{\text{GIC}}$.} 
 
 \begin{figure}[th]
   \begin{center}
@@ -408,7 +393,7 @@ Then the estimation can pick how close to this value the largest discount factor
   \end{center}
 \end{figure}
 
-Also, note that several of the types in the Dropout group have very low discount factors and are very impatient.
+Note that several of the types in the Dropout group have very low discount factors and are very impatient.
 In this way, the model fits the feature of the data for the Dropout group that the bottom quintiles do not save at all and do not accumulate any liquid wealth.
 Very low estimates for discount factors are in line with those obtained in the literature on payday lending.\footnote{See, for example, \cite{skiba2008payday}, who estimate two-week discount rates of $21$ percent, and \cite{allcott2021high}, who estimate an initial period discount factor between $0.74$ and $0.83$ in a model where a period is eight weeks long.
 Both of these papers use quasi-hyperbolic preferences, so the estimates are not directly comparable with parameters in our model.
@@ -442,7 +427,7 @@ As shown in the Online Appendix~\ref{app:Model_without_splurge}, the model is no
             \multicolumn{5}{c}{Panel (A) Non-targeted moments by education group} \\ \midrule
             & Dropout & Highschool & College & Population \\ \midrule
             Percent of liquid wealth (data) & 0.8 & 17.9 & 81.2 & 100 \\
-            Percent of liquid wealth (model) & 1.2 & 20.1 & 78.7 & 100 \\
+            Percent of liquid wealth (model) & 1.2 & 16.8 & 82.0 & 100 \\
             \makecell[l]{Avg. lottery-win-year MPC \\ (model, incl. splurge)} & 0.78 & 0.61 & 0.38 & 0.54
             \\ \bottomrule 
         \end{tabular} \\ \\
@@ -453,8 +438,8 @@ As shown in the Online Appendix~\ref{app:Model_without_splurge}, the model is no
             \multicolumn{5}{c}{Panel (B) Non-targeted moments by wealth quartile} \\ \midrule
              & WQ 4 & WQ 3 & WQ 2 & WQ 1 \\ \midrule
             Percent of liquid wealth (data) & 0.14 & 1.60 & 8.51 & 89.76 \\
-            Percent of liquid wealth (model) & 0.09 & 0.96 & 4.55 & 94.40 \\
-            \makecell[l]{Avg. lottery-win-year MPC \\ (model, incl. splurge)} & 0.78 & 0.63 & 0.44 & 0.31
+            Percent of liquid wealth (model) & 0.12 & 0.98 & 3.85 & 95.06 \\
+            \makecell[l]{Avg. lottery-win-year MPC \\ (model, incl. splurge)} & 0.74 & 0.61 & 0.48 & 0.32
             \\ \bottomrule 
         \end{tabular}
     \end{tabular*}
