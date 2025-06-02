@@ -62,29 +62,49 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         betas_txt_location = Abs_Path_Results+'/Results/DiscFacEstim_CRRA_2.0_R_1.01_Splurge0.txt'
         Splurge_txt_location = Abs_Path_Results+'/Target_AggMPCX_LiquWealth/Result_AllTarget_Splurge0.txt'
     
-    
+    # Set some default values to use if loading from files doesn't work 
+    betaDefaults = [0.72, 0.91, 0.98]
+    nablaDefaults = [0.32, 0.1, 0.014]
+    GICxDefaults = [6, 4.2, 5.5]
   
     myEstim = [[],[],[]]
-    betFile = open(betas_txt_location, 'r')
-    readStr = betFile.readline().strip()
-    while readStr != '' :
-        dictload = eval(readStr)
-        edType = dictload['EducationGroup']
-        beta = dictload['beta']
-        nabla = dictload['nabla']
-        GICx = dictload['GICx']
-        GICfactor = np.exp(GICx)/(1+np.exp(GICx))
-        myEstim[edType] = [beta,nabla,GICx, GICfactor]
+    readCount = 0
+    if os.path.exists(betas_txt_location):
+        betFile = open(betas_txt_location, 'r')
         readStr = betFile.readline().strip()
-    betFile.close()
+        while readStr != '' :
+            dictload = eval(readStr)
+            edType = dictload['EducationGroup']
+            beta = dictload['beta']
+            nabla = dictload['nabla']
+            GICx = dictload['GICx']
+            GICfactor = np.exp(GICx)/(1+np.exp(GICx))
+            myEstim[edType] = [beta,nabla,GICx, GICfactor]
+            readStr = betFile.readline().strip()
+            readCount += 1
+        betFile.close()
+    else:
+        print('Parameters.py: Failed to open ' + betas_txt_location)
 
+    if readCount < 3: 
+        print('Using default values for beta, nabla, GICx for education groups not found in ' + betas_txt_location)
+        for edType in range(readCount,3):
+            beta = betaDefaults[edType]
+            nabla = nablaDefaults[edType]
+            GICx = GICxDefaults[edType]
+            GICfactor = np.exp(GICx)/(1+np.exp(GICx))
+            myEstim[edType] = [beta,nabla,GICx, GICfactor]
 
-    f = open(Splurge_txt_location, 'r')
-    if f.mode=='r':
-        contents= f.read()
-    dictload= eval(contents)
-    Splurge = dictload['splurge']
-    
+    if os.path.exists(Splurge_txt_location):
+        f = open(Splurge_txt_location, 'r')
+        if f.mode=='r':
+            contents= f.read()
+        dictload= eval(contents)
+        Splurge = dictload['splurge']
+    else:
+        print('Parameters.py: Failed to open ' + Splurge_txt_location)
+        print('Using default value for Splurge')
+        Splurge = 0.25 
     
     figs_dir_FullRun = ''
     if Parametrization == 'CRRA2_PVSame':
