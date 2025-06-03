@@ -43,6 +43,18 @@ Some of the statistics hard coded into the reproduce_computed.sh script are calc
 Code/Empirical/make_liquid_wealth.do
 ```
 
+## Step-by-step replication of computational results
+
+Given the time it takes to replicate all the computational results in the paper, it could be useful to do them step-by-step. To do so, navigate to the directory `Code/Ha-Models` and set the appropriate flags in the file `do_all.py` for the steps to be executed. Then execute the command:  
+
+```
+python do_all.py
+```
+
+See **Runtime Requirements** below for estimates of the execution time of each step. 
+
+**NOTE**: Our code using optimization routines should be deterministic. However, small differences in environments may lead to numerical differences in the results obtained. Such differences in steps 1 and 2 will lead to numerical differences in the results obtained in later steps as well. 
+
 ## Data Availability and Provenance Statements
 
 The data used is saved in the replication packages and is below, along with how to find it publically:
@@ -67,7 +79,7 @@ Download and unzip the following files to reproduce our results:
 
 Place these .dta files in the same directory as **make_liquid_wealth.do** before running the file.
 
-**Note**: When releasing new waves of the SCF, the summary extract data for older versions are inflation-adjusted. At the time of writing, downloading the data gives a file where all dollar variables are inflation-adjusted to 2022 dollars. With an adjusted version of **rscfp2004.dta** the numbers marked **USD** below will not replicate the numbers used in the paper. 
+**Note**: When releasing new waves of the SCF, the summary extract data for older versions are inflation-adjusted. At the time of writing, downloading the data gives a file where all dollar variables are inflation-adjusted to 2022 dollars. With an adjusted version of **rscfp2004.dta** the numbers that are in dollar amounts will not replicate the numbers used in the paper (this applies to line 2 of Table 2, Panel B). 
 
 ### Summary of Availability
 
@@ -75,7 +87,7 @@ Place these .dta files in the same directory as **make_liquid_wealth.do** before
 
 ## Computational requirements
 
-A current (2025) laptop or equivalent is sufficient to reproduce the results.
+A current (2025) laptop or equivalent is sufficient to reproduce the results. 
 
 ### Software Requirements
 
@@ -111,9 +123,21 @@ A current (2025) laptop or equivalent is sufficient to reproduce the results.
 
 ### Runtime Requirements
 
-The full results take several days to reproduce on a modern laptop. We recommend running the code in the 4 steps which can be found in:
+The full results take several days to reproduce on a modern laptop. We recommend running the code in the 5 steps which can be found in:
 
 `Code/HA-Models/do_all.py'
+
+On a Windows 11 laptop with 32 gb RAM and an AMD Ryzen 9 5900HS 3.30 GHz processor the timings were approximately as follows
+
+- Step 1: Runtime about 20 minutes
+
+- Step 2: Runtime about 21 hours (~7 hours per education group)
+
+- Step 3: Similar to Step 2
+
+- Step 4: Runtime about 1 hour
+
+- Step 5: Runtime about 65 hours
 
 ## List of tables
 
