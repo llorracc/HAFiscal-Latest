@@ -612,4 +612,4 @@ def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline
         
     #%% Output welfare tables
         
-    # Welfare_Results(saved_results_dir,table_dir,Parametrization=Parametrization)
+    Welfare_Results(saved_results_dir,table_dir,Parametrization=Parametrization)

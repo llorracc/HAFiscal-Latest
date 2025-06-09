@@ -6,6 +6,10 @@ import pandas as pd
 import os
 import sys 
 from HARK.utilities import make_figs
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 from matplotlib_config import show_plot
 
 cwd             = os.getcwd()
@@ -37,19 +41,14 @@ x_axis = np.array([20,40,60,80])
 
 
 #%% Plot figure for main results or robustness case (CRRA or R)
-fig = plt.figure()
-gs = fig.add_gridspec(2, 2, hspace=.5, wspace=.5)
-axs = gs.subplots(sharex=False, sharey=False)
-
 if len(sys.argv) < 2:
-    # Plot baseline figure 
+    # First, plot baseline figure 
+    fig = plt.figure()
+    gs = fig.add_gridspec(2, 2, hspace=.5, wspace=.5)
+    axs = gs.subplots(sharex=False, sharey=False)
+
     resFile = open(res_dir+'/AllResults_CRRA_2.0_R_1.01.txt', 'r')  
     model_LorenzPts = []
-    
-    plotWithSplurgeZero = True
-    if plotWithSplurgeZero:
-        resFileSplZero = open(res_dir+'/AllResults_CRRA_2.0_R_1.01_Splurge0.txt', 'r')
-        model_LorenzPtsSplZero = []
     
     for line in resFile:
         if "Lorenz Points" in line:
@@ -61,18 +60,6 @@ if len(sys.argv) < 2:
                 model_LorenzPts = np.array([theLPfloat])
             else:
                 model_LorenzPts = np.append(model_LorenzPts,[theLPfloat],axis=0)
- 
-    if plotWithSplurgeZero:
-        for line in resFileSplZero:
-            if "Lorenz Points" in line:
-                theLPstr = line[line.find('[')+1:line.find(']')].split(', ')
-                theLPfloat = []
-                for ii in range(0,len(theLPstr)):
-                    theLPfloat.append(float(theLPstr[ii]))
-                if np.array_equal(model_LorenzPtsSplZero, []):
-                    model_LorenzPtsSplZero = np.array([theLPfloat])
-                else:
-                    model_LorenzPtsSplZero = np.append(model_LorenzPtsSplZero,[theLPfloat],axis=0)
  
     for row in range(2):
         for col in range(2):
@@ -91,9 +78,6 @@ if len(sys.argv) < 2:
                                   linestyle='solid', linewidth=1.5, label='Data')
             axs[row,col].plot(x_axis, model_LorenzPts[col+row*(row+1)], color="tab:red", 
                               linestyle='dashed', linewidth=1.5,label='Model')
-            if plotWithSplurgeZero:
-                axs[row,col].plot(x_axis, model_LorenzPtsSplZero[col+row*(row+1)], color="tab:green", 
-                                  linestyle='dotted', linewidth=1.5,label='Model - Splurge=0')
                 
             axs[row,col].set_xticks(ticks=[0,20,40,60,80,100])
             axs[row,col].set_yticks(ticks=myYticks[col+row*(row+1)])
@@ -108,22 +92,77 @@ if len(sys.argv) < 2:
         #ax.label_outer()
     plt.rc('axes', labelsize=12)
     
-    if plotWithSplurgeZero:
-        lgd = fig.legend(handles, labels, loc='lower center', ncol=3, fancybox=True, shadow=False, 
-                  bbox_to_anchor=(0.5, -0.01), fontsize=12)
-    else:
-        lgd = fig.legend(handles, labels, loc='lower center', ncol=2, fancybox=True, shadow=False, 
+    lgd = fig.legend(handles, labels, loc='lower center', ncol=2, fancybox=True, shadow=False, 
                   bbox_to_anchor=(0.5, -0.01), fontsize=12)
     fig.set_facecolor(color="white")
     
     plt.gcf().subplots_adjust(bottom=0.14)
-#    fig.savefig('LorenzPoints_CRRA_2.0_R_1.01.pdf')
-    if plotWithSplurgeZero:
-        make_figs('LorenzPoints_CRRA_2.0_R_1.01_wSplZero', True , False, target_dir=figs_dir)
-    else:
-        make_figs('LorenzPoints_CRRA_2.0_R_1.01', True , False, target_dir=figs_dir)
+    make_figs('LorenzPoints_CRRA_2.0_R_1.01', True , False, target_dir=figs_dir)
+
+    # Then plot figure including fit with Splurge = 0
+    fig = plt.figure()
+    gs = fig.add_gridspec(2, 2, hspace=.5, wspace=.5)
+    axs = gs.subplots(sharex=False, sharey=False)
+
+    resFileSplZero = open(res_dir+'/AllResults_CRRA_2.0_R_1.01_Splurge0.txt', 'r')
+    model_LorenzPtsSplZero = []
+    
+    for line in resFileSplZero:
+        if "Lorenz Points" in line:
+            theLPstr = line[line.find('[')+1:line.find(']')].split(', ')
+            theLPfloat = []
+            for ii in range(0,len(theLPstr)):
+                theLPfloat.append(float(theLPstr[ii]))
+            if np.array_equal(model_LorenzPtsSplZero, []):
+                model_LorenzPtsSplZero = np.array([theLPfloat])
+            else:
+                model_LorenzPtsSplZero = np.append(model_LorenzPtsSplZero,[theLPfloat],axis=0)
+ 
+    for row in range(2):
+        for col in range(2):
+            idx = col+row*(row+1)+1
+            if idx < 4:
+                dfToPlot = data_LP_byEd[data_LP_byEd['myEd']==idx]
+                if idx == 1:
+                    dfToPlot = dfToPlot[dfToPlot['sumEdW'] <= 96.5]
+                else:
+                    dfToPlot = dfToPlot[dfToPlot['sumEdW'] <= 90]
+                axs[row,col].plot(dfToPlot['sumEdW'],dfToPlot['sumLW'], color="royalblue",
+                                  linestyle='solid', linewidth=1.5, label='Data')
+            else:
+                dfToPlot = data_LP_popln[data_LP_popln['sumNormW'] <= 93]
+                axs[row,col].plot(dfToPlot['sumNormW'],dfToPlot['sumLWall'], color="royalblue",
+                                  linestyle='solid', linewidth=1.5, label='Data')
+            axs[row,col].plot(x_axis, model_LorenzPts[col+row*(row+1)], color="tab:red", 
+                              linestyle='dashed', linewidth=1.5,label='Model')
+            axs[row,col].plot(x_axis, model_LorenzPtsSplZero[col+row*(row+1)], color="tab:green", 
+                              linestyle='dotted', linewidth=1.5,label='Model - Splurge=0')
+                
+            axs[row,col].set_xticks(ticks=[0,20,40,60,80,100])
+            axs[row,col].set_yticks(ticks=myYticks[col+row*(row+1)])
+            axs[row,col].set_title(mytitles[col+row*(row+1)])
+            axs[row,col].title.set_fontsize(12)
+            
+            if idx == 4:
+                handles, labels = axs[row,col].get_legend_handles_labels()
+    
+    for ax in axs.flat:
+        ax.set(xlabel='Percentile', ylabel='Cumulative share of wealth')
+        #ax.label_outer()
+    plt.rc('axes', labelsize=12)
+    
+    lgd = fig.legend(handles, labels, loc='lower center', ncol=3, fancybox=True, shadow=False, 
+              bbox_to_anchor=(0.5, -0.01), fontsize=12)
+    fig.set_facecolor(color="white")
+    
+    plt.gcf().subplots_adjust(bottom=0.14)
+    make_figs('LorenzPoints_CRRA_2.0_R_1.01_wSplZero', True , False, target_dir=figs_dir)
 
 elif len(sys.argv) >= 2: 
+    fig = plt.figure()
+    gs = fig.add_gridspec(2, 2, hspace=.5, wspace=.5)
+    axs = gs.subplots(sharex=False, sharey=False)
+
     if int(sys.argv[1]) == 1:
         # Load series for robustness figure w.r.t. the interest rate R
         resFile1 = open(res_dir+'/AllResults_CRRA_2.0_R_1.005.txt', 'r')  

@@ -1,4 +1,5 @@
 # Import python tools
+import sys 
 import os
 import numpy as np
 import random
@@ -16,7 +17,11 @@ from SetupParamsCSTW import init_infinite
 
 # for plotting
 import matplotlib.pyplot as plt
-from matplotlib_config import show_plot
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+from matplotlib_config import show_plot     # located in the parent directory
 
 # for output
 cwd             = os.getcwd()
@@ -497,7 +502,7 @@ for j in range(TypeCount):
 Run_estimation      = True
 Run_SplurgeZero     = True
 
-RunLoopofStarpoints = True 
+RunLoopofStarpoints = False 
 # Running the Loop of startpoints shows that that the algorithm converges to the same
 # solution independent of startpoint and thus strongly suggests that the global minimum was found
 
@@ -721,7 +726,7 @@ print('Splurge = 0:', error_two_arrays(KY_target, Splurge0_Sol['KY_Model']))
 
 
 #%%
-Run_other_CRRA_values = True
+Run_other_CRRA_values = False
 if Run_other_CRRA_values:
     CRRA_values = [1,3]
     

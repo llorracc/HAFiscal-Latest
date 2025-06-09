@@ -16,6 +16,10 @@ from HARK.distribution import DiscreteDistribution, Uniform
 from HARK import multi_thread_commands, multi_thread_commands_fake
 from HARK.utilities import get_percentiles, get_lorenz_shares
 from HARK.estimation import minimize_nelder_mead
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 from matplotlib_config import show_plot
 
 cwd             = os.getcwd()
@@ -634,8 +638,8 @@ def calcMPCbyWealthQ(Agents,lotterySize):
                   +str(numWQ[3])+', '+str(numWQ[4])+']\n')
     
     
-    calculatedMPCs = namedtuple("calculatedMPCs", ["MPCbyWQ", "MPCbyEd", "simulated_IMPCs"])
-    return calculatedMPCs(MPCbyWQ, MPCbyEd, simulated_IMPCs)
+    calculatedMPCs = namedtuple("calculatedMPCs", ["MPCbyWQ", "MPCbyEd", "simulated_IMPCs", "pctWealthByWQ"])
+    return calculatedMPCs(MPCbyWQ, MPCbyEd, simulated_IMPCs, pctWealthByWQ)
 
 
 # =============================================================================
@@ -811,13 +815,14 @@ def betasObjFunc(betas, spreads, GICfactors, target_option=1, print_mode=False, 
     distance = np.sqrt(sumSquares)
 
     if print_mode or print_file:
-        WealthShares = calcWealthShareByEd(TypeListNew)
+        WealthSharesByEd = calcWealthShareByEd(TypeListNew)
         MPCsByEdSimple = calcMPCbyEdSimple(TypeListNew)
         MPCsByWQsimple = calcMPCbyWealthQsimple(TypeListNew)
         calculatedMPCs = calcMPCbyWealthQ(TypeListNew, 5)
         MPCsByWQ = calculatedMPCs.MPCbyWQ
         MPCsByEd = calculatedMPCs.MPCbyEd
         IMPCs = calculatedMPCs.simulated_IMPCs
+        WealthSharesByWQ = calculatedMPCs.pctWealthByWQ
 
     # If not estimating, print stats by education level
     if print_mode:
@@ -841,18 +846,20 @@ def betasObjFunc(betas, spreads, GICfactors, target_option=1, print_mode=False, 
               + ' C = ' + mystr(Stats.avgLWPI[2])) 
         print('Total LW/Total PI: D = ' + mystr(Stats.LWoPI[0]) + ' H = ' + mystr(Stats.LWoPI[1]) \
               + ' C = ' + mystr(Stats.LWoPI[2]))
-        print('Wealth Shares: D = ' + mystr(WealthShares[0]) + \
-              ' H = ' + mystr(WealthShares[1]) + ' C = ' + mystr(WealthShares[2]))
+        print('Wealth Shares by Ed.: D = ' + mystr(WealthSharesByEd[0]) + \
+              ' H = ' + mystr(WealthSharesByEd[1]) + ' C = ' + mystr(WealthSharesByEd[2]))
+        print('Wealth Shares by Wealth Q = ['+mystr(WealthSharesByWQ[0])+', '+mystr(WealthSharesByWQ[1])+ \
+              ', '+mystr(WealthSharesByWQ[2])+ ', '+mystr(WealthSharesByWQ[3])+']')
         print('Average MPCs by Ed. (incl. splurge) = ['+str(round(MPCsByEdSimple.MPCsA[0],3))+', '
                       +str(round(MPCsByEdSimple.MPCsA[1],3))+', '+str(round(MPCsByEdSimple.MPCsA[2],3))+', '
                       +str(round(MPCsByEdSimple.MPCsA[3],3))+']')
-        print('Average annual MPCs by Wealth (incl. splurge) = ['+str(round(MPCsByWQsimple.MPCsA[0],3))+', '
+        print('Average annual MPCs by Wealth Q (incl. splurge) = ['+str(round(MPCsByWQsimple.MPCsA[0],3))+', '
                       +str(round(MPCsByWQsimple.MPCsA[1],3))+', '+str(round(MPCsByWQsimple.MPCsA[2],3))+', '
                       +str(round(MPCsByWQsimple.MPCsA[3],3))+', '+str(round(MPCsByWQsimple.MPCsA[4],3))+']\n')
-        print('Average lottery-win-year MPCs by Wealth (simple, incl. splurge) = ['+str(round(MPCsByWQsimple.MPCsFYL[0],3))+', '
+        print('Average lottery-win-year MPCs by Wealth Q (simple, incl. splurge) = ['+str(round(MPCsByWQsimple.MPCsFYL[0],3))+', '
                       +str(round(MPCsByWQsimple.MPCsFYL[1],3))+', '+str(round(MPCsByWQsimple.MPCsFYL[2],3))+', '
                       +str(round(MPCsByWQsimple.MPCsFYL[3],3))+', '+str(round(MPCsByWQsimple.MPCsFYL[4],3))+']\n')
-        print('Average lottery-win-year MPCs by Wealth (incl. splurge) = ['+str(round(MPCsByWQ[0],3))+', '
+        print('Average lottery-win-year MPCs by Wealth Q (incl. splurge) = ['+str(round(MPCsByWQ[0],3))+', '
                       +str(round(MPCsByWQ[1],3))+', '+str(round(MPCsByWQ[2],3))+', '
                       +str(round(MPCsByWQ[3],3))+', '+str(round(MPCsByWQ[4],3))+']\n')
         print('Average lottery-win-year MPCs by Education (incl. splurge) = ['+str(round(MPCsByEd[0],3))+', '
@@ -869,9 +876,10 @@ def betasObjFunc(betas, spreads, GICfactors, target_option=1, print_mode=False, 
             resFile.write('\tLorenz Points = ['+str(round(Stats.LorenzPts[0],4))+', '
                           +str(round(Stats.LorenzPts[1],4))+', '+str(round(Stats.LorenzPts[2],4))+', '
                           +str(round(Stats.LorenzPts[3],4))+']\n')
-            resFile.write('\tWealth shares = ['+str(round(WealthShares[0],3))+', '
-                          +str(round(WealthShares[1],3))+', '+str(round(WealthShares[2],3))+']\n')
-            
+            resFile.write('\tWealth shares by Ed.= ['+str(round(WealthSharesByEd[0],3))+', '
+                          +str(round(WealthSharesByEd[1],3))+', '+str(round(WealthSharesByEd[2],3))+']\n')
+            resFile.write('\tWealth Shares by Wealth Q = ['+mystr(WealthSharesByWQ[0])+', '+mystr(WealthSharesByWQ[1])+ 
+                          ', '+mystr(WealthSharesByWQ[2])+ ', '+mystr(WealthSharesByWQ[3])+']\n')
             resFile.write('\tAverage LW/PI-ratios: D = ' + mystr(Stats.avgLWPI[0]) + ' H = ' + mystr(Stats.avgLWPI[1]) \
                   + ' C = ' + mystr(Stats.avgLWPI[2])+'\n') 
             resFile.write('\tTotal LW/Total PI: D = ' + mystr(Stats.LWoPI[0]) + ' H = ' + mystr(Stats.LWoPI[1]) \
@@ -1010,7 +1018,7 @@ def betasObjFuncEduc(beta, spread, GICx, educ_type=2, print_mode=False, print_fi
 # -----------------------------------------------------------------------------
 
 #%% Estimate discount factor distributions separately for each education type
-estimateDiscFacs = False 
+estimateDiscFacs = True 
 if estimateDiscFacs:
     if IncUnemp == 0.7 and IncUnempNoBenefits == 0.5:
         # Baseline unemployment system: 
@@ -1033,7 +1041,7 @@ if estimateDiscFacs:
         if edType == 0:
             initValues = [0.75, 0.3, 6]       # Dropouts
         elif edType == 1:
-            initValues = [0.93, 0.12, 5]      # HighSchool
+            initValues = [0.93, 0.1, 5]      # HighSchool
         elif edType == 2:
             initValues = [0.98, 0.015, 6]     # College
         else:
@@ -1045,8 +1053,7 @@ if estimateDiscFacs:
               ' GIC factor = ' + mystr4(np.exp(opt_params[2])/(1+np.exp(opt_params[2]))))
     
         if edType == 0:
-            #mode = 'w'      # Overwrite old file...
-            mode = 'a'      # Append to old file...
+            mode = 'w'      # Overwrite old file...
         else:
             mode = 'a'      # ...and append further results to the same file 
         with open(df_resFileStr, mode) as f: 
@@ -1083,7 +1090,7 @@ if calcAllResults:
     print('Loading estimates from ' + df_resFileStr + '\n')
     
     if printResToFile:
-        with open(ar_resFileStr, 'a') as resFile: 
+        with open(ar_resFileStr, 'w') as resFile: 
             print('Saving all model results in ' + ar_resFileStr + '\n')
             resFile.write('Results for parameters:\n')
             resFile.write('R = '+str(round(Rfree_base[0],2))+', CRRA = '+str(round(CRRA,2))

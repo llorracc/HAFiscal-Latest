@@ -1,0 +1,142 @@
+% -*- mode: LaTeX; TeX-PDF-mode: t; -*-  # Config emacs auctex
+
+% allow latex to find custom stuff
+\input{@resources/tex-add-search-paths}  
+
+% Set paths (like, \LaTeXInputs) to find resources
+\input{./.econtexRoot} 
+
+% Document has title page and table of contents and header:
+\documentclass[titlepage, headings=optiontotocandhead]{econark}
+\usepackage{catchfile}
+\newcommand{\texname}{HAFiscal} % Keyname for paper (optional)
+\usepackage{econark-bibfilesfind}
+\bibfilesfind{\texname}
+
+% Definitions unique to this paper
+\usepackage{@local/local} % local.sty imports packages
+\usepackage{@local/owner} % for urls that are constructed
+% To include Appendix and Table of Contents? false->true
+\provideboolean{Appendix}
+\setboolean{Appendix}{true}
+
+\provideboolean{draftmode}\setboolean{draftmode}{false}
+%\setboolean{draftmode}{false}
+\newcommand{\Draft}{\ifthenelse{\boolean{draftmode}}}
+\Draft{\usepackage{showlabels}
+  \renewcommand{\showlabelsetlabel}[1]{\tiny #1}
+}{}
+
+\usepackage{lmodern}
+%\usepackage{microtype}
+
+% Standard useful packages for economics
+\usepackage{pdforhtml}         % allow compile as pdf or html
+\ifdvi
+  \setboolean{Web}{false}   
+\fi
+
+%\usepackage{econark-multibib}  % Only use bib files that exist
+\bibliographystyle{econark}
+%\usepackage{econark-titlepage} 
+
+% When compiling Web version of paper, construct targets/anchors
+\ifthenelse{\boolean{Web}}{
+  \hypersetup{destlabel=true} % set up html labels
+}{ % begin non Web instructions
+  \provideboolean{showPageHead}{\setboolean{showPageHead}{true}}
+  \usepackage{scrlayer-scrpage}  % Package for page headers if PDF
+  \usepackage{caption}           % allow suppression of appendix figures
+} % end non Web instructions
+
+\ifthenelse{\boolean{Web}}{
+  \usepackage{endnotes}
+  \let\footnote=\endnote
+  }{}  % {Web}
+
+\externaldocument{HAFiscal}	% For references to labels in the main paper, needs HAFiscal.aux to exist in this directory 
+\renewcommand\appendixpagename{Online Appendix}
+
+\begin{document}
+% Tell subfiles they are not being compiled as standalone files
+\renewcommand{\onlyinsubfile}[1]{}
+\renewcommand{\notinsubfile}[1]{#1}
+
+\title{Welfare and Spending Effects \\ of Consumption Stimulus Policies}
+
+\author{Christopher D. Carroll\authNum \and Edmund Crawley\authNum \and William Du\authNum \and Ivan Frankovic\authNum \and H{\aa}kon Tretvoll\authNum}
+
+\date{\today}
+\maketitle
+
+% Various resources
+\hypertarget{links}{}
+
+\newcommand{\REMARK}{\href{https://github.com/econ-ark/REMARK}{REMARK}}
+\begin{footnotesize}
+	\parbox{0.9\textwidth}{
+		%  \begin{center}
+			\begin{tabbing}
+				\texttt{~~~~~~~~~~~} \= \=  \\ 
+				%      \texttt{~~~\REMARK:~} \= \= \texttt{\url{https://econ-ark.org/materials/hafiscal}} \\ 
+				%      \texttt{Dashboard:~} \> \> \texttt{\href{https://econ-ark.org/materials/hafiscal}{Click `Launch Dashboard' Button}} \\
+				\texttt{~~~~~html:~} \> \> \texttt{\href{https://\owner.github.io/HAFiscal/}{https://\owner.github.io/HAFiscal/}} \\ % Owner is defined in @local/owner.tex
+				\texttt{~~~~~~PDF:~} \> \> \texttt{\href{https://github.com/\owner/HAFiscal/blob/master/HAFiscal.pdf}{HAFiscal.pdf}} \\ 
+				\texttt{~~~Slides:~} \> \> \texttt{\href{https://\owner.github.io/HAFiscal/HAFiscal-Slides.pdf}{https://\owner.github.io/HAFiscal/HAFiscal-Slides.pdf}} \\ % Owner is defined in @local/owner.tex
+				\texttt{~~~GitHub:~} \> \> \texttt{\href{https://github.com/\owner/HAFiscal}{https://github.com/\owner/HAFiscal}} \\
+			\end{tabbing}
+			%  \end{center}
+	} % end \parbox{\textwidth}
+\end{footnotesize}
+
+\centerline{Forthcoming, \textit{Quantitative Economics}}
+
+\begin{authorsinfo}
+	\noindent \name{\href{https://www.econ2.jhu.edu/people/ccarroll}{Carroll: Department of Economics, Johns Hopkins University}, \href{mailto:ccarroll@jhu.edu}{\texttt{ccarroll@jhu.edu}}, and \href{https://nber.org}{NBER}}. \newline
+	\name{Crawley: Federal Reserve Board, \href{mailto:edmund.s.crawley@frb.gov}{\texttt{edmund.s.crawley@frb.gov}} } \newline
+	\name{Du: Johns Hopkins University, \href{mailto:wdu9@jhu.edu}{\texttt{wdu9@jhu.edu}} } \newline
+	\name{Frankovic: Deutsche Bundesbank, \href{mailto:ivan.frankovic@bundesbank.de}{\texttt{ivan.frankovic@bundesbank.de}}} \newline
+	\name{Tretvoll: Statistics Norway and HOFIMAR at BI Norwegian Business School, \href{mailto:Hakon.Tretvoll@ssb.no}{\texttt{Hakon.Tretvoll@ssb.no}}}
+\end{authorsinfo}
+
+
+
+\ifthenelse{\boolean{Appendix}}{
+	\appendix\subfile{Subfiles/Online-appendix}\pagebreak
+}{}
+
+\ifthenelse{\boolean{Web}}{
+\section*{Endnotes}
+\theendnotes
+  }{}  % {Web}
+
+% Make the bibliography
+% \input{bibliography_blend}
+
+\bibliography{\bibfilesfound}
+
+%\econarkmultibib{\texname}
+\end{document}\endinput
+
+% Lines below help configure AucTeX if that is your editor
+% 
+% Local Variables:
+% TeX-master-file: t
+% eval: (setq TeX-command-list  (assq-delete-all (car (assoc "BibTeX" TeX-command-list)) TeX-command-list))
+% eval: (setq TeX-command-list  (assq-delete-all (car (assoc "Biber"  TeX-command-list)) TeX-command-list))
+% eval: (setq TeX-command-list  (remove '("BibTeX" "%(bibtex) %s"    TeX-run-BibTeX nil t :help "Run BibTeX") TeX-command-list))
+% eval: (setq TeX-command-list  (remove '("BibTeX"    "bibtex %s"    TeX-run-BibTeX nil (plain-tex-mode latex-mode doctex-mode ams-tex-mode texinfo-mode context-mode)  :help "Run BibTeX") TeX-command-list))
+% eval: (setq TeX-command-list  (remove '("BibTeX" "bibtex %s"    TeX-run-BibTeX nil t :help "Run BibTeX") TeX-command-list))
+% eval: (add-to-list 'TeX-command-list '("BibTeX" "bibtex %s" TeX-run-BibTeX nil t                                                                              :help "Run BibTeX") t)
+% eval:  (add-to-list 'TeX-command-list '("BibTeX" "bibtex %s" TeX-run-BibTeX nil (plain-tex-mode latex-mode doctex-mode ams-tex-mode texinfo-mode context-mode) :help "Run BibTeX") t)
+% TeX-PDF-mode: t
+% TeX-file-line-error: t
+% TeX-debug-warnings: t
+% LaTeX-command-style: (("" "%(PDF)%(latex) %(file-line-error) %(extraopts) -output-directory=. %S%(PDFout)"))
+% TeX-source-correlate-mode: t
+% TeX-parse-self: t
+% TeX-parse-all-errors: t
+% eval: (cond ((string-equal system-type "darwin") (progn (setq TeX-view-program-list '(("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline -b %n %o %b"))))))
+% eval: (cond ((string-equal system-type "gnu/linux") (progn (setq TeX-view-program-list '(("Evince" "evince --page-index=%(outpage) %o"))))))
+% eval: (cond ((string-equal system-type "gnu/linux") (progn (setq TeX-view-program-selection '((output-pdf "Evince"))))))
+% End:

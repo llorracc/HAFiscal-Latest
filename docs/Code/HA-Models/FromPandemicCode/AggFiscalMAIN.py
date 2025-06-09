@@ -22,15 +22,16 @@ from Output_Results import Output_Results
 
 #%%
 
-Run_Main                = False 
-Run_EqualPVs            = False 
-Run_ADElas_robustness   = False
-Run_CRRA1_robustness    = False
-Run_CRRA3_robustness    = False
-Run_Rfree_robustness    = False
-Run_Rspell_robustness   = False
-Run_LowerUBnoB          = False
+Run_Main                = True 
+Run_EqualPVs            = True 
 Run_Splurge0            = True
+# The flags below refer to robustness exercises that we did not keep in the paper, hence they are set to 'False' here 
+Run_ADElas_robustness   = False  
+Run_CRRA1_robustness    = False 
+Run_CRRA3_robustness    = False 
+Run_Rfree_robustness    = False 
+Run_Rspell_robustness   = False 
+Run_LowerUBnoB          = False 
 
 
 Run_Dict = dict()
@@ -42,8 +43,8 @@ Run_Dict['Run_TaxCut_Recession']    = True
 Run_Dict['Run_Check']               = True
 Run_Dict['Run_UB_Ext']              = True 
 Run_Dict['Run_TaxCut']              = True 
-Run_Dict['Run_AD ']                 = False 
-Run_Dict['Run_1stRoundAD']          = False 
+Run_Dict['Run_AD ']                 = True 
+Run_Dict['Run_1stRoundAD']          = True 
 Run_Dict['Run_NonAD']               = True 
 # For PVSame some of this automatically set to False
 
