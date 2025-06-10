@@ -2,16 +2,13 @@
 
 # To reproduce all the computational results of the paper:
 
-if ! source ./reproduce/reproduce_computed.sh; then
-    echo "Error: Failed to reproduce computational results"
-    exit 1
-fi
+./reproduce/reproduce_computed.sh
 
 # To reproduce a minimal set of the computational results
 
-source ./reproduce/reproduce_computed_min.sh
+./reproduce/reproduce_computed_min.sh
 
 # To reproduce the text of the document:
 # - assuming that you have a full installation of texlive on your computer
 
-source ./reproduce_document.sh
+./reproduce_document.sh
