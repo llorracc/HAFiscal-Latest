@@ -361,3 +361,7 @@ make4ht-trials_private
 version
 
 .cursorindexingignore
+
+# Prompts
+prompts/
+prompts_local/
