@@ -8,14 +8,13 @@ William Du3
 Ivan Frankovic4
 Håkon Tretvoll5
 Using a heterogeneous agent model calibrated to match measured spending dynamics
-over four years following an income shock (Fagereng, Holm, and Natvik (2021)), we
-assess the effectiveness of three fiscal stimulus policies employed during recent recessions.
-Unemployment insurance (UI) extensions are the clear “bang for the buck” winner when
-effectiveness is measured in utility terms. Stimulus checks are second best and have
-two advantages (over UI): they arrive faster, and they are scalable to any desired size.
-A temporary (two-year) cut in the rate of wage taxation is considerably less effective
-than the other policies and has negligible effects in the version of our model without a
-multiplier.
+over four years following an income shock (?), we assess the effectiveness of three fiscal
+stimulus policies employed during recent recessions. Unemployment insurance (UI)
+extensions are the clear “bang for the buck” winner when effectiveness is measured
+in utility terms. Stimulus checks are second best and have two advantages (over UI):
+they arrive faster, and they are scalable to any desired size. A temporary (two-year) cut
+in the rate of wage taxation is considerably less effective than the other policies and has
+negligible effects in the version of our model without a multiplier.
 html:
 PDF:
 Slides:
@@ -60,7 +59,7 @@ the consequences of an income shock for consumer spending depend on a measurable
 object: the intertemporal marginal propensity to consume (iMPC) introduced in ?.
 The iMPC extends the notion of a marginal propensity to consume to account for the
 speed at which households spend. Fortuitously, new sources of microeconomic data,
-particularly from Scandinavian national registries, have recently allowed the first highquality measurements of the iMPC (Fagereng, Holm, and Natvik (2021)).
+particularly from Scandinavian national registries, have recently allowed the first highquality measurements of the iMPC (?).
 Even in models that can match a given measured iMPC pattern, the relative merits of
 alternative policies depend profoundly both on the metric (welfare or GDP) and on the
 quantitative structure of the rest of the model – for example, whether multipliers exist
@@ -76,8 +75,8 @@ analyze a standard HANK-and-SAM general equilibrium model modified to embed our
 households’ consumption responses.1
 By “microeconomically credible,” we mean, at a minimum, a model that can match
 both the cross-sectional distribution of liquid wealth (following ?’s definition of liquid
-wealth) and the entire pattern of the iMPC from Fagereng, Holm, and Natvik (2021)
-(see Figure 1a for their data and our model’s fit to it).
+wealth) and the entire pattern of the iMPC from ? (see Figure 1a for their data and our
+model’s fit to it).
 Standard HA models can match both the pattern of spending in years 1-4 (for a shock
 that arrives in year 0) and the initial distribution of liquid wealth.2 But even a brief
 look at the figure convinces the eye that spending in the initial period when the shock
@@ -228,17 +227,16 @@ the relevant takeaways from the micro literature.
 1.1.1 Microeconomic Evidence
 For our purposes, the single most important kind of micro evidence is on the iMPC;
 we explicitly target our partial equilibrium model to match the microeconomic iMPC
-estimates of Fagereng, Holm, and Natvik (2021), whose evidence is the gold standard
-because their millions of datapoints allow precise estimates over a long horizon (five
-years) and because their natural experiment is almost ideal (a lottery win is a random
-shock by construction). Particularly striking is their evidence on the excess initial MPC.
-Any worry that their Norwegian evidence might not apply in other countries is allayed
+estimates of ?, whose evidence is the gold standard because their millions of datapoints
+allow precise estimates over a long horizon (five years) and because their natural experiment is almost ideal (a lottery win is a random shock by construction). Particularly
+striking is their evidence on the excess initial MPC. Any worry that their Norwegian
+evidence might not apply in other countries is allayed by results in a new paper by ?,
 
 4
 
-by results in a new paper by ?, who use data from a Greek lottery and find that the
-induced extra monthly spending in the first three months after the win is triple the
-induced extra spending in the remaining observed months.
+who use data from a Greek lottery and find that the induced extra monthly spending in
+the first three months after the win is triple the induced extra spending in the remaining
+observed months.
 There are, of course, many prominent papers dating all the way back to ? finding that
 the initial spending response to shocks is vastly greater than implied by a representative
 agent model (in particular a steady stream of state-of-the-art papers by Jonathan Parker
@@ -246,8 +244,9 @@ and his collaborators). In much of that literature there has been some evidence 
 initial spending response was out of line with the subsequent effects (see, e.g., ?; ?; ?),
 but data limitations usually made it difficult to sharply pin down the temporal pattern
 of spending (especially beyond the six month horizon).
-Another striking result in Fagereng, Holm, and Natvik (2021) was that even households with high liquid wealth exhibited high MPC’s. ?, ?, ?, and ? among others also
-provide strong evidence of high MPCs for high-liquid-wealth households.5
+Another striking result in ? was that even households with high liquid wealth exhibited
+high MPC’s. ?, ?, ?, and ? among others also provide strong evidence of high MPCs
+for high-liquid-wealth households.5
 1.1.2 Microeconomic Theories
 A rapidly growing recent literature has used a variety of data sources to reconfirm the
 high initial MPC, but with an eye to providing theoretical explanations. We sketch this
@@ -340,9 +339,8 @@ and fitting the distribution of liquid wealth by estimating the distribution of 
 heterogeneity in discount factors that allows the model to match both kinds of data
 (discount heterogeneity is one of several competing mechanisms for resolving that tension
 discussed by ?). But the model in that paper does not match the subsequently published
-evidence about the iMPC (Fagereng, Holm, and Natvik (2021)); does not incorporate
-a multiplier; and does not compare the relative effectiveness of alternative stimulus
-policies.
+evidence about the iMPC (?); does not incorporate a multiplier; and does not compare
+the relative effectiveness of alternative stimulus policies.
 Another related paper is ?, who analyze the output response to different fiscal policies
 in a HANK and SAM model similar to the one we present in our robustness exercise. As
 we do in Section 5, they examine the policies in a steady state rather than a recession.
@@ -369,6 +367,7 @@ size of any multiplication effect, allowing a reader to scale our results by the
 estimate of the magnitude of recessionary multipliers.
 Aside from the size of spending effects (whether multiplied or not), we are interested
 in ranking policies in terms of their welfare consequences. Thus, the paper relates to
+the recent literature on welfare comparisons in HA models. Both ? and ? introduce
 9
 
 “predicted” because the paper was published long before any data on the actual response were
@@ -376,8 +375,7 @@ available.
 
 7
 
-the recent literature on welfare comparisons in HA models. Both ? and ? introduce
-ways of decomposing welfare effects. In the former case, these are aggregate efficiency,
+ways of decomposing welfare effects. In the former case, these are aggregate efficiency,
 redistribution and insurance, while the latter further decomposes the insurance part into
 intra- and intertemporal components.
 One part of these decompositions is tricky: Under standard calibrations like the ones
@@ -419,9 +417,9 @@ when it arrives—the ‘splurge’, described in the introduction.10 With what 
 the consumer chooses to optimize consumption without regard to the fraction that was
 10
 
-One attractive feature of the splurge assumption is that it is also consistent with evidence from
-Ganong and Noel (2019), that spending drops sharply following the large and predictable drop in income
-after the exhaustion of unemployment benefits; see Section 3.3.4.
+One attractive feature of the splurge assumption is that it is also consistent with evidence from ?,
+that spending drops sharply following the large and predictable drop in income after the exhaustion of
+unemployment benefits; see Section 3.3.4.
 
 8
 
@@ -645,8 +643,7 @@ to which consumers ‘splurge’ when receiving an income shock. Given the lack 
 evidence on the marginal propensity to consume over time for the US, we instead use
 Norwegian data to estimate the splurge. Specifically, we calibrate our model to the
 Norwegian economy and match evidence from Norway on the profile of the marginal
-propensity to spend over time and across different wealth levels, as provided by Fagereng,
-Holm, and Natvik (2021).16
+propensity to spend over time and across different wealth levels, as provided by ?.16
 Second, we set up the full model on U.S. data, taking the splurge factor as given
 from the Norwegian estimation. In the full model, agents differ according to their level
 of education and their subjective discount factors. A subset of the parameters in the
@@ -670,15 +667,17 @@ we are interested in, but not dramatically so, and that our conclusions regardin
 ranking of the policies are not affected. However, in our view, this version of the model
 requires households with unreasonably low discount factors.
 The specific exercise we carry out in this section, is to show that our model can
-account well for the results of Fagereng, Holm, and Natvik (2021), who study the effect of
-lottery winnings in Norway on consumption using millions of records from the Norwegian
-population registry. We calibrate our model to reflect the Norwegian economy and, using
-their results, estimate the splurge factor, as well as the distribution of discount factors
-in the population, to match two empirical moments.
-First, we take from Fagereng, Holm, and Natvik (2021) the marginal propensity to
-consume out of a one-period income shock. We target not only the initial (aggregate)
-response of consumption to the income shock, but also the subsequent effect on consumption in years one through four after the shock. We also target the initial consumption
-response in the cross-section, i.e. across the quartiles of the liquid wealth distribution,
+account well for the results of ?, who study the effect of lottery winnings in Norway
+on consumption using millions of records from the Norwegian population registry. We
+calibrate our model to reflect the Norwegian economy and, using their results, estimate
+the splurge factor, as well as the distribution of discount factors in the population, to
+match two empirical moments.
+First, we take from ? the marginal propensity to consume out of a one-period income
+shock. We target not only the initial (aggregate) response of consumption to the income
+shock, but also the subsequent effect on consumption in years one through four after
+the shock. We also target the initial consumption response in the cross-section, i.e.
+across the quartiles of the liquid wealth distribution, for which empirical estimates are
+also provided. The shares of lottery winnings expended at different time horizons, as
 16
 
 The Online Appendix B discusses an alternative calibration method, which solely relies on US
@@ -688,10 +687,8 @@ data. The main results derived in that calibration are in line with those discus
 
 {sec:splurge}
 
-for which empirical estimates are also provided. The shares of lottery winnings expended
-at different time horizons, as found in Fagereng, Holm, and Natvik (2021), are plotted
-in figure 1a. Table 1 (second row) shows the initial consumption response across liquid
-wealth quartiles.
+found in ?, are plotted in figure 1a. Table 1 (second row) shows the initial consumption
+response across liquid wealth quartiles.
 Second, we match the steady-state distribution of liquid wealth in the model to its
 empirical counterpart. Because of the lack of data on the liquid wealth distribution in
 Norway, we use the corresponding data from the United States, assuming that liquid
@@ -768,14 +765,15 @@ distribution in the model and the data
 {fig:splurge_estima
 
 Note: Panel (a) shows the fit of the model to the dynamic consumption response estimated in
-Fagereng, Holm, and Natvik (2021); see their figure A5. Panel (b) shows the fit of the model to
-the distribution of liquid wealth (see Section 3.2 for the definition) from the 2004 SCF.
+?; see their figure A5. Panel (b) shows the fit of the model to the distribution of liquid wealth
+(see Section 3.2 for the definition) from the 2004 SCF.
 
 For this estimation exercise, the remaining model parameters are calibrated to reflect
 the Norwegian economy. Specifically, we set the real interest rate to 2 percent annually
 and the unemployment rate to 4.4 percent, in line with ?. The quarterly probability
 to survive is calibrated to 1 − 1/160, reflecting an expected working life of 40 years.
 Aggregate productivity growth is set to 1 percent annually, following ?. The unemployment net replacement rate is calibrated to 60 percent, following ?. Finally, we set the
+
 17
 Data from the Norwegian tax registry contains information on liquid assets, but not liquid debt.
 Only total debt is reported – which is mainly mortgage debt. Therefore, we cannot construct liquid
@@ -835,20 +833,19 @@ Thus, we obtain quarterly standard deviations of σψ = 0.0316 and σξ = 0.363.
 Using the calibrated model, we simulated unexpected lottery winnings and calculate
 the share of the lottery spent in each year. Specifically, each simulated agent receives a
 lottery win in a random quarter of the first year of the simulation. The size of the lottery
-win is itself random and spans the range of lottery sizes found in Fagereng, Holm, and
-Natvik (2021). The estimation procedure minimizes the distance between the target and
-model moments by selecting the splurge factor and the distribution of discount factors
-in the population, where the latter are assumed to be uniformly distributed in the range
-[β − ∇, β + ∇]. We approximate the uniform distribution of discount factors with a
-discrete approximation and let the population consist of seven different types.
+win is itself random and spans the range of lottery sizes found in ?. The estimation
+procedure minimizes the distance between the target and model moments by selecting
+the splurge factor and the distribution of discount factors in the population, where
+the latter are assumed to be uniformly distributed in the range [β − ∇, β + ∇]. We
+approximate the uniform distribution of discount factors with a discrete approximation
+and let the population consist of seven different types.
 The estimation yields a splurge factor of 0.249 and a distribution of discount factors
 described by β = 0.968 and ∇ = 0.0578. Given these estimated parameters and the
 remaining calibrated ones, the model is able to replicate the time path of consumption
-in response to a lottery win from Fagereng, Holm, and Natvik (2021) and the targeted
-distribution of liquid wealth very well, see Figure 1. Also, the targeted moments
-discussed in Table 1 are captured relatively well. In particular, the model is able to
-account for the empirical fact, in the first column, that the MPC for high-wealth agents
-is substantially larger than zero.
+in response to a lottery win from ? and the targeted distribution of liquid wealth
+very well, see Figure 1. Also, the targeted moments discussed in Table 1 are captured
+relatively well. In particular, the model is able to account for the empirical fact, in the
+first column, that the MPC for high-wealth agents is substantially larger than zero.
 
 18
 
@@ -1379,26 +1376,25 @@ and in the model. The model matches these shares quite closely, which may not be
 surprising given that we calibrate the size of each group and we manage to fit the wealth
 distribution within each group separately. The panel also reports the average marginal
 propensity to consume for the different groups. To be comparable to numbers reported
-in Fagereng, Holm, and Natvik (2021), these are calculated as the average MPC in the
-year of a lottery win. Lottery wins occur in a random quarter of the year that differs
+in ?, these are calculated as the average MPC in the year of a lottery win. Lottery wins
+occur in a random quarter of the year that differs across individuals. The MPC for an
 
 23
 
 {sec:nonTargetedMo
 
-across individuals. The MPC for an individual depends on the spending pattern after
-the win, and these are averaged across individuals within each education group.
+individual depends on the spending pattern after the win, and these are averaged across
+individuals within each education group.
 Panel B of table 5 shows similar numbers to Panel A, sorted by quartiles of the
 liquid wealth distribution instead of education groups. Our model yields a slightly more
 concentrated liquid wealth distribution than in the data. However, it does produce
 a fairly high MPC even for households in the highest quartile of the liquid wealth
-distribution. This is consistent with the results found in the Norwegian data by Fagereng,
-Holm, and Natvik (2021), but also with recent results in ?. In an administrative dataset
-from a large US financial institution, they find that the spending response to an income
-receipt is large across the distribution of liquid asset holdings. In our model, we obtain
-this result due to the inclusion of the splurge factor. As shown in the Online Appendix B,
-the model is not able to generate a high MPC for the highest wealth quartile without
-splurge consumption.
+distribution. This is consistent with the results found in the Norwegian data by ?,
+but also with recent results in ?. In an administrative dataset from a large US financial
+institution, they find that the spending response to an income receipt is large across
+the distribution of liquid asset holdings. In our model, we obtain this result due to the
+inclusion of the splurge factor. As shown in the Online Appendix B, the model is not able
+to generate a high MPC for the highest wealth quartile without splurge consumption.
 Panel (A) Non-targeted moments by education group
 Percent of liquid wealth (data)
 Percent of liquid wealth (model)
@@ -1479,20 +1475,21 @@ MPCs are averaged across individuals within each education group. Panel (B) show
 numbers for the population sorted into different quartiles of the liquid wealth distribution.
 
 Finally, we consider the implications of our model for two different patterns of spending
-over time. The first pattern is the dynamics of spending after a lottery win from
-Fagereng, Holm, and Natvik. This pattern was used in the estimation of the splurge
-factor in section 3.1, but was not targeted when estimating the discount factor distributions for each education group in section 3.3.3. Figure 3a shows that the model that is
+over time. The first pattern is the dynamics of spending after a lottery win from ?. This
+pattern was used in the estimation of the splurge factor in section 3.1, but was not
+targeted when estimating the discount factor distributions for each education group in
+section 3.3.3. Figure 3a shows that the model that is estimated taking the value of the
 
 24
 
-estimated taking the value of the splurge as given, results in a distribution of spending
-over time that is very similar to the one found in the Norwegian data.
+splurge as given, results in a distribution of spending over time that is very similar to
+the one found in the Norwegian data.
 The second pattern concerns the dynamics of income and spending for households that
-become unemployed and remain unemployed long enough for unemployment benefits
-to expire. Figure 3b shows the pattern of income and spending for such households.
-Ganong and Noel (2019) report the empirical result that nondurable spending drops by
-12 percent the month when benefits expire. Our quarterly model is broadly consistent
-with this as the drop in spending the quarter after the expiry of UI benefits is 18 percent.
+become unemployed and remain unemployed long enough for unemployment benefits to
+expire. Figure 3b shows the pattern of income and spending for such households. ?
+report the empirical result that nondurable spending drops by 12 percent the month
+when benefits expire. Our quarterly model is broadly consistent with this as the drop
+in spending the quarter after the expiry of UI benefits is 18 percent.
 0.6
 
 Model w/estimated splurge
@@ -1555,10 +1552,9 @@ UI benefits in the model
 
 {fig:untargetedMom
 
-Note: Panel (a) compares the dynamic consumption response in the model to the estimates
-in Fagereng, Holm, and Natvik (2021); see their Figure A5. Panel (b) shows the evolution of
-income and spending for households who remain unemployed long enough for UI benefits to
-expire; see Figure 2 in Ganong and Noel (2019).
+Note: Panel (a) compares the dynamic consumption response in the model to the estimates in
+?; see their Figure A5. Panel (b) shows the evolution of income and spending for households
+who remain unemployed long enough for UI benefits to expire; see Figure 2 in ?.
 
 4 Comparing fiscal stimulus policies
 In this section, we present our results where we compare three policies to provide fiscal
@@ -3056,252 +3052,5 @@ The duration of bonds in the model is (1+r)
 37
 
 45
-
-References
-Akerlof, George A, and Janet L Yellen (1985): “A near-rational model of the
-business cycle, with wage and price inertia,” The Quarterly Journal of Economics,
-100(Supplement), 823–838.
-Allcott, Hunt, Joshua J Kim, Dmitry Taubinsky, and Jonathan Zinman
-(2021): “Are high-interest loans predatory? Theory and evidence from payday
-lending,” NBER Working paper, no. 28799, NBER Working paper, no. 28799.
-Andre, Peter, Joel Flynn, Georgios Nikolakoudis, and Karthik Sastry
-(2025): “Quick-fixing: Near-rationality in consumption and savings behavior,” SSRN
-Electronic Journal.
-Auclert, Adrien, Bence Bardóczy, Matthew Rognlie, and Ludwig Straub
-(2021): “Using the Sequence-Space Jacobian to Solve and Estimate HeterogeneousAgent Models,” Econometrica, 89(5), 2375–2408.
-Auclert, Adrien, Matthew Rognlie, and Ludwig Straub (2018): “The
-Intertemporal Keynesian Cross,” Working Paper 25020, National Bureau of Economic
-Research.
-(2020): “Micro Jumps, Macro Humps: Monetary Policy and Business Cycles
-in an Estimated HANK Model,” Revise and Resubmit, American Economic Review,
-Revise and resubmit at American Economic Review.
-Aursland, Thor Andreas, Ivan Frankovic, Birol Kanik, and Magnus
-Saxegaard (2020): “State-dependent fiscal multipliers in NORA - A DSGE model
-for fiscal policy analysis in Norway,” Economic Modelling, 93, 321–353.
-Bardoczy, Bence (2024): “Spousal Insurance and the Amplification of Business
-Cycles,” Manuscript, Board of Governors of the Federal Reserve System.
-Bayer, Christian, Benjamin Born, Ralph Luetticke, and Gernot J Müller
-(2023): “The Coronavirus Stimulus Package: How Large is the Transfer Multiplier?,”
-The Economic Journal.
-Benigno, Pierpaolo, and Gauti B Eggertsson (2023): “It’s Baaack: The Surge
-in Inflation in the 2020s and the Return of the Non-Linear Phillips Curve,” Working
-Paper 31197, National Bureau of Economic Research.
-Beraja, Martin, and Nathan Zorzi (2023): “On the Size of Stimulus Checks: How
-Much is Too Much?,” Discussion paper, MIT, Working paper.
-Bhandari, Anmol, David Evans, Mikhail Golosov, and Thomas Sargent
-(2021): “Efficiency, Insurance, and Redistribution Effects of Government Policies,”
-Discussion paper, tomsargent.com.
-
-46
-
-Blanchard, Olivier, and Jordi Galí (2010): “Labor Markets and Monetary
-Policy: A New Keynesian Model with Unemployment,” American Economic Journal:
-Macroeconomics, 2(2), 1–30.
-Blanco, Andres, Corina Boar, Callum J Jones, and Virgiliu Midrigan
-(2024): “Non-Linear Inflation Dynamics in Menu Cost Economies,” Working Paper
-32094, National Bureau of Economic Research.
-Blinder, Alan S., and Angus S. Deaton (1985): “The Time Series Consumption
-Function Revisited,” Brookings Papers on Economic Activity, 1985:2, pp. 465–521.
-Boehm, Johannes, Etienne Fize, and Xavier Jaravel (2025): “Five Facts about
-MPCs: Evidence from a Randomized Experiment,” American Economic Review,
-115(1), 1–42.
-Boppart, Timo, Per Krusell, and Kurt Mitman (2018): “Exploiting MIT
-Shocks in Heterogeneous-Agent Economies: The Impulse Response as a Numerical
-Derivative,” Journal of Economic Dynamics and Control, 89(C), 68–92.
-Boutros, Michael (2022): “Windfall income shocks with finite planning horizons,”
-Discussion paper, Bank of Canada.
-Broda, Christian, and Jonathan A Parker (2014): “The economic stimulus
-payments of 2008 and the aggregate demand for consumption,” Journal of Monetary
-Economics, 68, S20–S36.
-Broer, Tobias, Jeppe Druedahl, Karl Harmenberg, and Erik Öberg (2025):
-“Stimulus Effects of Common Fiscal Policies,” Discussion Paper 19823, Center for
-Economic Policy Research.
-Broer, Tobias, Per Krusell, and Erik Öberg (2023): “Fiscal Multipliers: A
-Heterogenous-Agent Perspective,” Quantitative Economics, 14(3), 799–816.
-Browning, Martin, and Thomas F. Crossley (2009): “Shocks, Stocks, and Socks:
-Smoothing Consumption Over a Temporary Income Loss,” Journal of the European
-Economic Association, 7(6), 1169–1192.
-Cagetti, Marco (2003): “Wealth accumulation over the life cycle and precautionary
-savings,” Journal of Business & Economic Statistics, 21(3), 339–353.
-Carroll, Christopher, Edmund Crawley, Ivan Frankovic, and Håkon
-Tretvoll (2023): “Welfare and Spending Effects of Consumption Stimulus Policies,”
-Finance and Economics Discussion Series 2023-002, Board of Governors of the Federal
-Reserve System, Washington.
-Carroll, Christopher D (2022): “Theoretical Foundations of Buffer Stock Saving,”
-Department of Economics, Working paper.
-
-47
-
-Carroll, Christopher D., Edmund Crawley, Jiri Slacalek, Kiichi Tokuoka, and Matthew N. White (2020): “Sticky Expectations and Consumption
-Dynamics,” American Economic Journal: Macroeconomics, 12(3), 40–76.
-Carroll, Christopher D, Edmund Crawley, Jiri Slacalek, and Matthew N
-White (2020): “Modeling the consumption response to the CARES act,” Covid
-Economics, 10, 62–86.
-Carroll, Christopher D., Jiri Slacalek, Kiichi Tokuoka, and Matthew N. White (2017): “The Distribution of Wealth and the Marginal
-Propensity to Consume,” Quantitative Economics, 8(3), 977–1020, At https:
-//llorracc.github.io/cstwMPC.
-Chodorow-Reich, Gabriel, and Loukas Karabarbounis (2016): “The limited
-macroeconomic effects of unemployment benefit extensions,” Discussion paper,
-National Bureau of Economic Research.
-Christiano, Lawrence, Martin Eichenbaum, and Sergio Rebelo (2011):
-“When is the government spending multiplier large?,” Journal of Political Economy,
-119(1), 78–121.
-Christiano, Lawrence J., Martin S. Eichenbaum, and Mathias Trabandt
-(2016): “Unemployment and Business Cycles,” Econometrica, 84(4), 1523–1569.
-Cochrane, John H (1989): “The Sensitivity of Tests of the Intertemporal Allocation
-of Consumption to Near-Rational Alternatives,” The American Economic Review, pp.
-319–337.
-Cohen, Jonathan, and Peter Ganong (2024): “Disemployment effects of
-unemployment insurance: A meta-analysis,” SSRN Electronic Journal.
-Crawley, Edmund, Martin B. Holm, and Håkon Tretvoll (2024): “A
-Parsimonious Model of Idiosyncratic Income,” Working paper.
-Crawley, Edmund, and Andreas Kuchler (2023): “Consumption Heterogeneity: Micro Drivers and Macro Implications,” American Economic Journal:
-Macroeconomics, 15(1), 314–41.
-Dávila, Eduardo, and Andreas Schaab (2022): “Welfare Assessments with
-Heterogeneous Individuals,” Available at SSRN 4102027.
-Davis, Steven J., and Till Von Wachter (2011): “Recessions and the Costs of
-Job Loss,” Brookings Papers on Economic Activity, pp. 1–72.
-den Haan, Wouter J., Garey Ramey, and Joel Watson (2000): “Job
-Destruction and Propagation of Shocks,” The American Economic Review, 90(3),
-482–498.
-
-48
-
-Du, William (2024): “The Macroeconomic Consequences of Unemployment Scarring,”
-Manuscript, The Johns Hopkins University.
-Eggertsson, Gauti B (2011): “What fiscal policy is effective at zero interest rates?,”
-NBER Macroeconomics Annual, 25(1), 59–112.
-Elsby, Michael W L, and Bart Hobijn (2010): “The Labor Market in the Great
-Recession,” Brookings Papers on Economic Activity.
-Fagereng, Andreas, Martin B. Holm, and Gisle J. Natvik (2021):
-“MPC Heterogeneity and Household Balance Sheets,” American Economic Journal:
-Macroeconomics, 13(4), 1–54.
-Friedman, Milton A. (1963): “Windfalls, the ‘Horizon,’ and Related Concepts in the
-Permanent Income Hypothesis,” in Measurement in Economics, ed. by Carl Christ,
-pp. 1–28. Stanford University Press.
-Ganong, Peter, Fiona E Greig, Pascal J Noel, Daniel M Sullivan,
-and Joseph S Vavra (2022): “Spending and Job-Finding Impacts of Expanded
-Unemployment Benefits: Evidence from Administrative Micro Data,” Working Paper
-30315, National Bureau of Economic Research.
-Ganong, Peter, and Pascal Noel (2019): “Consumer Spending during
-Unemployment: Positive and Normative Implications,” American Economic Review,
-109(7), 2383–2424.
-Gjeldsregistret (2022): “Nokkeltall fra Gjeldsregisteret,” Gjeldsregistret nettside,
-Url: https://www.gjeldsregisteret.com/pages/nokkeltall.
-Gornemann, Nils, Keith Kuester, and Makoto Nakajima (2021): “Doves for
-the Rich, Hawks for the Poor? Distributional Consequences of Systematic Monetary
-Policy,” ECONtribute Discussion Papers Series 089, University of Bonn and University
-of Cologne, Germany.
-Graham, James, and Robert McDowall (2024): “Mental Accounts and
-Consumption Sensitivity Across the Distribution of Liquid Assets,” Available at SSRN
-4793885.
-Graves, Sebastian (2024): “Does unemployment risk affect business cycle
-dynamics?,” American Economic Journal Macroeconomics.
-Hagedorn, Marcus, Fatih Karahan, Iourii Manovskii, and Kurt Mitman
-(2019): “Unemployment Benefits and Unemployment in the Great Recession: The
-Role of Macro Effects,” Discussion paper, National Bureau of Economic Research,
-Working paper 19499.
-
-49
-
-Hagedorn, Marcus, Iourii Manovskii, and Kurt Mitman (2017): “The
-Impact of Unemployment Benefit Extensions on Employment: The 2014 Employment
-Miracle?,” Discussion paper, National Bureau of Economic Research, Working paper
-20884.
-(2019): “The fiscal multiplier,” Working paper, National Bureau of Economic
-Research.
-Hai, Rong, Dirk Krueger, and Andrew Postlewaite (2020): “On the welfare
-cost of consumption fluctuations in the presence of memorable goods,” Quantitative
-economics, 11(4), 1177–1214.
-Ilut, Cosmin, and Rosen Valchev (2022): “Economic Agents as Imperfect Problem
-Solvers,” Q. J. Econ., 138(1), 313–362.
-Indarte, Sasha, Raymond Kluender, Ulrike Malmendier, and Michael
-Stepner (2024): “What Explains the Consumption Decisions of Low-Income
-Households?,” Department of Economics.
-Johnson, David S., Jonathan A. Parker, and Nicholas S. Souleles (2006):
-“Household Expenditure and the Income Tax Rebates of 2001,” American Economic
-Review, 96(5), 1589–1610.
-Kaplan, Greg, and Giovanni L Violante (2014): “A model of the consumption
-response to fiscal stimulus payments,” Econometrica, 82(4), 1199–1239.
-(2022): “The Marginal Propensity to Consume in Heterogeneous Agent
-Models,” Working Paper 30013, National Bureau of Economic Research.
-Kekre, Rohan (2022): “Unemployment Insurance in Macroeconomic Stabilization,”
-The Review of Economic Studies.
-Kotsogiannis, Christos, and Plutarchos Sakellaris (2024): “MPCs Estimated
-from Tax Lottery, Survey and Administrative Data,” Discussion paper, Athens
-University of Economics and Business.
-Kravik, Erling Motzfeldt, and Yassin Mimir (2019): “Navigating with NEMO,”
-Norges Bank Staff Memo, 5.
-Krueger, Dirk, Kurt Mitman, and Fabrizio Perri (2016): “Macroeconomics
-and household heterogeneity,” in Handbook of Macroeconomics, vol. 2, pp. 843–921.
-Elsevier.
-Kueng, Lorenz (2018): “Excess Sensitivity of High-Income Consumers*,” The
-Quarterly Journal of Economics, 133(4), 1693–1751.
-Lian, Chen (2023): “Mistakes in future consumption, high MPCs now,” American
-Economic Review: Insights, 5(4), 563–581.
-
-50
-
-Mankiw, N. Gregory (1982): “Hall’s Consumption Hypothesis and Durable Goods,”
-Journal of Monetary Economics, 10(3), 417–425.
-Maxted, Peter, David Laibson, and Benjamin Moll (2024): “Present Bias
-Amplifies the Household Balance-Sheet Channels of Macroeconomic Policy,” The
-Quarterly Journal of Economics, p. qjae026.
-McKay, Alisdair, and Ricardo Reis (2016): “The role of automatic stabilizers in
-the US business cycle,” Econometrica, 84(1), 141–194.
-(2021): “Optimal automatic stabilizers,” The Review of Economic Studies,
-88(5), 2375–2406.
-Melcangi, Davide, and Vincent Sterk (2024): “Stock market participation,
-inequality, and monetary policy,” Review of Economic Studies, p. rdae068.
-Mincer, Jacob (1991): “Education and Unemployment,” NBER Working Paper
-w3838.
-OECD
-(2020):
-“Net
-replacement
-rate
-OECD
-statistics
-"Social
-Protection
-and
-https://stats.oecd.org/Index.aspx?DataSetCode=NRR.
-
-in
-unemployment,”
-Well-being",
-Url:
-
-Parker, Jonathan A (2017): “Why don’t households smooth consumption? Evidence
-from a $25 million experiment,” American Economic Journal: Macroeconomics, 9(4),
-153–183.
-Parker, Jonathan A, Nicholas S Souleles, David S Johnson, and Robert
-McClelland (2013): “Consumer spending and the economic stimulus payments of
-2008,” American Economic Review, 103(6), 2530–53.
-Phan, Nam (2024): “The Welfare Consequences of Countercyclical Fiscal Transfers,”
-Manuscript, Queens Economics Department.
-Ramey, Valerie A, and Sarah Zubairy (2018): “Government spending multipliers
-in good times and in bad: evidence from US historical data,” Journal of political
-economy, 126(2), 850–901.
-Ravn, Morten O., and Vincent Sterk (2017): “Job uncertainty and deep
-recessions,” Journal of Monetary Economics, 90, 125–141.
-Ravn, Morten O, and Vincent Sterk (2021): “Macroeconomic Fluctuations
-with HANK & SAM: an Analytical Approach,” Journal of the European Economic
-Association, 19, 1162–1202.
-Rotemberg, Julio J. (1982): “Sticky Prices in the United States,” Journal of Political
-Economy, 90(6), 1187–1211.
-
-51
-
-Rothstein, Jesse, and Robert G Valletta (2017): “Scraping by: Income and
-program participation after the loss of extended unemployment benefits,” Journal of
-Policy Analysis and Management, 36(4), 880–908.
-Silva, José, and Manuel Toledo (2009): “Labor Turnover Costs and The Cyclical
-Behavior or Vacancies and Unemployment,” Macroeconomic Dynamics, 13(S1), 76–96.
-Skiba, Paige Marta, and Jeremy Tobacman (2008): “Payday loans, uncertainty
-and discounting: Explaining patterns of borrowing, repayment, and default,”
-Vanderbilt Law and Economics Research Paper, 08(33).
-
-52
 
 
