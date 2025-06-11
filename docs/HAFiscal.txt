@@ -8,14 +8,13 @@ William Du3
 Ivan Frankovic4
 Håkon Tretvoll5
 Using a heterogeneous agent model calibrated to match measured spending dynamics
-over four years following an income shock (Fagereng, Holm, and Natvik (2021)), we
-assess the effectiveness of three fiscal stimulus policies employed during recent recessions.
-Unemployment insurance (UI) extensions are the clear “bang for the buck” winner when
-effectiveness is measured in utility terms. Stimulus checks are second best and have
-two advantages (over UI): they arrive faster, and they are scalable to any desired size.
-A temporary (two-year) cut in the rate of wage taxation is considerably less effective
-than the other policies and has negligible effects in the version of our model without a
-multiplier.
+over four years following an income shock (?), we assess the effectiveness of three fiscal
+stimulus policies employed during recent recessions. Unemployment insurance (UI)
+extensions are the clear “bang for the buck” winner when effectiveness is measured
+in utility terms. Stimulus checks are second best and have two advantages (over UI):
+they arrive faster, and they are scalable to any desired size. A temporary (two-year) cut
+in the rate of wage taxation is considerably less effective than the other policies and has
+negligible effects in the version of our model without a multiplier.
 html:
 PDF:
 Slides:
@@ -57,47 +56,44 @@ which ones are likely to be most effective—either in reducing misery (a ‘wel
 or in increasing output (a ‘GDP metric’).
 But a new generation of macro models has shown that when microeconomic heterogeneity across consumer circumstances (wealth; income; education) is taken into account,
 the consequences of an income shock for consumer spending depend on a measurable
-object: the intertemporal marginal propensity to consume (iMPC) introduced in Auclert,
-Rognlie, and Straub (2018). The iMPC extends the notion of a marginal propensity to
-consume to account for the speed at which households spend. Fortuitously, new sources
-of microeconomic data, particularly from Scandinavian national registries, have recently
-allowed the first high-quality measurements of the iMPC (Fagereng, Holm, and Natvik
-(2021)).
-Even in models that can match a given measured iMPC pattern, the relative merits
-of alternative policies depend profoundly both on the metric (welfare or GDP) and on
-the quantitative structure of the rest of the model – for example, whether multipliers
-exist and whether the degree of multiplication is different under different economic
-conditions. Here, after constructing a microeconomically credible heterogeneous agent
-(HA) model, we examine that model’s implications for how effects of stimulus policies
-depend on the existence and timing of any “multipliers,” which, following Krueger,
-Mitman, and Perri (2016), we model in a clean and simple way, so that the interaction
-of the multiplier (if any) with the other elements of the model is reasonably easy to
-understand. This partial equilibrium analysis allows us to transparently incorporate
-the possibility that multipliers may be larger in recessions. But we understand that a
-richer general equilibrium framework could introduce transmission channels absent from
-the partial-equilibrium-plus-multiplier analysis, so we also analyze a standard HANKand-SAM general equilibrium model modified to embed our households’ consumption
-responses.1
+object: the intertemporal marginal propensity to consume (iMPC) introduced in ?.
+The iMPC extends the notion of a marginal propensity to consume to account for the
+speed at which households spend. Fortuitously, new sources of microeconomic data,
+particularly from Scandinavian national registries, have recently allowed the first highquality measurements of the iMPC (?).
+Even in models that can match a given measured iMPC pattern, the relative merits of
+alternative policies depend profoundly both on the metric (welfare or GDP) and on the
+quantitative structure of the rest of the model – for example, whether multipliers exist
+and whether the degree of multiplication is different under different economic conditions.
+Here, after constructing a microeconomically credible heterogeneous agent (HA) model,
+we examine that model’s implications for how effects of stimulus policies depend on the
+existence and timing of any “multipliers,” which, following ?, we model in a clean and
+simple way, so that the interaction of the multiplier (if any) with the other elements of
+the model is reasonably easy to understand. This partial equilibrium analysis allows us
+to transparently incorporate the possibility that multipliers may be larger in recessions.
+But we understand that a richer general equilibrium framework could introduce transmission channels absent from the partial-equilibrium-plus-multiplier analysis, so we also
+analyze a standard HANK-and-SAM general equilibrium model modified to embed our
+households’ consumption responses.1
 By “microeconomically credible,” we mean, at a minimum, a model that can match
-both the cross-sectional distribution of liquid wealth (following Kaplan and Violante
-(2014)’s definition of liquid wealth) and the entire pattern of the iMPC from Fagereng,
-Holm, and Natvik (2021) (see Figure 1a for their data and our model’s fit to it).
+both the cross-sectional distribution of liquid wealth (following ?’s definition of liquid
+wealth) and the entire pattern of the iMPC from ? (see Figure 1a for their data and our
+model’s fit to it).
 Standard HA models can match both the pattern of spending in years 1-4 (for a shock
 that arrives in year 0) and the initial distribution of liquid wealth.2 But even a brief
 look at the figure convinces the eye that spending in the initial period when the shock
 arrives seems out of line with the smooth declining pattern in years 1-4. The eye is
 not wrong: HA models that match liquid assets and the spending pattern in years 1-4
+seriously underpredict the amount of immediate spending that occurs on receipt of the
+income shock.
 1
 
 The Econ-ARK toolkit with which the partial equilibrium model was solved constructs the
-Jacobians necessary to connect a steady-state version of the model to the SSJ Toolkit. Our HANKand-SAM model builds on Ravn and Sterk (2017, 2021).
+Jacobians necessary to connect a steady-state version of the model to the SSJ Toolkit. Our HANKand-SAM model builds on ??.
 2
-For example, the model in Carroll, Slacalek, Tokuoka, and White (2017).
+For example, the model in ?.
 
 1
 
-seriously underpredict the amount of immediate spending that occurs on receipt of the
-income shock.
-We call this initial extra spending the ‘excess initial MPC.’ Below, we describe a
+We call this initial extra spending the ‘excess initial MPC.’ Below, we describe a
 substantial and longstanding literature in which the pattern of an excess initial MPC
 has been documented, and a vigorous recent literature confirming the fact with different
 datasets and proposing various potential theoretical explanations.
@@ -120,12 +116,12 @@ in the United States (and elsewhere): an extension of unemployment insurance (UI
 benefits, a means-tested stimulus check, and a payroll tax cut.
 Our first metric of policy effectiveness is “spending bang for the buck”: For a dollar of
 spending on a particular policy, how much multiplication is induced? First, we calculate
-the policy-induced spending dynamics in an economy with no multiplier. We then
-follow Krueger, Mitman, and Perri (2016)’s approach to modeling the aggregate demand
-externality, in which output depends mechanically on the level of consumption relative
-to steady state. But in our model, the aggregate demand externality is only switched on
-when the economy is experiencing a recession—there is no multiplication for spending
-that occurs after our simulated recession is over.
+the policy-induced spending dynamics in an economy with no multiplier. We then follow
+?’s approach to modeling the aggregate demand externality, in which output depends
+mechanically on the level of consumption relative to steady state. But in our model,
+the aggregate demand externality is only switched on when the economy is experiencing
+a recession—there is no multiplication for spending that occurs after our simulated
+recession is over.
 Even without multiplication, a utility-based metric can justify countercyclical policy
 on welfare grounds because the larger idiosyncratic shocks to income that occur during
 a recession may justify a greater-than-normal degree of social insurance. Because our
@@ -135,6 +131,8 @@ We call this “welfare bang for the buck.”
 The principal difference between the two metrics is that what matters for the degree of
 spending multiplication is how much of the policy-induced extra spending occurs during
 the recession (when the multiplier matters), while effectiveness in the utility metric also
+depends on who is doing the extra spending (because the recession hits some households
+much harder than others).
 3
 
 Proponents of the theoretical models described in our literature review in section 1.1 may choose
@@ -143,9 +141,7 @@ an interpretation.
 
 2
 
-depends on who is doing the extra spending (because the recession hits some households
-much harder than others).
-Because high-MPC consumers tend to have high marginal utility, a standard aggregated welfare function would favor redistribution to such consumers even in the absence
+Because high-MPC consumers tend to have high marginal utility, a standard aggregated welfare function would favor redistribution to such consumers even in the absence
 of a recession. We are interested in the degree of extra motivation for social insurance
 that is present in a recession, so we construct our social welfare metric specifically to
 measure only the incremental social welfare effect of alternative policies during recessions
@@ -178,6 +174,8 @@ checks, in terms of “spending bang for the buck,” is that it takes somewhat 
 until the transfers reach the beneficiaries. The stimulus checks are assumed to be
 distributed immediately in the same quarter as the recession starts. Countering this
 disadvantage is the fact that the MPC of UI recipients is higher than that of stimulus
+check recipients, and, furthermore, the insurance nature of the UI payments reduces the
+precautionary saving motive. In the end, our model says that these two forces roughly
 4
 
 One reason there is any (welfare) benefit at all, even for people who have not experienced an
@@ -191,9 +189,7 @@ prior mechanism will be greater. But, quantitatively, all of these effects are s
 
 3
 
-check recipients, and, furthermore, the insurance nature of the UI payments reduces the
-precautionary saving motive. In the end, our model says that these two forces roughly
-balance each other, so that the spending bang for the buck of the two policies is similar.
+balance each other, so that the spending bang for the buck of the two policies is similar.
 In the welfare metric, however, there is considerable marginal value to UI recipients even
 if they receive some of the benefits after the recession is over (and no multiplier exists).
 Hence, in the welfare metric, the relative value of UI benefits is increased compared with
@@ -204,13 +200,13 @@ this arsenal, as they have a greater welfare benefit than stimulus checks and a 
 that can be accomplished with the UI extension is constrained by the fact that only a
 limited number of people become unemployed. If more stimulation is called for than
 can be accomplished via the UI extension, checks have the advantage that their effects
-scale almost linearly in the size of the stimulus—see Beraja and Zorzi (2023) for a more
-detailed exposition of the relation between MPC and stimulus size. The wage tax cut
-is also, in principle, scalable, but its effects are smaller because recipients have lower
-MPCs and marginal utility than check and UI recipients. In the real world, a tax cut
-is also likely the least flexible of the three tools: UI benefits can be further extended,
-and multiple rounds of checks can be sent, but multiple rounds of changes in payroll tax
-rates would likely be administratively and politically more difficult.
+scale almost linearly in the size of the stimulus—see ? for a more detailed exposition
+of the relation between MPC and stimulus size. The wage tax cut is also, in principle,
+scalable, but its effects are smaller because recipients have lower MPCs and marginal
+utility than check and UI recipients. In the real world, a tax cut is also likely the least
+flexible of the three tools: UI benefits can be further extended, and multiple rounds of
+checks can be sent, but multiple rounds of changes in payroll tax rates would likely be
+administratively and politically more difficult.
 One theme of our paper is that which policies are better or worse, and by how much,
 depends on both the quantitative details of the policies and the quantitative modeling
 of the economy.
@@ -231,70 +227,67 @@ the relevant takeaways from the micro literature.
 1.1.1 Microeconomic Evidence
 For our purposes, the single most important kind of micro evidence is on the iMPC;
 we explicitly target our partial equilibrium model to match the microeconomic iMPC
-estimates of Fagereng, Holm, and Natvik (2021), whose evidence is the gold standard
-because their millions of datapoints allow precise estimates over a long horizon (five
-years) and because their natural experiment is almost ideal (a lottery win is a random
+estimates of ?, whose evidence is the gold standard because their millions of datapoints
+allow precise estimates over a long horizon (five years) and because their natural experiment is almost ideal (a lottery win is a random shock by construction). Particularly
+striking is their evidence on the excess initial MPC. Any worry that their Norwegian
+evidence might not apply in other countries is allayed by results in a new paper by ?,
 
 4
 
-shock by construction). Particularly striking is their evidence on the excess initial MPC.
-Any worry that their Norwegian evidence might not apply in other countries is allayed
-by results in a new paper by Kotsogiannis and Sakellaris (2024), who use data from a
-Greek lottery and find that the induced extra monthly spending in the first three months
-after the win is triple the induced extra spending in the remaining observed months.
-There are, of course, many prominent papers dating all the way back to Friedman
-(1963) finding that the initial spending response to shocks is vastly greater than implied
-by a representative agent model (in particular a steady stream of state-of-the-art papers
-by Jonathan Parker and his collaborators). In much of that literature there has been
-some evidence that the initial spending response was out of line with the subsequent
-effects (see, e.g., Parker, Souleles, Johnson, and McClelland (2013); Broda and Parker
-(2014); Johnson, Parker, and Souleles (2006)), but data limitations usually made it
-difficult to sharply pin down the temporal pattern of spending (especially beyond the
-six month horizon).
-Another striking result in Fagereng, Holm, and Natvik (2021) was that even households with high liquid wealth exhibited high MPC’s. Boehm, Fize, and Jaravel (2025),
-Graham and McDowall (2024), Crawley and Kuchler (2023), and Kueng (2018) among
-others also provide strong evidence of high MPCs for high-liquid-wealth households.5
+who use data from a Greek lottery and find that the induced extra monthly spending in
+the first three months after the win is triple the induced extra spending in the remaining
+observed months.
+There are, of course, many prominent papers dating all the way back to ? finding that
+the initial spending response to shocks is vastly greater than implied by a representative
+agent model (in particular a steady stream of state-of-the-art papers by Jonathan Parker
+and his collaborators). In much of that literature there has been some evidence that the
+initial spending response was out of line with the subsequent effects (see, e.g., ?; ?; ?),
+but data limitations usually made it difficult to sharply pin down the temporal pattern
+of spending (especially beyond the six month horizon).
+Another striking result in ? was that even households with high liquid wealth exhibited
+high MPC’s. ?, ?, ?, and ? among others also provide strong evidence of high MPCs
+for high-liquid-wealth households.5
 1.1.2 Microeconomic Theories
 A rapidly growing recent literature has used a variety of data sources to reconfirm the
 high initial MPC, but with an eye to providing theoretical explanations. We sketch this
 literature because different theories might have different implications for the spending
 consequences of a shock.
-One possibility is that the burst of initial spending is rationalizable if the spending is on
-durables (Browning and Crossley, 2009). Mankiw (1982) showed that in the frictionless
-case, spending on durable goods should be vastly more responsive to an income shock
-than spending on nondurables. It seems plausible that a model with a large number
-of goods that are durable at, say, the quarterly or annual frequency could explain the
-‘excess initial MPC’ as reflecting a rational marginal propensity to eXpend (MPX).6
-Maxted, Laibson, and Moll (2024) combine a simplified model of durables spending
-with the assumption common in behavioral economics that spending decisions are influenced by “present bias” (people have time-inconsistent preferences). They present
-a back-of-the-envelope calculation that yields a rough estimate that the ratio of initial
-spending on durables to the spending that would occur if all spending were nondurable
+One possibility is that the burst of initial spending is rationalizable if the spending
+is on durables (?). ? showed that in the frictionless case, spending on durable goods
+should be vastly more responsive to an income shock than spending on nondurables. It
+seems plausible that a model with a large number of goods that are durable at, say,
+the quarterly or annual frequency could explain the ‘excess initial MPC’ as reflecting a
+rational marginal propensity to eXpend (MPX).6
+? combine a simplified model of durables spending with the assumption common in
+behavioral economics that spending decisions are influenced by “present bias” (people
+have time-inconsistent preferences). They present a back-of-the-envelope calculation
+that yields a rough estimate that the ratio of initial spending on durables to the spending
+that would occur if all spending were nondurable is roughly three to one (not far from
+the ratio estimated in the Greek lottery episode studied by ?).
+? use high frequency bank account data to study spending responses to the U.S. 2021
+
 5
-The “infrequent consumption good” model of Melcangi and Sterk (2024) has a similar flavor, but
-is not about MPC’s. It aims at accounting for high saving rates among high-income households during
-normal times and high consumption during episodes where the infrequent consumption good becomes
-available (such as high-end health care or education expenses).
+
+The “infrequent consumption good” model of ? has a similar flavor, but is not about MPC’s.
+It aims at accounting for high saving rates among high-income households during normal times and
+high consumption during episodes where the infrequent consumption good becomes available (such as
+high-end health care or education expenses).
 6
 The NIPA accounts treat as ‘durable’ those goods whose expected lifetime is 3 years or more, but
 at the annual (or quarterly) frequency many more goods (and even services) are arguably durable –
-for example, Blinder and Deaton (1985) mention clothes and shoes, and Hai, Krueger, and Postlewaite
-(2020) argue that many services are durable at the annual frequency, which explains why people take
-vacations once a year.
+for example, ? mention clothes and shoes, and ? argue that many services are durable at the annual
+frequency, which explains why people take vacations once a year.
 
 5
 
-is roughly three to one (not far from the ratio estimated in the Greek lottery episode
-studied by Kotsogiannis and Sakellaris (2024)).
-Indarte, Kluender, Malmendier, and Stepner (2024) use high frequency bank account
-data to study spending responses to the U.S. 2021 stimulus, and find sustantial “excess
-MPC’s” especially among low income households; like Maxted, Laibson, and Moll (2024)
-they lean toward present bias as an explanation.7
-The logic of Akerlof and Yellen (1985) and Cochrane (1989) suggests that the utility
-consequences of ‘near-rational’ deviations from frictionless rational behavior is small. In
-that spirit, Boutros (2022) and Ilut and Valchev (2022) present models with bounded
-rationality and costly re-optimization. Building on this logic, Andre, Flynn, Nikolakoudis, and Sastry (2025) argue that costs of reoptimization cause consumers to resort to
-simple “quick-fix” consumption heuristics; for small shocks, most people in their survey
-report that they anticipate that their MPC’s would be one or zero.
+stimulus, and find sustantial “excess MPC’s” especially among low income households;
+like ? they lean toward present bias as an explanation.7
+The logic of ? and ? suggests that the utility consequences of ‘near-rational’ deviations
+from frictionless rational behavior is small. In that spirit, ? and ? present models with
+bounded rationality and costly re-optimization. Building on this logic, ? argue that
+costs of reoptimization cause consumers to resort to simple “quick-fix” consumption
+heuristics; for small shocks, most people in their survey report that they anticipate that
+their MPC’s would be one or zero.
 The ‘splurge’ component of our consumption model is a simple modelling device
 that lets the model match the empirical evidence, regardless of what the right deep
 explanation(s) may be. As we will show, the model with our splurge component is
@@ -302,74 +295,79 @@ consistent with all of what we described above as the key ‘takeaways’ from t
 literature.
 1.1.3 Macroeconomic Models
 Turning now to the macroeconomic setting, a number of papers have addressed questions
-that are similar in spirit to ours. For example, McKay and Reis (2016), McKay and Reis
-(2021), and Phan (2024) have examined the role of automatic stabilizers in HA models.
+that are similar in spirit to ours. For example, ?, ?, and ? have examined the role of
+automatic stabilizers in HA models.
 But we follow much of the recent literature in treating recessions as ‘MIT shocks’ –
 unanticipated events. And the policies we examine are discretionary, which arguably
 makes sense as reflecting what occurs when the automatic stabilizers have not automatically prevented a recession.8
-A relevant early contribution is by Kaplan and Violante (2014) who build a model
-where agents save in both liquid and illiquid assets. Their model yields a substantial
-consumption response to a stimulus payment, since MPCs are high both for low-wealth
-households and for the many households (in their model) with high net worth but
+A relevant early contribution is by ? who build a model where agents save in both
+liquid and illiquid assets. Their model yields a substantial consumption response to a
+stimulus payment, since MPCs are high both for low-wealth households and for the
+many households (in their model) with high net worth but little liquid assets (the
+“wealthy hand-to-mouth”). (Though the subsequent literature finding high MPC’s even
+by wealthy households with ample liquidity casts doubt on this mechanism.)
+? study discretionary fiscal policies implemented after a large shock, in their case
+the COVID-19 pandemic. They find that targeted stimulus through an increase in
+unemployment benefits has a much larger effect than an untargeted policy. In contrast,
+we find that untargeted stimulus checks have slightly larger spending effects than a
 7
-A related theoretical insight is provided by Lian (2023), who shows that households anticipating
-their own future consumption mistakes can rationally exhibit higher current MPCs; this is because they
-know that any additional savings would be likely be disposed of suboptimally in the future.
+A related theoretical insight is provided by ?, who shows that households anticipating their own
+future consumption mistakes can rationally exhibit higher current MPCs; this is because they know
+that any additional savings would be likely be disposed of suboptimally in the future.
 8
 In our model (and most others in the literature we are contributing to) consumers do not adjust
 their labor supply in response to stimulus policies. This assumption is broadly consistent with the
-empirical findings in Ganong, Greig, Noel, Sullivan, and Vavra (2022) and Chodorow-Reich and
-Karabarbounis (2016). However, the literature is conflicted on this subject; Hagedorn, Manovskii,
-and Mitman (2017) and Hagedorn, Karahan, Manovskii, and Mitman (2019) argue that extensions
-of unemployment insurance affect both search decisions and vacancy creation leading to a rise in
-unemployment. Kekre (2022), on the other hand, evaluates the effect of extending unemployment
+empirical findings in ? and ?. However, the literature is conflicted on this subject; ? and ? argue
+that extensions of unemployment insurance affect both search decisions and vacancy creation leading
+to a rise in unemployment. ?, on the other hand, evaluates the effect of extending unemployment
 insurance in the period from 2008 to 2014, and finds that this extension raised aggregate demand and
-implied a lower unemployment rate than without the policy. Finally, Cohen and Ganong (2024) conduct
-a meta-analysis of the literature on how unemployment benefits impact unemployment duration, and
-they find that the effects are modest.
+implied a lower unemployment rate than without the policy. Finally, ? conduct a meta-analysis of the
+literature on how unemployment benefits impact unemployment duration, and they find that the effects
+are modest.
 
 6
 
-little liquid assets (the “wealthy hand-to-mouth”). (Though the subsequent literature
-finding high MPC’s even by wealthy households with ample liquidity casts doubt on this
-mechanism.)
-Bayer, Born, Luetticke, and Müller (2023) study discretionary fiscal policies implemented after a large shock, in their case the COVID-19 pandemic. They find that
-targeted stimulus through an increase in unemployment benefits has a much larger
-effect than an untargeted policy. In contrast, we find that untargeted stimulus checks
-have slightly larger spending effects than a targeted policy extending eligibility for
-unemployment insurance. The difference derives from the fact that – in our model
-as in the data – even middle- and high-liquid-wealth consumers have relatively high
-MPCs, which means that much more of the stimulus checks get spent quickly.
-Carroll, Crawley, Slacalek, and White (2020) also study the U.S. fiscal response to the
-COVID-19 pandemic, using a HA model similar in many respects to the one we study.
-They predicted9 the consumption response to the 2020 U.S. CARES Act that contained
-both an extension of unemployment benefits and a stimulus check. They resolve the
-tension between obtaining a realistic MPC and fitting the distribution of liquid wealth
-by estimating the distribution of ex-ante heterogeneity in discount factors that allows the
-model to match both kinds of data (discount heterogeneity is one of several competing
-mechanisms for resolving that tension discussed by Kaplan and Violante (2022)). But
-the model in that paper does not match the subsequently published evidence about the
-iMPC (Fagereng, Holm, and Natvik (2021)); does not incorporate a multiplier; and does
-not compare the relative effectiveness of alternative stimulus policies.
-Another related paper is Broer, Druedahl, Harmenberg, and Öberg (2025), who
-analyze the output response to different fiscal policies in a HANK and SAM model
-similar to the one we present in our robustness exercise. As we do in Section 5, they
-examine the policies in a steady state rather than a recession. Unlike us, they do not
-calibrate their model to match the wealth distribution and the iMPCs, and they do not
-evaluate the policies using a welfare metric as we do in our baseline partial equilibrium
-setting.
+targeted policy extending eligibility for unemployment insurance. The difference derives
+from the fact that – in our model as in the data – even middle- and high-liquid-wealth
+consumers have relatively high MPCs, which means that much more of the stimulus
+checks get spent quickly.
+? also study the U.S. fiscal response to the COVID-19 pandemic, using a HA model
+similar in many respects to the one we study. They predicted9 the consumption response
+to the 2020 U.S. CARES Act that contained both an extension of unemployment benefits
+and a stimulus check. They resolve the tension between obtaining a realistic MPC
+and fitting the distribution of liquid wealth by estimating the distribution of ex-ante
+heterogeneity in discount factors that allows the model to match both kinds of data
+(discount heterogeneity is one of several competing mechanisms for resolving that tension
+discussed by ?). But the model in that paper does not match the subsequently published
+evidence about the iMPC (?); does not incorporate a multiplier; and does not compare
+the relative effectiveness of alternative stimulus policies.
+Another related paper is ?, who analyze the output response to different fiscal policies
+in a HANK and SAM model similar to the one we present in our robustness exercise. As
+we do in Section 5, they examine the policies in a steady state rather than a recession.
+Unlike us, they do not calibrate their model to match the wealth distribution and the
+iMPCs, and they do not evaluate the policies using a welfare metric as we do in our
+baseline partial equilibrium setting.
 One criterion to rank policies is the extent to which induced spending is “multiplied,”
-and our paper therefore relates to the vast literature discussing the size and timing
-of any multiplier. Our focus is on policies pursued in the Great Recession, a period
-when monetary policy was essentially fixed at the zero lower bound (ZLB). We therefore
-do not consider monetary policy responses to the policies we evaluate in our primary
-analysis, and our work thus relates to papers such as Christiano, Eichenbaum, and
-Rebelo (2011) and Eggertsson (2011), who argue that fiscal multipliers are higher in
-such circumstances. Hagedorn, Manovskii, and Mitman (2019) present an HA model
-with both incomplete markets and nominal rigidities to evaluate the size of the fiscal
-multiplier and also find that it is higher when monetary policy is constrained. They focus
-on government spending instead of transfers and are interested in the consequences
-of alternative options for financing that spending. Broer, Krusell, and Öberg (2023)
+and our paper therefore relates to the vast literature discussing the size and timing of
+any multiplier. Our focus is on policies pursued in the Great Recession, a period when
+monetary policy was essentially fixed at the zero lower bound (ZLB). We therefore do not
+consider monetary policy responses to the policies we evaluate in our primary analysis,
+and our work thus relates to papers such as ? and ?, who argue that fiscal multipliers
+are higher in such circumstances. ? present an HA model with both incomplete markets
+and nominal rigidities to evaluate the size of the fiscal multiplier and also find that it is
+higher when monetary policy is constrained. They focus on government spending instead
+of transfers and are interested in the consequences of alternative options for financing
+that spending. ? also focus on fiscal multipliers for government spending and show
+how they differ in representative agent and HA models with different sources of nominal
+rigidities. Finally, ? find empirical evidence that multipliers are higher when there is
+slack in the economy or the ZLB binds. In any case, our concern in the versions of our
+model with multipliers is to compare the relative size of any differences in multiplication
+across the policies we consider, which should thus be roughly scalable by the absolute
+size of any multiplication effect, allowing a reader to scale our results by their preferred
+estimate of the magnitude of recessionary multipliers.
+Aside from the size of spending effects (whether multiplied or not), we are interested
+in ranking policies in terms of their welfare consequences. Thus, the paper relates to
+the recent literature on welfare comparisons in HA models. Both ? and ? introduce
 9
 
 “predicted” because the paper was published long before any data on the actual response were
@@ -377,21 +375,9 @@ available.
 
 7
 
-also focus on fiscal multipliers for government spending and show how they differ in
-representative agent and HA models with different sources of nominal rigidities. Finally,
-Ramey and Zubairy (2018) find empirical evidence that multipliers are higher when there
-is slack in the economy or the ZLB binds. In any case, our concern in the versions of our
-model with multipliers is to compare the relative size of any differences in multiplication
-across the policies we consider, which should thus be roughly scalable by the absolute
-size of any multiplication effect, allowing a reader to scale our results by their preferred
-estimate of the magnitude of recessionary multipliers.
-Aside from the size of spending effects (whether multiplied or not), we are interested
-in ranking policies in terms of their welfare consequences. Thus, the paper relates to the
-recent literature on welfare comparisons in HA models. Both Bhandari, Evans, Golosov,
-and Sargent (2021) and Dávila and Schaab (2022) introduce ways of decomposing welfare
-effects. In the former case, these are aggregate efficiency, redistribution and insurance,
-while the latter further decomposes the insurance part into intra- and intertemporal
-components.
+ways of decomposing welfare effects. In the former case, these are aggregate efficiency,
+redistribution and insurance, while the latter further decomposes the insurance part into
+intra- and intertemporal components.
 One part of these decompositions is tricky: Under standard calibrations like the ones
 we use, any change in redistribution tends to have powerful consequences on welfare.
 We presume that there are real (but unmodeled) reasons that the equilibrium degree
@@ -421,10 +407,7 @@ Consumers differ by their level of education and, within education group, by sub
 discount factors (calibrated to match the within-group distribution of liquid wealth).
 We first describe each kind of consumer’s problem, given an income process with permanent and transitory shocks calibrated to their type, as well as type-specific shocks to
 employment. The next step describes the arrival of a recession and the policies we study
-
-8
-
-as potential fiscal policy responses. The last section discusses an extension incorporating
+as potential fiscal policy responses. The last section discusses an extension incorporating
 aggregate demand effects that induce feedback from aggregate consumption to income
 and (via the marginal propensity to consume) back to consumption, amplifying the effect
 of a recession when it occurs.
@@ -432,7 +415,15 @@ A consumer i has education e(i) and a subjective discount factor βi . The consu
 faces a stochastic income stream, yi,t , and chooses to consume a fraction of that income
 when it arrives—the ‘splurge’, described in the introduction.10 With what is left over,
 the consumer chooses to optimize consumption without regard to the fraction that was
-already spent. Therefore, consumption each period for consumer i can be written as
+10
+
+One attractive feature of the splurge assumption is that it is also consistent with evidence from ?,
+that spending drops sharply following the large and predictable drop in income after the exhaustion of
+unemployment benefits; see Section 3.3.4.
+
+8
+
+already spent. Therefore, consumption each period for consumer i can be written as
 ci,t = csp,i,t + copt,i,t ,
 
 (1)
@@ -472,24 +463,28 @@ unemployed receive unemployment benefits for two quarters. Permanent income evol
 according to:
 pi,t+1 = ψi,t+1 Γe(i) pi,t ,
 (5)
-10
+where ψi,t+1 is the shock to permanent income and Γe(i) is the average growth rate of
+income for the consumer’s education group e(i).11 The realized growth rate of permanent
+income for consumer i is thus Γ̂i,t+1 = ψi,t+1 Γe(i) . The shock to permanent income is
+normally distributed with variance σψ2 .
+The actual income a consumer receives will be subject to the individual’s employment
 
-One attractive feature of the splurge assumption is that it is also consistent with evidence from
-Ganong and Noel (2019), that spending drops sharply following the large and predictable drop in income
-after the exhaustion of unemployment benefits; see Section 3.3.4.
+11
+
+We model the rate of growth for permanent income for each education group and keep this rate
+unchanged during periods of unemployment. There is evidence, e.g. in ?, that unemployment, especially
+in a recession, leads to permanent income loss. This finding could be added to the model—see ? for an
+example—but is not material to the evaluation of stimulus payments here so we have chosen to keep
+the model simple.
 
 9
 
 {eq:model}
 
-where ψi,t+1 is the shock to permanent income and Γe(i) is the average growth rate of
-income for the consumer’s education group e(i).11 The realized growth rate of permanent
-income for consumer i is thus Γ̂i,t+1 = ψi,t+1 Γe(i) . The shock to permanent income is
-normally distributed with variance σψ2 .
-The actual income a consumer receives will be subject to the individual’s employment
-status as well as transitory shocks, ξi,t :
+status as well as transitory shocks, ξi,t :
 if employed
-yi,t = ρb pi,t , if unemployed with benefits
+yi,t = ρb pi,t , if unemployed with benefits
+
 
 
 ρnb pi,t , if unemployed without benefits
@@ -509,9 +504,9 @@ last. An employed consumer can continue being employed or move to being unemploy
 e(i)
 e(i)
 e(i)
+with benefits.12 The first row of Π is thus given by [1 − πeu
 , πeu
 , 0], where πeu
-with benefits.12 The first row of Π is thus given by [1 − πeu
 indicates the probability of becoming unemployed from an employed state and 0 is a
 vector of zeros of the appropriate length. Note that we allow this probability to depend
 on the education group of consumer i and will calibrate this parameter to match the
@@ -530,21 +525,7 @@ recession and one for each of the three different policy responses we consider. 
 responses are usually modeled as in addition to the recession, but we also consider
 a counterfactual in which the policy response occurs without a recession in order to
 understand the welfare effects of the policy.
-11
-
-We model the rate of growth for permanent income for each education group and keep this rate
-unchanged during periods of unemployment. There is evidence, e.g. in Davis and Wachter (2011), that
-unemployment, especially in a recession, leads to permanent income loss. This finding could be added
-to the model—see Carroll, Crawley, Slacalek, and White (2020) for an example—but is not material to
-the evaluation of stimulus payments here so we have chosen to keep the model simple.
-12
-That is, as long as we assume that there is at least one period of unemployment benefits.
-
-10
-
-{sec:recessions}
-
-Recession. At the onset of a recession, several changes occur. First, the unemployment
+Recession. At the onset of a recession, several changes occur. First, the unemployment
 rate for each education group doubles: Those who would have been unemployed in the
 absence of a recession are still unemployed, and an additional number of consumers move
 from employment to unemployment. Second, conditional on the recession continuing,
@@ -553,7 +534,15 @@ high level and the expected length of time for an unemployment spell increases. 
 our baseline calibration, discussed in detail in section 3.3.1, we set the expected length
 of an unemployment spell to one and a half quarters in normal times, and this length
 increases to four quarters in a recession. Third, the end of the recession occurs as a
-Bernoulli process calibrated for an average length of recession of six quarters. Finally,
+12
+
+That is, as long as we assume that there is at least one period of unemployment benefits.
+
+10
+
+{sec:recessions}
+
+Bernoulli process calibrated for an average length of recession of six quarters. Finally,
 at the end of a recession, the employment transition matrix switches back to its original
 probabilities, and, as a result, the unemployment rate trends down over time, back to
 its steady-state level. The details of how certain model parameters change in a recession
@@ -579,20 +568,23 @@ continues. This policy reflects temporary changes made to unemployment benefits 
 the U.S. following the great recession.
 3. Payroll tax cut. In this policy response, employee-side payroll taxes are reduced for
 a period of eight quarters.13 During this period, which continues irrespective of whether
-13
-
-Although payroll taxes are paid by both the employer and the employee, the payroll tax cuts in
-the U.S. have been applied only the employee side.
-
-11
-
-the recession continues or ends, employed consumers’ income is increased by 2 percent.
+the recession continues or ends, employed consumers’ income is increased by 2 percent.
 The income of the unemployed is unchanged by this policy. Households also believe
 there is a 50-50 chance that the tax cut will be extended by another two years if the
 recession has not ended when the first tax cut expires.14 The payroll tax cut introduced
 in the U.S. in 2010 was itself an extension of previously implemented cuts and had a
 two-year horizon.
-Financing the policies. Some work in the HA macro literature has shown that if taxes
+
+13
+
+Although payroll taxes are paid by both the employer and the employee, the payroll tax cuts in
+the U.S. have been applied only the employee side.
+14
+The belief that the payroll tax cut may be extended makes little difference to the results.
+
+11
+
+Financing the policies. Some work in the HA macro literature has shown that if taxes
 are raised immediately to offset any fiscal stimulus, results can be very different than
 they would be if, as occurs in reality, recessionary policies are debt financed. However,
 typical fiscal rules assume that any increase in debt gets financed over a long interval.
@@ -618,39 +610,16 @@ output. By contrast, government spending in an economy running at potential with
 an active monetary policy will not succeed in increasing output. The recent inflation
 experience of the U.S. provides some evidence that output responds highly non-linearly
 to aggregate demand. This idea is explored in a recent revival of research into non-linear
-Phillips curves, such as Benigno and Eggertsson (2023) and Blanco, Boar, Jones, and
-Midrigan (2024).
+Phillips curves, such as ? and ?.
 With this extension, any changes in consumption away from the steady-state consumption level feed back into labor income. Aggregate demand effects are evaluated
-
-14
-
-The belief that the payroll tax cut may be extended makes little difference to the results.
-In our general equilibrium analysis in section 5, we apply a fiscal rule that assumes debt is slowly
-paid back over time.
-15
-
-12
-
-{sec:ADeffects}
-
-as
-
+as
  κ
 
- Ct ,
-
-if in a recession
-
-1,
-
-otherwise,
-
-AD(Ct ) = 
-
-C̃
-
+ Ct , if in a recession
 (7)
-
+AD(Ct ) =  C̃
+1,
+otherwise,
 where C̃ is the level of consumption in the steady state. Idiosyncratic income in the
 aggregate demand extension is multiplied by AD(Ct ):
 yAD,i,t = AD(Ct )yi,t .
@@ -659,14 +628,22 @@ yAD,i,t = AD(Ct )yi,t .
 
 The series yAD,i,t is then used for each consumer’s budget constraint.
 
-3 Parameterizing the model
+15
+
+In our general equilibrium analysis in section 5, we apply a fiscal rule that assumes debt is slowly
+paid back over time.
+
+12
+
+{sec:ADeffects}
+
+3 Parameterizing the model
 This section describes how we set the model’s parameters. First, we estimate the extent
 to which consumers ‘splurge’ when receiving an income shock. Given the lack of empirical
 evidence on the marginal propensity to consume over time for the US, we instead use
 Norwegian data to estimate the splurge. Specifically, we calibrate our model to the
 Norwegian economy and match evidence from Norway on the profile of the marginal
-propensity to spend over time and across different wealth levels, as provided by Fagereng,
-Holm, and Natvik (2021).16
+propensity to spend over time and across different wealth levels, as provided by ?.16
 Second, we set up the full model on U.S. data, taking the splurge factor as given
 from the Norwegian estimation. In the full model, agents differ according to their level
 of education and their subjective discount factors. A subset of the parameters in the
@@ -689,6 +666,18 @@ There we show that such a model provides a worse fit to the moments in the data 
 we are interested in, but not dramatically so, and that our conclusions regarding the
 ranking of the policies are not affected. However, in our view, this version of the model
 requires households with unreasonably low discount factors.
+The specific exercise we carry out in this section, is to show that our model can
+account well for the results of ?, who study the effect of lottery winnings in Norway
+on consumption using millions of records from the Norwegian population registry. We
+calibrate our model to reflect the Norwegian economy and, using their results, estimate
+the splurge factor, as well as the distribution of discount factors in the population, to
+match two empirical moments.
+First, we take from ? the marginal propensity to consume out of a one-period income
+shock. We target not only the initial (aggregate) response of consumption to the income
+shock, but also the subsequent effect on consumption in years one through four after
+the shock. We also target the initial consumption response in the cross-section, i.e.
+across the quartiles of the liquid wealth distribution, for which empirical estimates are
+also provided. The shares of lottery winnings expended at different time horizons, as
 16
 
 The Online Appendix B discusses an alternative calibration method, which solely relies on US
@@ -698,59 +687,8 @@ data. The main results derived in that calibration are in line with those discus
 
 {sec:splurge}
 
-Model
-Data
-
-1st WQ
-
-2nd WQ
-
-MPC
-3rd WQ
-
-4th WQ
-
-Agg
-
-K/Y
-
-0.27
-0.39
-
-0.49
-0.39
-
-0.60
-0.55
-
-0.66
-0.66
-
-0.50
-0.51
-
-6.59
-6.60
-
-Table 1 Marginal propensities to consume across wealth quartiles and the total
-population as well as the wealth to income ratio, in the model and according
-to the data
-{tab:MPC_WQ}
-
-The specific exercise we carry out in this section, is to show that our model can
-account well for the results of Fagereng, Holm, and Natvik (2021), who study the effect of
-lottery winnings in Norway on consumption using millions of records from the Norwegian
-population registry. We calibrate our model to reflect the Norwegian economy and, using
-their results, estimate the splurge factor, as well as the distribution of discount factors
-in the population, to match two empirical moments.
-First, we take from Fagereng, Holm, and Natvik (2021) the marginal propensity to
-consume out of a one-period income shock. We target not only the initial (aggregate)
-response of consumption to the income shock, but also the subsequent effect on consumption in years one through four after the shock. We also target the initial consumption
-response in the cross-section, i.e. across the quartiles of the liquid wealth distribution,
-for which empirical estimates are also provided. The shares of lottery winnings expended
-at different time horizons, as found in Fagereng, Holm, and Natvik (2021), are plotted
-in figure 1a. Table 1 (second row) shows the initial consumption response across liquid
-wealth quartiles.
+found in ?, are plotted in figure 1a. Table 1 (second row) shows the initial consumption
+response across liquid wealth quartiles.
 Second, we match the steady-state distribution of liquid wealth in the model to its
 empirical counterpart. Because of the lack of data on the liquid wealth distribution in
 Norway, we use the corresponding data from the United States, assuming that liquid
@@ -761,21 +699,8 @@ targets the cumulative liquid wealth shares for the entire population at the 20t
 percent, and 7.42 percent, respectively. Hence, 92.6 percent of the total liquid wealth is
 held by the top income quintile. We also target the mean liquid wealth to income ratio
 of 6.60. The data are plotted in figure 1b.
-For this estimation exercise, the remaining model parameters are calibrated to reflect
-the Norwegian economy. Specifically, we set the real interest rate to 2 percent annually
-and the unemployment rate to 4.4 percent, in line with Aursland, Frankovic, Kanik,
-and Saxegaard (2020). The quarterly probability to survive is calibrated to 1 − 1/160,
-reflecting an expected working life of 40 years. Aggregate productivity growth is set
-17
-Data from the Norwegian tax registry contains information on liquid assets, but not liquid debt.
-Only total debt is reported – which is mainly mortgage debt. Therefore, we cannot construct liquid
-wealth as Kaplan and Violante (2014) can for the U.S.
 
-14
-
-{foot:liqwealth}
-
-1.0
+1.0
 
 Model
 Fagereng, Holm and Natvik (2021)
@@ -836,27 +761,92 @@ Liquid wealth percentile
 
 Figure 1 Marginal propensity to consume over time and the liquid wealth
 distribution in the model and the data
-Note: Panel (a) shows the fit of the model to the dynamic consumption response estimated in
-Fagereng, Holm, and Natvik (2021); see their figure A5. Panel (b) shows the fit of the model to
-the distribution of liquid wealth (see Section 3.2 for the definition) from the 2004 SCF.
 
-to 1 percent annually, following Kravik and Mimir (2019). The unemployment net
-replacement rate is calibrated to 60 percent, following OECD (2020). Finally, we set
-the real interest rate on liquid debt to 13.6 percent, following data from the Norwegian
-debt registry Gjeldsregistret (2022).18
-Estimates of the standard deviations of the permanent and transitory shocks are
-taken from Crawley, Holm, and Tretvoll (2024), who estimate an income process on
-administrative data for Norwegian males from 1971 to 2014. The estimated annual
-variances for the permanent and transitory shocks are 0.004 and 0.033, respectively.19
-As in Carroll, Crawley, Slacalek, Tokuoka, and White (2020), these are converted to
-quarterly values by multiplying the permanent and transitory shock variances by 1/4
-and 4, respectively. Thus, we obtain quarterly standard deviations of σψ = 0.0316 and
-σξ = 0.363.
+{fig:splurge_estima
+
+Note: Panel (a) shows the fit of the model to the dynamic consumption response estimated in
+?; see their figure A5. Panel (b) shows the fit of the model to the distribution of liquid wealth
+(see Section 3.2 for the definition) from the 2004 SCF.
+
+For this estimation exercise, the remaining model parameters are calibrated to reflect
+the Norwegian economy. Specifically, we set the real interest rate to 2 percent annually
+and the unemployment rate to 4.4 percent, in line with ?. The quarterly probability
+to survive is calibrated to 1 − 1/160, reflecting an expected working life of 40 years.
+Aggregate productivity growth is set to 1 percent annually, following ?. The unemployment net replacement rate is calibrated to 60 percent, following ?. Finally, we set the
+
+17
+Data from the Norwegian tax registry contains information on liquid assets, but not liquid debt.
+Only total debt is reported – which is mainly mortgage debt. Therefore, we cannot construct liquid
+wealth as ? can for the U.S.
+
+14
+
+{foot:liqwealth}
+
+Model
+Data
+
+1st WQ
+
+2nd WQ
+
+MPC
+3rd WQ
+
+4th WQ
+
+Agg
+
+K/Y
+
+0.27
+0.39
+
+0.49
+0.39
+
+0.60
+0.55
+
+0.66
+0.66
+
+0.50
+0.51
+
+6.59
+6.60
+
+Table 1 Marginal propensities to consume across wealth quartiles and the total
+population as well as the wealth to income ratio, in the model and according
+to the data
+{tab:MPC_WQ}
+
+real interest rate on liquid debt to 13.6 percent, following data from the Norwegian debt
+registry ?.18
+Estimates of the standard deviations of the permanent and transitory shocks are taken
+from ?, who estimate an income process on administrative data for Norwegian males from
+1971 to 2014. The estimated annual variances for the permanent and transitory shocks
+are 0.004 and 0.033, respectively.19 As in ?, these are converted to quarterly values by
+multiplying the permanent and transitory shock variances by 1/4 and 4, respectively.
+Thus, we obtain quarterly standard deviations of σψ = 0.0316 and σξ = 0.363.
 Using the calibrated model, we simulated unexpected lottery winnings and calculate
 the share of the lottery spent in each year. Specifically, each simulated agent receives a
 lottery win in a random quarter of the first year of the simulation. The size of the lottery
-win is itself random and spans the range of lottery sizes found in Fagereng, Holm, and
-Natvik (2021). The estimation procedure minimizes the distance between the target and
+win is itself random and spans the range of lottery sizes found in ?. The estimation
+procedure minimizes the distance between the target and model moments by selecting
+the splurge factor and the distribution of discount factors in the population, where
+the latter are assumed to be uniformly distributed in the range [β − ∇, β + ∇]. We
+approximate the uniform distribution of discount factors with a discrete approximation
+and let the population consist of seven different types.
+The estimation yields a splurge factor of 0.249 and a distribution of discount factors
+described by β = 0.968 and ∇ = 0.0578. Given these estimated parameters and the
+remaining calibrated ones, the model is able to replicate the time path of consumption
+in response to a lottery win from ? and the targeted distribution of liquid wealth
+very well, see Figure 1. Also, the targeted moments discussed in Table 1 are captured
+relatively well. In particular, the model is able to account for the empirical fact, in the
+first column, that the MPC for high-wealth agents is substantially larger than zero.
+
 18
 
 Specifically, we determine the average volume-weighted interest rate on liquid debt, which consists
@@ -865,28 +855,13 @@ December 2019. Note that although these data let us pin down aggregate quantitie
 the issue referred to in footnote 17, since we cannot link them to the tax registry at the individual level.
 We set the borrowing limit on liquid debt to zero.
 19
-As shown in Crawley, Holm, and Tretvoll (2024), an income process of the form that we use here
-is more accurately estimated using moments in levels not differences. Hence, we take the numbers from
-column 3 of Panel C in their table 4.
+As shown in ?, an income process of the form that we use here is more accurately estimated using
+moments in levels not differences. Hence, we take the numbers from column 3 of Panel C in their table
+4.
 
 15
 
-{fig:splurge_estima
-
-model moments by selecting the splurge factor and the distribution of discount factors
-in the population, where the latter are assumed to be uniformly distributed in the range
-[β − ∇, β + ∇]. We approximate the uniform distribution of discount factors with a
-discrete approximation and let the population consist of seven different types.
-The estimation yields a splurge factor of 0.249 and a distribution of discount factors
-described by β = 0.968 and ∇ = 0.0578. Given these estimated parameters and the
-remaining calibrated ones, the model is able to replicate the time path of consumption
-in response to a lottery win from Fagereng, Holm, and Natvik (2021) and the targeted
-distribution of liquid wealth very well, see Figure 1. Also, the targeted moments
-discussed in Table 1 are captured relatively well. In particular, the model is able to
-account for the empirical fact, in the first column, that the MPC for high-wealth agents
-is substantially larger than zero.
-
-3.2 Data on permanent income, liquid wealth, and education
+3.2 Data on permanent income, liquid wealth, and education
 Before we move on to the parameterization of the full model, we describe in detail the
 data that we use to get measures of permanent income, liquid wealth, and the division of
 households into educational groups in the United States. We use data on the distribution
@@ -896,13 +871,12 @@ The SCF-variable “normal annual income” is our measure of the household’s 
 income, and, to exclude outliers, we drop the observations that make up the bottom 5
 percent of the distribution of this variable. The smallest value of permanent income for
 households in our sample is thus $16,708.
-Liquid wealth is defined as in Kaplan and Violante (2014) and consists of cash, money
-market, checking, savings, and call accounts; directly held mutual funds; and stocks and
-bonds. We subtract off liquid debt, which is the revolving debt on credit card balances.
-Note that the SCF does not contain information on cash holdings, so these are imputed
-with the procedure described in Appendix B.1 of Kaplan and Violante (2014), which
-also describes the credit card balances that are considered part of liquid debt. We drop
-any households that have negative liquid wealth.
+Liquid wealth is defined as in ? and consists of cash, money market, checking, savings,
+and call accounts; directly held mutual funds; and stocks and bonds. We subtract off
+liquid debt, which is the revolving debt on credit card balances. Note that the SCF
+does not contain information on cash holdings, so these are imputed with the procedure
+described in Appendix B.1 of ?, which also describes the credit card balances that are
+considered part of liquid debt. We drop any households that have negative liquid wealth.
 Households are classified into three educational groups. The first group, “Dropout,”
 applies to households where the head of household has not obtained a high school
 diploma; the second group, “Highschool,” includes heads of households who have a
@@ -914,11 +888,9 @@ Highschool group 52.7 percent, and the College group 38.0 percent.
 With our sample selection criteria, we are left with a sample representing about 61.3
 million U.S. households.
 
-16
-
 {sec:SCFdata}
 
-3.3 Parameters in the full model
+3.3 Parameters in the full model
 {sec:paramsFull}
 
 With households classified into the three education groups using the SCF data, we
@@ -933,7 +905,10 @@ the education level of the household based on the education of the head of the h
 and we typically think of individual characteristics as applying to that person.
 A period in the model is one quarter. This choice makes it realistic to consider stimulus
 policies that are implemented in the same period as a recession starts.
-3.3.1 Calibrated parameters — Normal times
+
+16
+
+3.3.1 Calibrated parameters — Normal times
 Table 2 presents our calibration of the model parameters in normal times. Panel A lists
 parameters that are calibrated equally across all types in the model, and Panel B lists
 parameters in the model that are education specific. In the next subsection we present
@@ -959,6 +934,23 @@ and for the College group, it is $14,500. The standard deviations of the log-nor
 distributions for each group are, respectively, 0.32, 0.42, and 0.53.
 While households remain employed, their income is subject to both permanent and
 transitory idiosyncratic shocks. These shocks are distributed equally for the three
+education groups. The standard deviations of these shocks are taken from ?, who set
+the standard deviations of the transitory and permanent shocks to σξ = 0.346 and
+σψ = 0.0548, respectively.
+Permanent income also grows, on average, with a growth rate Γe(i) that depends
+on the level of education. These average growth rates are based on numbers from ?,
+who construct age-dependent expected permanent income growth factors using numbers
+from ? and fit the age-dependent numbers to their life-cycle model. We construct the
+quarterly growth rates of permanent income in our perpetual-youth model by taking
+the average of the age-dependent growth rates during a household’s working life. The
+average gross quarterly growth rates that we obtain for the three education groups are
+then Γd = 1.0036, Γh = 1.0045, and Γc = 1.0049.
+Unemployment. Consumers also face the risk of becoming unemployed and will then
+have access to unemployment benefits for a certain period. The parameters describing
+the unemployment benefits in normal times are based on the work of ?, who study
+the effects on household income of unemployment and of running out of eligibility for
+benefits. The unemployment benefits replacement rate is thus set to ρb = 0.7 for all
+households, and when benefits run out, the unemployment replacement rate without
 
 17
 
@@ -1048,39 +1040,20 @@ Probability of entering unemployment (πeu
 , percent)
 
 Note: The first three rows show numbers from the 2004 SCF. The fourth row are averages of growth
-rates from Carroll, Crawley, Slacalek, and White (2020). The fifth row are numbers for 2004 from the
-Bureau of Labor Statistics, and the sixth row are calculated from these unemployment rates.
+rates from ?. The fifth row are numbers for 2004 from the Bureau of Labor Statistics, and the sixth row
+are calculated from these unemployment rates.
 
 Panel (A) shows parameters calibrated the same for all types. Panel (B) shows parameters
 calibrated for each education group. “PI” refers to permanent income.
 {tab:calibration}
 
-education groups. The standard deviations of these shocks are taken from Carroll,
-Crawley, Slacalek, Tokuoka, and White (2020), who set the standard deviations of the
-transitory and permanent shocks to σξ = 0.346 and σψ = 0.0548, respectively.
-Permanent income also grows, on average, with a growth rate Γe(i) that depends on
-the level of education. These average growth rates are based on numbers from Carroll,
-Crawley, Slacalek, and White (2020), who construct age-dependent expected permanent
-income growth factors using numbers from Cagetti (2003) and fit the age-dependent
-numbers to their life-cycle model. We construct the quarterly growth rates of permanent
-income in our perpetual-youth model by taking the average of the age-dependent growth
-rates during a household’s working life. The average gross quarterly growth rates that
-we obtain for the three education groups are then Γd = 1.0036, Γh = 1.0045, and
-Γc = 1.0049.
-Unemployment. Consumers also face the risk of becoming unemployed and will then
-have access to unemployment benefits for a certain period. The parameters describing
-the unemployment benefits in normal times are based on the work of Rothstein and
-Valletta (2017), who study the effects on household income of unemployment and of
-running out of eligibility for benefits. The unemployment benefits replacement rate is
-thus set to ρb = 0.7 for all households, and when benefits run out, the unemployment
-replacement rate without any benefits is set to ρnb = 0.5. These replacement rates are
-set as a share of the households’ permanent income and are based on the initial drop
-in income upon entering an unemployment spell, presented in figure 3 in Rothstein and
-Valletta (2017).20
+any benefits is set to ρnb = 0.5. These replacement rates are set as a share of the
+households’ permanent income and are based on the initial drop in income upon entering
+an unemployment spell, presented in figure 3 in ?.20
 The duration of unemployment benefits in normal times is set to two quarters, so that
 our Markov transition matrix Π has four states. This length of time corresponds to the
 mean duration of unemployment benefits across U.S. states from 2004 to mid-2008 of 26
-weeks, reported by Rothstein and Valletta (2017).
+weeks, reported by ?.
 The probability of transitioning out of unemployment is set to match the average
 duration of an unemployment spell in normal times. In data from the Bureau of Labor
 Statistics, this average duration was 19.6 weeks or 1.5 quarters in 2004. We do not
@@ -1090,39 +1063,49 @@ probability from unemployment to employment is set to πue = 2/3.
 The Bureau of Labor Statistics provide data on unemployment rates for different
 education groups, and we match the average rate in each group in 2004 by setting
 an education-specific probability of transitioning from employment into unemployment.
-Note that this calibration strategy is consistent with the results in Mincer (1991) who
-finds that the main difference between education groups is in the incidence of unemploy20
-
-See the lines for their UI exhaustee sample including and excluding UI income. Rothstein and
-Valletta (2017) also point out that “UI benefits replace about 40 percent of the lost earnings on average”
-(page 894). For a household with two income earners with equal income, these findings would mean
-that income drops to 70 percent when one earner becomes unemployed and to 50 percent when benefits
-run out. In this paper we ignore several of the channels studied by Rothstein and Valletta (2017) such
-as within household insurance and other social programs that can provide income even after UI benefits
-have run out.
-
-19
-
-ment, and not its duration.21 More recent work by Elsby and Hobijn (2010) includes
-data upto 2009 and echoes Mincer’s results.
+Note that this calibration strategy is consistent with the results in ? who finds that the
+main difference between education groups is in the incidence of unemployment, and not
+its duration.21 More recent work by ? includes data upto 2009 and echoes ?’s results.
 The average unemployment rate in 2004 was 8.5 percent for the Dropout group, 4.4
 percent for the Highschool group, and 2.7 percent for the College group. These values
 imply that the probabilities of transitioning into unemployment in normal times are
-d
-h
 c
-πeu
-= 6.2 percent, πeu
-= 3.1 percent, and πeu
+h
+d
 = 1.8 percent, respectively.22
+= 3.1 percent, and πeu
+= 6.2 percent, πeu
+πeu
 Finally, the strength of the aggregate demand effect in recessions is determined by the
-consumption elasticity of productivity. We follow Krueger, Mitman, and Perri (2016)
-and set this to κ = 0.3.
+consumption elasticity of productivity. We follow ? and set this to κ = 0.3.
 3.3.2 Calibrated parameters — Recession
 Table 3 shows the model parameters that change when a recession hits. Panel A shows
 the change in two parameters that apply to all types, and Panel B shows changes in some
 parameters that differ across education groups. For completeness, panel C summarizes
-the remaining parameters describing how we model a recession and the three policies we
+20
+See the lines for their UI exhaustee sample including and excluding UI income. ? also point out
+that “UI benefits replace about 40 percent of the lost earnings on average” (page 894). For a household
+with two income earners with equal income, these findings would mean that income drops to 70 percent
+when one earner becomes unemployed and to 50 percent when benefits run out. In this paper we ignore
+several of the channels studied by ? such as within household insurance and other social programs that
+can provide income even after UI benefits have run out.
+21
+? states that “the reduction of the incidence of unemployment [at higher education levels] is
+found to be far more important than the reduced duration of unemployment in creating the educational
+differentials in unemployment rates” (page 1).
+22
+Also note that the probability of transitioning from employment to unemployment is the probability
+of a job separation times the conditional probability of unemployment given a job separation. ? reports
+that both of these are lower for higher education levels. For our calibration, this means that a higher
+job finding rate within the quarter of the job separation for more educated workers translates into a
+lower probability of transitioning from employment to unemployment during a quarter. In that sense,
+our calibration is consistent with short-term job-finding rates being higher for more educated workers.
+
+19
+
+{sec:calibRecession}
+
+the remaining parameters describing how we model a recession and the three policies we
 consider as potential responses to a recession.
 The two immediate changes that occur at the outset of a recession is that the unemployment rate doubles for all education groups, and the expected duration of an
 unemployment spell increases from 1.5 to 4 quarters. The duration of unemployment
@@ -1136,31 +1119,14 @@ slightly smaller than those transition probabilities in normal times. The probab
 in a recession is set to 5.1 percent for the Dropout group, 2.4 percent for the Highschool
 group, and 1.4 for the College group.
 Our calibration of the transition probabilities between employment and unemployment
-during a recession are thus broadly in line with the results of Elsby and Hobijn (2010).
-They find that unemployment duration does not vary much between education groups
-and that the flow from unemployment to employment drops sharply for all groups in a
-recession. The flow into unemployment is more stable, but they find that it tends to
-21
-Mincer (1991) states that “the reduction of the incidence of unemployment [at higher education
-levels] is found to be far more important than the reduced duration of unemployment in creating the
-educational differentials in unemployment rates” (page 1).
-22
-Also note that the probability of transitioning from employment to unemployment is the probability
-of a job separation times the conditional probability of unemployment given a job separation. Mincer
-(1991) reports that both of these are lower for higher education levels. For our calibration, this means
-that a higher job finding rate within the quarter of the job separation for more educated workers
-translates into a lower probability of transitioning from employment to unemployment during a quarter.
-In that sense, our calibration is consistent with short-term job-finding rates being higher for more
-educated workers.
-
-20
-
-{sec:calibRecession}
-
-increase a little bit in recessions.23 This differs from the small decrease in the transition
-probabilities from employment into unemployment that our calibration strategy implies,
-which follows from our choice of targeting a doubling of the unemployment rate for each
-group rather than an even larger increase.
+during a recession are thus broadly in line with the results of ?. They find that
+unemployment duration does not vary much between education groups and that the
+flow from unemployment to employment drops sharply for all groups in a recession. The
+flow into unemployment is more stable, but they find that it tends to increase a little bit
+in recessions.23 This differs from the small decrease in the transition probabilities from
+employment into unemployment that our calibration strategy implies, which follows from
+our choice of targeting a doubling of the unemployment rate for each group rather than
+an even larger increase.
 3.3.3 Estimating the discount factor distributions
 Discount factor distributions are estimated separately for each education group to match
 the distribution of liquid wealth for households in that group. To do so, we let each
@@ -1177,34 +1143,11 @@ actually use in the model when we use a discrete approximation with seven values
 approximate the uniform distribution of discount factors. Panel B of table 4 shows
 that with these estimated distributions, we can exactly match the median liquid-wealthto-permanent-income ratios for each education group. Figure 2 shows that with the
 estimated distributions, the model quite closely matches the distribution of liquid wealth
-within each education group as well as for the population as a whole. Thus, our model
-does not suffer from the “missing middle” problem, identified in Kaplan and Violante
-(2022), in which the middle of the wealth distribution has too little wealth.24
-Note that several of the types in the Dropout group have very low discount factors and
-are very impatient. In this way, the model fits the feature of the data for the Dropout
-group that the bottom quintiles do not save at all and do not accumulate any liquid
-wealth. Very low estimates for discount factors are in line with those obtained in the
-literature on payday lending.25
 23
 
-See the bottom row of Figure 8 in Elsby and Hobijn (2010) for these results.
-One technical point to note about our estimation, is that we impose the constraint that the Growth
-Impatience Condition (GIC), discussed in Carroll (2022), is never violated. (The GIC is required to
-prevent the ratio of total wealth to total income of any group from approaching infinity. It does this by
-making sure that the growth of wealth of the group is less than or equal to the growth of income.) The
-constraint is imposed by calculating an upper bound for the discount factors β GIC where the GIC holds
-with equality. The estimation procedure ensures that no type ends up with a discount factor higher
-than this upper bound.
-25
-See, for example, Skiba and Tobacman (2008), who estimate two-week discount rates of 21 percent,
-and Allcott, Kim, Taubinsky, and Zinman (2021), who estimate an initial period discount factor between
-0.74 and 0.83 in a model where a period is eight weeks long. Both of these papers use quasi-hyperbolic
-preferences, so the estimates are not directly comparable with parameters in our model. Nevertheless,
-they support the point that very high discount rates are necessary to model the part of the population
-that takes out payday loans at very high interest rates.
-24
+See the bottom row of Figure 8 in ? for these results.
 
-21
+20
 
 {sec:estimBetas}
 
@@ -1273,9 +1216,12 @@ numbers further describing how we model a recession and the three policies we co
 refers to permanent income.
 {tab:calibrationRece
 
-22
+21
 
-Panel (A) Estimated discount factor distributions
+within each education group as well as for the population as a whole. Thus, our model
+does not suffer from the “missing middle” problem, identified in ?, in which the middle
+of the wealth distribution has too little wealth.24
+Panel (A) Estimated discount factor distributions
 Dropout
 
 Highschool
@@ -1313,31 +1259,28 @@ to the uniform distribution of discount factors for each group. Panel (B) shows 
 median ratio of liquid wealth to permanent income from the 2004 SCF and in the model. In the
 annual data from the SCF, the annual PI is divided by 4 to obtain a quarterly number.
 
-3.3.4 Implications for non-targeted moments
-Before we move on to compare different consumption stimulus policies in the calibrated
-model, we also report implications of the model for some non-targeted moments. Panel A
-of table 5 shows the wealth distribution across the three education groups in the data
-and in the model. The model matches these shares quite closely, which may not be
-surprising given that we calibrate the size of each group and we manage to fit the wealth
-distribution within each group separately. The panel also reports the average marginal
-propensity to consume for the different groups. To be comparable to numbers reported
-in Fagereng, Holm, and Natvik (2021), these are calculated as the average MPC in the
-year of a lottery win. Lottery wins occur in a random quarter of the year that differs
-across individuals. The MPC for an individual depends on the spending pattern after
-the win, and these are averaged across individuals within each education group.
-Panel B of table 5 shows similar numbers to Panel A, sorted by quartiles of the
-liquid wealth distribution instead of education groups. Our model yields a slightly more
-concentrated liquid wealth distribution than in the data. However, it does produce
-a fairly high MPC even for households in the highest quartile of the liquid wealth
-distribution. This is consistent with the results found in the Norwegian data by Fagereng,
-Holm, and Natvik (2021), but also with recent results in Graham and McDowall (2024).
-In an administrative dataset from a large US financial institution, they find that the
-spending response to an income receipt is large across the distribution of liquid asset
-holdings. In our model, we obtain this result due to the inclusion of the splurge factor.
+Note that several of the types in the Dropout group have very low discount factors and
+are very impatient. In this way, the model fits the feature of the data for the Dropout
+group that the bottom quintiles do not save at all and do not accumulate any liquid
+wealth. Very low estimates for discount factors are in line with those obtained in the
+literature on payday lending.25
 
-23
+24
+One technical point to note about our estimation, is that we impose the constraint that the Growth
+Impatience Condition (GIC), discussed in ?, is never violated. (The GIC is required to prevent the
+ratio of total wealth to total income of any group from approaching infinity. It does this by making sure
+that the growth of wealth of the group is less than or equal to the growth of income.) The constraint
+is imposed by calculating an upper bound for the discount factors β GIC where the GIC holds with
+equality. The estimation procedure ensures that no type ends up with a discount factor higher than
+this upper bound.
+25
+See, for example, ?, who estimate two-week discount rates of 21 percent, and ?, who estimate an
+initial period discount factor between 0.74 and 0.83 in a model where a period is eight weeks long.
+Both of these papers use quasi-hyperbolic preferences, so the estimates are not directly comparable
+with parameters in our model. Nevertheless, they support the point that very high discount rates are
+necessary to model the part of the population that takes out payday loans at very high interest rates.
 
-{sec:nonTargetedMo
+22
 
 0
 
@@ -1416,29 +1359,43 @@ Percentile
 Figure 2 Distributions of liquid wealth within each education group and for the
 whole population from the 2004 Survey of Consumer Finances and from the
 model with estimated discount factor distributions
+
+{fig:LorenzPts}
+
 Note: The discount factor distributions are estimated separately for each education group
 to fit the median liquid-wealth-to-permanent-income ratio and the 20th, 40th, 60th, and 80th
 percentile points of the Lorenz curve for liquid wealth for that group. The “Population” panel
 compares the wealth distribution that results from pooling the three groups in the model to the
 overall wealth distribution in the data.
 
-As shown in the Online Appendix B, the model is not able to generate a high MPC for
-the highest wealth quartile without splurge consumption.
-Finally, we consider the implications of our model for two different patterns of spending
-over time. The first pattern is the dynamics of spending after a lottery win from
-Fagereng, Holm, and Natvik. This pattern was used in the estimation of the splurge
-factor in section 3.1, but was not targeted when estimating the discount factor distributions for each education group in section 3.3.3. Figure 3a shows that the model that is
-estimated taking the value of the splurge as given, results in a distribution of spending
-over time that is very similar to the one found in the Norwegian data.
-The second pattern concerns the dynamics of income and spending for households that
-become unemployed and remain unemployed long enough for unemployment benefits
-to expire. Figure 3b shows the pattern of income and spending for such households.
+3.3.4 Implications for non-targeted moments
+Before we move on to compare different consumption stimulus policies in the calibrated
+model, we also report implications of the model for some non-targeted moments. Panel A
+of table 5 shows the wealth distribution across the three education groups in the data
+and in the model. The model matches these shares quite closely, which may not be
+surprising given that we calibrate the size of each group and we manage to fit the wealth
+distribution within each group separately. The panel also reports the average marginal
+propensity to consume for the different groups. To be comparable to numbers reported
+in ?, these are calculated as the average MPC in the year of a lottery win. Lottery wins
+occur in a random quarter of the year that differs across individuals. The MPC for an
 
-24
+23
 
-{fig:LorenzPts}
+{sec:nonTargetedMo
 
-Panel (A) Non-targeted moments by education group
+individual depends on the spending pattern after the win, and these are averaged across
+individuals within each education group.
+Panel B of table 5 shows similar numbers to Panel A, sorted by quartiles of the
+liquid wealth distribution instead of education groups. Our model yields a slightly more
+concentrated liquid wealth distribution than in the data. However, it does produce
+a fairly high MPC even for households in the highest quartile of the liquid wealth
+distribution. This is consistent with the results found in the Norwegian data by ?,
+but also with recent results in ?. In an administrative dataset from a large US financial
+institution, they find that the spending response to an income receipt is large across
+the distribution of liquid asset holdings. In our model, we obtain this result due to the
+inclusion of the splurge factor. As shown in the Online Appendix B, the model is not able
+to generate a high MPC for the highest wealth quartile without splurge consumption.
+Panel (A) Non-targeted moments by education group
 Percent of liquid wealth (data)
 Percent of liquid wealth (model)
 Avg. lottery-win-year MPC
@@ -1517,13 +1474,23 @@ that the win takes place in a random quarter of the year that differs across ind
 MPCs are averaged across individuals within each education group. Panel (B) shows the same
 numbers for the population sorted into different quartiles of the liquid wealth distribution.
 
-Ganong and Noel (2019) report the empirical result that nondurable spending drops by
-12 percent the month when benefits expire. Our quarterly model is broadly consistent
-with this as the drop in spending the quarter after the expiry of UI benefits is 18 percent.
+Finally, we consider the implications of our model for two different patterns of spending
+over time. The first pattern is the dynamics of spending after a lottery win from ?. This
+pattern was used in the estimation of the splurge factor in section 3.1, but was not
+targeted when estimating the discount factor distributions for each education group in
+section 3.3.3. Figure 3a shows that the model that is estimated taking the value of the
 
-25
+24
 
-0.6
+splurge as given, results in a distribution of spending over time that is very similar to
+the one found in the Norwegian data.
+The second pattern concerns the dynamics of income and spending for households that
+become unemployed and remain unemployed long enough for unemployment benefits to
+expire. Figure 3b shows the pattern of income and spending for such households. ?
+report the empirical result that nondurable spending drops by 12 percent the month
+when benefits expire. Our quarterly model is broadly consistent with this as the drop
+in spending the quarter after the expiry of UI benefits is 18 percent.
+0.6
 
 Model w/estimated splurge
 Fagereng, Holm and Natvik (2021)
@@ -1585,10 +1552,9 @@ UI benefits in the model
 
 {fig:untargetedMom
 
-Note: Panel (a) compares the dynamic consumption response in the model to the estimates
-in Fagereng, Holm, and Natvik (2021); see their Figure A5. Panel (b) shows the evolution of
-income and spending for households who remain unemployed long enough for UI benefits to
-expire; see Figure 2 in Ganong and Noel (2019).
+Note: Panel (a) compares the dynamic consumption response in the model to the estimates in
+?; see their Figure A5. Panel (b) shows the evolution of income and spending for households
+who remain unemployed long enough for UI benefits to expire; see Figure 2 in ?.
 
 4 Comparing fiscal stimulus policies
 In this section, we present our results where we compare three policies to provide fiscal
@@ -1601,20 +1567,17 @@ Then we compare the policies in terms of their cumulative multipliers and in ter
 their effect on a welfare measure that we introduce. Finally, based on these comparisons,
 we can rank the three policies.
 
+25
+
 {sec:comparing}
 
-4.1 Impulse responses
+4.1 Impulse responses
 The impulse responses that we present for each stimulus policy are constructed as follows:
 • A recession hits in quarter one.
 • We compute the subsequent path for the economy without any policy introduced
 in response to the recession.
 • We also compute the subsequent path for the economy with a given policy introduced at the onset of the recession in quarter one.
-
-26
-
-{sec:IRFs}
-
-• The impulse responses we present are then the difference between these two paths
+• The impulse responses we present are then the difference between these two paths
 for the economy and show the effect of a policy relative to a case where no policy
 was implemented.
 • The solid lines show these impulse responses for an economy where the aggregate
@@ -1644,14 +1607,10 @@ which income—and hence the splurge—return to zero. After a couple of years, 
 recession is most likely over and aggregate demand effects are no longer in place, income
 is close to where it would be without the stimulus check policy, although consumption
 remains somewhat elevated.
-4.1.2 UI extension
-The impulse responses in Figure 4b show the response to a policy that extends unemployment benefits from 6 months to 12 months for a period of a year. In the model
-without aggregate demand effects, the path for income now depends on the number of
-consumers who receive the extended unemployment benefits. These consumers are those
-who have been unemployed for between 6 and 12 months. In the first quarter of the
-recession, the newly unemployed receive unemployment benefits regardless of whether
 
-27
+26
+
+{sec:IRFs}
 
 Income
 Income (AD effects)
@@ -1852,6 +1811,12 @@ cumulative multipliers as a function of the horizon for the three policies.
 Note: For the cumulative multiplier plots, policies are implemented during a recession with
 aggregate demand effects active.
 
+4.1.2 UI extension
+The impulse responses in Figure 4b show the response to a policy that extends unemployment benefits from 6 months to 12 months for a period of a year. In the model
+without aggregate demand effects, the path for income now depends on the number of
+consumers who receive the extended unemployment benefits. These consumers are those
+who have been unemployed for between 6 and 12 months. In the first quarter of the
+recession, the newly unemployed receive unemployment benefits regardless of whether
 they are extended or not. Therefore, it is in the second and third quarters, when
 the effects of the recession on long-term unemployment start to materialize, that the
 extended UI payments ramp up, amounting to an aggregate increase in quarterly income
@@ -1859,15 +1824,15 @@ by 0.7 percent. By the fifth quarter, the policy is no longer in effect, and inc
 extended unemployment goes to zero. Consumption in the first quarter jumps by more
 than income (by 0.3 percent), prompted by both the increase in expected income and
 the reduced need for precautionary saving given the extended insurance. In the model
-without aggregate demand effects, consumption is only a little above the counterfactual
+
+27
+
+without aggregate demand effects, consumption is only a little above the counterfactual
 by the time the policy is over. In the model with aggregate demand effects, there is
 an extra boost to income of about the same size in the first and second quarters. As
 this extra aggregate demand induced income goes to employed consumers, more of it is
 saved, and consumption remains elevated several quarters beyond the end of the policy.
-
-28
-
-4.1.3 Payroll tax cut
+4.1.3 Payroll tax cut
 The final impulse response graph, Figure 4c, shows the impulse response for a payroll tax
 cut that persists for two years (eight quarters). In the model without aggregate demand
 effects, income rises by close to 2 percent as the take-home pay for employed consumers
@@ -1909,18 +1874,12 @@ table 6 shows the 10y-horizon multiplier for each policy. The stimulus check, wh
 paid out in quarter one, exhibits the largest multiplier on impact. About 50 percent
 of the total policy expenditure is immediately spent by consumers. After two years,
 and because of the aggregate demand effects, consumption has increased cumulatively
-by more than the cost of the stimulus check. Over time, the policy reaches a total
-multiplier of 1.234. Without AD effects the policy only generates a multiplier of 0.879.
-The last two rows in table 6 show the expected share of the policy expenditures and
-stimulated consumption that occurs during a recession. For the stimulus check all of
-the policy expenditures occur in the first quarter and thus with certainty during the
-recession. However, since induced consumption also takes place during later periods at
 26
 
 In the case that there is no aggregate demand effect, these multipliers converge to 1 as t goes to
 infinity.
 
-29
+28
 
 {sec:multipliers}
 
@@ -1964,6 +1923,12 @@ policies and the additional boost to consumption resulting from the aggregate de
 acting on the direct consumption impact. It does not include higher-round aggregate demand
 effects materializing on aggregate demand effects acting on indirectly stimulated consumption. {tab:Multiplier}
 
+by more than the cost of the stimulus check. Over time, the policy reaches a total
+multiplier of 1.234. Without AD effects the policy only generates a multiplier of 0.879.
+The last two rows in table 6 show the expected share of the policy expenditures and
+stimulated consumption that occurs during a recession. For the stimulus check all of
+the policy expenditures occur in the first quarter and thus with certainty during the
+recession. However, since induced consumption also takes place during later periods at
 which time the recession may have already ended, the share of stimulated consumption
 during the recession is lower at 74.2%.
 Since spending for the UI policy is spread out over four quarters (and peaks in quarters
@@ -1985,15 +1950,15 @@ poorly targeted if the goal is to provide short-term stimulus.
 Table 6 contains an additional (middle) row with results for an economy where we only
 consider a “first-round” aggregate demand effect. To understand these values note that
 the policies initially increase the income of consumers directly, which leads to a boost in
-consumption. As a consequence, this boost triggers an aggregate demand effect which
+
+29
+
+consumption. As a consequence, this boost triggers an aggregate demand effect which
 increases the income of everyone and in turn leads to an additional boost to consumption.
 We refer to the sum of this initial and the indirect boost to consumption as the firstround AD effect. However, the AD effect continues as the indirect boost to consumption
 triggers another round of income increases which further boost consumption and so
 on. One might argue that these higher-order rounds of the AD effect are not likely to
-
-30
-
-be anticipated by consumers. Since higher-order consumption boosts only materialize
+be anticipated by consumers. Since higher-order consumption boosts only materialize
 if consumers anticipate them and act accordingly, the overall increase in consumption
 might turn out to be smaller than suggested by the full AD effect. As shown in the
 middle row of the table, the multipliers are smaller when excluding higher-order rounds.
@@ -2023,30 +1988,22 @@ As with all social welfare measures, ours is not without ethical issues. We have
 our welfare measure over one with equal weights because an equal-weights measure
 would be increasing with the size of any redistributive policy.28 However, similar to
 Negishi weights, our welfare measure gives greater weight to households that are well
-off.29 Furthermore, our welfare measure distinguishes between households that would
 27
+
 Discounting at the real interest rate accounts for the fact that a redistributive policy over time will
 require borrowing or lending at the real interest rate. The preference discount factors of households
 would appear in both the numerator and the denominator—the utility and marginal utility—and
 therefore cancel and do not play a role in our welfare measure.
 28
-Using a version of an equal-weights measure results in an even greater welfare benefit to
-extended unemployment insurance—see the previously distributed draft of this paper, Carroll, Crawley,
-Frankovic, and Tretvoll (2023). However, because the size of the extended unemployment benefits policy
-is much larger in a recession compared to normal times, while the size of the other two policies does not
-change significantly in a recession, this equal-weights measure almost mechanically favored the extended
-unemployment benefits policy.
-29
-Negishi weights have been used in the climate literature as a way to separate the welfare benefits
-of climate mitigation policies from broader questions about global income redistribution. Our problem
-of separating the welfare benefits of recession mitigation policies from income redistribution in normal
-times is similar, but complicated by our incomplete markets setup. With complete markets, under which
-there is no potential benefit to redistributing consumption across time for any individual household,
-our measure is identical to Negishi weights.
+Using a version of an equal-weights measure results in an even greater welfare benefit to extended
+unemployment insurance—see the previously distributed draft of this paper, ?. However, because the
+size of the extended unemployment benefits policy is much larger in a recession compared to normal
+times, while the size of the other two policies does not change significantly in a recession, this equalweights measure almost mechanically favored the extended unemployment benefits policy.
 
-31
+30
 
-have suffered unemployment in normal times and households that are made unemployed
+off.29 Furthermore, our welfare measure distinguishes between households that would
+have suffered unemployment in normal times and households that are made unemployed
 as a result of the recession—–giving the latter a higher weight in the social welfare
 function.
 Let cit,normal be the consumption—inclusive of the splurge—of household i at time t
@@ -2065,6 +2022,7 @@ X
 1 u(cit,policy,Rec,AD ) − u(cit,none,Rec,AD )
 1
 ,
+W(policy, Rec, AD) =
 N P V (policy, Rec, AD) i=1 t=0 Rt
 u′ (cit,normal )
 (10) {welfare_def6}
@@ -2074,8 +2032,6 @@ equal to the change in consumption multiplied by the marginal utility in normal 
 As the total change in consumption is equal to the net present value of the policy, which
 we divide by, the total welfare measure is equal to one. Note that for large increases in
 consumption, this measure may be less than one because the utility function is concave.
-
-W(policy, Rec, AD) =
 
 W(policy, Rec = 0, AD = 0)
 W(policy, Rec = 1, AD = 0)
@@ -2105,20 +2061,26 @@ recession with and without aggregate demand effects
 
 Table 7 shows the welfare measure for each policy as defined by equation (10). The
 top row of the table shows the welfare measure for implementing each policy in normal
-times. For marginal policies, this is equal to one by definition. Indeed, the value for
-both the stimulus check and the tax cut policy is very close to one. However, the welfare
-measure for the extended unemployment policy in normal times is noticeably less than
-one. This is because, although this policy is smaller in absolute size than the other
-policies, its consumption effects are concentrated on a small number of households that
+29
+Negishi weights have been used in the climate literature as a way to separate the welfare benefits
+of climate mitigation policies from broader questions about global income redistribution. Our problem
+of separating the welfare benefits of recession mitigation policies from income redistribution in normal
+times is similar, but complicated by our incomplete markets setup. With complete markets, under which
+there is no potential benefit to redistributing consumption across time for any individual household,
+our measure is identical to Negishi weights.
 30
-
 In the simulations, household i experiences the same permanent and transitory shock sequence,
 but in the recession simulation some households experience unemployment during periods in which the
 same household is employed in the baseline simulation.
 
-32
+31
 
-remain unemployed long enough to receive the extended benefits. For these households,
+times. For marginal policies, this is equal to one by definition. Indeed, the value for
+both the stimulus check and the tax cut policy is very close to one. However, the welfare
+measure for the extended unemployment policy in normal times is noticeably less than
+one. This is because, although this policy is smaller in absolute size than the other
+policies, its consumption effects are concentrated on a small number of households that
+remain unemployed long enough to receive the extended benefits. For these households,
 the effect on consumption is large enough such that the non linearity of the consumption
 function leads to smaller welfare benefit than the marginal utility of consumption would
 otherwise imply.
@@ -2156,13 +2118,13 @@ targeted to consumers with high MPCs and high marginal utility, giving rise to l
 multipliers and welfare improvements. The stimulus checks come in slightly higher when
 measured by their short-term multiplier effect but are a distant second when measured
 by their welfare effects. The stimulus checks have large initial multipliers because the
-money gets to consumers at the beginning of the recession and therefore induce aggregate
+
+32
+
+money gets to consumers at the beginning of the recession and therefore induce aggregate
 demand effects more quickly. However, the checks are not well targeted to high-MPC
 consumers, so even though the funds arrive early in the recession, they are spent out
-
-33
-
-more slowly than the extended unemployment benefits.31 Furthermore, the average
+more slowly than the extended unemployment benefits.31 Furthermore, the average
 recipient of a stimulus check has a much lower marginal utility than consumers receiving
 unemployment benefits, so the welfare benefits of this policy are substantially muted
 relative to UI extensions.
@@ -2199,16 +2161,16 @@ wealth quartiles to empirical estimates. Without the splurge, the model leads to
 MPC for the top wealth quartile that is far lower than in the data. In the US model
 this MPC is also quite low compared to the model with splurge consumption, but for
 the US we do not have an empirical estimate to compare to.
-To evaluate the impact of splurge consumption on our ranking of the policies, we
-simulate the three fiscal policies in the reestimated model without the splurge. There
 31
 
 Theoretically, stimulus checks could be targeted to the highest-MPC households which, for smallsized policies, would mean households with an MPC of one. However, data limitations and other
 practicalities make means-testing stimulus checks by income the extent of targeting in practice.
 
-34
+33
 
-are only minor shifts in the multipliers of the policies, but the lower average MPCs
+To evaluate the impact of splurge consumption on our ranking of the policies, we
+simulate the three fiscal policies in the reestimated model without the splurge. There
+are only minor shifts in the multipliers of the policies, but the lower average MPCs
 reduces multipliers for the check and tax cut policy relative to the model with the
 splurge. In contrast, the UI extension becomes slighlty more effective in stimulating
 consumption as the wider distribution of discount factors implies a larger share of the
@@ -2266,13 +2228,13 @@ many advantages to studying the welfare and multiplier effects in this setting w
 embedding the model in general equilibrium. First, general equilibrium models often
 struggle to adequately capture the feedback mechanisms between consumption and income, particularly the asymmetric nature of these relationships during recessionary versus expansionary periods. Additionally, a complete general equilibrium treatment would
 necessitate the analysis of numerous complex channels including investment dynamics,
-firm ownership structures and dividend distribution policies, inventory management,
+
+34
+
+firm ownership structures and dividend distribution policies, inventory management,
 and international trade flows—elements that, while important in their own right, would
 potentially obscure the core mechanisms we aim to investigate.
-
-35
-
-Despite the advantages of our partial equilibrium approach, here we complement our
+Despite the advantages of our partial equilibrium approach, here we complement our
 analysis with a general equilibrium HANK and SAM model, as standard as possible,
 that is able to capture supply-side effects that are absent from the partial equilibrium
 model. In particular, fiscal policies can generate labor market responses that our
@@ -2285,41 +2247,37 @@ The resulting decline in labor demand further raises unemployment risk, reinforc
 precautionary savings.
 We embed the consumption choices of our households—–with heterogeneity over
 education type and discount factors—–in a New Keynesian model with search and
-matching frictions that closely follows Du (2024), which, in turn, is in spirit of the
-seminal work of Ravn and Sterk (2017, 2021). Aside from the household block of the
-model, the framework is standard and follows from the HANK and SAM literature. The
-model features nominal price rigidities à la Rotemberg, a monetary authority that sets
-the nominal interest rate following a standard Taylor rule that responds to inflation, and
-a fiscal authority that taxes labor income and borrows debt from households to fund
-unemployment insurance and interest on past debt. As in Gornemann, Kuester, and
-Nakajima (2021), Bardoczy (2024), and Graves (2024), households randomly search for
-jobs and match with a labor agency that sells labor to intermediate good producers.
-Complete details of the model are provided in appendix A.
+matching frictions that closely follows ?, which, in turn, is in spirit of the seminal
+work of ??. Aside from the household block of the model, the framework is standard
+and follows from the HANK and SAM literature. The model features nominal price
+rigidities à la Rotemberg, a monetary authority that sets the nominal interest rate
+following a standard Taylor rule that responds to inflation, and a fiscal authority that
+taxes labor income and borrows debt from households to fund unemployment insurance
+and interest on past debt. As in ?, ?, and ?, households randomly search for jobs and
+match with a labor agency that sells labor to intermediate good producers. Complete
+details of the model are provided in appendix A.
 The general equilibrium structure generates fiscal multipliers through an intertemporal
 Keynesian cross mechanism, which becomes particularly pronounced when monetary
 policy is passive. Moreover, the search and matching framework allows the employment
 rate to respond to policy interventions, allowing us to capture both demand and supply
 effects of fiscal policies.
 Our approach in this section relies on linearizing the macro dynamics of the model
-and employs the Sequence Space Jacobian methods developed by Auclert, Bardóczy,
-Rognlie, and Straub (2021). This linearization imposes certain constraints on our
-analysis. Notably, we cannot evaluate the effects of different policies starting from
-a deep recessionary state, as we do in our main results.32 This limitation prevents us
-from conducting welfare comparisons between recessionary periods and the steady state.
-Additionally, the Keynesian cross mechanism embedded in the model exhibits uniform
-behavior regardless of the degree of economic slack—–a feature that stands in contrast
-to the state-dependent multipliers we apply in our partial equilibrium analysis.33
+and employs the Sequence Space Jacobian methods developed by ?. This linearization
+imposes certain constraints on our analysis. Notably, we cannot evaluate the effects of
+different policies starting from a deep recessionary state, as we do in our main results.32
+This limitation prevents us from conducting welfare comparisons between recessionary
+periods and the steady state. Additionally, the Keynesian cross mechanism embedded
+in the model exhibits uniform behavior regardless of the degree of economic slack—–a
+feature that stands in contrast to the state-dependent multipliers we apply in our partial
+equilibrium analysis.33
 32
 
-One approach to overcome this limitation, which could be used in future work, is described in
-Boppart, Krusell, and Mitman (2018).
-33
+One approach to overcome this limitation, which could be used in future work, is described in ?.
 We note two additional technical limitations of our general equilibrium implementation. First,
 stimulus payments in the model are specified as proportional to permanent income, rather than as
-means-tested fixed dollar amounts as implemented in practice and in our partial equilibrium framework.
-Second, splurge behavior only occurs out of equilibrium.
+33
 
-36
+35
 
 The consumption response in this general equilibrium model to each of the three
 policies is shown in the top row of Figure 5. For each of the three fiscal policies, we
@@ -2465,17 +2423,14 @@ cumulative multipliers as a function of the horizon for the three policies.
 Overall, the IRFs from this model are similar to those from the partial equilibrium
 analysis, especially under the fixed real-rate rule. Note that the magnitude of the consumption response to the UI extension is lower than in our main analysis—a consequence
 of lower long-term unemployment in this HANK exercise of deviating from the steady
-state.34 Furthermore, although we are unable to repeat our welfare analysis under
-34
 
-By contrast, our main analysis considers deviations from a recessionary scenario. Note that the
-dynamics of the UI extension IRF are also somewhat faster acting. This is because, under the recession
-that we study in the partial equilibrium analysis, the large mass of newly-unemployed households do
-not start receiving extended UI for six months.
+means-tested fixed dollar amounts as implemented in practice and in our partial equilibrium framework.
+Second, splurge behavior only occurs out of equilibrium.
 
-37
+36
 
-a recession in this model, the distributional effects of the policies are similar. Most
+state.34 Furthermore, although we are unable to repeat our welfare analysis under
+a recession in this model, the distributional effects of the policies are similar. Most
 importantly, the mechanism leading to far greater welfare benefits for the UI extension,
 namely that the newly unemployed have high marginal utility, are robust to the supplyside effects of a general equilibrium HANK and SAM model.
 
@@ -2530,24 +2485,28 @@ different horizons under a fixed real rate rule to those in our baseline partial
 model. The multipliers are bigger in the HANK and SAM model. Nevertheless, in
 both models, the relative ranking of the consumption multipliers over time horizons are
 similar, with the effect of the tax cut substantially smaller than the stimulus check or
-UI extension policies, despite the inclusion of supply-side effects in this HANK model.
+34
+
+By contrast, our main analysis considers deviations from a recessionary scenario. Note that the
+dynamics of the UI extension IRF are also somewhat faster acting. This is because, under the recession
+that we study in the partial equilibrium analysis, the large mass of newly-unemployed households do
+not start receiving extended UI for six months.
+
+37
+
+UI extension policies, despite the inclusion of supply-side effects in this HANK model.
 However, in contrast to the partial equilibrium model, towards the end of the period
 shown the tax cut consumption multiplier is near that of the stimulus check. This is
 because the aggregate demand effects in our partial equilibrium model do not continue
 beyond the recession, dampening the benefits of the tax cut policy—in which much of
-
-38
-
-the extra spending occurs after the recession is over—relative to the stimulus check and
+the extra spending occurs after the recession is over—relative to the stimulus check and
 extended UI policies.
-As discussed in the literature review, Broer, Druedahl, Harmenberg, and Öberg (2025)
-also compute fiscal multipliers for commonly implemented stimulus policies in a HANK
-and SAM framework. A key distinction is that our model exhibits more spending
-out of income shocks in the quarters following the quarter of the shock. As shown in
-Auclert, Rognlie, and Straub (2018), accounting for the path of iMPCs beyond the first
+As discussed in the literature review, ? also compute fiscal multipliers for commonly
+implemented stimulus policies in a HANK and SAM framework. A key distinction is
+that our model exhibits more spending out of income shocks in the quarters following the
+quarter of the shock. As shown in ?, accounting for the path of iMPCs beyond the first
 quarter significantly amplifies cumulative fiscal multipliers. By capturing this persistence—consistent with microeconomic evidence—our model produces larger multipliers
-for the untargeted stimulus check than those in Broer, Druedahl, Harmenberg, and
-Öberg (2025).
+for the untargeted stimulus check than those in ?.
 
 6 Conclusion
 {sec:conclusion}
@@ -2575,18 +2534,18 @@ stimulus (in a typical recession). However, since some of the stimulus checks fl
 well-off consumers, such checks do worse than UI extensions when we evaluate welfare
 consequences. Finally, the payroll tax cut is the least effective in terms of both the
 multiplier and welfare effect, since it targets only employed consumers and, for a typical
-recession, more of its payouts are likely to occur after the recessionary period (when
+
+38
+
+recession, more of its payouts are likely to occur after the recessionary period (when
 multipliers may exist) has ended.
 The tools we are using could be reasonably easily modified to evaluate a number of
 other policies. For example, in the COVID-driven recession, not only was the duration of
-
-39
-
-UI benefits extended, but those benefits were also supplemented by substantial payments
+UI benefits extended, but those benefits were also supplemented by substantial payments
 to all UI recipients. We did not calibrate the model to match this particular policy, but
 the framework could easily accommodate such an analysis.
 
-40
+39
 
 Appendices
 
@@ -2602,8 +2561,8 @@ calculated without the splurge behavior. Second, the level of permanent income o
 newborns is equal to one. Furthermore, all households face the same employment to
 unemployment and unemployment to employment probabilities. The probabilities are
 calibrated to the transition probabilities of high school graduates from the main text.
-Lastly, following the notation of Auclert, Rognlie, and Straub (2020), rta will denote the
-economy wide ex-ante real interest rate.
+Lastly, following the notation of ?, rta will denote the economy wide ex-ante real interest
+rate.
 
 A.2 Goods Market
 A continuum of monopolistically competitive intermediate goods producers, indexed by
@@ -2678,7 +2637,7 @@ Pt =
 1−ϵ
 Pjt p dj
 
-41
+40
 
 Yt ,
 
@@ -2697,26 +2656,23 @@ Yjt = ZLjt ,
 where Z is total factor productivity.
 Each intermediate goods producer hires labor Lt from a labor agency at cost ht .
 Given this labor cost, each producer sets Pjt to maximize profits while facing price
-stickiness à la Rotemberg (1982). In HANK models with sticky prices, profits tend to
-be countercyclical, and when households have high MPCs, this can generate countercyclical consumption responses to dividends. To simplify, we assume that intermediate
-goods producers fully consume their profits rather than distributing them to households, thereby abstracting from consumption responses to firm profits. Each producer
-maximizes profits by solving:
-Jt (Pjt ) = max
-
+stickiness à la ?. In HANK models with sticky prices, profits tend to be countercyclical,
+and when households have high MPCs, this can generate countercyclical consumption
+responses to dividends. To simplify, we assume that intermediate goods producers fully
+consume their profits rather than distributing them to households, thereby abstracting
+from consumption responses to firm profits. Each producer maximizes profits by solving:
 
 P
-
-{Pjt } 
-
-jt Yjt
-
-Pt
 
 Pjt − Pjt−1
 Pjt−1
 
 φ
+jt Yjt
 − ht Ljt −
+Jt (Pjt ) = max 
+{Pjt }
+Pt
 2
 
 
@@ -2771,17 +2727,17 @@ where Πt = PPt+1
 .
 
 A.3 Labor market
-A risk-neutral labor agency supplies labor Nt to intermediate goods producers at cost ht
-by hiring households at wage wt . To hire workers, the agency posts vacancies vt , which
-are filled with probability ϕt . Household job search is random. Following Bardoczy
-(2024), we assume the labor agency cannot observe individual household productivity.
-Instead, it only observes the average productivity of all employed workers, which is
-normalized to one.
+A risk-neutral labor agency supplies labor Nt to intermediate goods producers at cost
+ht by hiring households at wage wt . To hire workers, the agency posts vacancies vt ,
+which are filled with probability ϕt . Household job search is random. Following ?, we
+assume the labor agency cannot observe individual household productivity. Instead, it
+only observes the average productivity of all employed workers, which is normalized to
+one.
+Labor agency. The labor agency determines how many vacancies to post and how
 
-42
+41
 
 Appendices
-Labor agency. The labor agency determines how many vacancies to post and how
 much labor to sell by solving the following problem:
 (
 
@@ -2804,14 +2760,14 @@ Nt = (1 − ω)Nt−1 + ϕt vt .
 The parameters κ and ω are, respectively, the cost of posting a vacancy, and the job
 separation rate.
 The resulting job creation curve is:
-"
-
 #
 
+"
+
 κ
 κ
-= (ht − wt ) + (1 − ω)Et
 .
+= (ht − wt ) + (1 − ω)Et
 ϕt
 (1 + rta )ϕt+1
 Matching. The matching process between households and the labor agency follows
@@ -2824,25 +2780,29 @@ The vacancy filling probability ϕt and the job finding probability ηt evolve a
 ϕt = χΘ−α
 t
 where Θt = vett is labor market tightness.
-Wage Determination. Following Gornemann, Kuester, and Nakajima (2021) and
-Blanchard and Galí (2010), we assume the real wage evolves according to the following
-rule:
-
-
-
-
-
-
+Wage Determination. Following ? and ?, we assume the real wage evolves according to the following rule:
 wt
+log
+wss
+
+
+
+
 wt−1
 Nt
-log
 = ϕw log
 + (1 − ϕw )log
 ,
 wss
-wss
 Nss
+
+
+
+
+
+
+
+
 where ϕw dictates the extent of real wage rigidity.
 
 A.4 Fiscal Policy
@@ -2858,14 +2818,16 @@ b
 a
 1 + rt
 
-43
+The government funds its expenditures through debt and taxes, subject to the follow-
+
+42
 
 Appendices
-The government funds its expenditures through debt and taxes, subject to the following budget constraint:
+ing budget constraint:
 (1 + δqtb )Bt−1 + Gt + St = τt wt Nt + qtb Bt ,
 where St are payments for unemployment insurance and other transfers.
-For all stimulus policies, except tax cuts, we follow Auclert, Rognlie, and Straub
-(2020) and allow the tax rate to adjust in order to stabilize the debt-to-GDP ratio:
+For all stimulus policies, except tax cuts, we follow ? and allow the tax rate to adjust
+in order to stabilize the debt-to-GDP ratio:
 b
 τt − τss = ϕB qss
 
@@ -2914,8 +2876,10 @@ t=0 solves the household’s maximization problem given (wt , ηt , rt , τt )t=
 – The final goods producer and intermediate goods producers both maximize their
 respective objective functions.
 – The nominal interest rate is determined by the central bank’s Taylor rule.
+– The tax rate is set according to the fiscal rule, ensuring that the government budget
+constraint is satisfied.
 
-44
+43
 
 Appendices
 Table 9 Calibration
@@ -2943,7 +2907,7 @@ Price Adjustment Costs
 
 96.9
 
-Ravn and Sterk (2017, 2021)
+??
 
 Vacancy Cost
 
@@ -2969,7 +2933,7 @@ Matching Elasticity
 
 0.65
 
-Ravn and Sterk (2017, 2021)
+??
 
 Job Finding Probability
 
@@ -2985,7 +2949,7 @@ Vacancy Filling Rate
 
 0.71
 
-den Haan et al. (2000)
+den Haan et al. (?)
 
 Real Wage Rigidity parameter
 
@@ -2993,7 +2957,7 @@ Real Wage Rigidity parameter
 
 0.837
 
-Gornemann et al. (2021)
+Gornemann et al. (?)
 
 Government Spending
 
@@ -3017,7 +2981,7 @@ Response of Tax Rate to Debt
 
 0.015
 
-Auclert et al. (2020)
+Auclert et al. (?)
 
 Taylor Rule Inflation Coefficient
 
@@ -3027,20 +2991,19 @@ Taylor Rule Inflation Coefficient
 
 Standard
 
-– The tax rate is set according to the fiscal rule, ensuring that the government budget
-constraint is satisfied.
 – The value of assets is equal to the value of government bonds:
 At = qtb Bt .
 – The goods market clears35 :
 
 Ct = wt Nt + Gt ,
 
-where Ct ≡ 01 cit di.
-R
+where Ct ≡ 0 cit di.
+R1
 
 – The labor demand of intermediate goods producers equals labor supply of labor
 agency:
 Lt = Nt .
+
 35
 
 Note if profits were not held by firms then the goods market condition would be Ct + Gt =
@@ -3059,29 +3022,27 @@ t
 then the goods market condition would become Ct + Gt = wt Nt + Dt = Yt − κvt − φ2 PPt−1
 − 1 Yt .
 
-45
+44
 
 A.7 Calibration of Non-Household Blocks
-The elasticity of substitution is set to 6, and the price adjustment cost parameter is set
-to 96.9 as in Ravn and Sterk (2017, 2021). The vacancy cost is set to 7% of the real
-wage as in Christiano, Eichenbaum, and Trabandt (2016).36 The matching elasticity is
-0.65 following Ravn and Sterk (2017, 2021). The job separation rate is set to 0.092. As
-in section 3.3.1, we set the job finding probability in the steady state for the unemployed
+The elasticity of substitution is set to 6, and the price adjustment cost parameter is
+set to 96.9 as in ??. The vacancy cost is set to 7% of the real wage as in ?.36 The
+matching elasticity is 0.65 following ??. The job separation rate is set to 0.092. As in
+section 3.3.1, we set the job finding probability in the steady state for the unemployed
 ηss to 0.67. Along with the job separation rate, this gives a probability of transitioning
-from employment to unemployment within a quarter of 3.1 percent which is the value
-we use for the Highschool group in section 3.3.1. The quarterly vacancy filling rate is
-0.71 as in den Haan, Ramey, and Watson (2000) (and together with our other choices,
-this pins down the matching efficiency χ). The degree of wage rigidity ϕw is set to 0.837
-following Gornemann, Kuester, and Nakajima (2021). The tax rate is set to 0.3 and
+from employment to unemployment within a quarter of 3.1 percent which is the value we
+use for the Highschool group in section 3.3.1. The quarterly vacancy filling rate is 0.71
+as in ? (and together with our other choices, this pins down the matching efficiency χ).
+The degree of wage rigidity ϕw is set to 0.837 following ?. The tax rate is set to 0.3 and
 government spending is set to clear the government budget constraint. The parameters
 that dictate the speed of fiscal adjustment, ϕB and ϕG , are set to 0.015, the lower bound
-of the estimates in Auclert, Rognlie, and Straub (2020).37 Furthermore, the decay rate
-of government coupons is set to δ = 0.95 to match a maturity of 5 years.38 Finally, the
-Taylor rule coefficient on inflation is set to the standard value of ϕπ = 1.5.
+of the estimates in ?.37 Furthermore, the decay rate of government coupons is set to
+δ = 0.95 to match a maturity of 5 years.38 Finally, the Taylor rule coefficient on inflation
+is set to the standard value of ϕπ = 1.5.
 
 36
 
-The range of plausible values lie between 4% and 14% Silva and Toledo (2009)
+The range of plausible values lie between 4% and 14% ?
 The speed of adjustment parameter is set to the lower bound to ensure that the policies evaluated
 in the HANK and SAM model are almost entirely deficit financed.
 (1+r)4
@@ -3090,253 +3051,6 @@ The duration of bonds in the model is (1+r)
 4 −δ
 37
 
-46
-
-References
-Akerlof, George A, and Janet L Yellen (1985): “A near-rational model of the
-business cycle, with wage and price inertia,” The Quarterly Journal of Economics,
-100(Supplement), 823–838.
-Allcott, Hunt, Joshua J Kim, Dmitry Taubinsky, and Jonathan Zinman
-(2021): “Are high-interest loans predatory? Theory and evidence from payday
-lending,” NBER Working paper, no. 28799, NBER Working paper, no. 28799.
-Andre, Peter, Joel Flynn, Georgios Nikolakoudis, and Karthik Sastry
-(2025): “Quick-fixing: Near-rationality in consumption and savings behavior,” SSRN
-Electronic Journal.
-Auclert, Adrien, Bence Bardóczy, Matthew Rognlie, and Ludwig Straub
-(2021): “Using the Sequence-Space Jacobian to Solve and Estimate HeterogeneousAgent Models,” Econometrica, 89(5), 2375–2408.
-Auclert, Adrien, Matthew Rognlie, and Ludwig Straub (2018): “The
-Intertemporal Keynesian Cross,” Working Paper 25020, National Bureau of Economic
-Research.
-(2020): “Micro Jumps, Macro Humps: Monetary Policy and Business Cycles
-in an Estimated HANK Model,” Revise and Resubmit, American Economic Review,
-Revise and resubmit at American Economic Review.
-Aursland, Thor Andreas, Ivan Frankovic, Birol Kanik, and Magnus
-Saxegaard (2020): “State-dependent fiscal multipliers in NORA - A DSGE model
-for fiscal policy analysis in Norway,” Economic Modelling, 93, 321–353.
-Bardoczy, Bence (2024): “Spousal Insurance and the Amplification of Business
-Cycles,” Manuscript, Board of Governors of the Federal Reserve System.
-Bayer, Christian, Benjamin Born, Ralph Luetticke, and Gernot J Müller
-(2023): “The Coronavirus Stimulus Package: How Large is the Transfer Multiplier?,”
-The Economic Journal.
-Benigno, Pierpaolo, and Gauti B Eggertsson (2023): “It’s Baaack: The Surge
-in Inflation in the 2020s and the Return of the Non-Linear Phillips Curve,” Working
-Paper 31197, National Bureau of Economic Research.
-Beraja, Martin, and Nathan Zorzi (2023): “On the Size of Stimulus Checks: How
-Much is Too Much?,” Discussion paper, MIT, Working paper.
-Bhandari, Anmol, David Evans, Mikhail Golosov, and Thomas Sargent
-(2021): “Efficiency, Insurance, and Redistribution Effects of Government Policies,”
-Discussion paper, tomsargent.com.
-
-47
-
-Blanchard, Olivier, and Jordi Galí (2010): “Labor Markets and Monetary
-Policy: A New Keynesian Model with Unemployment,” American Economic Journal:
-Macroeconomics, 2(2), 1–30.
-Blanco, Andres, Corina Boar, Callum J Jones, and Virgiliu Midrigan
-(2024): “Non-Linear Inflation Dynamics in Menu Cost Economies,” Working Paper
-32094, National Bureau of Economic Research.
-Blinder, Alan S., and Angus S. Deaton (1985): “The Time Series Consumption
-Function Revisited,” Brookings Papers on Economic Activity, 1985:2, pp. 465–521.
-Boehm, Johannes, Etienne Fize, and Xavier Jaravel (2025): “Five Facts about
-MPCs: Evidence from a Randomized Experiment,” American Economic Review,
-115(1), 1–42.
-Boppart, Timo, Per Krusell, and Kurt Mitman (2018): “Exploiting MIT
-Shocks in Heterogeneous-Agent Economies: The Impulse Response as a Numerical
-Derivative,” Journal of Economic Dynamics and Control, 89(C), 68–92.
-Boutros, Michael (2022): “Windfall income shocks with finite planning horizons,”
-Discussion paper, Bank of Canada.
-Broda, Christian, and Jonathan A Parker (2014): “The economic stimulus
-payments of 2008 and the aggregate demand for consumption,” Journal of Monetary
-Economics, 68, S20–S36.
-Broer, Tobias, Jeppe Druedahl, Karl Harmenberg, and Erik Öberg (2025):
-“Stimulus Effects of Common Fiscal Policies,” Discussion Paper 19823, Center for
-Economic Policy Research.
-Broer, Tobias, Per Krusell, and Erik Öberg (2023): “Fiscal Multipliers: A
-Heterogenous-Agent Perspective,” Quantitative Economics, 14(3), 799–816.
-Browning, Martin, and Thomas F. Crossley (2009): “Shocks, Stocks, and Socks:
-Smoothing Consumption Over a Temporary Income Loss,” Journal of the European
-Economic Association, 7(6), 1169–1192.
-Cagetti, Marco (2003): “Wealth accumulation over the life cycle and precautionary
-savings,” Journal of Business & Economic Statistics, 21(3), 339–353.
-Carroll, Christopher, Edmund Crawley, Ivan Frankovic, and Håkon
-Tretvoll (2023): “Welfare and Spending Effects of Consumption Stimulus Policies,”
-Finance and Economics Discussion Series 2023-002, Board of Governors of the Federal
-Reserve System, Washington.
-Carroll, Christopher D (2022): “Theoretical Foundations of Buffer Stock Saving,”
-Department of Economics, Working paper.
-
-48
-
-Carroll, Christopher D., Edmund Crawley, Jiri Slacalek, Kiichi Tokuoka, and Matthew N. White (2020): “Sticky Expectations and Consumption
-Dynamics,” American Economic Journal: Macroeconomics, 12(3), 40–76.
-Carroll, Christopher D, Edmund Crawley, Jiri Slacalek, and Matthew N
-White (2020): “Modeling the consumption response to the CARES act,” Covid
-Economics, 10, 62–86.
-Carroll, Christopher D., Jiri Slacalek, Kiichi Tokuoka, and Matthew N. White (2017): “The Distribution of Wealth and the Marginal
-Propensity to Consume,” Quantitative Economics, 8(3), 977–1020, At https:
-//llorracc.github.io/cstwMPC.
-Chodorow-Reich, Gabriel, and Loukas Karabarbounis (2016): “The limited
-macroeconomic effects of unemployment benefit extensions,” Discussion paper,
-National Bureau of Economic Research.
-Christiano, Lawrence, Martin Eichenbaum, and Sergio Rebelo (2011):
-“When is the government spending multiplier large?,” Journal of Political Economy,
-119(1), 78–121.
-Christiano, Lawrence J., Martin S. Eichenbaum, and Mathias Trabandt
-(2016): “Unemployment and Business Cycles,” Econometrica, 84(4), 1523–1569.
-Cochrane, John H (1989): “The Sensitivity of Tests of the Intertemporal Allocation
-of Consumption to Near-Rational Alternatives,” The American Economic Review, pp.
-319–337.
-Cohen, Jonathan, and Peter Ganong (2024): “Disemployment effects of
-unemployment insurance: A meta-analysis,” SSRN Electronic Journal.
-Crawley, Edmund, Martin B. Holm, and Håkon Tretvoll (2024): “A
-Parsimonious Model of Idiosyncratic Income,” Working paper.
-Crawley, Edmund, and Andreas Kuchler (2023): “Consumption Heterogeneity: Micro Drivers and Macro Implications,” American Economic Journal:
-Macroeconomics, 15(1), 314–41.
-Dávila, Eduardo, and Andreas Schaab (2022): “Welfare Assessments with
-Heterogeneous Individuals,” Available at SSRN 4102027.
-Davis, Steven J., and Till Von Wachter (2011): “Recessions and the Costs of
-Job Loss,” Brookings Papers on Economic Activity, pp. 1–72.
-den Haan, Wouter J., Garey Ramey, and Joel Watson (2000): “Job
-Destruction and Propagation of Shocks,” The American Economic Review, 90(3),
-482–498.
-
-49
-
-Du, William (2024): “The Macroeconomic Consequences of Unemployment Scarring,”
-Manuscript, The Johns Hopkins University.
-Eggertsson, Gauti B (2011): “What fiscal policy is effective at zero interest rates?,”
-NBER Macroeconomics Annual, 25(1), 59–112.
-Elsby, Michael W L, and Bart Hobijn (2010): “The Labor Market in the Great
-Recession,” Brookings Papers on Economic Activity.
-Fagereng, Andreas, Martin B. Holm, and Gisle J. Natvik (2021):
-“MPC Heterogeneity and Household Balance Sheets,” American Economic Journal:
-Macroeconomics, 13(4), 1–54.
-Friedman, Milton A. (1963): “Windfalls, the ‘Horizon,’ and Related Concepts in the
-Permanent Income Hypothesis,” in Measurement in Economics, ed. by Carl Christ,
-pp. 1–28. Stanford University Press.
-Ganong, Peter, Fiona E Greig, Pascal J Noel, Daniel M Sullivan,
-and Joseph S Vavra (2022): “Spending and Job-Finding Impacts of Expanded
-Unemployment Benefits: Evidence from Administrative Micro Data,” Working Paper
-30315, National Bureau of Economic Research.
-Ganong, Peter, and Pascal Noel (2019): “Consumer Spending during
-Unemployment: Positive and Normative Implications,” American Economic Review,
-109(7), 2383–2424.
-Gjeldsregistret (2022): “Nokkeltall fra Gjeldsregisteret,” Gjeldsregistret nettside,
-Url: https://www.gjeldsregisteret.com/pages/nokkeltall.
-Gornemann, Nils, Keith Kuester, and Makoto Nakajima (2021): “Doves for
-the Rich, Hawks for the Poor? Distributional Consequences of Systematic Monetary
-Policy,” ECONtribute Discussion Papers Series 089, University of Bonn and University
-of Cologne, Germany.
-Graham, James, and Robert McDowall (2024): “Mental Accounts and
-Consumption Sensitivity Across the Distribution of Liquid Assets,” Available at SSRN
-4793885.
-Graves, Sebastian (2024): “Does unemployment risk affect business cycle
-dynamics?,” American Economic Journal Macroeconomics.
-Hagedorn, Marcus, Fatih Karahan, Iourii Manovskii, and Kurt Mitman
-(2019): “Unemployment Benefits and Unemployment in the Great Recession: The
-Role of Macro Effects,” Discussion paper, National Bureau of Economic Research,
-Working paper 19499.
-
-50
-
-Hagedorn, Marcus, Iourii Manovskii, and Kurt Mitman (2017): “The
-Impact of Unemployment Benefit Extensions on Employment: The 2014 Employment
-Miracle?,” Discussion paper, National Bureau of Economic Research, Working paper
-20884.
-(2019): “The fiscal multiplier,” Working paper, National Bureau of Economic
-Research.
-Hai, Rong, Dirk Krueger, and Andrew Postlewaite (2020): “On the welfare
-cost of consumption fluctuations in the presence of memorable goods,” Quantitative
-economics, 11(4), 1177–1214.
-Ilut, Cosmin, and Rosen Valchev (2022): “Economic Agents as Imperfect Problem
-Solvers,” Q. J. Econ., 138(1), 313–362.
-Indarte, Sasha, Raymond Kluender, Ulrike Malmendier, and Michael
-Stepner (2024): “What Explains the Consumption Decisions of Low-Income
-Households?,” Department of Economics.
-Johnson, David S., Jonathan A. Parker, and Nicholas S. Souleles (2006):
-“Household Expenditure and the Income Tax Rebates of 2001,” American Economic
-Review, 96(5), 1589–1610.
-Kaplan, Greg, and Giovanni L Violante (2014): “A model of the consumption
-response to fiscal stimulus payments,” Econometrica, 82(4), 1199–1239.
-(2022): “The Marginal Propensity to Consume in Heterogeneous Agent
-Models,” Working Paper 30013, National Bureau of Economic Research.
-Kekre, Rohan (2022): “Unemployment Insurance in Macroeconomic Stabilization,”
-The Review of Economic Studies.
-Kotsogiannis, Christos, and Plutarchos Sakellaris (2024): “MPCs Estimated
-from Tax Lottery, Survey and Administrative Data,” Discussion paper, Athens
-University of Economics and Business.
-Kravik, Erling Motzfeldt, and Yassin Mimir (2019): “Navigating with NEMO,”
-Norges Bank Staff Memo, 5.
-Krueger, Dirk, Kurt Mitman, and Fabrizio Perri (2016): “Macroeconomics
-and household heterogeneity,” in Handbook of Macroeconomics, vol. 2, pp. 843–921.
-Elsevier.
-Kueng, Lorenz (2018): “Excess Sensitivity of High-Income Consumers*,” The
-Quarterly Journal of Economics, 133(4), 1693–1751.
-Lian, Chen (2023): “Mistakes in future consumption, high MPCs now,” American
-Economic Review: Insights, 5(4), 563–581.
-
-51
-
-Mankiw, N. Gregory (1982): “Hall’s Consumption Hypothesis and Durable Goods,”
-Journal of Monetary Economics, 10(3), 417–425.
-Maxted, Peter, David Laibson, and Benjamin Moll (2024): “Present Bias
-Amplifies the Household Balance-Sheet Channels of Macroeconomic Policy,” The
-Quarterly Journal of Economics, p. qjae026.
-McKay, Alisdair, and Ricardo Reis (2016): “The role of automatic stabilizers in
-the US business cycle,” Econometrica, 84(1), 141–194.
-(2021): “Optimal automatic stabilizers,” The Review of Economic Studies,
-88(5), 2375–2406.
-Melcangi, Davide, and Vincent Sterk (2024): “Stock market participation,
-inequality, and monetary policy,” Review of Economic Studies, p. rdae068.
-Mincer, Jacob (1991): “Education and Unemployment,” NBER Working Paper
-w3838.
-OECD
-(2020):
-“Net
-replacement
-rate
-OECD
-statistics
-"Social
-Protection
-and
-https://stats.oecd.org/Index.aspx?DataSetCode=NRR.
-
-in
-unemployment,”
-Well-being",
-Url:
-
-Parker, Jonathan A (2017): “Why don’t households smooth consumption? Evidence
-from a $25 million experiment,” American Economic Journal: Macroeconomics, 9(4),
-153–183.
-Parker, Jonathan A, Nicholas S Souleles, David S Johnson, and Robert
-McClelland (2013): “Consumer spending and the economic stimulus payments of
-2008,” American Economic Review, 103(6), 2530–53.
-Phan, Nam (2024): “The Welfare Consequences of Countercyclical Fiscal Transfers,”
-Manuscript, Queens Economics Department.
-Ramey, Valerie A, and Sarah Zubairy (2018): “Government spending multipliers
-in good times and in bad: evidence from US historical data,” Journal of political
-economy, 126(2), 850–901.
-Ravn, Morten O., and Vincent Sterk (2017): “Job uncertainty and deep
-recessions,” Journal of Monetary Economics, 90, 125–141.
-Ravn, Morten O, and Vincent Sterk (2021): “Macroeconomic Fluctuations
-with HANK & SAM: an Analytical Approach,” Journal of the European Economic
-Association, 19, 1162–1202.
-Rotemberg, Julio J. (1982): “Sticky Prices in the United States,” Journal of Political
-Economy, 90(6), 1187–1211.
-
-52
-
-Rothstein, Jesse, and Robert G Valletta (2017): “Scraping by: Income and
-program participation after the loss of extended unemployment benefits,” Journal of
-Policy Analysis and Management, 36(4), 880–908.
-Silva, José, and Manuel Toledo (2009): “Labor Turnover Costs and The Cyclical
-Behavior or Vacancies and Unemployment,” Macroeconomic Dynamics, 13(S1), 76–96.
-Skiba, Paige Marta, and Jeremy Tobacman (2008): “Payday loans, uncertainty
-and discounting: Explaining patterns of borrowing, repayment, and default,”
-Vanderbilt Law and Economics Research Paper, 08(33).
-
-53
+45
 
 
