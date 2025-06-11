@@ -79,4 +79,3 @@ keywords: # optional
 
 This repository is a complete software archive for the paper “Welfare and Spending Effects of Consumption Stimulus Policies” by Carroll, Crawley, Du, Frankovic, and Tretvoll (2025). 
 
-## References
