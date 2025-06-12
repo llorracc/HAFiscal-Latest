@@ -57,6 +57,6 @@
 *.xbb.zip
 *.xbb.whl
 *.xbb.whl.zip
-*.latexmk*
+# *.latexmk*
 **docs/**
 **archive/**
