@@ -53,8 +53,9 @@
 fontsize=12pt,english,
 numbers=noenddot,          % do not add final dot after ordinary section numbers
 captions=tableheading,     % allows \captionabove for captions above rather than below tables
-captions=nooneline         % do not treat one-line captions differently
-,headings=optiontocandhead % section headings at top of page
+captions=nooneline,        % do not treat one-line captions differently
+headings=optiontocandhead, % section headings at top of page
+epstopdf=false             % epstopdf prevents latexmk from running pdflatex unless --shell-escape 
 ]{scrartcl}
 
 % use TeX encoding scheme (T1), which contains accented (European) letters,

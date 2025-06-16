@@ -365,3 +365,6 @@ version
 # Prompts
 prompts/
 prompts_local/
+
+# Intermediate latex ps outputs
+*.out.ps

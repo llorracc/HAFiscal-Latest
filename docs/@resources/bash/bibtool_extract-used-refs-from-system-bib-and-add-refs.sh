@@ -92,3 +92,9 @@ mv "$full_path.tmp" "$full_path"
 
 echo "Additional processing complete."
 echo "Final bibliography saved to: $full_path"
+
+debug='test if append or replace for HAFiscal'
+say "$debug"
+echo 'determine whether HAFiscal is getting replaced or added to'
+echo 'hit return to continue'
+read answer

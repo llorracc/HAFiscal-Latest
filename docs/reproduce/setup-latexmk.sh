@@ -78,43 +78,42 @@ else
     get_default_files() {
         local default_files=()
         
-        # Check for latexmkrc files in order of precedence
-        local rc_files=(".latexmkrc-for-pdf" ".latexmkrc" "latexmkrc")
+        # Use .latexmkrc-for-pdf explicitly
+        local rc_file=".latexmkrc-for-pdf"
         
-        for rc_file in "${rc_files[@]}"; do
-            if [[ -f "$rc_file" ]]; then
-                # Extract @default_files = (...) using perl-style parsing
-                local extracted=$(grep -E '^\s*@default_files\s*=' "$rc_file" | head -1)
-                if [[ -n "$extracted" ]]; then
-                    # Extract content between parentheses
-                    # Handle both: @default_files = ('file1.tex', 'file2.tex'); 
-                    #         and: @default_files = ('file1.tex, file2.tex');
-                    local files_content=$(echo "$extracted" | sed -n "s/.*(\s*\(.*\)\s*).*/\1/p")
-                    
-                    # Remove outer quotes and split intelligently
-                    files_content=$(echo "$files_content" | sed "s/^['\"]//;s/['\"]$//")
-                    
-                    # Handle comma-separated files within quotes or separate quoted files
-                    if [[ "$files_content" == *,* ]]; then
-                        # Split by comma and clean up each file
-                        while IFS= read -r file; do
-                            # Remove quotes and whitespace
-                            file=$(echo "$file" | sed "s/['\"]//g" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-                            if [[ -n "$file" && -f "$file" ]]; then
-                                default_files+=("$file")
-                            fi
-                        done <<< "$(echo "$files_content" | tr ',' '\n')"
-                    else
-                        # Single file, just clean it up
-                        local file=$(echo "$files_content" | sed "s/['\"]//g" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+        if [[ -f "$rc_file" ]]; then
+            # Extract @default_files = (...) using perl-style parsing
+            local extracted=$(grep -E '^\s*@default_files\s*=' "$rc_file" | head -1)
+            if [[ -n "$extracted" ]]; then
+                # Extract content between parentheses
+                # Handle both: @default_files = ('file1.tex', 'file2.tex'); 
+                #         and: @default_files = ('file1.tex, file2.tex');
+                local files_content=$(echo "$extracted" | sed -n "s/.*(\s*\(.*\)\s*).*/\1/p")
+                
+                # Remove outer quotes and split intelligently
+                files_content=$(echo "$files_content" | sed "s/^['\"]//;s/['\"]$//")
+                
+                # Handle comma-separated files within quotes or separate quoted files
+                if [[ "$files_content" == *,* ]]; then
+                    # Split by comma and clean up each file
+                    while IFS= read -r file; do
+                        # Remove quotes and whitespace
+                        file=$(echo "$file" | sed "s/['\"]//g" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
                         if [[ -n "$file" && -f "$file" ]]; then
                             default_files+=("$file")
                         fi
+                    done <<< "$(echo "$files_content" | tr ',' '\n')"
+                else
+                    # Single file, just clean it up
+                    local file=$(echo "$files_content" | sed "s/['\"]//g" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+                    if [[ -n "$file" && -f "$file" ]]; then
+                        default_files+=("$file")
                     fi
-                    break  # Use first latexmkrc file found
                 fi
             fi
-        done
+        else
+            echo "Note: .latexmkrc-for-pdf not found, will use all .tex files in current directory" >&2
+        fi
         
         # If no default files found, fall back to all .tex files
         if [[ ${#default_files[@]} -eq 0 ]]; then

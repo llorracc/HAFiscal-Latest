@@ -13,28 +13,38 @@ Using a heterogeneous agent model calibrated to match measured spending dynamics
 
 ## Replication from a unix (macOS/linux) command line
 
-To reproduce all the computational results of the paper (several days):
+### Interactive Reproduction Script
 
-```
-    /bin/bash reproduce/reproduce_computed.sh
-```
+The easiest way to reproduce results is using the interactive script:
 
-To produce pdf version of the paper from a unix (macOS/linux) command line:
-
-```
-    /bin/bash reproduce/reproduce_document.sh
+```bash
+./reproduce.sh
 ```
 
-To reproduce both computational results and the paper:
+This will present a menu with options to reproduce:
+- LaTeX documents (a few minutes)
+- Minimal computational results (~1 hour) 
+- All computational results (1-2 days)
 
-```
-    /bin/bash reproduce.sh
+### Non-Interactive Reproduction
+
+For automated/scripted usage, set the `REPRODUCE_TARGETS` environment variable:
+
+```bash
+REPRODUCE_TARGETS=docs ./reproduce.sh      # Documents only
+REPRODUCE_TARGETS=min ./reproduce.sh       # Minimal results (~1 hour)
+REPRODUCE_TARGETS=all ./reproduce.sh       # All results (1-2 days)
+REPRODUCE_TARGETS=docs,min ./reproduce.sh  # Multiple targets
 ```
 
- To run a cut-down version of the results (\<1 hour):
+### Individual Scripts (Legacy)
 
-```
-   /bin/bash reproduce_min.sh
+You can also run individual reproduction scripts directly:
+
+```bash
+/bin/bash reproduce/reproduce_computed.sh      # All computational results
+/bin/bash reproduce/reproduce_document_pdfs.sh # PDF documents  
+/bin/bash reproduce_min.sh                     # Minimal results
 ```
 
 Some of the statistics hard coded into the reproduce_computed.sh script are calculated using Stata. To reproduce these statistics, run the following do file in Stata:
