@@ -102,11 +102,7 @@
 
 
 \ifthenelse{\boolean{Appendix}}{
-  \appendix
-  \subfile{Subfiles/Online-appendix}
-  %%% AI's keep suggesting using \subimport, but for subtle reasons that fails
-  %%%	\subimport{\econtexRoot/Subfiles/}{Online-appendix}\pagebreak
-  \pagebreak
+	\appendix\subfile{Subfiles/Online-appendix}\pagebreak
 }{}
 
 \ifthenelse{\boolean{Web}}{

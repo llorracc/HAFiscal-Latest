@@ -15,6 +15,6 @@ setup_latex_interaction
 latexmk -c 2>/dev/null || true
 latexmk  "HAFiscal-Slides.tex"
 latexmk  "HAFiscal-titlepage.tex"
-latexmk  "HAFiscal-online-appendix.tex"
 latexmk  "HAFiscal.tex"
+latexmk  "HAFiscal-online-appendix.tex"
 latexmk -c 2>/dev/null || true
