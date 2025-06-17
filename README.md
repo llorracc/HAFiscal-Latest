@@ -113,6 +113,8 @@ A current (2025) laptop or equivalent is sufficient to reproduce the results.
   
   - numba=0.59.0
   
+  - openpyxl=3.1.5
+  
   - pip
   
   - pip:
