@@ -10,7 +10,7 @@ run_step_1 = True
 run_step_2 = True
 run_step_3 = False # This step produces robustness results in the Online appendix
 run_step_4 = True
-run_step_5 = True
+run_step_5 = True 
 
 #%%
 # Step 1: Estimation of the splurge factor: 
@@ -41,17 +41,14 @@ if run_step_2:
 # Step 3: Robustness results. Estimate discount factor distributions with Splurge = 0. The results for Splurge = 0 are in the Online Appendix.
 if run_step_3:
     print('Step 3: Robustness results (note: this repeats step 2)\n')  
-    if run_robustness_results:
-        os.chdir('FromPandemicCode')
-        # Order of input arguments: interest rate, risk aversion, replacement rate w/benefits, replacement rate w/o benefits, Splurge   
-        # For robustness, keep basline parameters, but set splurge to 0
+    os.chdir('FromPandemicCode')
+    # Order of input arguments: interest rate, risk aversion, replacement rate w/benefits, replacement rate w/o benefits, Splurge   
+    # For robustness, keep basline parameters, but set splurge to 0
 
-        args = ['1.01', '2.0', '0.7', '0.5', '0']
-        cmd = "python EstimAggFiscalMAIN.py " + " ".join(args)
-        os.system(cmd)
-        os.chdir('../')
-    else:
-        print('Skipping robustness for Splurge = 0 this time (see do_all.py line 35)')
+    args = ['1.01', '2.0', '0.7', '0.5', '0']
+    cmd = "python EstimAggFiscalMAIN.py " + " ".join(args)
+    os.system(cmd)
+    os.chdir('../')
     print('Concluded Step 3.\n\n')
 
 

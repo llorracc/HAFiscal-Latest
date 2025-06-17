@@ -54,17 +54,14 @@ UBspell_normal = 2           # Average duration of unemployment benefits in norm
 
 # Basic model parameters: CRRA, growth factors, unemployment parameters (for normal times)
 CRRA = 2.0                 # Coefficient of relative risk aversion (1, 2 or 3)
-splurgeZero = False
-if splurgeZero:
-    Splurge = 0
-else:
-    f = open('../Target_AggMPCX_LiquWealth/Result_AllTarget.txt', 'r')
-    dictload = eval(f.read())
-    Splurge = dictload['splurge'] 
-# if len(sys.argv) >= 6:
-#     # Number of arguments indicates that Splurge is set manually 
-#     Splurge = float(sys.argv[5])
-#     CRRA = float(sys.argv[2])
+
+f = open('../Target_AggMPCX_LiquWealth/Result_AllTarget.txt', 'r')
+dictload = eval(f.read())
+Splurge = dictload['splurge'] 
+if len(sys.argv) >= 6:
+    # Number of arguments indicates that Splurge is set manually 
+    Splurge = float(sys.argv[5])
+
 # elif len(sys.argv) >= 3:
 #     # Number of arguments indicates that CRRA is set manually
 #     CRRA = float(sys.argv[2])
