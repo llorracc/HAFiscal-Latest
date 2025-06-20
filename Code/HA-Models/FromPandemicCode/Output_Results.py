@@ -1,7 +1,12 @@
 import os
+import sys
 from Welfare import Welfare_Results
 from HARK.utilities import make_figs
 import matplotlib.pyplot as plt
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 from matplotlib_config import show_plot
 
 def Output_Results(saved_results_dir,fig_dir,table_dir,Parametrization='Baseline'):

@@ -1,7 +1,14 @@
 """Simple plotting functions for time series"""
-import matplotlib.pyplot as plt
-from matplotlib_config import show_plot
+import os
+import sys
 import numpy as np
+import matplotlib.pyplot as plt
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+from matplotlib_config import show_plot
+
 
 
 def plot_timeseries(data_dict, dims, xlabel='Quarters', **kwargs):
