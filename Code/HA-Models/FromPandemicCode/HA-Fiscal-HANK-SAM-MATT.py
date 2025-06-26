@@ -28,7 +28,7 @@ Specify the output to be produced, and where to write it.
 """
     
 # Name the shocks parameters, their labels for the output file, and whether they are offset in time
-shock_params = ["transfers", "Rfree_all", "wage", "tax_rate", "job_find", "DiscFac", "IncUnempExt", "IncUnemp"]
+shock_params = ["transfers", "Rfree_base", "wage", "tax_rate", "job_find", "DiscFac", "IncUnempExt", "IncUnemp"]
 shock_labels = ["transfers", "r", "w", "tau", "eta", "DiscFac", "UI_extend", "UI_rr"]  # used in pickled dictionary
 offset_list = [True, True, True, True, True, False, True, True]  # Most are offset in time
     
@@ -271,7 +271,6 @@ print("Time to compute some HA-SSJs!")
 
 # Loop over each type of agent (education X discount factor)
 for e in range(num_educ_types):
-    e = 2
     betas = DiscFacDstns[e].atoms[0]
     ThisType = BaseTypeList[e]
     for d,beta in enumerate(betas):
