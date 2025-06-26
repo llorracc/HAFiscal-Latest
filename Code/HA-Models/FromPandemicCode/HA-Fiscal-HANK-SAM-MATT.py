@@ -275,6 +275,7 @@ for e in range(num_educ_types):
     ThisType = BaseTypeList[e]
     for d,beta in enumerate(betas):
         type_start = time()
+        print("")  # skip a line
         print("Beginning work on agents with " + educ_names[e] + " education and beta={:.4f}".format(beta) + "...")
         
         # Solve the long run model and prepare to calculate steady state
@@ -308,7 +309,8 @@ for e in range(num_educ_types):
                     
         print("Work on agents with " + educ_names[e] + " education and beta={:.4f}".format(beta) + " took {:.1f}".format((time() - type_start)/60) + " minutes.")
 
-print('Calculating all HA-SSJs took {:.2f}'.format((time.time() - overall_start)/3600.) + " hours.")
+print("")  # skip a line
+print('Calculating all HA-SSJs took {:.2f}'.format((time() - overall_start)/3600.) + " hours.")
 
 ###############################################################################
 
