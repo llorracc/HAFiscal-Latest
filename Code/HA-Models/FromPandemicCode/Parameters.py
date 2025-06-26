@@ -14,7 +14,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         Abs_Path = cwd + '\\FromPandemicCode'
 
     import numpy as np
-    from HARK.distribution import Uniform
+    from HARK.distributions import Uniform
     from OtherFunctions import loadPickle, getSimulationDiff
     
 
@@ -451,10 +451,10 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
                     "aXtraNestFac": aXtraNestFac,
                     "CubicBool": False,
                     "vFuncBool": False,
-                    'aNrmInitMean': np.log(0.00001), # Initial assets are zero
-                    'aNrmInitStd': 0.0,
-                    'pLvlInitMean': pLvlInitMean_d,
-                    'pLvlInitStd': pLvlInitStd_d,
+                    'kLogInitMean': np.log(0.00001), # Initial assets are zero
+                    'kLogInitStd': 0.0,
+                    'pLogInitMean': pLvlInitMean_d,
+                    'pLogInitStd': pLvlInitStd_d,
                     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_d)),
                     'Urate_normal' : Urate_normal_d,
                     'Uspell_normal' : Uspell_normal,
