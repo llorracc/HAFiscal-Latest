@@ -12,6 +12,7 @@ from copy import deepcopy
 import numpy as np
 from time import time
 import pickle
+import matplotlib.pyplot as plt
 from HARK.distributions import DiscreteDistributionLabeled
 from HARK.ConsumptionSaving.ConsMarkovModel import MarkovConsumerType, markov_constructor_dict
 from HARK.Calibration.Income.IncomeProcesses import construct_HANK_lognormal_income_process_unemployment, get_PermShkDstn_from_IncShkDstn_markov, get_TranShkDstn_from_IncShkDstn_markov
@@ -51,7 +52,7 @@ tax_rate_SS = 0.3  # Calibrated steady state tax rate
 wage_SS = 1.0  # Calibrated steady state wage rate
 U_rr = 0.4 * (1.0 - tax_rate_SS) * wage_SS  # Ordinary unemployment benefits
 weights_of_educ_types = [0.093, 0.527, 0.38]  # Dropout, high school, college
-educ_names = ["dropout", "high school", "college"]
+educ_names = ["dropout", "highschool", "college"]
 
 # Load in the parameters from the main parameters file
 [init_dropout, init_highschool, init_college, init_ADEconomy, DiscFacDstns,\
@@ -168,7 +169,7 @@ def make_hank_sam_income_dstn(IncShkDstnEmp, IncUnemp, IncUnempExt, transfers, T
     -------
     IncShkDstn : [[DiscreteDistributionLabeled]]
         Nested list of income shock distributions by period and discrete Markov state.
-    """
+    """ 
     rr_0 = (1. + IncUnemp) / 2. + transfers     # Ordinary unemployment benefits
     rr_1 = (1. + IncUnempExt) / 2. + transfers  # Extended unemployment benefits
     rr_2 = (1. + 0.) / 2. + transfers           # No employment benefits at all
@@ -334,8 +335,8 @@ for s in range(num_shocks):
     for d in range(num_discfacs):
         for e in range(num_educ_types):
             type_weight = DiscFacDstns[e].pmv[d] * weights_of_educ_types[e]
-            CJAC[s,:,:] += type_weight * Cjac_all[e,d,s]
-            AJAC[s,:,:] += type_weight * Ajac_all[e,d,s]
+            CJAC[s,:,:] += type_weight * Cjac_all[e,d,s,:,:]
+            AJAC[s,:,:] += type_weight * Ajac_all[e,d,s,:,:]
 
 # Calculate HA-SSJs by education level for each shock variable
 CJAC_by_educ = np.zeros((num_shocks, num_educ_types, bigT, bigT))
@@ -344,8 +345,8 @@ for s in range(len(shock_params)):
     for d in range(num_discfacs): # discount factor
         for e in range(num_educ_types): # education type
             type_weight = DiscFacDstns[e].pmv[d]
-            CJAC_by_educ[s,e,:,:] += Cjac_all[e,d,s]
-            AJAC_by_educ[s,e,:,:] += Ajac_all[e,d,s]
+            CJAC_by_educ[s,e,:,:] += Cjac_all[e,d,s,:,:]
+            AJAC_by_educ[s,e,:,:] += Ajac_all[e,d,s,:,:]
 
 ###############################################################################
 
@@ -360,7 +361,7 @@ CJAC_dict_educ = {}
 AJAC_dict_educ = {}
 
 # Fill in HA-SSJs by shock in the dictionaries
-for s,shk in enumerate(shock_params):
+for s,shk in enumerate(shock_labels):
     CJAC_dict[shk] = deepcopy(CJAC[s,:,:])
     AJAC_dict[shk] = deepcopy(AJAC[s,:,:])
 
@@ -368,7 +369,7 @@ for s,shk in enumerate(shock_params):
 for e,educ in enumerate(educ_names):    
     CJAC_dict_temp_i = {}
     AJAC_dict_temp_i = {}
-    for s,shk in enumerate(shock_params):
+    for s,shk in enumerate(shock_labels):
         CJAC_dict_temp_i[shk] = deepcopy(CJAC_by_educ[s,e,:,:])
         AJAC_dict_temp_i[shk] = deepcopy(AJAC_by_educ[s,e,:,:])
     
@@ -395,3 +396,37 @@ with open(output_filename, 'wb') as f:
     pickle.dump(big_dict_to_save, f)
     f.close()
 print("Wrote HA-SSJs to " + output_filename + "!")
+
+###############################################################################
+
+"""
+Define some plotting tools for conveniently checking the results.
+"""
+
+# Define a simple function for plotting SSJs
+def plot_SSJ(jac, S, outcome, shock):
+    T = jac.shape[0]
+    if type(S) is int:
+        S = [S]
+    plt.plot([-1,T+1], [0,0], '--k', lw=1)
+    for s in S:
+        plt.plot(jac[:, s], "-", label="s=" + str(s))
+    plt.legend()
+    plt.xlabel(r"time $t$")
+    plt.ylabel("rate of change of " + outcome)
+    plt.title("SSJ for " + outcome + " with respect to " + shock + r" at time $s$")
+    plt.tight_layout()
+    plt.xlim(-1, T + 1)
+    plt.show()
+    
+def quick_plot_A(e, d, i):
+    plot_SSJ(Ajac_all[e,d,i], [0,10,30,60,100], "assets", shock_params[i])
+    
+def quick_plot_C(e, d, i):
+    plot_SSJ(Cjac_all[e,d,i], [0,10,30,60,100], "consumption", shock_params[i])
+    
+def kwick_plot_A(i):
+    plot_SSJ(AJAC[i], [0,10,30,60,100], "assets", shock_params[i])
+    
+def kwick_plot_C(i):
+    plot_SSJ(CJAC[i], [0,10,30,60,100], "consumption", shock_params[i])
