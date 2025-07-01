@@ -1271,7 +1271,7 @@ def NPV(irf, length, discount_rate=None):
     return NPV_val
 
 
-def run_ui_extension_experiments():
+def run_ui_extension_experiments(param_overrides=None):
     """
     Run UI extension experiments under different monetary policies.
 
@@ -1284,24 +1284,34 @@ def run_ui_extension_experiments():
     The UI extension increases income replacement for unemployed individuals
     who have exhausted their regular benefits.
 
+    Args:
+        param_overrides: Dictionary of parameter overrides to apply
+
     Returns:
         tuple: Contains IRFs and steady state dictionaries for all three scenarios:
             (irfs_UI_extend, irfs_UI_extend_fixed_nominal_rate,
              irfs_UI_extension_fixed_real_rate, irf_UI_extend_realizations,
              SteadyState_Dict_UI_extend, shocks_UI_extension)
     """
+    if param_overrides is None:
+        param_overrides = {}
+
     # Create shock
+    ui_length = param_overrides.get("UI_extension_length", UI_extension_length)
     dUI_extension = np.zeros(bigT)
-    dUI_extension[:UI_extension_length] = 0.2
+    dUI_extension[:ui_length] = 0.2
     shocks_UI_extension = {"UI_extend": dUI_extension}
 
     # Set up steady state dictionary
     SteadyState_Dict_UI_extend = deepcopy(SteadyState_Dict)
-    SteadyState_Dict_UI_extend["phi_b"] = phi_b
-    SteadyState_Dict_UI_extend["phi_w"] = real_wage_rigidity
-    SteadyState_Dict_UI_extend["rho_r"] = rho_r
-    SteadyState_Dict_UI_extend["phi_y"] = phi_y
-    SteadyState_Dict_UI_extend["phi_pi"] = phi_pi
+    SteadyState_Dict_UI_extend["phi_b"] = param_overrides.get("phi_b", phi_b)
+    SteadyState_Dict_UI_extend["phi_w"] = param_overrides.get(
+        "real_wage_rigidity", real_wage_rigidity
+    )
+    SteadyState_Dict_UI_extend["rho_r"] = param_overrides.get("rho_r", rho_r)
+    SteadyState_Dict_UI_extend["phi_y"] = param_overrides.get("phi_y", phi_y)
+    SteadyState_Dict_UI_extend["phi_pi"] = param_overrides.get("phi_pi", phi_pi)
+    SteadyState_Dict_UI_extend["kappa_p"] = param_overrides.get("kappa_p", kappa_p_ss)
     SteadyState_Dict_UI_extend["deficit_T"] = -1
 
     # Standard taylor rule
@@ -1354,7 +1364,7 @@ def run_ui_extension_experiments():
     )
 
 
-def run_transfer_experiments():
+def run_transfer_experiments(param_overrides=None):
     """
     Run transfer (stimulus check) experiments under different monetary policies.
 
@@ -1368,12 +1378,18 @@ def run_transfer_experiments():
     The transfer is calibrated as 5% of steady-state consumption, representing
     approximately $1,200 per person when scaled to US data.
 
+    Args:
+        param_overrides: Dictionary of parameter overrides to apply
+
     Returns:
         tuple: Contains IRFs and configuration for all monetary policy scenarios:
             (irfs_transfer, irfs_transfer_fixed_nominal_rate,
              irfs_transfer_fixed_real_rate, irfs_transfers_lagged_nominal_rate,
              SteadyState_Dict_transfer, shocks_transfers)
     """
+    if param_overrides is None:
+        param_overrides = {}
+
     # Create shock
     dtransfers = np.zeros(bigT)
     dtransfers[:stimulus_check_length] = C_ss * 0.05  # 5% of quarterly consumption
@@ -1381,11 +1397,14 @@ def run_transfer_experiments():
 
     # Set up steady state dictionary
     SteadyState_Dict_transfer = deepcopy(SteadyState_Dict)
-    SteadyState_Dict_transfer["phi_b"] = phi_b
-    SteadyState_Dict_transfer["phi_w"] = real_wage_rigidity
-    SteadyState_Dict_transfer["rho_r"] = rho_r
-    SteadyState_Dict_transfer["phi_y"] = phi_y
-    SteadyState_Dict_transfer["phi_pi"] = phi_pi
+    SteadyState_Dict_transfer["phi_b"] = param_overrides.get("phi_b", phi_b)
+    SteadyState_Dict_transfer["phi_w"] = param_overrides.get(
+        "real_wage_rigidity", real_wage_rigidity
+    )
+    SteadyState_Dict_transfer["rho_r"] = param_overrides.get("rho_r", rho_r)
+    SteadyState_Dict_transfer["phi_y"] = param_overrides.get("phi_y", phi_y)
+    SteadyState_Dict_transfer["phi_pi"] = param_overrides.get("phi_pi", phi_pi)
+    SteadyState_Dict_transfer["kappa_p"] = param_overrides.get("kappa_p", kappa_p_ss)
     SteadyState_Dict_transfer["deficit_T"] = -1
 
     # Standard taylor rule
@@ -1444,7 +1463,7 @@ def run_transfer_experiments():
     )
 
 
-def run_tax_cut_experiments():
+def run_tax_cut_experiments(param_overrides=None):
     """
     Run tax cut experiments under different monetary policies.
 
@@ -1457,23 +1476,35 @@ def run_tax_cut_experiments():
     2. Fixed nominal interest rate
     3. Fixed real interest rate
 
+    Args:
+        param_overrides: Dictionary of parameter overrides to apply
+
     Returns:
         tuple: Contains IRFs and configuration for all scenarios:
             (irfs_tau, irfs_tau_fixed_nominal_rate, irfs_tau_fixed_real_rate,
              SteadyState_Dict_tax_shock, shocks_tau)
     """
+    if param_overrides is None:
+        param_overrides = {}
+
     # Create shock
+    tax_length = param_overrides.get("tax_cut_length", tax_cut_length)
     dtau = np.zeros(bigT)
-    dtau[:tax_cut_length] = -0.02  # 2 percentage point tax cut
+    dtau[:tax_length] = -0.02  # 2 percentage point tax cut
     shocks_tau = {"tau": dtau}
 
     # Set up steady state dictionary
     SteadyState_Dict_tax_shock = deepcopy(SteadyState_Dict)
-    SteadyState_Dict_tax_shock["phi_G"] = -phi_b  # G adjusts instead of tau
-    SteadyState_Dict_tax_shock["phi_w"] = real_wage_rigidity
-    SteadyState_Dict_tax_shock["rho_r"] = rho_r
-    SteadyState_Dict_tax_shock["phi_y"] = phi_y
-    SteadyState_Dict_tax_shock["phi_pi"] = phi_pi
+    SteadyState_Dict_tax_shock["phi_G"] = -param_overrides.get(
+        "phi_b", phi_b
+    )  # G adjusts instead of tau
+    SteadyState_Dict_tax_shock["phi_w"] = param_overrides.get(
+        "real_wage_rigidity", real_wage_rigidity
+    )
+    SteadyState_Dict_tax_shock["rho_r"] = param_overrides.get("rho_r", rho_r)
+    SteadyState_Dict_tax_shock["phi_y"] = param_overrides.get("phi_y", phi_y)
+    SteadyState_Dict_tax_shock["phi_pi"] = param_overrides.get("phi_pi", phi_pi)
+    SteadyState_Dict_tax_shock["kappa_p"] = param_overrides.get("kappa_p", kappa_p_ss)
     SteadyState_Dict_tax_shock["deficit_T"] = -1
 
     # Standard taylor rule
@@ -1512,7 +1543,7 @@ def run_tax_cut_experiments():
     )
 
 
-def compute_fiscal_multipliers(horizon_length=20):
+def compute_fiscal_multipliers(horizon_length=20, **param_overrides):
     """
     Compute fiscal multipliers for all policies and monetary regimes.
 
@@ -1528,13 +1559,14 @@ def compute_fiscal_multipliers(horizon_length=20):
 
     Args:
         horizon_length: Number of quarters to compute multipliers (default=20)
+        **param_overrides: Parameter overrides to apply to all experiments
 
     Returns:
         dict: Contains two sub-dictionaries:
             - 'multipliers': Arrays of multipliers by horizon for each policy/regime
             - 'irfs': Full impulse response functions for each experiment
     """
-    # Run all experiments
+    # Run all experiments with parameter overrides
     (
         irfs_UI_extend,
         irfs_UI_extend_fixed_nominal_rate,
@@ -1542,7 +1574,7 @@ def compute_fiscal_multipliers(horizon_length=20):
         irf_UI_extend_realizations,
         _,
         _,
-    ) = run_ui_extension_experiments()
+    ) = run_ui_extension_experiments(param_overrides)
 
     (
         irfs_transfer,
@@ -1551,10 +1583,10 @@ def compute_fiscal_multipliers(horizon_length=20):
         irfs_transfers_lagged_nominal_rate,
         _,
         _,
-    ) = run_transfer_experiments()
+    ) = run_transfer_experiments(param_overrides)
 
     (irfs_tau, irfs_tau_fixed_nominal_rate, irfs_tau_fixed_real_rate, _, _) = (
-        run_tax_cut_experiments()
+        run_tax_cut_experiments(param_overrides)
     )
 
     # Initialize multiplier arrays

@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     formats: ipynb,md,py:percent
+#     formats: ipynb,py:percent
 #     text_representation:
 #       extension: .py
 #       format_name: percent
@@ -35,8 +35,6 @@ import numpy as np
 from copy import deepcopy
 import scipy.sparse as sp
 import matplotlib.pyplot as plt
-import time
-from HARK.utilities import make_figs
 
 # %% [markdown]
 # # Calibrate job transition probabilities
@@ -255,11 +253,7 @@ tax_cut_length = 8  # number of quarters where taxes are cut/lower
 # %%
 import sequence_jacobian as sj
 from sequence_jacobian.classes import JacobianDict, SteadyStateDict
-from sequence_jacobian import het, simple, create_model  # functions
-from sequence_jacobian.blocks.block import Block
-from sequence_jacobian.classes.result_dict import ResultDict
-import sequence_jacobian as sj  # SSJ will allow us to define blocks, models, compute IRFs, etc
-from matplotlib.pyplot import figure
+from sequence_jacobian import create_model  # functions
 
 
 @sj.simple
@@ -573,7 +567,7 @@ SteadyState_Dict = SteadyStateDict(
 import pickle  # Import Jacobians
 
 
-obj = open("../Code/HA-Models/FromPandemicCode/HA_Fiscal_Jacs.obj", "rb")
+obj = open("Code/HA-Models/FromPandemicCode/HA_Fiscal_Jacs.obj", "rb")
 HA_fiscal_JAC = pickle.load(obj)
 obj.close()
 
@@ -584,7 +578,7 @@ CJACs_by_educ = HA_fiscal_JAC["C_by_educ"]
 AJACs_by_educ = HA_fiscal_JAC["A_by_educ"]
 
 
-obj = open("../Code/HA-Models/FromPandemicCode/HA_Fiscal_Jacs_UI_extend_real.obj", "rb")
+obj = open("Code/HA-Models/FromPandemicCode/HA_Fiscal_Jacs_UI_extend_real.obj", "rb")
 UI_extend_realized_Jacs = pickle.load(obj)
 obj.close()
 
@@ -626,8 +620,6 @@ UJAC_dict = JacobianDict(
 )
 
 # %%
-from copy import copy
-
 old_Jacobian_Dict = deepcopy(Jacobian_Dict)
 periods = old_Jacobian_Dict["C"]["transfers"].shape[0]
 
@@ -1436,9 +1428,6 @@ plot_consumption_irfs_three_experiments(
 
 # %%
 def plot_consumption_irfs_three(irf_SC1, irf_UI1, irf_TC1):
-    green = "darkorange"
-    red = "red"
-
     Length = 12
     fontsize = 10
     width = 2
