@@ -1,0 +1,323 @@
+name: Deploy Voila Dashboard to GitHub Pages
+
+on:
+  push:
+    branches: [ main, master, dashboard ]
+    paths: [ 'dashboard/**', '.github/workflows/deploy-dashboard.yml' ]
+  pull_request:
+    branches: [ main, master ]
+    paths: [ 'dashboard/**' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  pull-requests: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CONDA_ENV: hafiscal
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+
+    - name: Setup Micromamba
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        micromamba-version: 'latest'
+        environment-file: dashboard/environment.yml
+        environment-name: ${{ env.CONDA_ENV }}
+        cache-environment: true
+
+    - name: Enable Jupyter widgets for Voila
+      shell: micromamba-shell {0}
+      run: |
+        micromamba activate ${{ env.CONDA_ENV }}
+        jupyter nbextension enable --py widgetsnbextension --sys-prefix
+
+    - name: Test dashboard imports
+      shell: micromamba-shell {0}
+      working-directory: dashboard
+      run: |
+        micromamba activate ${{ env.CONDA_ENV }}
+        python -c "
+        import hank_sam as hs
+        import hafiscal
+        print('✅ Dashboard imports successful')
+        "
+
+    - name: Create MyBinder files and landing page
+      run: |
+        mkdir -p voila-build
+        cp -r dashboard/* voila-build/
+        
+        # Use canonical environment.yml and postBuild for MyBinder (already copied from dashboard/)
+        # This ensures consistency between CI and MyBinder environments
+        chmod +x voila-build/postBuild
+        
+        # Determine deployment info for dynamic content
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          BRANCH_NAME="${{ github.head_ref }}"
+          DEPLOY_TYPE="Pull Request #${{ github.event.number }}"
+        else
+          BRANCH_NAME="${{ github.ref_name }}"
+          DEPLOY_TYPE="Branch: $BRANCH_NAME"
+        fi
+        
+        # Create professional landing page with dynamic MyBinder links
+        # This HTML page serves as the GitHub Pages entry point, providing
+        # users with clear options to launch the dashboard or download resources
+        cat > voila-build/index.html << 'EOHTML'
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>HANK-SAM Interactive Dashboard</title>
+            <style>
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    max-width: 1200px; margin: 0 auto; padding: 20px; line-height: 1.6;
+                    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                    min-height: 100vh;
+                }
+                .container { 
+                    background: white; border-radius: 12px; 
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 40px; 
+                }
+                .header { text-align: center; margin-bottom: 40px; }
+                .header h1 { color: #2c3e50; margin-bottom: 10px; font-size: 2.5em; }
+                .subtitle { color: #7f8c8d; font-size: 1.2em; margin-bottom: 30px; }
+                .launch-section { 
+                    background: #f8f9fa; border-radius: 8px; 
+                    padding: 30px; margin: 30px 0; text-align: center; 
+                }
+                .btn { 
+                    display: inline-block; padding: 15px 30px; margin: 10px;
+                    border-radius: 8px; text-decoration: none; font-weight: 600;
+                    font-size: 1.1em; transition: all 0.3s ease; 
+                }
+                .btn-primary { background: #3498db; color: white; }
+                .btn-primary:hover { background: #2980b9; transform: translateY(-2px); }
+                .btn-secondary { background: #95a5a6; color: white; }
+                .btn-secondary:hover { background: #7f8c8d; }
+                .features { 
+                    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: 20px; margin: 30px 0; 
+                }
+                .feature { 
+                    background: #ecf0f1; padding: 20px; border-radius: 8px;
+                    border-left: 4px solid #3498db; 
+                }
+                .feature h3 { color: #2c3e50; margin-top: 0; }
+                .badge { 
+                    background: #e74c3c; color: white; padding: 4px 12px;
+                    border-radius: 12px; font-size: 0.8em; margin-left: 10px; 
+                }
+                .deploy-info { 
+                    background: #f39c12; color: white; padding: 15px;
+                    border-radius: 6px; margin: 20px 0; text-align: center; 
+                }
+                .footer { 
+                    text-align: center; margin-top: 40px; padding-top: 20px;
+                    border-top: 1px solid #ecf0f1; color: #7f8c8d; 
+                }
+                @media (max-width: 768px) {
+                    body { padding: 10px; } 
+                    .container { padding: 20px; }
+                    .btn { display: block; margin: 10px 0; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🏦 HANK-SAM Dashboard</h1>
+                    <p class="subtitle">Interactive Economic Policy Analysis</p>
+                    <div class="deploy-info">
+                        <strong>DEPLOY_TYPE_PLACEHOLDER</strong> • Built from commit <code>COMMIT_PLACEHOLDER</code>
+                    </div>
+                </div>
+                <div class="launch-section">
+                    <h2>🚀 Launch Interactive Dashboard</h2>
+                    <p>Choose your preferred way to run the dashboard:</p>
+                    <a href="MYBINDER_URL_PLACEHOLDER" class="btn btn-primary">
+                        🔬 Launch on MyBinder <span class="badge">Recommended</span>
+                    </a>
+                    <a href="app.ipynb" class="btn btn-secondary">📝 Download Notebook</a>
+                    <a href="SOURCE_URL_PLACEHOLDER" class="btn btn-secondary">💻 View Source Code</a>
+                </div>
+                <div class="features">
+                    <div class="feature">
+                        <h3>📊 Fiscal Multipliers</h3>
+                        <p>Compare unemployment insurance extensions, direct transfers, and tax cuts under different monetary policy regimes.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>⚙️ Interactive Parameters</h3>
+                        <p>Adjust Taylor rule coefficients, fiscal policy parameters, and policy durations to see real-time impacts.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>📈 Professional Visualizations</h3>
+                        <p>Publication-ready charts with impulse response functions and cumulative multiplier analysis.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🎯 HANK-SAM Model</h3>
+                        <p>Heterogeneous Agent New Keynesian with Search and Matching framework for realistic labor market dynamics.</p>
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>
+                        <a href="MYBINDER_URL_PLACEHOLDER">
+                            <img src="https://mybinder.org/badge_logo.svg" alt="Binder" style="vertical-align: middle;">
+                        </a>
+                    </p>
+                    <p>Built with ❤️ using Voila, MyBinder, and GitHub Actions</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        EOHTML
+        
+        # Replace placeholders with actual values
+        sed -i "s/DEPLOY_TYPE_PLACEHOLDER/$DEPLOY_TYPE/g" voila-build/index.html
+        sed -i "s/COMMIT_PLACEHOLDER/${{ github.sha }}/g" voila-build/index.html
+        sed -i "s|MYBINDER_URL_PLACEHOLDER|https://mybinder.org/v2/gh/${{ github.repository }}/$BRANCH_NAME?urlpath=voila%2Frender%2Fapp.ipynb|g" voila-build/index.html
+        sed -i "s|SOURCE_URL_PLACEHOLDER|https://github.com/${{ github.repository }}/tree/$BRANCH_NAME/dashboard|g" voila-build/index.html
+
+    - name: Setup GitHub Pages
+      if: github.event_name != 'pull_request'
+      uses: actions/configure-pages@v4
+
+    - name: Upload to GitHub Pages
+      if: github.event_name != 'pull_request'
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: voila-build
+
+    - name: Deploy to GitHub Pages
+      if: github.event_name != 'pull_request' 
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+    - name: Upload PR artifacts
+      if: github.event_name == 'pull_request'
+      uses: actions/upload-artifact@v4
+      with:
+        name: voila-dashboard-pr-${{ github.event.number }}
+        path: voila-build/
+        retention-days: 30
+
+    # Post an auto-updating comment on PRs with dashboard preview links
+    # This script creates a comprehensive comment with MyBinder launch links,
+    # testing instructions, and download options. On subsequent pushes to the PR,
+    # it updates the existing comment instead of creating duplicate comments.
+    - name: Comment on PR with dashboard links
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const prNumber = context.payload.pull_request.number;
+          const headRef = context.payload.pull_request.head.ref;
+          const repo = context.repo.owner + '/' + context.repo.repo;
+          
+          const comment = `## 🏦 HANK-SAM Dashboard Preview Ready!
+          
+          Your Voila dashboard has been built and is ready for testing.
+          
+          ### 🚀 Launch Dashboard
+          
+          [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${repo}/${headRef}?urlpath=voila%2Frender%2Fapp.ipynb)
+          
+          **[🔬 Click here to launch the interactive dashboard](https://mybinder.org/v2/gh/${repo}/${headRef}?urlpath=voila%2Frender%2Fapp.ipynb)**
+          
+          ### 📋 Testing Instructions
+          
+          1. **Click the launch link above** - MyBinder will build the environment
+          2. **Wait 2-3 minutes** for the environment to load  
+          3. **Test the dashboard:**
+             - Adjust parameter sliders (φπ, φy, etc.)
+             - Click "Run Simulation" 
+             - Verify plots update correctly
+             - Check that all three policy experiments render
+          
+          ### 📊 What to Test
+          
+          - **Parameter Controls:** All sliders should be responsive
+          - **Fiscal Multipliers Plot:** Should show 3 panels (UI Extension, Transfers, Tax Cuts)
+          - **Consumption IRFs Plot:** Should show impulse response functions
+          - **Performance:** Simulations should complete in <30 seconds
+          
+          ### 📁 Download Options
+          
+          - 📝 [Download Notebook Artifact](https://github.com/${repo}/actions/runs/${{ github.run_id }})
+          - 💻 [View Source Code](https://github.com/${repo}/tree/${headRef}/dashboard)
+          
+          ---
+          🔄 **Auto-updated** when you push new commits • 🕒 Built: ${new Date().toISOString().slice(0,19)}Z`;
+          
+          // Find existing comment and update it, or create new one
+          const comments = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber
+          });
+          
+          const existingComment = comments.data.find(comment => 
+            comment.user.login === 'github-actions[bot]' && 
+            comment.body.includes('HANK-SAM Dashboard Preview Ready')
+          );
+          
+          if (existingComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: existingComment.id,
+              body: comment
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: comment
+            });
+          }
+
+    - name: Create deployment summary
+      run: |
+        echo "## 🏦 Voila Dashboard Deployment" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          echo "### 🔗 PR Dashboard Links" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${{ github.repository }}/${{ github.head_ref }}?urlpath=voila%2Frender%2Fapp.ipynb)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**[🚀 Launch Interactive Dashboard](https://mybinder.org/v2/gh/${{ github.repository }}/${{ github.head_ref }}?urlpath=voila%2Frender%2Fapp.ipynb)**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "### ✅ Live Dashboard Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Link | Description |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| [📊 Dashboard Home](${{ steps.deployment.outputs.page_url }}) | Landing page with launch options |" >> $GITHUB_STEP_SUMMARY
+          echo "| [🔬 Interactive Dashboard](https://mybinder.org/v2/gh/${{ github.repository }}/${{ github.ref_name }}?urlpath=voila%2Frender%2Fapp.ipynb) | Live Voila dashboard on MyBinder |" >> $GITHUB_STEP_SUMMARY
+          echo "| [📝 Download Notebook](${{ steps.deployment.outputs.page_url }}app.ipynb) | Direct notebook download |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📋 Build Info" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Backend:** MyBinder" >> $GITHUB_STEP_SUMMARY
+        echo "- **Frontend:** GitHub Pages + Voila" >> $GITHUB_STEP_SUMMARY

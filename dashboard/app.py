@@ -16,6 +16,7 @@
 
 # %%
 # """HANK-SAM Model Interactive Dashboard.
+# Author: Alan Lujan <alujan@jhu.edu>
 
 # This Voila dashboard allows interactive exploration of the HANK-SAM model's
 # fiscal multipliers under different monetary and fiscal policy parameters.

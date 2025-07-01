@@ -48,7 +48,6 @@
 *.js
 *.json
 *.yaml
-*.yml
 *.toml
 *.xbb
 *.xbb.gz

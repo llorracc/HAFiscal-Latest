@@ -1,6 +1,6 @@
 """
 hank_sam.py – Complete HANK + SAM with HA-Fiscal households (Modular Refactoring)
-Author: William Du <wdu9@jhu.edu>
+Author: Alan Lujan <alujan@jhu.edu>
 
 This is a clean, modular refactoring of hafiscal.py that produces EXACTLY the same
 results, features, and graphs while improving code organization and maintainability.
