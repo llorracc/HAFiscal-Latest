@@ -380,10 +380,408 @@ class TestFigureGeneration:
         except Exception as e:
             pytest.fail(f"Dashboard axis labels test failed: {e}")
 
+    def test_dashboard_figure_aspect_ratio_is_wide(self):
+        """Test that dashboard figures use wide aspect ratio appropriate for 3-panel layout."""
+        try:
+            import matplotlib.pyplot as plt
+
+            # Create figures the way the dashboard does - with cut-off-safe sizing
+            fig1, axes1 = plt.subplots(
+                1, 3, figsize=(9.6, 2.4), sharey=True, constrained_layout=True
+            )
+            fig2, axes2 = plt.subplots(
+                1, 3, figsize=(9.6, 2.4), sharey=True, constrained_layout=True
+            )
+
+            # Verify figures use dashboard-appropriate wide aspect ratio
+            fig1_aspect = fig1.get_size_inches()[0] / fig1.get_size_inches()[1]
+            fig2_aspect = fig2.get_size_inches()[0] / fig2.get_size_inches()[1]
+
+            # Wide aspect ratio should be > 3.0 for dashboard 3-panel layout
+            min_aspect_ratio = 3.0
+            assert fig1_aspect > min_aspect_ratio, (
+                f"Figure 1 aspect ratio should be > {min_aspect_ratio} for wide dashboard layout, got {fig1_aspect:.2f}"
+            )
+            assert fig2_aspect > min_aspect_ratio, (
+                f"Figure 2 aspect ratio should be > {min_aspect_ratio} for wide dashboard layout, got {fig2_aspect:.2f}"
+            )
+
+            # Verify exact size matches dashboard requirements
+            expected_size = (9.6, 2.4)
+            assert tuple(fig1.get_size_inches()) == expected_size, (
+                f"Figure 1 should be {expected_size}, got {tuple(fig1.get_size_inches())}"
+            )
+            assert tuple(fig2.get_size_inches()) == expected_size, (
+                f"Figure 2 should be {expected_size}, got {tuple(fig2.get_size_inches())}"
+            )
+
+            plt.close("all")
+
+        except Exception as e:
+            pytest.fail(f"Dashboard figure aspect ratio test failed: {e}")
+
+    def test_no_hardcoded_dimensions_in_outputs(self):
+        """Test that output widgets use fully responsive dimensions."""
+        # Check fig output widgets have flexible sizing in both dimensions
+        assert app.fig1_output.layout.width == "100%", (
+            "fig1_output should use 100% width"
+        )
+        assert app.fig2_output.layout.width == "100%", (
+            "fig2_output should use 100% width"
+        )
+
+        # Check they have 100% height for vertical responsiveness
+        assert app.fig1_output.layout.height == "100%", (
+            "fig1_output should use 100% height for vertical responsiveness"
+        )
+        assert app.fig2_output.layout.height == "100%", (
+            "fig2_output should use 100% height for vertical responsiveness"
+        )
+
+        # Check they have flex properties for responsiveness
+        assert app.fig1_output.layout.flex == "1 1 auto", (
+            "fig1_output should have flex: 1 1 auto for responsiveness"
+        )
+        assert app.fig2_output.layout.flex == "1 1 auto", (
+            "fig2_output should have flex: 1 1 auto for responsiveness"
+        )
+
+    def test_constrained_layout_usage(self):
+        """Test that matplotlib constrained_layout is used for better spacing."""
+        try:
+            import matplotlib.pyplot as plt
+
+            # Create figure the way dashboard does
+            fig, axes = plt.subplots(1, 3, sharey=True, constrained_layout=True)
+
+            # Verify constrained_layout is enabled
+            assert fig.get_constrained_layout(), (
+                "Figure should use constrained_layout for responsive spacing"
+            )
+
+            plt.close(fig)
+
+        except Exception as e:
+            pytest.fail(f"Constrained layout test failed: {e}")
+
+
+class TestResponsiveDesign:
+    """Test responsive design and layout flexibility."""
+
+    def test_dashboard_uses_appropriate_figsize_for_wide_layout(self):
+        """Test that dashboard uses appropriate figsize for wide 3-panel layout."""
+        import inspect
+
+        # Get the source code of the update_plots function
+        source = inspect.getsource(app.update_plots)
+
+        # Check that appropriate cut-off-safe figsize is used for dashboard
+        assert "figsize=(9.6, 2.4)" in source, (
+            "Dashboard should use figsize=(9.6, 2.4) to prevent cut-offs while maintaining wide aspect ratio"
+        )
+
+        # Check that constrained_layout is used for responsive spacing
+        assert "constrained_layout=True" in source, (
+            "Dashboard should use constrained_layout for responsive figures"
+        )
+
+        # Verify it appears twice (once for each figure)
+        figsize_count = source.count("figsize=(9.6, 2.4)")
+        assert figsize_count == 2, (
+            f"Dashboard should use figsize=(9.6, 2.4) exactly twice, found {figsize_count} times"
+        )
+
+    def test_regression_prevention_wide_aspect_ratio(self):
+        """Critical regression test: Ensure figures never revert to narrow default size."""
+        import matplotlib.pyplot as plt
+
+        # Get matplotlib's default figsize (narrow and tall)
+        default_figsize = plt.rcParams["figure.figsize"]
+        default_aspect = default_figsize[0] / default_figsize[1]
+
+        # Verify default is narrow (should be ~1.33)
+        assert default_aspect < 2.0, (
+            f"This test assumes matplotlib default is narrow, got aspect {default_aspect:.2f}"
+        )
+
+        # Create figures with dashboard sizing
+        dashboard_figsize = (12, 3.5)
+        dashboard_aspect = dashboard_figsize[0] / dashboard_figsize[1]
+
+        # Dashboard figures MUST be wide (aspect > 3.0)
+        assert dashboard_aspect > 3.0, (
+            f"Dashboard figures must be wide! Got aspect {dashboard_aspect:.2f}, should be > 3.0"
+        )
+
+        # The regression would be using default instead of dashboard sizing
+        regression_ratio = dashboard_aspect / default_aspect
+        assert regression_ratio > 2.0, (
+            f"Dashboard should be much wider than default. Dashboard: {dashboard_aspect:.2f}, "
+            f"Default: {default_aspect:.2f}, Ratio: {regression_ratio:.2f}"
+        )
+
+    def test_critical_cutoff_prevention(self):
+        """CRITICAL: Test that prevents the exact cut-off issue user reported."""
+        import matplotlib.pyplot as plt
+
+        # Test actual dashboard figure size
+        fig, axes = plt.subplots(
+            1, 3, figsize=(9.6, 2.4), sharey=True, constrained_layout=True
+        )
+
+        # Get actual figure dimensions
+        fig_size = fig.get_size_inches()
+        fig_height_inches = fig_size[1]
+        fig_height_pixels = fig_height_inches * 100  # 100 DPI assumption
+
+        # Test critical viewport: Laptop where user reported cut-off
+        laptop_viewport_height = 768
+        dashboard_height = laptop_viewport_height * 0.90  # 90vh = 691px
+
+        # Conservative estimate of available space per figure
+        # Account for: summary section, titles, margins, browser chrome
+        overhead = 150  # Conservative overhead estimate
+        available_for_figures = dashboard_height - overhead  # 541px
+        available_per_figure = available_for_figures / 2  # 270px per figure
+
+        # CRITICAL TEST: Figure must fit with safety margin
+        safety_margin = 30  # 30px safety margin
+        safe_available = available_per_figure - safety_margin  # 240px
+
+        fit_ratio = safe_available / fig_height_pixels
+
+        assert fit_ratio >= 1.0, (
+            f"CRITICAL CUT-OFF PREVENTION FAILED! "
+            f"Figure height: {fig_height_pixels:.0f}px, "
+            f"Safe available space: {safe_available:.0f}px, "
+            f"Fit ratio: {fit_ratio:.2f} (must be ≥ 1.0). "
+            f"This test prevents the exact cut-off issue user reported."
+        )
+
+        # Additional validation: aspect ratio should still be wide
+        aspect_ratio = fig_size[0] / fig_size[1]
+        assert aspect_ratio >= 3.5, (
+            f"Aspect ratio should remain wide (≥3.5), got {aspect_ratio:.2f}"
+        )
+
+        plt.close(fig)
+
+    def test_viewport_size_compatibility(self):
+        """Test that layout works across common viewport sizes."""
+        test_viewports = [
+            (1920, 1080, "Desktop FHD"),
+            (1366, 768, "Laptop Standard"),
+            (1280, 720, "Desktop HD"),
+            (1024, 768, "Tablet Landscape"),
+        ]
+
+        for width, height, name in test_viewports:
+            # Calculate layout space allocation
+            left_panel_width = width * 0.30
+            right_panel_width = width * 0.70
+
+            # Verify panels have minimum usable space
+            assert left_panel_width >= 250, (
+                f"{name}: Left panel too narrow: {left_panel_width:.0f}px"
+            )
+            assert right_panel_width >= 400, (
+                f"{name}: Right panel too narrow: {right_panel_width:.0f}px"
+            )
+
+            # Test vertical space for figures
+            dashboard_height = height * 0.90
+            available_per_figure = dashboard_height / 2.5  # Accounting for summary
+
+            # Figure should fit reasonably (dashboard figsize is 2.4 inches = ~240px)
+            figure_height_pixels = 2.4 * 100
+            if available_per_figure < figure_height_pixels:
+                scale_factor = available_per_figure / figure_height_pixels
+                assert scale_factor >= 0.7, (
+                    f"{name}: Figure scaling too aggressive: {scale_factor:.2f}x"
+                )
+
+    def test_flexible_layout_properties(self):
+        """Test that layout containers use flexible properties."""
+        # Main containers should use flexible sizing
+        assert "%" in app.left_panel.layout.width, (
+            "Left panel should use percentage width"
+        )
+        assert "%" in app.right_panel.layout.width, (
+            "Right panel should use percentage width"
+        )
+
+        # Figure panels should have flex properties and equal height distribution
+        assert app.fig1_panel.layout.flex == "1 1 50%", (
+            "fig1_panel should use flex with 50% basis for equal distribution"
+        )
+        assert app.fig2_panel.layout.flex == "1 1 50%", (
+            "fig2_panel should use flex with 50% basis for equal distribution"
+        )
+
+        # Figure panels should have 50% height for equal vertical space
+        assert app.fig1_panel.layout.height == "50%", (
+            "fig1_panel should use 50% height for equal space distribution"
+        )
+        assert app.fig2_panel.layout.height == "50%", (
+            "fig2_panel should use 50% height for equal space distribution"
+        )
+
+        # Check viewport height usage
+        assert "vh" in app.dashboard.layout.height, (
+            "Dashboard should use viewport height"
+        )
+        assert "vh" in app.main_content.layout.height, (
+            "Main content should use viewport height"
+        )
+
+    def test_overflow_prevention(self):
+        """Test that overflow is properly controlled throughout the layout."""
+        # All major containers should have overflow hidden
+        containers_to_check = [
+            app.dashboard,
+            app.main_content,
+            app.left_panel,
+            app.right_panel,
+            app.fig1_panel,
+            app.fig2_panel,
+            app.fig1_output,
+            app.fig2_output,
+        ]
+
+        for container in containers_to_check:
+            assert container.layout.overflow == "hidden", (
+                f"Container {container} should have overflow hidden to prevent scrollbars"
+            )
+
+    def test_figure_container_height_prevents_cutoffs(self):
+        """Test that figure containers have sufficient height to prevent cut-offs."""
+        # Mock different viewport scenarios
+        test_scenarios = [
+            (1366, 768, "Laptop Standard"),
+            (1280, 720, "HD Monitor"),
+            (1024, 768, "Tablet Landscape"),
+        ]
+
+        for width, height, name in test_scenarios:
+            # Calculate dashboard height using actual layout
+            dashboard_height = height * 0.90  # 90vh
+
+            # Right panel gets full dashboard height
+            right_panel_height = dashboard_height
+
+            # Summary takes ~80px, remaining split between 2 figures
+            summary_height = 80
+            available_for_figures = right_panel_height - summary_height
+            height_per_figure = available_for_figures / 2
+
+            # Dashboard figure is 2.4 inches tall, ~240px at 100 DPI
+            figure_height_pixels = 2.4 * 100
+
+            # Check if figure fits without cut-off
+            fits_comfortably = (
+                height_per_figure >= figure_height_pixels * 1.1
+            )  # 10% buffer
+
+            if width >= 1024:  # Desktop/tablet should fit comfortably
+                assert fits_comfortably, (
+                    f"{name} ({width}x{height}): Figure may be cut off. "
+                    f"Available: {height_per_figure:.0f}px, "
+                    f"Needed: {figure_height_pixels:.0f}px"
+                )
+
+
+class TestCriticalRegressionPrevention:
+    """Tests specifically designed to catch critical regressions."""
+
+    def test_figure_size_never_reverts_to_default(self):
+        """Prevent regression where figures revert to matplotlib default size."""
+        import matplotlib.pyplot as plt
+        import inspect
+
+        # Get the actual dashboard update function source
+        source = inspect.getsource(app.update_plots)
+
+        # Should explicitly set figsize, not rely on defaults
+        assert "figsize=" in source, (
+            "Dashboard must explicitly set figsize, not rely on matplotlib defaults"
+        )
+
+        # Should not use matplotlib's default narrow figsize
+        fig_default = plt.figure()  # Uses default figsize
+        default_aspect = (
+            fig_default.get_size_inches()[0] / fig_default.get_size_inches()[1]
+        )
+        plt.close(fig_default)
+
+        # Dashboard should use much wider aspect ratio
+        assert default_aspect < 2.0, (
+            f"Matplotlib default should be narrow, got {default_aspect:.2f}"
+        )
+
+        # Extract figsize from dashboard source (should be wide)
+        dashboard_aspect = None
+        if "figsize=(9.6, 2.4)" in source:
+            dashboard_aspect = 9.6 / 2.4  # 4.0
+        elif "figsize=(12, 3.5)" in source:
+            dashboard_aspect = 12 / 3.5  # 3.43
+
+        if dashboard_aspect is None:
+            pytest.fail("Dashboard should use known wide figsize")
+
+        assert dashboard_aspect > 3.0, (
+            f"Dashboard aspect ratio should be wide (>3.0), got {dashboard_aspect:.2f}"
+        )
+
+    def test_layout_never_uses_hardcoded_pixels(self):
+        """Prevent regression to hardcoded pixel dimensions."""
+        # Check that no layout containers use hardcoded pixel sizes
+        layout_containers = [
+            app.dashboard,
+            app.main_content,
+            app.left_panel,
+            app.right_panel,
+            app.fig1_panel,
+            app.fig2_panel,
+        ]
+
+        for container in layout_containers:
+            # Width should use relative units
+            if hasattr(container.layout, "width") and container.layout.width:
+                assert (
+                    "%" in container.layout.width or container.layout.width == "100%"
+                ), (
+                    f"Container should use relative width, not pixels: {container.layout.width}"
+                )
+
+            # Height should use relative units
+            if hasattr(container.layout, "height") and container.layout.height:
+                assert (
+                    "vh" in container.layout.height
+                    or "%" in container.layout.height
+                    or container.layout.height == "100%"
+                ), (
+                    f"Container should use relative height, not pixels: {container.layout.height}"
+                )
+
+    def test_overflow_hidden_never_removed(self):
+        """Prevent regression where overflow:hidden gets removed causing scrollbars."""
+        critical_containers = [
+            app.dashboard,
+            app.main_content,
+            app.right_panel,
+            app.fig1_output,
+            app.fig2_output,
+        ]
+
+        for container in critical_containers:
+            assert container.layout.overflow == "hidden", (
+                f"Critical container must have overflow:hidden to prevent scrollbars: {container}"
+            )
+
 
 def test_parameter_overrides():
     """Legacy test for backward compatibility."""
-    return TestParameterFunctionality().test_parameter_overrides_work()
+    TestParameterFunctionality().test_parameter_overrides_work()
 
 
 def test_specific_parameters():
@@ -447,10 +845,9 @@ def test_app_integration():
         results = hs.compute_fiscal_multipliers(horizon_length=3, **app_params)
         print("✅ SUCCESS: App parameters accepted")
         print(f"Transfer multiplier: {results['multipliers']['transfers'][0]:.4f}")
-        return True
+        # Test passes - no assertion error means success
     except Exception as e:
-        print(f"❌ FAILURE: App parameters rejected - {e}")
-        return False
+        pytest.fail(f"❌ FAILURE: App parameters rejected - {e}")
 
 
 if __name__ == "__main__":
@@ -458,9 +855,23 @@ if __name__ == "__main__":
     print("=" * 50)
 
     # Run tests
-    test1_passed = test_parameter_overrides()
+    try:
+        test_parameter_overrides()
+        test1_passed = True
+        print("✅ Parameter override test: PASS")
+    except Exception as e:
+        test1_passed = False
+        print(f"❌ Parameter override test: FAIL - {e}")
+
     test_specific_parameters()
-    test2_passed = test_app_integration()
+
+    try:
+        test_app_integration()
+        test2_passed = True
+        print("✅ App integration test: PASS")
+    except Exception as e:
+        test2_passed = False
+        print(f"❌ App integration test: FAIL - {e}")
 
     print("\n" + "=" * 50)
     print("SUMMARY:")

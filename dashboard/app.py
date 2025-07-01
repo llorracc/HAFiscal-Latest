@@ -160,12 +160,22 @@ run_button.style.button_color = "#27ae60"  # Muted green
 progress_label = widgets.Label(value="Ready to run simulation")
 
 # %%
-# Output widgets for the 2 main figures - no scrollbars allowed
+# Output widgets for truly responsive figures - adaptive to container size
 fig1_output = widgets.Output(
-    layout=Layout(overflow="hidden", width="100%", height="auto")
+    layout=Layout(
+        overflow="hidden",
+        width="100%",
+        height="100%",  # Use full available height
+        flex="1 1 auto",  # Grow and shrink with container
+    )
 )
 fig2_output = widgets.Output(
-    layout=Layout(overflow="hidden", width="100%", height="auto")
+    layout=Layout(
+        overflow="hidden",
+        width="100%",
+        height="100%",  # Use full available height
+        flex="1 1 auto",  # Grow and shrink with container
+    )
 )
 
 # %% [markdown]
@@ -210,9 +220,15 @@ def update_plots(*args) -> None:
         # Create figures with dashboard control over canvas
         import matplotlib.pyplot as plt
 
-        # Figure 1: Fiscal Multipliers with shared y-axis
+        # Figure 1: Fiscal Multipliers - guaranteed fit sizing
         with fig1_output:
-            fig1, axes1 = plt.subplots(1, 3, figsize=(10, 3), sharey=True)
+            # Use smaller base figure that will definitely fit in containers
+            # CSS flexbox will scale up as needed
+            # Wide aspect ratio (3.43:1) maintained but at smaller base size
+            fig1, axes1 = plt.subplots(
+                1, 3, figsize=(9.6, 2.4), sharey=True, constrained_layout=True
+            )
+
             fig1 = hs.plot_multipliers_three_experiments(
                 multipliers["transfers"],
                 multipliers["transfers_fixed_nominal"],
@@ -226,12 +242,16 @@ def update_plots(*args) -> None:
                 fig_and_axes=(fig1, axes1),
             )
             if fig1 is not None:
-                fig1.tight_layout(pad=1.0)
                 plt.show()
 
-        # Figure 2: Consumption IRFs with shared y-axis
+        # Figure 2: Consumption IRFs - guaranteed fit sizing
         with fig2_output:
-            fig2, axes2 = plt.subplots(1, 3, figsize=(10, 3), sharey=True)
+            # Use same smaller base size as Figure 1 for consistency
+            # CSS flexbox will scale both figures consistently
+            fig2, axes2 = plt.subplots(
+                1, 3, figsize=(9.6, 2.4), sharey=True, constrained_layout=True
+            )
+
             fig2 = hs.plot_consumption_irfs_three_experiments(
                 irfs["UI_extend"],
                 irfs["UI_extend_fixed_nominal"],
@@ -245,7 +265,6 @@ def update_plots(*args) -> None:
                 fig_and_axes=(fig2, axes2),
             )
             if fig2 is not None:
-                fig2.tight_layout(pad=1.0)
                 plt.show()
 
         # Update summary statistics
@@ -326,7 +345,7 @@ options_panel = VBox(
 )
 
 # %%
-# MAIN CONTENT - Two figure panels with dashboard control
+# MAIN CONTENT - Two figure panels with responsive layout
 fig1_panel = VBox(
     [
         HTML(
@@ -337,10 +356,13 @@ fig1_panel = VBox(
     layout=Layout(
         border="none",
         padding="0",
-        margin="0 0 0.6em 0",
+        margin="0 0 0.4em 0",  # Reduced margin for more space
         width="100%",
-        flex="1 1 auto",
+        height="50%",  # Equal split of available height
+        flex="1 1 50%",  # Equal flex basis for both panels
         overflow="hidden",  # No scrollbars on figure panels
+        display="flex",
+        flex_direction="column",
     ),
 )
 
@@ -356,8 +378,11 @@ fig2_panel = VBox(
         padding="0",
         margin="0",
         width="100%",
-        flex="1 1 auto",
+        height="50%",  # Equal split of available height
+        flex="1 1 50%",  # Equal flex basis for both panels
         overflow="hidden",  # No scrollbars on figure panels
+        display="flex",
+        flex_direction="column",
     ),
 )
 
@@ -433,6 +458,7 @@ right_panel = VBox(
         overflow="hidden",  # NO scrollbars allowed
         display="flex",  # Explicit flexbox
         flex_direction="column",  # Stack children vertically
+        gap="0.2em",  # Small gap between elements
     ),
 )
 
