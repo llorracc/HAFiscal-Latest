@@ -49,9 +49,9 @@ class TestDashboardComponents:
         for widget_name in required_widgets:
             assert hasattr(app, widget_name), f"Missing widget: {widget_name}"
             widget = getattr(app, widget_name)
-            assert isinstance(widget, (widgets.Widget, widgets.DOMWidget)), (
-                f"Invalid widget type: {widget_name}"
-            )
+            assert isinstance(
+                widget, (widgets.Widget, widgets.DOMWidget)
+            ), f"Invalid widget type: {widget_name}"
 
     def test_layout_containers_exist(self):
         """Test that layout containers are created properly."""
@@ -70,9 +70,9 @@ class TestDashboardComponents:
         for container_name in required_containers:
             assert hasattr(app, container_name), f"Missing container: {container_name}"
             container = getattr(app, container_name)
-            assert isinstance(container, (VBox, HBox)), (
-                f"Invalid container type: {container_name}"
-            )
+            assert isinstance(
+                container, (VBox, HBox)
+            ), f"Invalid container type: {container_name}"
 
     def test_widget_properties(self):
         """Test that widgets have correct properties and ranges."""
@@ -84,38 +84,38 @@ class TestDashboardComponents:
         assert app.phi_y_widget.min == 0.0, "phi_y_widget min value incorrect"
         assert app.phi_y_widget.max == 1.0, "phi_y_widget max value incorrect"
 
-        assert app.ui_extension_widget.min == 1, (
-            "ui_extension_widget min value incorrect"
-        )
-        assert app.ui_extension_widget.max == 12, (
-            "ui_extension_widget max value incorrect"
-        )
+        assert (
+            app.ui_extension_widget.min == 1
+        ), "ui_extension_widget min value incorrect"
+        assert (
+            app.ui_extension_widget.max == 12
+        ), "ui_extension_widget max value incorrect"
 
         # Test button properties
-        assert "Run Simulation" in app.run_button.description, (
-            "Run button description incorrect"
-        )
+        assert (
+            "Run Simulation" in app.run_button.description
+        ), "Run button description incorrect"
 
     def test_layout_properties(self):
         """Test that layout properties prevent scrollbars."""
         # Main dashboard should have no scrollbars
-        assert app.dashboard.layout.overflow == "hidden", (
-            "Dashboard should have overflow hidden"
-        )
-        assert app.main_content.layout.overflow == "hidden", (
-            "Main content should have overflow hidden"
-        )
-        assert app.right_panel.layout.overflow == "hidden", (
-            "Right panel should have overflow hidden"
-        )
+        assert (
+            app.dashboard.layout.overflow == "hidden"
+        ), "Dashboard should have overflow hidden"
+        assert (
+            app.main_content.layout.overflow == "hidden"
+        ), "Main content should have overflow hidden"
+        assert (
+            app.right_panel.layout.overflow == "hidden"
+        ), "Right panel should have overflow hidden"
 
         # Check height usage
-        assert "vh" in app.dashboard.layout.height, (
-            "Dashboard should use viewport height"
-        )
-        assert "vh" in app.main_content.layout.height, (
-            "Main content should use viewport height"
-        )
+        assert (
+            "vh" in app.dashboard.layout.height
+        ), "Dashboard should use viewport height"
+        assert (
+            "vh" in app.main_content.layout.height
+        ), "Main content should use viewport height"
 
 
 class TestParameterFunctionality:
@@ -135,9 +135,9 @@ class TestParameterFunctionality:
 
         # Check if they're different
         diff = abs(default_transfer_mult - high_phi_pi_mult)
-        assert diff > 0.001, (
-            f"Parameter φπ changes should affect results: {default_transfer_mult:.4f} vs {high_phi_pi_mult:.4f}"
-        )
+        assert (
+            diff > 0.001
+        ), f"Parameter φπ changes should affect results: {default_transfer_mult:.4f} vs {high_phi_pi_mult:.4f}"
 
     def test_all_parameters_accepted(self):
         """Test that all dashboard parameters are accepted by the model."""
@@ -163,17 +163,17 @@ class TestParameterFunctionality:
     def test_parameter_ranges_are_sensible(self):
         """Test that parameter ranges make economic sense."""
         # Taylor rule coefficients should be positive
-        assert app.phi_pi_widget.min >= 1.0, (
-            "Taylor rule inflation coefficient should be >= 1"
-        )
-        assert app.phi_y_widget.min >= 0.0, (
-            "Taylor rule output coefficient should be >= 0"
-        )
+        assert (
+            app.phi_pi_widget.min >= 1.0
+        ), "Taylor rule inflation coefficient should be >= 1"
+        assert (
+            app.phi_y_widget.min >= 0.0
+        ), "Taylor rule output coefficient should be >= 0"
 
         # Probabilities and rates should be between 0 and 1
-        assert 0 <= app.rho_r_widget.min <= app.rho_r_widget.max <= 1, (
-            "Interest rate smoothing should be in [0,1]"
-        )
+        assert (
+            0 <= app.rho_r_widget.min <= app.rho_r_widget.max <= 1
+        ), "Interest rate smoothing should be in [0,1]"
         assert (
             0
             <= app.real_wage_rigidity_widget.min
@@ -182,9 +182,9 @@ class TestParameterFunctionality:
         ), "Wage rigidity should be in [0,1]"
 
         # Policy durations should be positive integers
-        assert app.ui_extension_widget.min >= 1, (
-            "UI extension should be at least 1 quarter"
-        )
+        assert (
+            app.ui_extension_widget.min >= 1
+        ), "UI extension should be at least 1 quarter"
         assert app.tax_cut_widget.min >= 1, "Tax cut should be at least 1 quarter"
 
 
@@ -197,27 +197,27 @@ class TestDashboardIntegration:
         assert callable(app.update_plots), "update_plots should be callable"
 
         # Check that button is connected to function
-        assert len(app.run_button._click_handlers.callbacks) > 0, (
-            "Button should be connected to handler"
-        )
+        assert (
+            len(app.run_button._click_handlers.callbacks) > 0
+        ), "Button should be connected to handler"
 
     def test_output_widgets_configured(self):
         """Test that output widgets are properly configured."""
         # Both output widgets should exist and be configured for no scrollbars
-        assert app.fig1_output.layout.overflow == "hidden", (
-            "fig1_output should have overflow hidden"
-        )
-        assert app.fig2_output.layout.overflow == "hidden", (
-            "fig2_output should have overflow hidden"
-        )
+        assert (
+            app.fig1_output.layout.overflow == "hidden"
+        ), "fig1_output should have overflow hidden"
+        assert (
+            app.fig2_output.layout.overflow == "hidden"
+        ), "fig2_output should have overflow hidden"
 
         # Should have width and height properties
-        assert app.fig1_output.layout.width == "100%", (
-            "fig1_output should have 100% width"
-        )
-        assert app.fig2_output.layout.width == "100%", (
-            "fig2_output should have 100% width"
-        )
+        assert (
+            app.fig1_output.layout.width == "100%"
+        ), "fig1_output should have 100% width"
+        assert (
+            app.fig2_output.layout.width == "100%"
+        ), "fig2_output should have 100% width"
 
     def test_dashboard_styling(self):
         """Test that dashboard has professional styling."""
@@ -300,9 +300,9 @@ class TestFigureGeneration:
             )
 
             # Dashboard should get back the same figure object
-            assert result_fig is fig, (
-                "Dashboard should maintain control of figure object"
-            )
+            assert (
+                result_fig is fig
+            ), "Dashboard should maintain control of figure object"
             plt.close(fig)
 
         except Exception as e:
@@ -334,14 +334,14 @@ class TestFigureGeneration:
                 ylabel = ax.get_ylabel()
 
                 # Verify x-axis has time and unit labels
-                assert "Time" in xlabel and "Quarters" in xlabel, (
-                    f"Multiplier subplot {i}: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
-                )
+                assert (
+                    "Time" in xlabel and "Quarters" in xlabel
+                ), f"Multiplier subplot {i}: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
 
                 # Verify y-axis has descriptive multiplier label
-                assert "Consumption Multiplier" in ylabel, (
-                    f"Multiplier subplot {i}: Y-axis should contain 'Consumption Multiplier', got '{ylabel}'"
-                )
+                assert (
+                    "Consumption Multiplier" in ylabel
+                ), f"Multiplier subplot {i}: Y-axis should contain 'Consumption Multiplier', got '{ylabel}'"
 
             plt.close(fig1)
 
@@ -366,14 +366,14 @@ class TestFigureGeneration:
                 ylabel = ax.get_ylabel()
 
                 # Verify x-axis has time and unit labels
-                assert "Time" in xlabel and "Quarters" in xlabel, (
-                    f"Consumption subplot {i}: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
-                )
+                assert (
+                    "Time" in xlabel and "Quarters" in xlabel
+                ), f"Consumption subplot {i}: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
 
                 # Verify y-axis has response type and unit labels
-                assert "Consumption Response" in ylabel and "%" in ylabel, (
-                    f"Consumption subplot {i}: Y-axis should contain 'Consumption Response (%)', got '{ylabel}'"
-                )
+                assert (
+                    "Consumption Response" in ylabel and "%" in ylabel
+                ), f"Consumption subplot {i}: Y-axis should contain 'Consumption Response (%)', got '{ylabel}'"
 
             plt.close(fig2)
 
@@ -399,21 +399,21 @@ class TestFigureGeneration:
 
             # Wide aspect ratio should be > 3.0 for dashboard 3-panel layout
             min_aspect_ratio = 3.0
-            assert fig1_aspect > min_aspect_ratio, (
-                f"Figure 1 aspect ratio should be > {min_aspect_ratio} for wide dashboard layout, got {fig1_aspect:.2f}"
-            )
-            assert fig2_aspect > min_aspect_ratio, (
-                f"Figure 2 aspect ratio should be > {min_aspect_ratio} for wide dashboard layout, got {fig2_aspect:.2f}"
-            )
+            assert (
+                fig1_aspect > min_aspect_ratio
+            ), f"Figure 1 aspect ratio should be > {min_aspect_ratio} for wide dashboard layout, got {fig1_aspect:.2f}"
+            assert (
+                fig2_aspect > min_aspect_ratio
+            ), f"Figure 2 aspect ratio should be > {min_aspect_ratio} for wide dashboard layout, got {fig2_aspect:.2f}"
 
             # Verify exact size matches dashboard requirements
             expected_size = (9.6, 2.4)
-            assert tuple(fig1.get_size_inches()) == expected_size, (
-                f"Figure 1 should be {expected_size}, got {tuple(fig1.get_size_inches())}"
-            )
-            assert tuple(fig2.get_size_inches()) == expected_size, (
-                f"Figure 2 should be {expected_size}, got {tuple(fig2.get_size_inches())}"
-            )
+            assert (
+                tuple(fig1.get_size_inches()) == expected_size
+            ), f"Figure 1 should be {expected_size}, got {tuple(fig1.get_size_inches())}"
+            assert (
+                tuple(fig2.get_size_inches()) == expected_size
+            ), f"Figure 2 should be {expected_size}, got {tuple(fig2.get_size_inches())}"
 
             plt.close("all")
 
@@ -423,28 +423,28 @@ class TestFigureGeneration:
     def test_no_hardcoded_dimensions_in_outputs(self):
         """Test that output widgets use fully responsive dimensions."""
         # Check fig output widgets have flexible sizing in both dimensions
-        assert app.fig1_output.layout.width == "100%", (
-            "fig1_output should use 100% width"
-        )
-        assert app.fig2_output.layout.width == "100%", (
-            "fig2_output should use 100% width"
-        )
+        assert (
+            app.fig1_output.layout.width == "100%"
+        ), "fig1_output should use 100% width"
+        assert (
+            app.fig2_output.layout.width == "100%"
+        ), "fig2_output should use 100% width"
 
         # Check they have 100% height for vertical responsiveness
-        assert app.fig1_output.layout.height == "100%", (
-            "fig1_output should use 100% height for vertical responsiveness"
-        )
-        assert app.fig2_output.layout.height == "100%", (
-            "fig2_output should use 100% height for vertical responsiveness"
-        )
+        assert (
+            app.fig1_output.layout.height == "100%"
+        ), "fig1_output should use 100% height for vertical responsiveness"
+        assert (
+            app.fig2_output.layout.height == "100%"
+        ), "fig2_output should use 100% height for vertical responsiveness"
 
         # Check they have flex properties for responsiveness
-        assert app.fig1_output.layout.flex == "1 1 auto", (
-            "fig1_output should have flex: 1 1 auto for responsiveness"
-        )
-        assert app.fig2_output.layout.flex == "1 1 auto", (
-            "fig2_output should have flex: 1 1 auto for responsiveness"
-        )
+        assert (
+            app.fig1_output.layout.flex == "1 1 auto"
+        ), "fig1_output should have flex: 1 1 auto for responsiveness"
+        assert (
+            app.fig2_output.layout.flex == "1 1 auto"
+        ), "fig2_output should have flex: 1 1 auto for responsiveness"
 
     def test_constrained_layout_usage(self):
         """Test that matplotlib constrained_layout is used for better spacing."""
@@ -455,9 +455,9 @@ class TestFigureGeneration:
             fig, axes = plt.subplots(1, 3, sharey=True, constrained_layout=True)
 
             # Verify constrained_layout is enabled
-            assert fig.get_constrained_layout(), (
-                "Figure should use constrained_layout for responsive spacing"
-            )
+            assert (
+                fig.get_constrained_layout()
+            ), "Figure should use constrained_layout for responsive spacing"
 
             plt.close(fig)
 
@@ -476,20 +476,20 @@ class TestResponsiveDesign:
         source = inspect.getsource(app.update_plots)
 
         # Check that appropriate cut-off-safe figsize is used for dashboard
-        assert "figsize=(9.6, 2.4)" in source, (
-            "Dashboard should use figsize=(9.6, 2.4) to prevent cut-offs while maintaining wide aspect ratio"
-        )
+        assert (
+            "figsize=(9.6, 2.4)" in source
+        ), "Dashboard should use figsize=(9.6, 2.4) to prevent cut-offs while maintaining wide aspect ratio"
 
         # Check that constrained_layout is used for responsive spacing
-        assert "constrained_layout=True" in source, (
-            "Dashboard should use constrained_layout for responsive figures"
-        )
+        assert (
+            "constrained_layout=True" in source
+        ), "Dashboard should use constrained_layout for responsive figures"
 
         # Verify it appears twice (once for each figure)
         figsize_count = source.count("figsize=(9.6, 2.4)")
-        assert figsize_count == 2, (
-            f"Dashboard should use figsize=(9.6, 2.4) exactly twice, found {figsize_count} times"
-        )
+        assert (
+            figsize_count == 2
+        ), f"Dashboard should use figsize=(9.6, 2.4) exactly twice, found {figsize_count} times"
 
     def test_regression_prevention_wide_aspect_ratio(self):
         """Critical regression test: Ensure figures never revert to narrow default size."""
@@ -500,18 +500,18 @@ class TestResponsiveDesign:
         default_aspect = default_figsize[0] / default_figsize[1]
 
         # Verify default is narrow (should be ~1.33)
-        assert default_aspect < 2.0, (
-            f"This test assumes matplotlib default is narrow, got aspect {default_aspect:.2f}"
-        )
+        assert (
+            default_aspect < 2.0
+        ), f"This test assumes matplotlib default is narrow, got aspect {default_aspect:.2f}"
 
         # Create figures with dashboard sizing
         dashboard_figsize = (12, 3.5)
         dashboard_aspect = dashboard_figsize[0] / dashboard_figsize[1]
 
         # Dashboard figures MUST be wide (aspect > 3.0)
-        assert dashboard_aspect > 3.0, (
-            f"Dashboard figures must be wide! Got aspect {dashboard_aspect:.2f}, should be > 3.0"
-        )
+        assert (
+            dashboard_aspect > 3.0
+        ), f"Dashboard figures must be wide! Got aspect {dashboard_aspect:.2f}, should be > 3.0"
 
         # The regression would be using default instead of dashboard sizing
         regression_ratio = dashboard_aspect / default_aspect
@@ -560,9 +560,9 @@ class TestResponsiveDesign:
 
         # Additional validation: aspect ratio should still be wide
         aspect_ratio = fig_size[0] / fig_size[1]
-        assert aspect_ratio >= 3.5, (
-            f"Aspect ratio should remain wide (≥3.5), got {aspect_ratio:.2f}"
-        )
+        assert (
+            aspect_ratio >= 3.5
+        ), f"Aspect ratio should remain wide (≥3.5), got {aspect_ratio:.2f}"
 
         plt.close(fig)
 
@@ -581,12 +581,12 @@ class TestResponsiveDesign:
             right_panel_width = width * 0.70
 
             # Verify panels have minimum usable space
-            assert left_panel_width >= 250, (
-                f"{name}: Left panel too narrow: {left_panel_width:.0f}px"
-            )
-            assert right_panel_width >= 400, (
-                f"{name}: Right panel too narrow: {right_panel_width:.0f}px"
-            )
+            assert (
+                left_panel_width >= 250
+            ), f"{name}: Left panel too narrow: {left_panel_width:.0f}px"
+            assert (
+                right_panel_width >= 400
+            ), f"{name}: Right panel too narrow: {right_panel_width:.0f}px"
 
             # Test vertical space for figures
             dashboard_height = height * 0.90
@@ -596,43 +596,43 @@ class TestResponsiveDesign:
             figure_height_pixels = 2.4 * 100
             if available_per_figure < figure_height_pixels:
                 scale_factor = available_per_figure / figure_height_pixels
-                assert scale_factor >= 0.7, (
-                    f"{name}: Figure scaling too aggressive: {scale_factor:.2f}x"
-                )
+                assert (
+                    scale_factor >= 0.7
+                ), f"{name}: Figure scaling too aggressive: {scale_factor:.2f}x"
 
     def test_flexible_layout_properties(self):
         """Test that layout containers use flexible properties."""
         # Main containers should use flexible sizing
-        assert "%" in app.left_panel.layout.width, (
-            "Left panel should use percentage width"
-        )
-        assert "%" in app.right_panel.layout.width, (
-            "Right panel should use percentage width"
-        )
+        assert (
+            "%" in app.left_panel.layout.width
+        ), "Left panel should use percentage width"
+        assert (
+            "%" in app.right_panel.layout.width
+        ), "Right panel should use percentage width"
 
         # Figure panels should have flex properties and equal height distribution
-        assert app.fig1_panel.layout.flex == "1 1 50%", (
-            "fig1_panel should use flex with 50% basis for equal distribution"
-        )
-        assert app.fig2_panel.layout.flex == "1 1 50%", (
-            "fig2_panel should use flex with 50% basis for equal distribution"
-        )
+        assert (
+            app.fig1_panel.layout.flex == "1 1 50%"
+        ), "fig1_panel should use flex with 50% basis for equal distribution"
+        assert (
+            app.fig2_panel.layout.flex == "1 1 50%"
+        ), "fig2_panel should use flex with 50% basis for equal distribution"
 
         # Figure panels should have 50% height for equal vertical space
-        assert app.fig1_panel.layout.height == "50%", (
-            "fig1_panel should use 50% height for equal space distribution"
-        )
-        assert app.fig2_panel.layout.height == "50%", (
-            "fig2_panel should use 50% height for equal space distribution"
-        )
+        assert (
+            app.fig1_panel.layout.height == "50%"
+        ), "fig1_panel should use 50% height for equal space distribution"
+        assert (
+            app.fig2_panel.layout.height == "50%"
+        ), "fig2_panel should use 50% height for equal space distribution"
 
         # Check viewport height usage
-        assert "vh" in app.dashboard.layout.height, (
-            "Dashboard should use viewport height"
-        )
-        assert "vh" in app.main_content.layout.height, (
-            "Main content should use viewport height"
-        )
+        assert (
+            "vh" in app.dashboard.layout.height
+        ), "Dashboard should use viewport height"
+        assert (
+            "vh" in app.main_content.layout.height
+        ), "Main content should use viewport height"
 
     def test_overflow_prevention(self):
         """Test that overflow is properly controlled throughout the layout."""
@@ -649,9 +649,9 @@ class TestResponsiveDesign:
         ]
 
         for container in containers_to_check:
-            assert container.layout.overflow == "hidden", (
-                f"Container {container} should have overflow hidden to prevent scrollbars"
-            )
+            assert (
+                container.layout.overflow == "hidden"
+            ), f"Container {container} should have overflow hidden to prevent scrollbars"
 
     def test_figure_container_height_prevents_cutoffs(self):
         """Test that figure containers have sufficient height to prevent cut-offs."""
@@ -702,9 +702,9 @@ class TestCriticalRegressionPrevention:
         source = inspect.getsource(app.update_plots)
 
         # Should explicitly set figsize, not rely on defaults
-        assert "figsize=" in source, (
-            "Dashboard must explicitly set figsize, not rely on matplotlib defaults"
-        )
+        assert (
+            "figsize=" in source
+        ), "Dashboard must explicitly set figsize, not rely on matplotlib defaults"
 
         # Should not use matplotlib's default narrow figsize
         fig_default = plt.figure()  # Uses default figsize
@@ -714,9 +714,9 @@ class TestCriticalRegressionPrevention:
         plt.close(fig_default)
 
         # Dashboard should use much wider aspect ratio
-        assert default_aspect < 2.0, (
-            f"Matplotlib default should be narrow, got {default_aspect:.2f}"
-        )
+        assert (
+            default_aspect < 2.0
+        ), f"Matplotlib default should be narrow, got {default_aspect:.2f}"
 
         # Extract figsize from dashboard source (should be wide)
         dashboard_aspect = None
@@ -728,9 +728,9 @@ class TestCriticalRegressionPrevention:
         if dashboard_aspect is None:
             pytest.fail("Dashboard should use known wide figsize")
 
-        assert dashboard_aspect > 3.0, (
-            f"Dashboard aspect ratio should be wide (>3.0), got {dashboard_aspect:.2f}"
-        )
+        assert (
+            dashboard_aspect > 3.0
+        ), f"Dashboard aspect ratio should be wide (>3.0), got {dashboard_aspect:.2f}"
 
     def test_layout_never_uses_hardcoded_pixels(self):
         """Prevent regression to hardcoded pixel dimensions."""
@@ -749,9 +749,7 @@ class TestCriticalRegressionPrevention:
             if hasattr(container.layout, "width") and container.layout.width:
                 assert (
                     "%" in container.layout.width or container.layout.width == "100%"
-                ), (
-                    f"Container should use relative width, not pixels: {container.layout.width}"
-                )
+                ), f"Container should use relative width, not pixels: {container.layout.width}"
 
             # Height should use relative units
             if hasattr(container.layout, "height") and container.layout.height:
@@ -759,9 +757,7 @@ class TestCriticalRegressionPrevention:
                     "vh" in container.layout.height
                     or "%" in container.layout.height
                     or container.layout.height == "100%"
-                ), (
-                    f"Container should use relative height, not pixels: {container.layout.height}"
-                )
+                ), f"Container should use relative height, not pixels: {container.layout.height}"
 
     def test_overflow_hidden_never_removed(self):
         """Prevent regression where overflow:hidden gets removed causing scrollbars."""
@@ -774,9 +770,9 @@ class TestCriticalRegressionPrevention:
         ]
 
         for container in critical_containers:
-            assert container.layout.overflow == "hidden", (
-                f"Critical container must have overflow:hidden to prevent scrollbars: {container}"
-            )
+            assert (
+                container.layout.overflow == "hidden"
+            ), f"Critical container must have overflow:hidden to prevent scrollbars: {container}"
 
 
 def test_parameter_overrides():

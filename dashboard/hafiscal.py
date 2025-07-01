@@ -190,9 +190,10 @@ tau_ss = 0.3  # steady state tax rate
 UI = 0.5 * (1 - tau_ss) * wage_ss  # Effective Unemployment insurance
 
 # private/passive spousal income
-Y_priv = (
-    inc_ui_exhaust * (1 - tau_ss) * wage_ss * (ss_dstn[3] + ss_dstn[4] + ss_dstn[5])
-    + (0.7 - 0.5) * (1 - tau_ss) * wage_ss * (ss_dstn[1] + ss_dstn[2])
+Y_priv = inc_ui_exhaust * (1 - tau_ss) * wage_ss * (
+    ss_dstn[3] + ss_dstn[4] + ss_dstn[5]
+) + (0.7 - 0.5) * (1 - tau_ss) * wage_ss * (
+    ss_dstn[1] + ss_dstn[2]
 )  # + wage_ss*(1-tau_ss)*(inc_ui_exhaust -  0.13)*( mean_human_capital_u[3] +mean_human_capital_u[6]+mean_human_capital_u[7])
 
 # Steady state government consumption
@@ -826,9 +827,9 @@ SteadyState_Dict_UI_extend["phi_w"] = (
 SteadyState_Dict_UI_extend["rho_r"] = rho_r  # inertial parameter for taylor rule
 SteadyState_Dict_UI_extend["phi_y"] = phi_y  # taylor rule coefficient on output
 SteadyState_Dict_UI_extend["phi_pi"] = phi_pi  # taylor rule coefficient on inflation
-SteadyState_Dict_UI_extend[
-    "deficit_T"
-] = -1  # the number of periods it takes for government to adjust and follow its fiscal rule. If equal deficit_T = -40, then government will keep taxes fixed for 40 quarters
+SteadyState_Dict_UI_extend["deficit_T"] = (
+    -1
+)  # the number of periods it takes for government to adjust and follow its fiscal rule. If equal deficit_T = -40, then government will keep taxes fixed for 40 quarters
 
 
 SteadyState_Dict_UI_extend_fixed_nominal_rate = deepcopy(SteadyState_Dict_UI_extend)
@@ -1034,9 +1035,7 @@ SteadyState_Dict_tax_shock["phi_w"] = (
 SteadyState_Dict_tax_shock["rho_r"] = rho_r  # inertial parameter for taylor rule
 SteadyState_Dict_tax_shock["phi_y"] = phi_y  # taylor rule coefficient on output
 SteadyState_Dict_tax_shock["phi_pi"] = phi_pi  # taylor rule coefficient on inflation
-SteadyState_Dict_tax_shock[
-    "deficit_T"
-] = (
+SteadyState_Dict_tax_shock["deficit_T"] = (
     -1
 )  # the number of periods it takes for government to adjust and follow its fiscal rule.
 # If equal to -40, then government will keep taxes fixed for 40 quarters

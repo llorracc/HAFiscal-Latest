@@ -116,9 +116,9 @@ class TestHankSamStandalone:
             # Verify parameter changes affect results
             mult1 = result1["multipliers"]["transfers"][0]
             mult2 = result2["multipliers"]["transfers"][0]
-            assert abs(mult1 - mult2) > 0.001, (
-                f"Parameter φπ change should affect results: {mult1} vs {mult2}"
-            )
+            assert (
+                abs(mult1 - mult2) > 0.001
+            ), f"Parameter φπ change should affect results: {mult1} vs {mult2}"
 
         except Exception as e:
             pytest.fail(f"Parameter override system failed: {e}")
@@ -142,14 +142,14 @@ class TestHankSamStandalone:
             ]
 
             for mult_type in required_mult_types:
-                assert mult_type in results["multipliers"], (
-                    f"Missing multiplier type: {mult_type}"
-                )
+                assert (
+                    mult_type in results["multipliers"]
+                ), f"Missing multiplier type: {mult_type}"
                 multipliers = results["multipliers"][mult_type]
                 assert len(multipliers) == 5, f"Wrong multiplier length for {mult_type}"
-                assert all(isinstance(m, (int, float)) for m in multipliers), (
-                    f"Non-numeric multipliers in {mult_type}"
-                )
+                assert all(
+                    isinstance(m, (int, float)) for m in multipliers
+                ), f"Non-numeric multipliers in {mult_type}"
 
         except Exception as e:
             pytest.fail(f"Fiscal multiplier calculation failed: {e}")
@@ -168,15 +168,15 @@ class TestHankSamStandalone:
 
             # Tax cuts should have positive consumption multipliers (despite negative output multipliers)
             tax_mult = mults["tax_cut"][2]
-            assert tax_mult > 0, (
-                "Tax cut consumption multiplier should be positive (stimulates consumption)"
-            )
+            assert (
+                tax_mult > 0
+            ), "Tax cut consumption multiplier should be positive (stimulates consumption)"
 
             # Fixed nominal/real rates should generally amplify effects
             ui_mult_fixed = mults["UI_extend_fixed_nominal"][2]
-            assert ui_mult_fixed > ui_mult, (
-                "Fixed nominal rate should amplify UI multiplier"
-            )
+            assert (
+                ui_mult_fixed > ui_mult
+            ), "Fixed nominal rate should amplify UI multiplier"
 
         except Exception as e:
             pytest.fail(f"Economic sensibility test failed: {e}")
@@ -198,9 +198,9 @@ class TestHankSamStandalone:
                 results["multipliers"]["tax_cut_fixed_nominal"],
                 results["multipliers"]["tax_cut_fixed_real"],
             )
-            assert fig is not None, (
-                "Plotting function should return figure in standalone mode"
-            )
+            assert (
+                fig is not None
+            ), "Plotting function should return figure in standalone mode"
 
         except Exception as e:
             pytest.fail(f"Plotting dual mode test failed: {e}")
@@ -231,14 +231,14 @@ class TestHankSamStandalone:
                 ylabel = ax.get_ylabel()
 
                 # Check x-axis label contains time and units
-                assert "Time" in xlabel and "Quarters" in xlabel, (
-                    f"Subplot {i}: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
-                )
+                assert (
+                    "Time" in xlabel and "Quarters" in xlabel
+                ), f"Subplot {i}: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
 
                 # Check y-axis label contains multiplier and is descriptive
-                assert "Consumption Multiplier" in ylabel, (
-                    f"Subplot {i}: Y-axis should contain 'Consumption Multiplier', got '{ylabel}'"
-                )
+                assert (
+                    "Consumption Multiplier" in ylabel
+                ), f"Subplot {i}: Y-axis should contain 'Consumption Multiplier', got '{ylabel}'"
 
             plt.close(fig)
 
@@ -271,14 +271,14 @@ class TestHankSamStandalone:
                 ylabel = ax.get_ylabel()
 
                 # Check x-axis label contains time and units
-                assert "Time" in xlabel and "Quarters" in xlabel, (
-                    f"Subplot {i}: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
-                )
+                assert (
+                    "Time" in xlabel and "Quarters" in xlabel
+                ), f"Subplot {i}: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
 
                 # Check y-axis label contains response type and units
-                assert "Consumption Response" in ylabel and "%" in ylabel, (
-                    f"Subplot {i}: Y-axis should contain 'Consumption Response (%)', got '{ylabel}'"
-                )
+                assert (
+                    "Consumption Response" in ylabel and "%" in ylabel
+                ), f"Subplot {i}: Y-axis should contain 'Consumption Response (%)', got '{ylabel}'"
 
             plt.close(fig)
 
@@ -304,12 +304,12 @@ class TestHankSamStandalone:
             xlabel = ax1.get_xlabel()
             ylabel = ax1.get_ylabel()
 
-            assert "Time" in xlabel and "Quarters" in xlabel, (
-                f"Single multiplier panel: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
-            )
-            assert "Consumption Multiplier" in ylabel, (
-                f"Single multiplier panel: Y-axis should contain 'Consumption Multiplier', got '{ylabel}'"
-            )
+            assert (
+                "Time" in xlabel and "Quarters" in xlabel
+            ), f"Single multiplier panel: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
+            assert (
+                "Consumption Multiplier" in ylabel
+            ), f"Single multiplier panel: Y-axis should contain 'Consumption Multiplier', got '{ylabel}'"
 
             plt.close(fig1)
 
@@ -327,12 +327,12 @@ class TestHankSamStandalone:
             xlabel = ax2.get_xlabel()
             ylabel = ax2.get_ylabel()
 
-            assert "Time" in xlabel and "Quarters" in xlabel, (
-                f"Single consumption panel: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
-            )
-            assert "Consumption Response" in ylabel and "%" in ylabel, (
-                f"Single consumption panel: Y-axis should contain 'Consumption Response (%)', got '{ylabel}'"
-            )
+            assert (
+                "Time" in xlabel and "Quarters" in xlabel
+            ), f"Single consumption panel: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
+            assert (
+                "Consumption Response" in ylabel and "%" in ylabel
+            ), f"Single consumption panel: Y-axis should contain 'Consumption Response (%)', got '{ylabel}'"
 
             plt.close(fig2)
 
@@ -475,9 +475,9 @@ class TestSteadyStateDictionary:
                 hank_sam_val = hank_sam.SteadyState_Dict[key]
 
                 if isinstance(hafiscal_val, (int, float)):
-                    assert hafiscal_val == pytest.approx(hank_sam_val, rel=1e-10), (
-                        f"Mismatch in steady state value for {key}"
-                    )
+                    assert hafiscal_val == pytest.approx(
+                        hank_sam_val, rel=1e-10
+                    ), f"Mismatch in steady state value for {key}"
 
 
 class TestUnemploymentJacobian:
@@ -584,9 +584,9 @@ class TestPolicyExperiments:
         try:
             # Should work with no arguments (None defaults)
             results = hank_sam.run_ui_extension_experiments()
-            assert len(results) == 6, (
-                "Should return 6 elements (IRFs, steady state, shocks)"
-            )
+            assert (
+                len(results) == 6
+            ), "Should return 6 elements (IRFs, steady state, shocks)"
         except Exception:
             # If computation fails, just verify the function signature is correct
             import inspect
@@ -601,9 +601,9 @@ class TestPolicyExperiments:
         # Test that function accepts parameter overrides
         try:
             results = hank_sam.run_transfer_experiments()
-            assert len(results) == 6, (
-                "Should return 6 elements (IRFs, steady state, shocks)"
-            )
+            assert (
+                len(results) == 6
+            ), "Should return 6 elements (IRFs, steady state, shocks)"
         except Exception:
             # If computation fails, just verify the function signature is correct
             import inspect
@@ -618,9 +618,9 @@ class TestPolicyExperiments:
         # Test that function accepts parameter overrides
         try:
             results = hank_sam.run_tax_cut_experiments()
-            assert len(results) == 5, (
-                "Should return 5 elements (IRFs, steady state, shocks)"
-            )
+            assert (
+                len(results) == 5
+            ), "Should return 5 elements (IRFs, steady state, shocks)"
         except Exception:
             # If computation fails, just verify the function signature is correct
             import inspect
