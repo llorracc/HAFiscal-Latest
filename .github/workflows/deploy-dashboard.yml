@@ -1,4 +1,4 @@
-name: Deploy Voila Dashboard to GitHub Pages
+name: Deploy HANK-SAM Dashboard (Public + Private)
 
 on:
   push:
@@ -16,14 +16,14 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: deploy-dashboard-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   CONDA_ENV: hafiscal-dashboard
 
 jobs:
-  build-and-deploy:
+  deploy-dashboard:
     runs-on: ubuntu-latest
     
     steps:
@@ -60,29 +60,50 @@ jobs:
         print('✅ Dashboard imports successful')
         "
 
-    - name: Create MyBinder files and landing page
+    - name: Run dashboard tests
+      shell: micromamba-shell {0}
       run: |
-        mkdir -p voila-build
-        cp -r dashboard/* voila-build/
-        
-        # Use canonical environment.yml and postBuild for MyBinder (already copied from dashboard/)
-        # This ensures consistency between CI and MyBinder environments
-        # Note: postBuild may include jupyter-nbextension commands for MyBinder compatibility
-        chmod +x voila-build/postBuild
-        
-        # Determine deployment info for dynamic content
-        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-          BRANCH_NAME="${{ github.head_ref }}"
-          DEPLOY_TYPE="Pull Request #${{ github.event.number }}"
+        # Run dashboard tests to ensure everything works
+        pytest dashboard/test_app.py dashboard/test_hank_sam.py -v --tb=short
+
+    - name: Detect repository visibility
+      id: repo-visibility
+      run: |
+        # Check if repository is public or private
+        REPO_VISIBILITY=$(gh api repos/${{ github.repository }} --jq '.private')
+        if [[ "$REPO_VISIBILITY" == "false" ]]; then
+          echo "visibility=public" >> $GITHUB_OUTPUT
+          echo "🌍 Repository is PUBLIC - Using MyBinder + GitHub Pages deployment"
         else
-          BRANCH_NAME="${{ github.ref_name }}"
-          DEPLOY_TYPE="Branch: $BRANCH_NAME"
+          echo "visibility=private" >> $GITHUB_OUTPUT
+          echo "🔒 Repository is PRIVATE - Using Codespaces + artifact deployment"
         fi
+      env:
+        GH_TOKEN: ${{ github.token }}
+
+    - name: Create dashboard build artifacts
+      run: |
+        mkdir -p dashboard-build
         
-        # Create professional landing page with dynamic MyBinder links
-        # This HTML page serves as the GitHub Pages entry point, providing
-        # users with clear options to launch the dashboard or download resources
-        cat > voila-build/index.html << 'EOHTML'
+        # Copy all dashboard files
+        cp -r dashboard/* dashboard-build/
+        
+        # Create different builds based on repository visibility
+        if [[ "${{ steps.repo-visibility.outputs.visibility }}" == "public" ]]; then
+          echo "🌍 Creating PUBLIC repository build with MyBinder integration..."
+          
+          # Create professional landing page for public repositories
+          # Determine deployment info for dynamic content
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BRANCH_NAME="${{ github.head_ref }}"
+            DEPLOY_TYPE="Pull Request #${{ github.event.number }}"
+          else
+            BRANCH_NAME="${{ github.ref_name }}"
+            DEPLOY_TYPE="Branch: $BRANCH_NAME"
+          fi
+          
+          # Create the professional landing page with MyBinder integration
+          cat > dashboard-build/index.html << 'EOHTML'
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -192,41 +213,149 @@ jobs:
         </body>
         </html>
         EOHTML
+          
+          # Replace placeholders with actual values for public repositories
+          sed -i "s/DEPLOY_TYPE_PLACEHOLDER/$DEPLOY_TYPE/g" dashboard-build/index.html
+          sed -i "s/COMMIT_PLACEHOLDER/${{ github.sha }}/g" dashboard-build/index.html
+          sed -i "s|MYBINDER_URL_PLACEHOLDER|https://mybinder.org/v2/gh/${{ github.repository }}/$BRANCH_NAME?urlpath=voila%2Frender%2Fapp.ipynb|g" dashboard-build/index.html
+          sed -i "s|SOURCE_URL_PLACEHOLDER|https://github.com/${{ github.repository }}/tree/$BRANCH_NAME/dashboard|g" dashboard-build/index.html
+          
+        else
+          echo "🔒 Creating PRIVATE repository build with Codespaces integration..."
+        fi
         
-        # Replace placeholders with actual values
-        sed -i "s/DEPLOY_TYPE_PLACEHOLDER/$DEPLOY_TYPE/g" voila-build/index.html
-        sed -i "s/COMMIT_PLACEHOLDER/${{ github.sha }}/g" voila-build/index.html
-        sed -i "s|MYBINDER_URL_PLACEHOLDER|https://mybinder.org/v2/gh/${{ github.repository }}/$BRANCH_NAME?urlpath=voila%2Frender%2Fapp.ipynb|g" voila-build/index.html
-        sed -i "s|SOURCE_URL_PLACEHOLDER|https://github.com/${{ github.repository }}/tree/$BRANCH_NAME/dashboard|g" voila-build/index.html
+        # Create a comprehensive setup script for any environment
+        cat > dashboard-build/setup-dashboard.sh << 'EOSETUP'
+        #!/bin/bash
+        # HANK-SAM Dashboard Setup Script
+        # Works on any system with conda/micromamba
+        
+        echo "🏦 Setting up HANK-SAM Dashboard..."
+        
+        # Detect conda/micromamba
+        if command -v micromamba &> /dev/null; then
+            CONDA_CMD="micromamba"
+        elif command -v conda &> /dev/null; then
+            CONDA_CMD="conda"
+        else
+            echo "❌ Error: Neither conda nor micromamba found!"
+            echo "Please install miniconda or micromamba first."
+            exit 1
+        fi
+        
+        echo "📦 Using $CONDA_CMD for environment management"
+        
+        # Create environment
+        echo "🔨 Creating hafiscal-dashboard environment..."
+        $CONDA_CMD env create -f environment.yml
+        
+        echo "✅ Environment created successfully!"
+        echo ""
+        echo "🚀 To launch the dashboard:"
+        echo "  $CONDA_CMD activate hafiscal-dashboard"
+        echo "  ./start-dashboard.sh"
+        echo ""
+        echo "📁 Files included:"
+        echo "  - app.ipynb          (Main dashboard notebook)"
+        echo "  - environment.yml    (Environment specification)" 
+        echo "  - start-dashboard.sh (Launch script)"
+        echo "  - hank_sam.py        (Core model code)"
+        echo "  - test files         (Comprehensive test suite)"
+        EOSETUP
+        
+        chmod +x dashboard-build/setup-dashboard.sh
+        chmod +x dashboard-build/start-dashboard.sh
+        
+        # Create a professional README for the build
+        cat > dashboard-build/README.md << 'EOREADME'
+        # 🏦 HANK-SAM Interactive Dashboard
+        
+        This package contains a complete, ready-to-run HANK-SAM fiscal policy dashboard.
+        
+        ## 🚀 Quick Start
+        
+        ### Option 1: Automatic Setup
+        ```bash
+        ./setup-dashboard.sh
+        ```
+        
+        ### Option 2: Manual Setup  
+        ```bash
+        conda env create -f environment.yml
+        conda activate hafiscal-dashboard
+        ./start-dashboard.sh
+        ```
+        
+        ## 📊 What You Get
+        
+        - **Interactive Dashboard**: Explore fiscal multipliers under different policy regimes
+        - **Professional Visualizations**: Publication-ready charts and analysis
+        - **Real-time Parameter Adjustment**: See impacts immediately
+        - **Comprehensive Testing**: Full test suite included
+        
+        ## 🔧 System Requirements
+        
+        - Python 3.11+
+        - Conda or Micromamba
+        - 4GB+ RAM recommended
+        - Modern web browser
+        
+        ## 📁 Package Contents
+        
+        - `app.ipynb` - Main dashboard notebook
+        - `environment.yml` - Complete environment specification
+        - `start-dashboard.sh` - One-click launcher
+        - `setup-dashboard.sh` - Automatic setup script
+        - `hank_sam.py` - Core HANK-SAM model implementation
+        - `test_*.py` - Comprehensive test suite
+        
+        Built with ❤️ using Voila, ipywidgets, and the HANK-SAM framework.
+        EOREADME
+        
+        # Create version info
+        echo "Dashboard Build Information" > dashboard-build/BUILD_INFO.txt
+        echo "=========================" >> dashboard-build/BUILD_INFO.txt
+        echo "Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> dashboard-build/BUILD_INFO.txt
+        echo "Git Commit: ${{ github.sha }}" >> dashboard-build/BUILD_INFO.txt
+        echo "Git Branch: ${{ github.ref_name }}" >> dashboard-build/BUILD_INFO.txt
+        echo "Repository: ${{ github.repository }}" >> dashboard-build/BUILD_INFO.txt
+        echo "Trigger: ${{ github.event_name }}" >> dashboard-build/BUILD_INFO.txt
 
+    - name: Upload dashboard artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: hank-sam-dashboard-${{ github.ref_name }}-${{ github.sha }}
+        path: dashboard-build/
+        retention-days: 30
+        compression-level: 6
+
+    # GitHub Pages deployment for PUBLIC repositories
     - name: Setup GitHub Pages
-      if: github.event_name != 'pull_request'
+      if: steps.repo-visibility.outputs.visibility == 'public' && github.event_name != 'pull_request'
       uses: actions/configure-pages@v4
 
-    - name: Upload to GitHub Pages
-      if: github.event_name != 'pull_request'
+    - name: Upload to GitHub Pages  
+      if: steps.repo-visibility.outputs.visibility == 'public' && github.event_name != 'pull_request'
       uses: actions/upload-pages-artifact@v3
       with:
-        path: voila-build
+        path: dashboard-build
 
     - name: Deploy to GitHub Pages
-      if: github.event_name != 'pull_request' 
+      if: steps.repo-visibility.outputs.visibility == 'public' && github.event_name != 'pull_request'
       id: deployment
       uses: actions/deploy-pages@v4
 
-    - name: Upload PR artifacts
-      if: github.event_name == 'pull_request'
+    # Additional PR artifacts for public repositories (MyBinder-compatible)
+    - name: Upload PR artifacts for public repo
+      if: steps.repo-visibility.outputs.visibility == 'public' && github.event_name == 'pull_request'
       uses: actions/upload-artifact@v4
       with:
-        name: voila-dashboard-pr-${{ github.event.number }}
-        path: voila-build/
+        name: mybinder-dashboard-pr-${{ github.event.number }}
+        path: dashboard-build/
         retention-days: 30
 
-    # Post an auto-updating comment on PRs with dashboard preview links
-    # This script creates a comprehensive comment with MyBinder launch links,
-    # testing instructions, and download options. On subsequent pushes to the PR,
-    # it updates the existing comment instead of creating duplicate comments.
-    - name: Comment on PR with dashboard links
+    # Post adaptive PR comments based on repository visibility
+    - name: Comment on PR with deployment instructions
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v7
       with:
@@ -234,41 +363,145 @@ jobs:
           const prNumber = context.payload.pull_request.number;
           const headRef = context.payload.pull_request.head.ref;
           const repo = context.repo.owner + '/' + context.repo.repo;
+          const isPublic = '${{ steps.repo-visibility.outputs.visibility }}' === 'public';
           
-          const comment = `## 🏦 HANK-SAM Dashboard Preview Ready!
+          let comment;
           
-          Your Voila dashboard has been built and is ready for testing.
-          
-          ### 🚀 Launch Dashboard
-          
-          [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${repo}/${headRef}?urlpath=voila%2Frender%2Fapp.ipynb)
-          
-          **[🔬 Click here to launch the interactive dashboard](https://mybinder.org/v2/gh/${repo}/${headRef}?urlpath=voila%2Frender%2Fapp.ipynb)**
-          
-          ### 📋 Testing Instructions
-          
-          1. **Click the launch link above** - MyBinder will build the environment
-          2. **Wait 2-3 minutes** for the environment to load  
-          3. **Test the dashboard:**
-             - Adjust parameter sliders (φπ, φy, etc.)
-             - Click "Run Simulation" 
-             - Verify plots update correctly
-             - Check that all three policy experiments render
-          
-          ### 📊 What to Test
-          
-          - **Parameter Controls:** All sliders should be responsive
-          - **Fiscal Multipliers Plot:** Should show 3 panels (UI Extension, Transfers, Tax Cuts)
-          - **Consumption IRFs Plot:** Should show impulse response functions
-          - **Performance:** Simulations should complete in <30 seconds
-          
-          ### 📁 Download Options
-          
-          - 📝 [Download Notebook Artifact](https://github.com/${repo}/actions/runs/${{ github.run_id }})
-          - 💻 [View Source Code](https://github.com/${repo}/tree/${headRef}/dashboard)
-          
-          ---
-          🔄 **Auto-updated** when you push new commits • 🕒 Built: ${new Date().toISOString().slice(0,19)}Z`;
+          if (isPublic) {
+            // PUBLIC repository comment with MyBinder integration
+            comment = `## 🏦 HANK-SAM Dashboard Preview Ready!
+            
+            ✅ **All tests passed!** Your Voila dashboard has been built and is ready for testing.
+            
+            ---
+            
+            ## 🚀 **Instant Access (Public Repository)**
+            
+            ### Option 1: MyBinder (Recommended - Zero Setup)
+            
+            [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${repo}/${headRef}?urlpath=voila%2Frender%2Fapp.ipynb)
+            
+            **[🔬 Click here to launch the interactive dashboard](https://mybinder.org/v2/gh/${repo}/${headRef}?urlpath=voila%2Frender%2Fapp.ipynb)**
+            
+            > 💡 **MyBinder**: Builds environment automatically, no installation required!
+            
+            ### Option 2: GitHub Codespaces  
+            
+            1. **Launch**: Click "Code" → "Codespaces" → "Create codespace on ${headRef}"
+            2. **Run**: Execute \`dashboard/start-dashboard.sh\` in terminal
+            3. **Access**: Click forwarded port 8866 in "Ports" tab
+            
+            ### Option 3: Download Package
+            
+            📁 **[⬇️ Download Complete Package](https://github.com/${repo}/actions/runs/${{ github.run_id }})**
+            
+            ---
+            
+            ## 📋 **Testing Instructions**
+            
+            1. **Click the MyBinder link above** - Environment builds automatically
+            2. **Wait 2-3 minutes** for the environment to load  
+            3. **Test the dashboard:**
+               - Adjust parameter sliders (φπ, φy, etc.)
+               - Click "Run Simulation" 
+               - Verify plots update correctly
+               - Check that all three policy experiments render
+            
+            ## 📊 **What to Test**
+            
+            - **Parameter Controls**: All sliders should be responsive
+            - **Fiscal Multipliers Plot**: Should show 3 panels (UI Extension, Transfers, Tax Cuts)
+            - **Consumption IRFs Plot**: Should show impulse response functions
+            - **Performance**: Simulations should complete in <30 seconds`;
+                     }
+           
+           // Add common footer and resource links for both repository types
+           comment += `
+           
+           ---
+           
+           ## 📁 **Additional Resources**
+           
+           - 💻 **[View Source Code](https://github.com/${repo}/tree/${headRef}/dashboard)**
+           - 📖 **[Dashboard Documentation](https://github.com/${repo}/blob/${headRef}/dashboard/DASHBOARD_README.md)**
+           - 🧪 **[Test Results](https://github.com/${repo}/actions/runs/${{ github.run_id }})**
+           - 📊 **Model**: HANK-SAM (Heterogeneous Agent NK with Search & Matching)
+           
+           ---
+           
+           <sub>🔄 **Auto-updated** on new commits • 🕒 **Built**: ${new Date().toISOString().slice(0,19)}Z • 📦 **Package**: \`hank-sam-dashboard-${headRef}-${{ github.sha }}\`</sub>`;
+           } else {
+             // PRIVATE repository comment with Codespaces focus  
+             comment = `## 🏦 HANK-SAM Dashboard Ready for Testing!
+           
+           ✅ **All tests passed!** Your dashboard build is complete and ready to deploy.
+           
+           ---
+           
+           ## 🚀 **Option 1: GitHub Codespaces (Recommended)**
+           
+           **Zero-install cloud development:**
+           
+           1. **Launch**: Click "Code" → "Codespaces" → "Create codespace on ${headRef}"
+           2. **Wait**: Environment auto-configures (2-3 minutes)  
+           3. **Run**: Execute \`dashboard/start-dashboard.sh\` in terminal
+           4. **Access**: Click forwarded port 8866 in "Ports" tab
+           
+           > 💡 **Pro Tip**: Codespaces includes everything pre-configured - just run and go!
+           
+           ---
+           
+           ## 📦 **Option 2: Download Complete Package**
+           
+           **Self-contained dashboard bundle:**
+           
+           📁 **[⬇️ Download Dashboard Package](https://github.com/${repo}/actions/runs/${{ github.run_id }})**
+           
+           **What's included:**
+           - ✅ Complete dashboard environment (\`environment.yml\`)
+           - ✅ One-click setup script (\`setup-dashboard.sh\`)
+           - ✅ Dashboard launcher (\`start-dashboard.sh\`)  
+           - ✅ Full source code and documentation
+           - ✅ Comprehensive test suite
+           
+           **Quick start:**
+           \`\`\`bash
+           # Extract downloaded package, then:
+           ./setup-dashboard.sh        # Automatic setup
+           conda activate hafiscal-dashboard
+           ./start-dashboard.sh        # Launch dashboard
+           \`\`\`
+           
+           ---
+           
+           ## 📊 **Testing Checklist**
+           
+           **Core Functionality:**
+           - [ ] **Parameter Controls** - All sliders responsive and update plots
+           - [ ] **Fiscal Multipliers** - 3-panel plot (UI Extension, Transfers, Tax Cuts)
+           - [ ] **Consumption IRFs** - Impulse response functions display correctly
+           - [ ] **Real-time Updates** - Plots refresh when parameters change
+           - [ ] **Performance** - Simulations complete within 30 seconds
+           
+           **Policy Experiments:**
+           - [ ] **UI Extensions** - Unemployment insurance policy analysis
+           - [ ] **Transfer Payments** - Direct stimulus check analysis  
+           - [ ] **Tax Cuts** - Tax reduction policy analysis
+           - [ ] **Monetary Regimes** - Taylor rule vs fixed rate comparisons
+           
+           ---
+           
+           ## 📁 **Additional Resources**
+           
+           - 💻 **[View Source Code](https://github.com/${repo}/tree/${headRef}/dashboard)**
+           - 📖 **[Dashboard Documentation](https://github.com/${repo}/blob/${headRef}/dashboard/DASHBOARD_README.md)**
+           - 🧪 **[Test Results](https://github.com/${repo}/actions/runs/${{ github.run_id }})**
+           - 📊 **Model**: HANK-SAM (Heterogeneous Agent NK with Search & Matching)
+           
+           ---
+           
+           <sub>🔄 **Auto-updated** on new commits • 🕒 **Built**: ${new Date().toISOString().slice(0,19)}Z • 📦 **Package**: \`hank-sam-dashboard-${headRef}-${{ github.sha }}\`</sub>`;
+           }
           
           // Find existing comment and update it, or create new one
           const comments = await github.rest.issues.listComments({
@@ -279,7 +512,8 @@ jobs:
           
           const existingComment = comments.data.find(comment => 
             comment.user.login === 'github-actions[bot]' && 
-            comment.body.includes('HANK-SAM Dashboard Preview Ready')
+            (comment.body.includes('HANK-SAM Dashboard Ready for Testing') || 
+             comment.body.includes('HANK-SAM Dashboard Preview Ready'))
           );
           
           if (existingComment) {
@@ -298,30 +532,94 @@ jobs:
             });
           }
 
-    - name: Create deployment summary
+    - name: Create comprehensive workflow summary
       run: |
-        echo "## 🏦 Voila Dashboard Deployment" >> $GITHUB_STEP_SUMMARY
+        echo "# 🏦 HANK-SAM Dashboard Build Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ **All tests passed!** Dashboard package is ready for deployment." >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
-        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-          echo "### 🔗 PR Dashboard Links" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${{ github.repository }}/${{ github.head_ref }}?urlpath=voila%2Frender%2Fapp.ipynb)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**[🚀 Launch Interactive Dashboard](https://mybinder.org/v2/gh/${{ github.repository }}/${{ github.head_ref }}?urlpath=voila%2Frender%2Fapp.ipynb)**" >> $GITHUB_STEP_SUMMARY
+        # Add different instructions based on repository visibility and event type
+        if [[ "${{ steps.repo-visibility.outputs.visibility }}" == "public" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "## 🌍 Public Repository - PR Testing Options" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Option 1: MyBinder (Zero Setup) ⭐" >> $GITHUB_STEP_SUMMARY
+            echo "[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${{ github.repository }}/${{ github.head_ref }}?urlpath=voila%2Frender%2Fapp.ipynb)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**[🔬 Launch Interactive Dashboard on MyBinder](https://mybinder.org/v2/gh/${{ github.repository }}/${{ github.head_ref }}?urlpath=voila%2Frender%2Fapp.ipynb)**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Option 2: GitHub Codespaces" >> $GITHUB_STEP_SUMMARY
+            echo "1. **Launch**: Go to [this branch](https://github.com/${{ github.repository }}/tree/${{ github.head_ref }}) → Code → Codespaces" >> $GITHUB_STEP_SUMMARY
+            echo "2. **Run**: \`dashboard/start-dashboard.sh\`" >> $GITHUB_STEP_SUMMARY
+            echo "3. **Access**: Port 8866 via Ports tab" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Option 3: Download Package" >> $GITHUB_STEP_SUMMARY
+            echo "📦 **[Download MyBinder Package](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** - Complete dashboard bundle" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🌍 Public Repository - Live Deployment" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ✅ Live Dashboard Deployed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Option | Description | Link |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------------|------|" >> $GITHUB_STEP_SUMMARY
+            echo "| 🌐 **Landing Page** | Professional dashboard home | [📊 Visit Site](${{ steps.deployment.outputs.page_url }}) |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🔬 **MyBinder** | Instant interactive dashboard | [Launch Dashboard](https://mybinder.org/v2/gh/${{ github.repository }}/${{ github.ref_name }}?urlpath=voila%2Frender%2Fapp.ipynb) |" >> $GITHUB_STEP_SUMMARY
+            echo "| 📝 **Download** | Complete notebook package | [Download Notebook](${{ steps.deployment.outputs.page_url }}app.ipynb) |" >> $GITHUB_STEP_SUMMARY
+          fi
         else
-          echo "### ✅ Live Dashboard Deployed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Link | Description |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|-------------|" >> $GITHUB_STEP_SUMMARY
-          echo "| [📊 Dashboard Home](${{ steps.deployment.outputs.page_url }}) | Landing page with launch options |" >> $GITHUB_STEP_SUMMARY
-          echo "| [🔬 Interactive Dashboard](https://mybinder.org/v2/gh/${{ github.repository }}/${{ github.ref_name }}?urlpath=voila%2Frender%2Fapp.ipynb) | Live Voila dashboard on MyBinder |" >> $GITHUB_STEP_SUMMARY
-          echo "| [📝 Download Notebook](${{ steps.deployment.outputs.page_url }}app.ipynb) | Direct notebook download |" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "## 🔒 Private Repository - PR Testing Options" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Option 1: GitHub Codespaces (Recommended) ⭐" >> $GITHUB_STEP_SUMMARY
+            echo "1. **Launch**: Go to [this branch](https://github.com/${{ github.repository }}/tree/${{ github.head_ref }}) → Code → Codespaces" >> $GITHUB_STEP_SUMMARY
+            echo "2. **Run**: \`dashboard/start-dashboard.sh\`" >> $GITHUB_STEP_SUMMARY
+            echo "3. **Access**: Port 8866 via Ports tab" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Option 2: Download Package" >> $GITHUB_STEP_SUMMARY
+            echo "📦 **[Download Complete Dashboard](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** - Self-contained package with setup scripts" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🔒 Private Repository - Deployment Options" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### GitHub Codespaces" >> $GITHUB_STEP_SUMMARY
+            echo "- Launch Codespaces from main repository" >> $GITHUB_STEP_SUMMARY
+            echo "- Run: \`dashboard/start-dashboard.sh\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Download Package" >> $GITHUB_STEP_SUMMARY
+            echo "📦 **[Download Complete Dashboard](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** - Production-ready package" >> $GITHUB_STEP_SUMMARY
+          fi
         fi
         
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### 📋 Build Info" >> $GITHUB_STEP_SUMMARY
-        echo "- **Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "- **Backend:** MyBinder" >> $GITHUB_STEP_SUMMARY
-        echo "- **Frontend:** GitHub Pages + Voila" >> $GITHUB_STEP_SUMMARY
+        echo "## 📊 Dashboard Features" >> $GITHUB_STEP_SUMMARY
+        echo "- **Interactive Multipliers**: Real-time fiscal policy analysis" >> $GITHUB_STEP_SUMMARY
+        echo "- **HANK-SAM Model**: Heterogeneous Agent NK with Search & Matching" >> $GITHUB_STEP_SUMMARY  
+        echo "- **3 Policy Types**: UI Extensions, Transfers, Tax Cuts" >> $GITHUB_STEP_SUMMARY
+        echo "- **Multiple Regimes**: Taylor Rule, Fixed Nominal/Real Rates" >> $GITHUB_STEP_SUMMARY
+        echo "- **Professional Plots**: Publication-ready visualizations" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## 📁 Package Contents" >> $GITHUB_STEP_SUMMARY
+        echo "- \`app.ipynb\` - Main interactive dashboard" >> $GITHUB_STEP_SUMMARY
+        echo "- \`setup-dashboard.sh\` - Automatic environment setup" >> $GITHUB_STEP_SUMMARY
+        echo "- \`start-dashboard.sh\` - One-click launcher" >> $GITHUB_STEP_SUMMARY
+        echo "- \`environment.yml\` - Complete dependency specification" >> $GITHUB_STEP_SUMMARY
+        echo "- \`hank_sam.py\` - Core model implementation" >> $GITHUB_STEP_SUMMARY
+        echo "- \`test_*.py\` - Comprehensive test suite" >> $GITHUB_STEP_SUMMARY
+        echo "- \`README.md\` - Complete setup documentation" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## 🔧 Build Information" >> $GITHUB_STEP_SUMMARY
+        echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+        echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+        echo "| **Branch** | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Environment** | \`hafiscal-dashboard\` |" >> $GITHUB_STEP_SUMMARY
+        if [[ "${{ steps.repo-visibility.outputs.visibility }}" == "public" ]]; then
+          echo "| **Platform** | \`MyBinder + GitHub Pages + Codespaces\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Deployment** | \`Live Dashboard + Packages\` |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| **Platform** | \`GitHub Codespaces + Local\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Deployment** | \`Packages + Codespaces\` |" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "| **Package** | \`hank-sam-dashboard-${{ github.ref_name }}-${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Trigger** | \`${{ github.event_name }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Retention** | \`30 days\` |" >> $GITHUB_STEP_SUMMARY

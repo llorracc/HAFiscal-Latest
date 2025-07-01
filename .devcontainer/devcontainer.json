@@ -1,0 +1,54 @@
+{
+  "name": "HANK-SAM Dashboard Environment",
+  "image": "mcr.microsoft.com/devcontainers/miniconda:3",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  
+  "onCreateCommand": [
+    "bash", "-c", 
+    "echo 'Creating HAFiscal dashboard environment...' && conda env create -f dashboard/environment.yml"
+  ],
+  
+  "postStartCommand": [
+    "bash", "-c",
+    "echo 'Activating environment and setting up dashboard...' && conda init bash && source ~/.bashrc"
+  ],
+  
+  "forwardPorts": [8866, 8888],
+  "portsAttributes": {
+    "8866": {
+      "label": "Voila Dashboard",
+      "onAutoForward": "notify",
+      "protocol": "http"
+    },
+    "8888": {
+      "label": "Jupyter Lab",
+      "onAutoForward": "ignore", 
+      "protocol": "http"
+    }
+  },
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        "charliermarsh.ruff"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/opt/miniconda3/envs/hafiscal-dashboard/bin/python",
+        "python.terminal.activateEnvironment": true,
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  
+  "remoteUser": "vscode",
+  
+  "containerEnv": {
+    "CONDA_DEFAULT_ENV": "hafiscal-dashboard"
+  }
+}
