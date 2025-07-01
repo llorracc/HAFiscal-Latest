@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CONDA_ENV: hafiscal
+  CONDA_ENV: hafiscal-dashboard
 
 jobs:
   build-and-deploy:
@@ -40,18 +40,21 @@ jobs:
         environment-name: ${{ env.CONDA_ENV }}
         cache-environment: true
 
-    - name: Enable Jupyter widgets for Voila
+    - name: Verify Jupyter and widgets setup
       shell: micromamba-shell {0}
       run: |
-        micromamba activate ${{ env.CONDA_ENV }}
-        jupyter nbextension enable --py widgetsnbextension --sys-prefix
+        # Environment is already activated by micromamba-shell
+        # Modern Jupyter setups don't need jupyter-nbextension commands
+        jupyter --version
+        python -c "import ipywidgets; print(f'✅ ipywidgets {ipywidgets.__version__} ready')"
 
     - name: Test dashboard imports
       shell: micromamba-shell {0}
-      working-directory: dashboard
       run: |
-        micromamba activate ${{ env.CONDA_ENV }}
+        # Test imports from project root (where hafiscal.py can find its data files)
         python -c "
+        import sys
+        sys.path.insert(0, 'dashboard')
         import hank_sam as hs
         import hafiscal
         print('✅ Dashboard imports successful')
@@ -64,6 +67,7 @@ jobs:
         
         # Use canonical environment.yml and postBuild for MyBinder (already copied from dashboard/)
         # This ensures consistency between CI and MyBinder environments
+        # Note: postBuild may include jupyter-nbextension commands for MyBinder compatibility
         chmod +x voila-build/postBuild
         
         # Determine deployment info for dynamic content
