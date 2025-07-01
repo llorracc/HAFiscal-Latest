@@ -9,13 +9,335 @@ import numpy as np
 import pytest
 import sys
 import os
+from pathlib import Path
+import matplotlib.pyplot as plt
 
+# Setup paths before importing modules
 # Add dashboard directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Import both implementations
-import hafiscal
-import hank_sam
+# Add root directory to path for data files
+root_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(root_dir))
+
+# Change working directory to root to find data files
+original_cwd = os.getcwd()
+os.chdir(str(root_dir))
+
+try:
+    # Import both implementations (data files must be accessible)
+    import hafiscal
+    import hank_sam
+finally:
+    # Restore original working directory
+    os.chdir(original_cwd)
+
+# Verify both modules loaded successfully
+assert hafiscal is not None, "hafiscal.py failed to import - check data file paths"
+assert hank_sam is not None, "hank_sam.py failed to import - check data file paths"
+
+
+class TestHankSamStandalone:
+    """Test hank_sam.py functionality independently (core objective verification)."""
+
+    def test_hank_sam_imports_successfully(self):
+        """Test that hank_sam imports without errors."""
+        assert hank_sam is not None
+        assert hasattr(hank_sam, "__file__")
+
+    def test_all_calibration_functions_exist(self):
+        """Test that all required calibration functions are implemented."""
+        required_functions = [
+            "calibrate_labor_market",
+            "calibrate_general_equilibrium",
+            "compute_unemployment_jacobian",
+            "load_jacobians",
+            "apply_splurge_behavior",
+        ]
+        for func_name in required_functions:
+            assert hasattr(hank_sam, func_name), f"Missing function: {func_name}"
+            assert callable(getattr(hank_sam, func_name)), f"Not callable: {func_name}"
+
+    def test_all_experiment_functions_exist(self):
+        """Test that all policy experiment functions are implemented."""
+        required_functions = [
+            "run_ui_extension_experiments",
+            "run_transfer_experiments",
+            "run_tax_cut_experiments",
+            "compute_fiscal_multipliers",
+            "NPV",
+        ]
+        for func_name in required_functions:
+            assert hasattr(hank_sam, func_name), f"Missing function: {func_name}"
+            assert callable(getattr(hank_sam, func_name)), f"Not callable: {func_name}"
+
+    def test_all_plotting_functions_exist(self):
+        """Test that all plotting functions are implemented."""
+        required_functions = [
+            "plot_multipliers_three_experiments",
+            "plot_consumption_irfs_three_experiments",
+            "plot_consumption_irfs_three",
+            "plot_multipliers_across_horizon",
+            "plot_single_multiplier_panel",
+            "plot_single_consumption_panel",
+            "create_dashboard_figure",
+        ]
+        for func_name in required_functions:
+            assert hasattr(hank_sam, func_name), f"Missing function: {func_name}"
+            assert callable(getattr(hank_sam, func_name)), f"Not callable: {func_name}"
+
+    def test_all_models_created(self):
+        """Test that all required models are created."""
+        required_models = [
+            "HANK_SAM",
+            "HANK_SAM_tax_rate_shock",
+            "HANK_SAM_lagged_taylor_rule",
+            "HANK_SAM_fixed_real_rate",
+            "HANK_SAM_fixed_real_rate_UI_extend_real",
+            "HANK_SAM_tax_cut_fixed_real_rate",
+        ]
+        for model_name in required_models:
+            assert hasattr(hank_sam, model_name), f"Missing model: {model_name}"
+            model = getattr(hank_sam, model_name)
+            assert hasattr(model, "name"), f"Model {model_name} missing .name attribute"
+
+    def test_parameter_override_system_works(self):
+        """Test the core parameter override functionality."""
+        # Test with minimal horizon for speed
+        try:
+            result1 = hank_sam.compute_fiscal_multipliers(horizon_length=3, phi_pi=1.5)
+            result2 = hank_sam.compute_fiscal_multipliers(horizon_length=3, phi_pi=2.5)
+
+            # Verify structure
+            assert "multipliers" in result1
+            assert "irfs" in result1
+            assert "transfers" in result1["multipliers"]
+
+            # Verify parameter changes affect results
+            mult1 = result1["multipliers"]["transfers"][0]
+            mult2 = result2["multipliers"]["transfers"][0]
+            assert abs(mult1 - mult2) > 0.001, (
+                f"Parameter φπ change should affect results: {mult1} vs {mult2}"
+            )
+
+        except Exception as e:
+            pytest.fail(f"Parameter override system failed: {e}")
+
+    def test_fiscal_multiplier_calculation(self):
+        """Test that fiscal multipliers are calculated correctly."""
+        try:
+            results = hank_sam.compute_fiscal_multipliers(horizon_length=5)
+
+            # Check all required multiplier types exist
+            required_mult_types = [
+                "transfers",
+                "UI_extend",
+                "tax_cut",
+                "transfers_fixed_nominal",
+                "UI_extend_fixed_nominal",
+                "tax_cut_fixed_nominal",
+                "transfers_fixed_real",
+                "UI_extend_fixed_real",
+                "tax_cut_fixed_real",
+            ]
+
+            for mult_type in required_mult_types:
+                assert mult_type in results["multipliers"], (
+                    f"Missing multiplier type: {mult_type}"
+                )
+                multipliers = results["multipliers"][mult_type]
+                assert len(multipliers) == 5, f"Wrong multiplier length for {mult_type}"
+                assert all(isinstance(m, (int, float)) for m in multipliers), (
+                    f"Non-numeric multipliers in {mult_type}"
+                )
+
+        except Exception as e:
+            pytest.fail(f"Fiscal multiplier calculation failed: {e}")
+
+    def test_economic_sensibility(self):
+        """Test that results make economic sense."""
+        try:
+            results = hank_sam.compute_fiscal_multipliers(horizon_length=5)
+            mults = results["multipliers"]
+
+            # UI extensions should generally have higher multipliers than untargeted transfers
+            ui_mult = mults["UI_extend"][2]  # 3-quarter horizon
+            transfer_mult = mults["transfers"][2]
+            assert ui_mult > 0, "UI extension multiplier should be positive"
+            assert transfer_mult > 0, "Transfer multiplier should be positive"
+
+            # Tax cuts should have positive consumption multipliers (despite negative output multipliers)
+            tax_mult = mults["tax_cut"][2]
+            assert tax_mult > 0, (
+                "Tax cut consumption multiplier should be positive (stimulates consumption)"
+            )
+
+            # Fixed nominal/real rates should generally amplify effects
+            ui_mult_fixed = mults["UI_extend_fixed_nominal"][2]
+            assert ui_mult_fixed > ui_mult, (
+                "Fixed nominal rate should amplify UI multiplier"
+            )
+
+        except Exception as e:
+            pytest.fail(f"Economic sensibility test failed: {e}")
+
+    def test_plotting_dual_mode_functionality(self):
+        """Test that plotting functions support both standalone and dashboard modes."""
+        try:
+            results = hank_sam.compute_fiscal_multipliers(horizon_length=3)
+
+            # Test standalone mode (should return figure)
+            fig = hank_sam.plot_multipliers_three_experiments(
+                results["multipliers"]["transfers"],
+                results["multipliers"]["transfers_fixed_nominal"],
+                results["multipliers"]["transfers_fixed_real"],
+                results["multipliers"]["UI_extend"],
+                results["multipliers"]["UI_extend_fixed_nominal"],
+                results["multipliers"]["UI_extend_fixed_real"],
+                results["multipliers"]["tax_cut"],
+                results["multipliers"]["tax_cut_fixed_nominal"],
+                results["multipliers"]["tax_cut_fixed_real"],
+            )
+            assert fig is not None, (
+                "Plotting function should return figure in standalone mode"
+            )
+
+        except Exception as e:
+            pytest.fail(f"Plotting dual mode test failed: {e}")
+
+    def test_axis_labels_multipliers(self):
+        """Test that multiplier plots have proper axis labels with units."""
+        try:
+            results = hank_sam.compute_fiscal_multipliers(horizon_length=3)
+
+            fig = hank_sam.plot_multipliers_three_experiments(
+                results["multipliers"]["transfers"],
+                results["multipliers"]["transfers_fixed_nominal"],
+                results["multipliers"]["transfers_fixed_real"],
+                results["multipliers"]["UI_extend"],
+                results["multipliers"]["UI_extend_fixed_nominal"],
+                results["multipliers"]["UI_extend_fixed_real"],
+                results["multipliers"]["tax_cut"],
+                results["multipliers"]["tax_cut_fixed_nominal"],
+                results["multipliers"]["tax_cut_fixed_real"],
+            )
+
+            # Check that each subplot has proper labels
+            axs = fig.get_axes()
+            assert len(axs) == 3, "Should have 3 subplots"
+
+            for i, ax in enumerate(axs):
+                xlabel = ax.get_xlabel()
+                ylabel = ax.get_ylabel()
+
+                # Check x-axis label contains time and units
+                assert "Time" in xlabel and "Quarters" in xlabel, (
+                    f"Subplot {i}: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
+                )
+
+                # Check y-axis label contains multiplier and is descriptive
+                assert "Consumption Multiplier" in ylabel, (
+                    f"Subplot {i}: Y-axis should contain 'Consumption Multiplier', got '{ylabel}'"
+                )
+
+            plt.close(fig)
+
+        except Exception as e:
+            pytest.fail(f"Axis labels multipliers test failed: {e}")
+
+    def test_axis_labels_consumption_response(self):
+        """Test that consumption IRF plots have proper axis labels with units."""
+        try:
+            results = hank_sam.compute_fiscal_multipliers(horizon_length=3)
+
+            fig = hank_sam.plot_consumption_irfs_three_experiments(
+                results["irfs"]["UI_extend"],
+                results["irfs"]["UI_extend_fixed_nominal"],
+                results["irfs"]["UI_extend_fixed_real"],
+                results["irfs"]["transfer"],
+                results["irfs"]["transfer_fixed_nominal"],
+                results["irfs"]["transfer_fixed_real"],
+                results["irfs"]["tau"],
+                results["irfs"]["tau_fixed_nominal"],
+                results["irfs"]["tau_fixed_real"],
+            )
+
+            # Check that each subplot has proper labels
+            axs = fig.get_axes()
+            assert len(axs) == 3, "Should have 3 subplots"
+
+            for i, ax in enumerate(axs):
+                xlabel = ax.get_xlabel()
+                ylabel = ax.get_ylabel()
+
+                # Check x-axis label contains time and units
+                assert "Time" in xlabel and "Quarters" in xlabel, (
+                    f"Subplot {i}: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
+                )
+
+                # Check y-axis label contains response type and units
+                assert "Consumption Response" in ylabel and "%" in ylabel, (
+                    f"Subplot {i}: Y-axis should contain 'Consumption Response (%)', got '{ylabel}'"
+                )
+
+            plt.close(fig)
+
+        except Exception as e:
+            pytest.fail(f"Axis labels consumption response test failed: {e}")
+
+    def test_single_panel_axis_labels(self):
+        """Test that single panel plotting functions have proper axis labels."""
+        try:
+            results = hank_sam.compute_fiscal_multipliers(horizon_length=3)
+
+            # Test single multiplier panel
+            fig1, ax1 = plt.subplots(1, 1, figsize=(6, 4))
+            hank_sam.plot_single_multiplier_panel(
+                ax1,
+                results["multipliers"]["transfers"],
+                results["multipliers"]["transfers_fixed_nominal"],
+                results["multipliers"]["transfers_fixed_real"],
+                "Test Multiplier",
+                fontsize=10,
+            )
+
+            xlabel = ax1.get_xlabel()
+            ylabel = ax1.get_ylabel()
+
+            assert "Time" in xlabel and "Quarters" in xlabel, (
+                f"Single multiplier panel: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
+            )
+            assert "Consumption Multiplier" in ylabel, (
+                f"Single multiplier panel: Y-axis should contain 'Consumption Multiplier', got '{ylabel}'"
+            )
+
+            plt.close(fig1)
+
+            # Test single consumption panel
+            fig2, ax2 = plt.subplots(1, 1, figsize=(6, 4))
+            hank_sam.plot_single_consumption_panel(
+                ax2,
+                results["irfs"]["transfer"],
+                results["irfs"]["transfer_fixed_nominal"],
+                results["irfs"]["transfer_fixed_real"],
+                "Test Consumption",
+                fontsize=10,
+            )
+
+            xlabel = ax2.get_xlabel()
+            ylabel = ax2.get_ylabel()
+
+            assert "Time" in xlabel and "Quarters" in xlabel, (
+                f"Single consumption panel: X-axis should contain 'Time (Quarters)', got '{xlabel}'"
+            )
+            assert "Consumption Response" in ylabel and "%" in ylabel, (
+                f"Single consumption panel: Y-axis should contain 'Consumption Response (%)', got '{ylabel}'"
+            )
+
+            plt.close(fig2)
+
+        except Exception as e:
+            pytest.fail(f"Single panel axis labels test failed: {e}")
 
 
 class TestCalibrationConsistency:
@@ -58,6 +380,8 @@ class TestLaborMarketCalibration:
 
     def test_markov_matrix(self):
         """Test Markov transition matrix consistency."""
+        assert hasattr(hafiscal, "markov_array_ss"), "hafiscal missing markov_array_ss"
+        assert hasattr(hank_sam, "markov_array_ss"), "hank_sam missing markov_array_ss"
         np.testing.assert_array_almost_equal(
             hafiscal.markov_array_ss, hank_sam.markov_array_ss, decimal=12
         )

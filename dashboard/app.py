@@ -15,16 +15,14 @@
 # ---
 
 # %%
-"""HANK-SAM Model Interactive Dashboard.
+# """HANK-SAM Model Interactive Dashboard.
 
-This Voila dashboard allows interactive exploration of the HANK-SAM model's
-fiscal multipliers under different monetary and fiscal policy parameters.
-"""
+# This Voila dashboard allows interactive exploration of the HANK-SAM model's
+# fiscal multipliers under different monetary and fiscal policy parameters.
+# """
 
 # %%
 import ipywidgets as widgets
-import matplotlib.pyplot as plt
-import numpy as np
 from IPython.display import clear_output
 from ipywidgets import HTML, HBox, Layout, VBox
 
@@ -33,9 +31,9 @@ from ipywidgets import HTML, HBox, Layout, VBox
 import hank_sam as hs
 
 # %%
-# Create style for sliders
-style = {"description_width": "180px"}
-slider_layout = Layout(width="320px")
+# Create style for sliders - optimized for compact layout
+style = {"description_width": "40%"}  # Relative description width
+slider_layout = Layout(width="85%")  # Shorter relative width to prevent overflow
 
 # %%
 # ═════════════════════════════════════════════════════════════════════════════
@@ -52,6 +50,8 @@ phi_pi_widget = widgets.FloatSlider(
     style=style,
     layout=slider_layout,
     continuous_update=False,
+    readout=True,
+    readout_format=".2f",
 )
 
 # %%
@@ -64,6 +64,8 @@ phi_y_widget = widgets.FloatSlider(
     style=style,
     layout=slider_layout,
     continuous_update=False,
+    readout=True,
+    readout_format=".2f",
 )
 
 # %%
@@ -76,9 +78,10 @@ rho_r_widget = widgets.FloatSlider(
     style=style,
     layout=slider_layout,
     continuous_update=False,
+    readout=True,
+    readout_format=".2f",
 )
 
-# %%
 kappa_p_widget = widgets.FloatSlider(
     value=0.06191950464396284,
     min=0.01,
@@ -87,11 +90,11 @@ kappa_p_widget = widgets.FloatSlider(
     description="Phillips curve slope (κp):",
     style=style,
     layout=slider_layout,
-    readout_format=".3f",
     continuous_update=False,
+    readout=True,
+    readout_format=".3f",
 )
 
-# %%
 # Fiscal and Structural Parameters
 phi_b_widget = widgets.FloatSlider(
     value=0.015,
@@ -101,11 +104,11 @@ phi_b_widget = widgets.FloatSlider(
     description="Fiscal adjustment (φb):",
     style=style,
     layout=slider_layout,
-    readout_format=".3f",
     continuous_update=False,
+    readout=True,
+    readout_format=".3f",
 )
 
-# %%
 real_wage_rigidity_widget = widgets.FloatSlider(
     value=0.837,
     min=0.0,
@@ -114,11 +117,11 @@ real_wage_rigidity_widget = widgets.FloatSlider(
     description="Real wage rigidity:",
     style=style,
     layout=slider_layout,
-    readout_format=".3f",
     continuous_update=False,
+    readout=True,
+    readout_format=".3f",
 )
 
-# %%
 # Policy Duration Parameters
 ui_extension_widget = widgets.IntSlider(
     value=4,
@@ -129,9 +132,9 @@ ui_extension_widget = widgets.IntSlider(
     style=style,
     layout=slider_layout,
     continuous_update=False,
+    readout=True,
 )
 
-# %%
 tax_cut_widget = widgets.IntSlider(
     value=8,
     min=1,
@@ -141,24 +144,29 @@ tax_cut_widget = widgets.IntSlider(
     style=style,
     layout=slider_layout,
     continuous_update=False,
+    readout=True,
 )
 
 # %%
 # Run button and progress
 run_button = widgets.Button(
     description="▶ Run Simulation",
-    button_style="success",
-    layout=Layout(width="180px", height="40px"),
+    button_style="",
+    layout=Layout(width="85%", height="2.5em"),  # Relative sizing
 )
+# Set custom button styling
+run_button.style.button_color = "#27ae60"  # Muted green
 
 progress_label = widgets.Label(value="Ready to run simulation")
 
 # %%
-# Output widgets for the 4 figures from hank_sam.py main
-fig1_output = widgets.Output()  # plot_multipliers_three_experiments
-fig2_output = widgets.Output()  # plot_consumption_irfs_three_experiments
-fig3_output = widgets.Output()  # plot_consumption_irfs_three
-fig4_output = widgets.Output()  # plot_multipliers_across_horizon
+# Output widgets for the 2 main figures - no scrollbars allowed
+fig1_output = widgets.Output(
+    layout=Layout(overflow="hidden", width="100%", height="auto")
+)
+fig2_output = widgets.Output(
+    layout=Layout(overflow="hidden", width="100%", height="auto")
+)
 
 # %% [markdown]
 #
@@ -171,11 +179,13 @@ fig4_output = widgets.Output()  # plot_multipliers_across_horizon
 
 
 def update_plots(*args) -> None:
-    """Run the exact same 4 figures as hank_sam.py main execution."""
-    progress_label.value = "Running simulation... (15-30 seconds)"
+    """Run the unified academic figure for the dashboard with enhanced feedback."""
+    # Disable button and update progress
+    run_button.disabled = True
+    progress_label.value = "⏳ Running simulation... (15-30 seconds)"
 
     # Clear all outputs
-    for output in [fig1_output, fig2_output, fig3_output, fig4_output]:
+    for output in [fig1_output, fig2_output]:
         with output:
             clear_output(wait=True)
 
@@ -192,14 +202,18 @@ def update_plots(*args) -> None:
     }
 
     try:
-        # This matches the exact sequence in hank_sam.py main
+        # Run all experiments and get results
         results = hs.compute_fiscal_multipliers(**params)
         multipliers = results["multipliers"]
         irfs = results["irfs"]
 
-        # Figure 1: Compare multipliers across policies and monetary regimes
+        # Create figures with dashboard control over canvas
+        import matplotlib.pyplot as plt
+
+        # Figure 1: Fiscal Multipliers with shared y-axis
         with fig1_output:
-            hs.plot_multipliers_three_experiments(
+            fig1, axes1 = plt.subplots(1, 3, figsize=(10, 3), sharey=True)
+            fig1 = hs.plot_multipliers_three_experiments(
                 multipliers["transfers"],
                 multipliers["transfers_fixed_nominal"],
                 multipliers["transfers_fixed_real"],
@@ -209,11 +223,16 @@ def update_plots(*args) -> None:
                 multipliers["tax_cut"],
                 multipliers["tax_cut_fixed_nominal"],
                 multipliers["tax_cut_fixed_real"],
+                fig_and_axes=(fig1, axes1),
             )
+            if fig1 is not None:
+                fig1.tight_layout(pad=1.0)
+                plt.show()
 
-        # Figure 2: Consumption IRFs for all combinations
+        # Figure 2: Consumption IRFs with shared y-axis
         with fig2_output:
-            hs.plot_consumption_irfs_three_experiments(
+            fig2, axes2 = plt.subplots(1, 3, figsize=(10, 3), sharey=True)
+            fig2 = hs.plot_consumption_irfs_three_experiments(
                 irfs["UI_extend"],
                 irfs["UI_extend_fixed_nominal"],
                 irfs["UI_extend_fixed_real"],
@@ -223,57 +242,38 @@ def update_plots(*args) -> None:
                 irfs["tau"],
                 irfs["tau_fixed_nominal"],
                 irfs["tau_fixed_real"],
+                fig_and_axes=(fig2, axes2),
             )
+            if fig2 is not None:
+                fig2.tight_layout(pad=1.0)
+                plt.show()
 
-        # Figure 3: Baseline consumption responses under standard Taylor rule
-        with fig3_output:
-            hs.plot_consumption_irfs_three(
-                irfs["transfer"],
-                irfs["UI_extend"],
-                irfs["tau"],
-            )
+        # Update summary statistics
+        stimulus_mult_1yr = multipliers["transfers"][3]  # 1-year (4 quarters)
+        ui_mult_1yr = multipliers["UI_extend"][3]
+        tax_mult_1yr = multipliers["tax_cut"][3]
 
-        # Figure 4: Evolution of multipliers over time (standard Taylor rule)
-        with fig4_output:
-            # Create the multiplier evolution plot
-            plt.figure(figsize=(10, 6))
-            plt.plot(
-                np.arange(20) + 1,
-                multipliers["transfers"],
-                label="Stimulus Check",
-                color="green",
-                linewidth=2.5,
-            )
-            plt.plot(
-                np.arange(20) + 1,
-                multipliers["UI_extend"],
-                label="UI extensions",
-                color="blue",
-                linewidth=2.5,
-            )
-            plt.plot(
-                np.arange(20) + 1,
-                multipliers["tax_cut"],
-                label="Tax cut",
-                color="red",
-                linewidth=2.5,
-            )
-            plt.legend(loc="lower right")
-            plt.ylabel("C multipliers")
-            plt.xlabel("quarters")
-            plt.xlim(0.5, 12.5)
-            plt.title("Fiscal Multipliers Across Time Horizon", fontweight="bold")
-            plt.grid(True, alpha=0.3)
-            plt.tight_layout()
-            plt.show()
+        summary_html = f"""
+        <div style='display: flex; justify-content: space-between; margin: 0; padding: 0.8em; 
+                    background-color: #f8f9fa; border-radius: 4px; color: #495057; font-size: 0.85em;'>
+            <div><strong>Stimulus Check:</strong> {stimulus_mult_1yr:.2f}</div>
+            <div><strong>UI Extension:</strong> {ui_mult_1yr:.2f}</div>
+            <div><strong>Tax Cut:</strong> {tax_mult_1yr:.2f}</div>
+        </div>
+        """
 
-        progress_label.value = "✓ Simulation complete!"
+        # Update the summary section (find and update the HTML widget)
+        summary_section.children[1].value = summary_html
+
+        progress_label.value = "✅ Simulation complete!"
+        run_button.disabled = False
 
     except Exception as e:
         progress_label.value = f"❌ Error: {e!s}"
-        for output in [fig1_output, fig2_output, fig3_output, fig4_output]:
+        run_button.disabled = False
+        for output in [fig1_output, fig2_output]:
             with output:
-                pass
+                clear_output(wait=True)
 
 
 # %%
@@ -288,136 +288,177 @@ run_button.on_click(update_plots)
 # SECTION 3: CREATE DASHBOARD LAYOUT
 # ═════════════════════════════════════════════════════════════════════════════
 
-# OPTIONS panel - organized in 3 columns with actual sliders
-monetary_policy_col = VBox(
+# SIMPLE SIDEBAR - focused on core functionality
+options_panel = VBox(
     [
-        HTML("<h4 style='margin: 5px 0; color: #333;'>Monetary Policy</h4>"),
+        HTML(
+            "<h2 style='margin: 0 0 0.5em 0; color: #2c3e50; font-size: 1em; font-weight: 600;'>Model Parameters</h2>",
+        ),
+        HTML(
+            "<h3 style='margin: 0.5em 0 0.2em 0; color: #2c3e50; font-size: 0.8em; font-weight: 600;'>Monetary Policy</h3>"
+        ),
         phi_pi_widget,
         phi_y_widget,
         rho_r_widget,
         kappa_p_widget,
-    ],
-    layout=Layout(width="30%", padding="10px"),
-)
-
-fiscal_structural_col = VBox(
-    [
-        HTML("<h4 style='margin: 5px 0; color: #333;'>Fiscal & Structural</h4>"),
+        HTML(
+            "<h3 style='margin: 0.8em 0 0.2em 0; color: #2c3e50; font-size: 0.8em; font-weight: 600;'>Fiscal & Structural</h3>"
+        ),
         phi_b_widget,
         real_wage_rigidity_widget,
         ui_extension_widget,
         tax_cut_widget,
-    ],
-    layout=Layout(width="30%", padding="10px"),
-)
-
-controls_col = VBox(
-    [
-        HTML("<h4 style='margin: 5px 0; color: #333;'>Controls</h4>"),
+        HTML(
+            "<h3 style='margin: 0.8em 0 0.2em 0; color: #2c3e50; font-size: 0.8em; font-weight: 600;'>Simulation</h3>"
+        ),
         run_button,
-        HTML("<br>"),
         progress_label,
     ],
-    layout=Layout(width="25%", padding="10px", align_items="center"),
-)
-
-options_panel = VBox(
-    [
-        HTML(
-            "<h2 style='margin: 10px 0; text-align: center; color: #333;'>HANK-SAM Model Dashboard - Options</h2>",
-        ),
-        HBox(
-            [monetary_policy_col, fiscal_structural_col, controls_col],
-            layout=Layout(justify_content="space-around"),
-        ),
-    ],
     layout=Layout(
-        border="2px solid #333",
-        padding="15px",
-        margin="5px",
-        background_color="#f8f9fa",
+        border="none",
+        padding="0",
+        margin="0",
+        width="100%",
+        height="100%",
+        overflow_y="auto",  # Allow scrolling only within left panel if needed
+        overflow_x="hidden",  # No horizontal scroll
     ),
 )
 
 # %%
-# MAIN CONTENT - 4 figures matching the wireframe
-# FIG 4 gets the large left panel (single plot)
-fig4_panel = VBox(
-    [
-        HTML(
-            "<h3 style='text-align: center; margin: 5px 0; background: #fce4ec; padding: 5px;'>FIG 4 - Multiplier Evolution</h3>",
-        ),
-        fig4_output,
-    ],
-    layout=Layout(
-        border="1px solid #ddd",
-        padding="10px",
-        margin="5px",
-        width="48%",
-        min_height="600px",
-    ),
-)
-
-# FIG 1, 2, 3 are the 3-panel plots that stack on the right
+# MAIN CONTENT - Two figure panels with dashboard control
 fig1_panel = VBox(
     [
         HTML(
-            "<h4 style='text-align: center; margin: 5px 0; background: #e3f2fd; padding: 5px;'>FIG 1 - Multipliers Comparison</h4>",
+            "<h3 style='margin: 0 0 0.4em 0; color: #2c3e50; font-size: 0.9em; font-weight: 600;'>Fiscal Multipliers by Policy Type</h3>",
         ),
         fig1_output,
     ],
     layout=Layout(
-        border="1px solid #ddd",
-        padding="5px",
-        margin="2px",
-        width="98%",
-        height="190px",
+        border="none",
+        padding="0",
+        margin="0 0 0.6em 0",
+        width="100%",
+        flex="1 1 auto",
+        overflow="hidden",  # No scrollbars on figure panels
     ),
 )
 
 fig2_panel = VBox(
     [
         HTML(
-            "<h4 style='text-align: center; margin: 5px 0; background: #e8f5e8; padding: 5px;'>FIG 2 - All IRF Combinations</h4>",
+            "<h3 style='margin: 0 0 0.4em 0; color: #2c3e50; font-size: 0.9em; font-weight: 600;'>Consumption Response Functions</h3>",
         ),
         fig2_output,
     ],
     layout=Layout(
-        border="1px solid #ddd",
-        padding="5px",
-        margin="2px",
-        width="98%",
-        height="190px",
+        border="none",
+        padding="0",
+        margin="0",
+        width="100%",
+        flex="1 1 auto",
+        overflow="hidden",  # No scrollbars on figure panels
     ),
 )
 
-fig3_panel = VBox(
+# Create introduction section with H1 title and larger body text
+intro_section = VBox(
     [
         HTML(
-            "<h4 style='text-align: center; margin: 5px 0; background: #fff3e0; padding: 5px;'>FIG 3 - Baseline IRFs</h4>",
+            "<h1 style='margin: 0 0 0.4em 0; color: #2c3e50; font-size: 1.1em; font-weight: 600;'>"
+            "HANK-SAM Fiscal Policy Analysis</h1>"
         ),
-        fig3_output,
+        HTML(
+            "<p style='margin: 0 0 0.4em 0; color: #34495e; font-size: 0.85em; line-height: 1.4;'>"
+            "This dashboard explores fiscal multipliers in a Heterogeneous Agent New Keynesian model with Search and Matching frictions. "
+            "The model features heterogeneous households, unemployment dynamics, and endogenous job creation, making it ideal for analyzing fiscal policy effectiveness.</p>"
+        ),
+        HTML(
+            "<p style='margin: 0 0 0.4em 0; color: #34495e; font-size: 0.85em; line-height: 1.4;'>"
+            "Adjust the monetary and fiscal parameters below to explore how different policy regimes affect consumption multipliers. "
+            "Compare results across three fiscal policies: stimulus checks, UI extensions, and tax cuts under standard Taylor rule, fixed nominal rate, and fixed real rate scenarios.</p>"
+        ),
+        HTML(
+            "<p style='margin: 0 0 0.5em 0; color: #7f8c8d; font-size: 0.8em; line-height: 1.3; font-style: italic;'>"
+            "Key insight: UI extensions typically generate the highest multipliers due to targeting unemployed households with high marginal propensities to consume.</p>"
+        ),
     ],
     layout=Layout(
-        border="1px solid #ddd",
-        padding="5px",
-        margin="2px",
-        width="98%",
-        height="190px",
+        width="100%",
+        padding="0",
+        margin="0 0 0.5em 0",
+        flex="0 0 auto",
+        overflow="hidden",
     ),
 )
 
-# Arrange as: FIG4 (large left) | FIG1, FIG2, FIG3 (stacked right)
-right_panel = VBox([fig1_panel, fig2_panel, fig3_panel], layout=Layout(width="50%"))
-
-main_content = HBox(
-    [fig4_panel, right_panel],
-    layout=Layout(width="100%", min_height="650px"),
+# Create summary statistics section (will be populated by simulation results)
+summary_section = VBox(
+    [
+        HTML(
+            "<h3 style='margin: 0 0 0.2em 0; color: #2c3e50; font-size: 0.85em; font-weight: 600;'>Key Multipliers (1-Year Horizon)</h3>"
+        ),
+        HTML(
+            "<div id='summary-stats' style='margin: 0 0 0.5em 0; padding: 0.5em; background-color: #f8f9fa; "
+            "border-radius: 4px; color: #495057; font-size: 0.75em;'>Run simulation to view key results...</div>"
+        ),
+    ],
+    layout=Layout(
+        width="100%",
+        padding="0",
+        margin="0 0 0.4em 0",
+        flex="0 0 auto",  # Don't grow or shrink - use natural content size
+        overflow="hidden",
+    ),
 )
 
-# %%
+# Create left panel with intro section above model parameters
+left_panel = VBox(
+    [intro_section, options_panel],
+    layout=Layout(
+        width="30%",
+        height="100%",
+        overflow="hidden",  # No scrollbars on left panel container
+        padding="0.6em",
+        background_color="#f5f5f5",
+    ),
+)
+right_panel = VBox(
+    [summary_section, fig1_panel, fig2_panel],
+    layout=Layout(
+        width="70%",
+        height="100%",
+        padding="0.6em",
+        background_color="white",
+        overflow="hidden",  # NO scrollbars allowed
+        display="flex",  # Explicit flexbox
+        flex_direction="column",  # Stack children vertically
+    ),
+)
+
+# Split horizontally: Options left (30%) -> Figures right (70%)
+main_content = HBox(
+    [left_panel, right_panel],
+    layout=Layout(
+        width="100%",
+        height="90vh",  # Use more of viewport height
+        overflow="hidden",  # Prevent outer scrollbars
+        margin="0",
+        padding="0",
+    ),
+)
+
 # Complete dashboard
-dashboard = VBox([options_panel, main_content])
+dashboard = VBox(
+    [main_content],
+    layout=Layout(
+        width="100%",
+        height="90vh",  # Use more of viewport height
+        overflow="hidden",  # Master overflow control - NO SCROLLBARS
+        margin="0",
+        padding="0",
+    ),
+)
 
 # %%
 # Initialize with welcome message

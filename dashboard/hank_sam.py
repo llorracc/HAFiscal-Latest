@@ -167,7 +167,9 @@ def calibrate_labor_market():
     num_mrkv = len(markov_array_ss)
 
     # Get steady state distribution
-    eigen, ss_dstn = sp.linalg.eigs(markov_array_ss, k=1, which="LM")
+    from scipy.sparse.linalg import eigs
+
+    eigen, ss_dstn = eigs(markov_array_ss, k=1, which="LM")
     ss_dstn = ss_dstn[:, 0] / np.sum(ss_dstn[:, 0])
     ss_dstn = ss_dstn.real
 
@@ -983,7 +985,7 @@ def load_jacobians():
     Returns:
         tuple: (Jacobian_Dict, Jacobian_Dict_by_educ, Jacobian_Dict_UI_extend_real)
     """
-    # Define base path relative to this script
+    # Define base path relative to root directory (one above dashboard)
     base_path = Path(__file__).parent.parent / "Code/HA-Models/FromPandemicCode"
 
     # Load main Jacobians
@@ -1703,6 +1705,239 @@ def compute_fiscal_multipliers(horizon_length=20, **param_overrides):
 # ═════════════════════════════════════════════════════════════════════════════
 
 
+def plot_single_multiplier_panel(
+    ax,
+    multipliers_standard,
+    multipliers_fixed_nominal,
+    multipliers_fixed_real,
+    title,
+    show_legend=False,
+    fontsize=10,
+):
+    """
+    Plot fiscal multipliers for one policy under different monetary regimes.
+
+    This granular function plots on a provided axis rather than creating its own figure,
+    giving the caller complete control over layout and figure management.
+
+    Args:
+        ax: Matplotlib axis object to plot on
+        multipliers_standard: Multipliers under standard Taylor rule
+        multipliers_fixed_nominal: Multipliers under fixed nominal rate
+        multipliers_fixed_real: Multipliers under fixed real rate
+        title: Panel title
+        show_legend: Whether to show legend on this panel
+        fontsize: Base font size for scaling
+    """
+    # Colors for different monetary regimes
+    colors = {
+        "standard": "#1f77b4",  # Default blue
+        "nominal": "#ff7f0e",  # Orange
+        "real": "#d62728",  # Red
+    }
+
+    horizon_length = min(20, len(multipliers_standard))
+    width = 2
+    label_size = max(6, int(fontsize * 0.8))
+    legend_size = max(8, int(fontsize * 1.0))
+    ticksize = max(6, int(fontsize * 0.8))
+
+    x_axis = np.arange(horizon_length) + 1
+
+    # Plot the three monetary policy scenarios
+    ax.plot(
+        x_axis,
+        multipliers_standard[:horizon_length],
+        linewidth=width,
+        label="Standard Taylor Rule",
+        color=colors["standard"],
+    )
+    ax.plot(
+        x_axis,
+        multipliers_fixed_nominal[:horizon_length],
+        linewidth=width,
+        label="Fixed Nominal Rate",
+        linestyle="--",
+        color=colors["nominal"],
+    )
+    ax.plot(
+        x_axis,
+        multipliers_fixed_real[:horizon_length],
+        linewidth=width,
+        label="Fixed Real Rate",
+        linestyle=":",
+        color=colors["real"],
+    )
+
+    # Zero line
+    ax.axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
+
+    # Formatting with proper axis labels
+    ax.set_title(title, fontsize=fontsize, pad=8)
+    ax.tick_params(axis="both", labelsize=ticksize)
+    ax.set_ylabel("Consumption Multiplier", fontsize=label_size)
+    ax.set_xlabel("Time (Quarters)", fontsize=label_size)
+    ax.locator_params(axis="both", nbins=6)
+    ax.grid(alpha=0.3, linewidth=0.5)
+    ax.set_xlim(0.5, 12.5)  # Focus on first 3 years
+
+    if show_legend:
+        ax.legend(prop={"size": legend_size}, loc="upper left", framealpha=0.9)
+
+
+def plot_single_consumption_panel(
+    ax,
+    irf_standard,
+    irf_fixed_nominal,
+    irf_fixed_real,
+    title,
+    show_legend=False,
+    fontsize=10,
+):
+    """
+    Plot consumption IRFs for one policy under different monetary regimes.
+
+    Args:
+        ax: Matplotlib axis object to plot on
+        irf_standard: IRF dict under standard Taylor rule
+        irf_fixed_nominal: IRF dict under fixed nominal rate
+        irf_fixed_real: IRF dict under fixed real rate
+        title: Panel title
+        show_legend: Whether to show legend on this panel
+        fontsize: Base font size for scaling
+    """
+    # Colors for different monetary regimes (same as multipliers)
+    colors = {
+        "standard": "#1f77b4",  # Default blue
+        "nominal": "#ff7f0e",  # Orange
+        "real": "#d62728",  # Red
+    }
+
+    Length = 12  # 3 years
+    width = 2
+    label_size = max(6, int(fontsize * 0.8))
+    legend_size = max(8, int(fontsize * 1.0))
+    ticksize = max(6, int(fontsize * 0.8))
+
+    x_axis = np.arange(Length)
+
+    # Plot consumption responses as percent deviations
+    ax.plot(
+        x_axis,
+        100 * irf_standard["C"][:Length] / C_ss,
+        linewidth=width,
+        label="Standard Taylor Rule",
+        color=colors["standard"],
+    )
+    ax.plot(
+        x_axis,
+        100 * irf_fixed_nominal["C"][:Length] / C_ss,
+        linewidth=width,
+        label="Fixed Nominal Rate",
+        linestyle="--",
+        color=colors["nominal"],
+    )
+    ax.plot(
+        x_axis,
+        100 * irf_fixed_real["C"][:Length] / C_ss,
+        linewidth=width,
+        label="Fixed Real Rate",
+        linestyle=":",
+        color=colors["real"],
+    )
+
+    # Zero line
+    ax.axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
+
+    # Formatting with proper axis labels
+    ax.set_title(title, fontsize=fontsize, pad=8)
+    ax.tick_params(axis="both", labelsize=ticksize)
+    ax.set_ylabel("Consumption Response (%)", fontsize=label_size)
+    ax.set_xlabel("Time (Quarters)", fontsize=label_size)
+    ax.locator_params(axis="both", nbins=6)
+    ax.grid(alpha=0.3, linewidth=0.5)
+
+    if show_legend:
+        ax.legend(prop={"size": legend_size}, loc="best", framealpha=0.9)
+
+
+def create_dashboard_figure(multipliers, irfs, figsize=(12, 8), fontsize=10):
+    """
+    Create a unified academic-quality figure for the dashboard.
+
+    This function creates a single matplotlib figure with all panels arranged
+    in a 2x3 grid, giving the dashboard complete control over layout.
+
+    Args:
+        multipliers: Dictionary of multiplier arrays
+        irfs: Dictionary of IRF dictionaries
+        figsize: Overall figure size
+        fontsize: Base font size
+
+    Returns:
+        fig: Matplotlib figure object ready for display
+    """
+    # Create figure with 2 rows, 3 columns
+    fig, axes = plt.subplots(2, 3, figsize=figsize, sharey="row")
+
+    # Policy names for titles
+    policies = ["Stimulus Check", "UI Extension", "Tax Cut"]
+
+    # Row 1: Fiscal Multipliers
+    for i, policy in enumerate(["transfers", "UI_extend", "tax_cut"]):
+        plot_single_multiplier_panel(
+            axes[0, i],
+            multipliers[policy],
+            multipliers[f"{policy}_fixed_nominal"],
+            multipliers[f"{policy}_fixed_real"],
+            policies[i],
+            show_legend=(i == 0),  # Only show legend on first panel
+            fontsize=fontsize,
+        )
+
+    # Row 2: Consumption IRFs
+    irf_mapping = ["transfer", "UI_extend", "tau"]
+    for i, policy in enumerate(irf_mapping):
+        plot_single_consumption_panel(
+            axes[1, i],
+            irfs[policy],
+            irfs[f"{policy}_fixed_nominal"],
+            irfs[f"{policy}_fixed_real"],
+            policies[i],
+            show_legend=(i == 0),  # Only show legend on first panel
+            fontsize=fontsize,
+        )
+
+    # Add row labels
+    axes[0, 0].text(
+        -0.15,
+        0.5,
+        "Fiscal Multipliers",
+        transform=axes[0, 0].transAxes,
+        rotation=90,
+        va="center",
+        ha="center",
+        fontsize=fontsize + 1,
+        weight="bold",
+    )
+    axes[1, 0].text(
+        -0.15,
+        0.5,
+        "Consumption Response",
+        transform=axes[1, 0].transAxes,
+        rotation=90,
+        va="center",
+        ha="center",
+        fontsize=fontsize + 1,
+        weight="bold",
+    )
+
+    # Adjust layout for academic presentation
+    plt.tight_layout(pad=2.0, rect=[0.03, 0.03, 0.97, 0.97])
+
+    return fig
+
+
 def plot_multipliers_three_experiments(
     multipliers_transfers,
     multipliers_transfers_fixed_nominal_rate,
@@ -1713,254 +1948,289 @@ def plot_multipliers_three_experiments(
     multipliers_tax_cut,
     multipliers_tax_cut_fixed_nominal_rate,
     multipliers_tax_cut_fixed_real_rate,
+    fig_and_axes=None,
 ):
     """
     Plot fiscal multipliers for three experiments under different monetary policies.
 
-    Creates a 3-panel figure comparing how fiscal multipliers evolve over time
-    for each policy (transfers, UI extensions, tax cuts) under three different
-    monetary policy regimes. This visualization highlights how the stance of
-    monetary policy dramatically affects fiscal policy effectiveness.
+    This function can either create its own figure or draw on a provided canvas,
+    giving the caller complete control over figure layout and sizing.
 
     Args:
-        multipliers_transfers: Transfer multipliers under standard Taylor rule
-        multipliers_transfers_fixed_nominal_rate: Under fixed nominal rate
-        multipliers_transfers_fixed_real_rate: Under fixed real rate
-        multipliers_UI_extend: UI extension multipliers under standard Taylor rule
-        multipliers_UI_extensions_fixed_nominal_rate: Under fixed nominal rate
-        multipliers_UI_extensions_fixed_real_rate: Under fixed real rate
-        multipliers_tax_cut: Tax cut multipliers under standard Taylor rule
-        multipliers_tax_cut_fixed_nominal_rate: Under fixed nominal rate
-        multipliers_tax_cut_fixed_real_rate: Under fixed real rate
+        multipliers_* : Arrays of multiplier values for each policy/regime
+        fig_and_axes: Optional tuple of (fig, axes) to draw on. If None, creates new figure.
+
+    Returns:
+        fig: The matplotlib figure object (for dashboard control)
     """
-    green = "darkorange"  # Color for fixed nominal rate
-    red = "red"  # Color for fixed real rate
+    import matplotlib.pyplot as plt
 
-    Length = len(multipliers_transfers_fixed_nominal_rate) + 1
-    fontsize = 10
+    # Dashboard control: use provided figure/axes or create new
+    if fig_and_axes is not None:
+        fig, axs = fig_and_axes
+        show_figure = False  # Dashboard will handle display
+    else:
+        fig, axs = plt.subplots(1, 3, figsize=(12, 4))
+        show_figure = True  # Standalone mode
+
+    # Colors and styling
+    colors = {
+        "standard": "#1f77b4",  # Blue
+        "nominal": "#ff7f0e",  # Orange
+        "real": "#d62728",  # Red
+    }
+
+    horizon_length = min(20, len(multipliers_transfers))
     width = 2
+    fontsize = 10
     label_size = 8
-    legend_size = 11
+    legend_size = 10
     ticksize = 8
-    fig, axs = plt.subplots(1, 3, figsize=(12, 4))
 
-    y_max1 = max(multipliers_transfers_fixed_nominal_rate) * 1.5
-    y_max2 = max(multipliers_UI_extensions_fixed_real_rate) * 1.5
-    y_max = max([y_max1, y_max2])
-    for i in range(3):
-        axs[i].set_ylim(-0.2, y_max)
-
-    horizon_length = 20
+    x_axis = np.arange(horizon_length) + 1
 
     # Stimulus Check (transfers) - Left panel
     axs[0].plot(
-        np.arange(horizon_length) + 1,
-        multipliers_transfers,
+        x_axis,
+        multipliers_transfers[:horizon_length],
         linewidth=width,
         label="Standard Taylor Rule",
+        color=colors["standard"],
     )
     axs[0].plot(
-        np.arange(horizon_length) + 1,
-        multipliers_transfers_fixed_nominal_rate,
+        x_axis,
+        multipliers_transfers_fixed_nominal_rate[:horizon_length],
         linewidth=width,
         label="Fixed Nominal Rate",
         linestyle="--",
-        color=green,
+        color=colors["nominal"],
     )
     axs[0].plot(
-        np.arange(horizon_length) + 1,
-        multipliers_transfers_fixed_real_rate,
+        x_axis,
+        multipliers_transfers_fixed_real_rate[:horizon_length],
         linewidth=width,
-        label="Fixed Real ",
+        label="Fixed Real Rate",
         linestyle=":",
-        color=red,
+        color=colors["real"],
     )
-    axs[0].set_title("Stimulus Check", fontdict={"fontsize": fontsize})
+    axs[0].set_title("Stimulus Check", fontsize=fontsize)
     axs[0].legend(prop={"size": legend_size}, loc="upper left")
 
     # UI Extension - Middle panel
     axs[1].plot(
-        np.arange(horizon_length) + 1,
-        multipliers_UI_extend,
+        x_axis,
+        multipliers_UI_extend[:horizon_length],
         linewidth=width,
         label="Standard Taylor Rule",
+        color=colors["standard"],
     )
     axs[1].plot(
-        np.arange(horizon_length) + 1,
-        multipliers_UI_extensions_fixed_nominal_rate,
+        x_axis,
+        multipliers_UI_extensions_fixed_nominal_rate[:horizon_length],
         linewidth=width,
         label="Fixed Nominal Rate",
         linestyle="--",
-        color=green,
+        color=colors["nominal"],
     )
     axs[1].plot(
-        np.arange(horizon_length) + 1,
-        multipliers_UI_extensions_fixed_real_rate,
+        x_axis,
+        multipliers_UI_extensions_fixed_real_rate[:horizon_length],
         linewidth=width,
-        label="Fixed Real ",
+        label="Fixed Real Rate",
         linestyle=":",
-        color=red,
+        color=colors["real"],
     )
-    axs[1].set_title("UI Extension", fontdict={"fontsize": fontsize})
+    axs[1].set_title("UI Extension", fontsize=fontsize)
 
     # Tax Cut - Right panel
     axs[2].plot(
-        np.arange(horizon_length) + 1,
-        multipliers_tax_cut,
+        x_axis,
+        multipliers_tax_cut[:horizon_length],
         linewidth=width,
         label="Standard Taylor Rule",
+        color=colors["standard"],
     )
     axs[2].plot(
-        np.arange(horizon_length) + 1,
-        multipliers_tax_cut_fixed_nominal_rate,
+        x_axis,
+        multipliers_tax_cut_fixed_nominal_rate[:horizon_length],
         linewidth=width,
         label="Fixed Nominal Rate",
         linestyle="--",
-        color=green,
+        color=colors["nominal"],
     )
     axs[2].plot(
-        np.arange(horizon_length) + 1,
-        multipliers_tax_cut_fixed_real_rate,
+        x_axis,
+        multipliers_tax_cut_fixed_real_rate[:horizon_length],
         linewidth=width,
-        label="Fixed Real ",
+        label="Fixed Real Rate",
         linestyle=":",
-        color=red,
+        color=colors["real"],
     )
-    axs[2].set_title("Tax Cut", fontdict={"fontsize": fontsize})
+    axs[2].set_title("Tax Cut", fontsize=fontsize)
 
+    # Format all panels with proper axis labels
     for i in range(3):
-        axs[i].plot(np.zeros(Length), "k")
+        axs[i].axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
         axs[i].tick_params(axis="both", labelsize=ticksize)
-        axs[i].set_ylabel("Multipliers", fontsize=label_size)
-        axs[i].set_xlabel("Quarters", fontsize=label_size)
-        axs[i].locator_params(axis="both", nbins=7)
-        axs[i].grid(alpha=0.3)
+        axs[i].set_ylabel("Consumption Multiplier", fontsize=label_size)
+        axs[i].set_xlabel("Time (Quarters)", fontsize=label_size)
+        axs[i].locator_params(axis="both", nbins=6)
+        axs[i].grid(alpha=0.3, linewidth=0.5)
+        axs[i].set_xlim(0.5, 12.5)
 
-    fig.tight_layout()
-    plt.show()
+    # Only show if standalone (not controlled by dashboard)
+    if show_figure:
+        fig.tight_layout(pad=1.0)
+        plt.show()
+
+    return fig
 
 
 def plot_consumption_irfs_three_experiments(
-    irf_UI1, irf_UI2, irf_UI3, irf_SC1, irf_SC2, irf_SC3, irf_TC1, irf_TC2, irf_TC3
+    irf_UI1,
+    irf_UI2,
+    irf_UI3,
+    irf_SC1,
+    irf_SC2,
+    irf_SC3,
+    irf_TC1,
+    irf_TC2,
+    irf_TC3,
+    fig_and_axes=None,
 ):
     """
     Plot consumption IRFs for three experiments under different monetary policies.
 
-    Creates a comprehensive 3-panel figure showing consumption impulse responses
-    for all three fiscal policies under all three monetary regimes. This allows
-    for direct comparison of both the policy type and monetary stance effects.
+    This function can either create its own figure or draw on a provided canvas,
+    giving the caller complete control over figure layout and sizing.
 
     Args:
-        irf_UI1: UI extension IRFs under standard Taylor rule
-        irf_UI2: UI extension IRFs under fixed nominal rate
-        irf_UI3: UI extension IRFs under fixed real rate
-        irf_SC1: Stimulus check IRFs under standard Taylor rule
-        irf_SC2: Stimulus check IRFs under fixed nominal rate
-        irf_SC3: Stimulus check IRFs under fixed real rate
-        irf_TC1: Tax cut IRFs under standard Taylor rule
-        irf_TC2: Tax cut IRFs under fixed nominal rate
-        irf_TC3: Tax cut IRFs under fixed real rate
+        irf_*: IRF dictionaries for each policy/regime combination
+        fig_and_axes: Optional tuple of (fig, axes) to draw on. If None, creates new figure.
 
-    The figure shows:
-    - Left panel: Stimulus checks
-    - Middle panel: UI extensions
-    - Right panel: Tax cuts
-    Each panel compares the three monetary policy regimes.
+    Returns:
+        fig: The matplotlib figure object (for dashboard control)
     """
-    green = "darkorange"  # Color for fixed nominal rate
-    red = "red"  # Color for fixed real rate
+    import matplotlib.pyplot as plt
 
-    Length = 12
-    fontsize = 10
+    # Dashboard control: use provided figure/axes or create new
+    if fig_and_axes is not None:
+        fig, axs = fig_and_axes
+        show_figure = False  # Dashboard will handle display
+    else:
+        fig, axs = plt.subplots(1, 3, figsize=(12, 4))
+        show_figure = True  # Standalone mode
+
+    # Colors and styling (consistent with multipliers)
+    colors = {
+        "standard": "#1f77b4",  # Blue
+        "nominal": "#ff7f0e",  # Orange
+        "real": "#d62728",  # Red
+    }
+
+    Length = 12  # 3 years
     width = 2
+    fontsize = 10
     label_size = 8
-    legend_size = 11
+    legend_size = 10
     ticksize = 8
-    fig, axs = plt.subplots(1, 3, figsize=(12, 4))
 
-    y_max1 = max(100 * irf_TC2["C"][:Length] / C_ss) * 1.05
-    y_max2 = max(100 * irf_SC2["C"][:Length] / C_ss) * 1.05
-    y_max = max([y_max1, y_max2])
-    for i in range(3):
-        axs[i].set_ylim(-0.2, y_max)
+    x_axis = np.arange(Length)
 
-    # UI Extension
-    axs[1].plot(
-        100 * irf_UI1["C"][:Length] / C_ss,
-        linewidth=width,
-        label="Standard Taylor Rule",
-    )
-    axs[1].plot(
-        100 * irf_UI2["C"][:Length] / C_ss,
-        linewidth=width,
-        label="Fixed Nominal Rate",
-        linestyle="--",
-        color=green,
-    )
-    axs[1].plot(
-        100 * irf_UI3["C"][:Length] / C_ss,
-        linewidth=width,
-        label="Fixed Real ",
-        linestyle=":",
-        color=red,
-    )
-    axs[1].set_title("UI Extension", fontdict={"fontsize": fontsize})
-
-    # Stimulus Check
+    # Stimulus Check (left panel)
     axs[0].plot(
+        x_axis,
         100 * irf_SC1["C"][:Length] / C_ss,
         linewidth=width,
         label="Standard Taylor Rule",
+        color=colors["standard"],
     )
     axs[0].plot(
+        x_axis,
         100 * irf_SC2["C"][:Length] / C_ss,
         linewidth=width,
         label="Fixed Nominal Rate",
         linestyle="--",
-        color=green,
+        color=colors["nominal"],
     )
     axs[0].plot(
+        x_axis,
         100 * irf_SC3["C"][:Length] / C_ss,
         linewidth=width,
-        label="Fixed Real ",
+        label="Fixed Real Rate",
         linestyle=":",
-        color=red,
+        color=colors["real"],
     )
-    axs[0].set_title("Stimulus Check", fontdict={"fontsize": fontsize})
-    axs[0].legend(prop={"size": legend_size})
+    axs[0].set_title("Stimulus Check", fontsize=fontsize)
+    axs[0].legend(prop={"size": legend_size}, loc="best")
 
-    # Tax Cut
+    # UI Extension (middle panel)
+    axs[1].plot(
+        x_axis,
+        100 * irf_UI1["C"][:Length] / C_ss,
+        linewidth=width,
+        label="Standard Taylor Rule",
+        color=colors["standard"],
+    )
+    axs[1].plot(
+        x_axis,
+        100 * irf_UI2["C"][:Length] / C_ss,
+        linewidth=width,
+        label="Fixed Nominal Rate",
+        linestyle="--",
+        color=colors["nominal"],
+    )
+    axs[1].plot(
+        x_axis,
+        100 * irf_UI3["C"][:Length] / C_ss,
+        linewidth=width,
+        label="Fixed Real Rate",
+        linestyle=":",
+        color=colors["real"],
+    )
+    axs[1].set_title("UI Extension", fontsize=fontsize)
+
+    # Tax Cut (right panel)
     axs[2].plot(
+        x_axis,
         100 * irf_TC1["C"][:Length] / C_ss,
         linewidth=width,
         label="Standard Taylor Rule",
+        color=colors["standard"],
     )
     axs[2].plot(
+        x_axis,
         100 * irf_TC2["C"][:Length] / C_ss,
         linewidth=width,
         label="Fixed Nominal Rate",
         linestyle="--",
-        color=green,
+        color=colors["nominal"],
     )
     axs[2].plot(
+        x_axis,
         100 * irf_TC3["C"][:Length] / C_ss,
         linewidth=width,
-        label="Fixed Real ",
+        label="Fixed Real Rate",
         linestyle=":",
-        color=red,
+        color=colors["real"],
     )
-    axs[2].set_title("Tax Cut", fontdict={"fontsize": fontsize})
+    axs[2].set_title("Tax Cut", fontsize=fontsize)
 
+    # Format all panels with proper axis labels
     for i in range(3):
-        axs[i].plot(np.zeros(Length), "k")
+        axs[i].axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
         axs[i].tick_params(axis="both", labelsize=ticksize)
-        axs[i].set_ylabel("% consumption deviation", fontsize=label_size)
-        axs[i].set_xlabel("Quarters", fontsize=label_size)
-        axs[i].locator_params(axis="both", nbins=7)
-        axs[i].grid(alpha=0.3)
+        axs[i].set_ylabel("Consumption Response (%)", fontsize=label_size)
+        axs[i].set_xlabel("Time (Quarters)", fontsize=label_size)
+        axs[i].locator_params(axis="both", nbins=6)
+        axs[i].grid(alpha=0.3, linewidth=0.5)
 
-    fig.tight_layout()
-    plt.show()
+    # Only show if standalone (not controlled by dashboard)
+    if show_figure:
+        fig.tight_layout(pad=1.0)
+        plt.show()
+
+    return fig
 
 
 def plot_multipliers_across_horizon():
@@ -2021,7 +2291,9 @@ def plot_consumption_irfs_three(irf_SC1, irf_UI1, irf_TC1):
     label_size = 8
     legend_size = 8
     ticksize = 8
-    fig, axs = plt.subplots(1, 3, figsize=(12, 4))
+    fig, axs = plt.subplots(
+        1, 3, figsize=(12, 4)
+    )  # Responsive size for dashboard containers
 
     # Set y-axis limits based on largest response
     y_max1 = max(100 * irf_TC1["C"][:Length] / C_ss) * 1.05
@@ -2063,7 +2335,7 @@ def plot_consumption_irfs_three(irf_SC1, irf_UI1, irf_TC1):
         axs[i].set_xlabel("Quarters", fontsize=label_size)
         axs[i].locator_params(axis="both", nbins=7)
         axs[i].grid(alpha=0.3)
-    fig.tight_layout()
+    fig.tight_layout(pad=0.3)  # Minimal padding for maximum space usage
     plt.show()
 
 
