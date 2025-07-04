@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import sys
-from HARK.distribution import Uniform
+from HARK.distributions import Uniform
 
 # Targets in the estimation of the discount factor distributions for each 
 # education level. 
