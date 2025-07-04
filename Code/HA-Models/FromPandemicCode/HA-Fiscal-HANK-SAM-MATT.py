@@ -50,7 +50,6 @@ EU_prob = 0.0306834  # Calibrated probability of switching to unemployment
 job_sep = EU_prob / (1. - job_find)  # Implied job separation probability
 tax_rate_SS = 0.3  # Calibrated steady state tax rate
 wage_SS = 1.0  # Calibrated steady state wage rate
-U_rr = 0.4 * (1.0 - tax_rate_SS) * wage_SS  # Ordinary unemployment benefits
 weights_of_educ_types = [0.093, 0.527, 0.38]  # Dropout, high school, college
 educ_names = ["dropout", "highschool", "college"]
 
@@ -62,6 +61,11 @@ data_EducShares, max_recession_duration, num_experiment_periods,\
 recession_changes, UI_changes, recession_UI_changes,\
 TaxCut_changes, recession_TaxCut_changes, Check_changes, recession_Check_changes] = \
     returnParameters(Parametrization='Baseline',OutputFor='_Main.py')
+    
+del init_dropout["MrkvArray"]
+del init_highschool["MrkvArray"]
+del init_college["MrkvArray"]
+
 
 # Set some parameters to overwrite and extend the ones loaded in above
 swap_dict = {
@@ -71,14 +75,14 @@ swap_dict = {
     'tax_rate': [0.3],  # Calibrated steady-state tax rate
     'wage': [1.0],  # Basic default
     'labor': [1.0],  # Basic default
-    'IncUnemp': U_rr,  # Unemployment benefit replacement rate for *one* of the couple
+    'IncUnemp': 0.4 / 2,  # Unemployment benefit replacement rate for *one* of the couple
     'IncUnempExt': 0.0,  # Extended unemployment benefits for quarters 3 and 4
     'UnempPrb': 0.0,  # Turn off ordinary "unemployment" in transitory shocks
     'job_find': job_find,  # Probability of finding a job if unemployed
     'job_sep': job_sep,  # Probability of separating from a job
     'aXtraMax': 1e4,  # Very high top of assets grid
     'aXtraCount': 200,  # With a bunch more asset points
-    'tolerance': 1e-14,  # Set a tight solution tolerance because of very patient agents
+    'tolerance': 1e-12,  # Set a tight solution tolerance because of very patient agents
     'cycles': 0,  # Specify as infinite horizon
     }
 
@@ -141,7 +145,8 @@ def make_hank_sam_markov_array(job_sep, job_find, T_cycle):
 
 
 # Define a constructor that makes the six-state income process for this model
-def make_hank_sam_income_dstn(IncShkDstnEmp, IncUnemp, IncUnempExt, transfers, T_cycle):
+def make_hank_sam_income_dstn(IncShkDstnEmp, IncUnemp, IncUnempExt, transfers,
+                              wage, tax_rate, T_cycle):
     """
     Construct a nested list of income shock distributions. The outer list is over
     periods of the cycle, and the inner list is over discrete Markov states. Index
@@ -162,6 +167,10 @@ def make_hank_sam_income_dstn(IncShkDstnEmp, IncUnemp, IncUnempExt, transfers, T
         Unemployment benefit replacement rate for extended benefits.
     transfers : float
         Direct transfer payment in all employment states.
+    wage : float
+        Wage rate paid for labor.
+    tax_rate : float
+        Total tax rate paid on labor income, including unemployment benefits
     T_cycle : int
         Number of periods in the sequence or cycle.
 
@@ -169,10 +178,11 @@ def make_hank_sam_income_dstn(IncShkDstnEmp, IncUnemp, IncUnempExt, transfers, T
     -------
     IncShkDstn : [[DiscreteDistributionLabeled]]
         Nested list of income shock distributions by period and discrete Markov state.
-    """ 
-    rr_0 = (1. + IncUnemp) / 2. + transfers     # Ordinary unemployment benefits
-    rr_1 = (1. + IncUnempExt) / 2. + transfers  # Extended unemployment benefits
-    rr_2 = (1. + 0.) / 2. + transfers           # No employment benefits at all
+    """
+    y_scale = wage[0]*(1-tax_rate[0])                 # Net rate of income
+    rr_0 = (0.5 + IncUnemp) * y_scale + transfers     # Ordinary unemployment benefits
+    rr_1 = (0.5 + IncUnempExt) * y_scale + transfers  # Extended unemployment benefits
+    rr_2 = (0.5 + 0.0) * y_scale + transfers          # No employment benefits at all
     
     # Make degenerate income shock distributions for unemployment states
     IncShkDstnUnemp_ordinary = DiscreteDistributionLabeled(np.array([1.0]),
@@ -261,8 +271,8 @@ C_ss_all = np.zeros((num_educ_types, num_discfacs))
 A_ss_all = np.zeros((num_educ_types, num_discfacs))
 
 # Make grid specifications
-cons_grid_spec = {"min": 0.0, "max": 5.0, "N": 201}
-asset_grid_spec = {"min": 0.0, "max": 100.0, "N": 301}
+cons_grid_spec = {"min": 0.0, "max": 5.0, "N": 401}
+asset_grid_spec = {"min": 0.0, "max": 300.0, "N": 301, "order": 2.5}
 z_grid_spec = {"N": states}
 hank_sam_grid_specs = {"kNrm": asset_grid_spec, "cNrm": cons_grid_spec, "zPrev": z_grid_spec}
 
@@ -280,7 +290,7 @@ for e in range(num_educ_types):
         print("Beginning work on agents with " + educ_names[e] + " education and beta={:.4f}".format(beta) + "...")
         
         # Solve the long run model and prepare to calculate steady state
-        ThisType.DiscFac = beta
+        ThisType.assign_parameters(DiscFac=beta)
         ThisType.solve()
         ThisType.initialize_sym()
         
@@ -288,12 +298,8 @@ for e in range(num_educ_types):
         X = ThisType._simulator
         X.make_transition_matrices(hank_sam_grid_specs, norm="PermShk")
         X.find_steady_state()
-        A_dstn = np.dot(X.steady_state_dstn, X.outcome_arrays[0]["aNrm"])
-        A_ss = np.dot(A_dstn, X.outcome_grids[0]["aNrm"])
-        C_dstn = np.dot(X.steady_state_dstn, X.outcome_arrays[0]["cNrm"])
-        C_ss = np.dot(C_dstn, X.outcome_grids[0]["cNrm"])
-        C_ss_all[e,d] = C_ss
-        A_ss_all[e,d] = A_ss
+        C_ss_all[e,d] = X.get_long_run_average("cNrm")
+        A_ss_all[e,d] = X.get_long_run_average("aNrm")
         del X
         
         print("Solved the agents' long run model in {:.2f}".format(time() - type_start) + " seconds.")
@@ -396,37 +402,3 @@ with open(output_filename, 'wb') as f:
     pickle.dump(big_dict_to_save, f)
     f.close()
 print("Wrote HA-SSJs to " + output_filename + "!")
-
-###############################################################################
-
-"""
-Define some plotting tools for conveniently checking the results.
-"""
-
-# Define a simple function for plotting SSJs
-def plot_SSJ(jac, S, outcome, shock):
-    T = jac.shape[0]
-    if type(S) is int:
-        S = [S]
-    plt.plot([-1,T+1], [0,0], '--k', lw=1)
-    for s in S:
-        plt.plot(jac[:, s], "-", label="s=" + str(s))
-    plt.legend()
-    plt.xlabel(r"time $t$")
-    plt.ylabel("rate of change of " + outcome)
-    plt.title("SSJ for " + outcome + " with respect to " + shock + r" at time $s$")
-    plt.tight_layout()
-    plt.xlim(-1, T + 1)
-    plt.show()
-    
-def quick_plot_A(e, d, i):
-    plot_SSJ(Ajac_all[e,d,i], [0,10,30,60,100], "assets", shock_params[i])
-    
-def quick_plot_C(e, d, i):
-    plot_SSJ(Cjac_all[e,d,i], [0,10,30,60,100], "consumption", shock_params[i])
-    
-def kwick_plot_A(i):
-    plot_SSJ(AJAC[i], [0,10,30,60,100], "assets", shock_params[i])
-    
-def kwick_plot_C(i):
-    plot_SSJ(CJAC[i], [0,10,30,60,100], "consumption", shock_params[i])
