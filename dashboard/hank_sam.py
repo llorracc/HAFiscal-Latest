@@ -1983,7 +1983,7 @@ def plot_multipliers_three_experiments(
     horizon_length = min(20, len(multipliers_transfers))
     width = 2
     fontsize = 12  # Increased from 10
-    label_size = 16  # Increased from 8
+    label_size = 14  # Increased from 8
     legend_size = 10
     ticksize = 10  # Increased from 8
 
@@ -2014,7 +2014,7 @@ def plot_multipliers_three_experiments(
         color=colors["real"],
     )
     axs[0].set_title("Stimulus Check", fontsize=fontsize)
-    axs[0].legend(prop={"size": legend_size}, loc="upper left")
+    axs[0].legend(prop={"size": legend_size}, loc="upper left", framealpha =0.0)
 
     # UI Extension - Middle panel
     axs[1].plot(
@@ -2072,8 +2072,10 @@ def plot_multipliers_three_experiments(
     for i in range(3):
         axs[i].axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
         axs[i].tick_params(axis="both", labelsize=ticksize)
-        axs[i].set_ylabel("% Change in Consumption", fontsize=label_size, labelpad=10)  # Added labelpad
+        axs[i].set_ylabel("Consumption Multiplier", fontsize=label_size, labelpad=10)  # Added labelpad
+        #axs[i].set_ylabel("% Change in Consumption", fontsize=label_size, labelpad=10)  # Added labelpad
         axs[i].set_xlabel("Time (Quarters)", fontsize=label_size, labelpad=10)  # Added labelpad
+        #axs[i].set_title("Consumption Multiplier", fontsize=fontsize, pad=10)  # Added pad
         axs[i].locator_params(axis="both", nbins=6)
         axs[i].grid(alpha=0.3, linewidth=0.5)
         axs[i].set_xlim(0.5, 12.5)
@@ -2162,7 +2164,7 @@ def plot_consumption_irfs_three_experiments(
         color=colors["real"],
     )
     axs[0].set_title("Stimulus Check", fontsize=fontsize)
-    axs[0].legend(prop={"size": legend_size}, loc="best")
+    axs[0].legend(prop={"size": legend_size}, loc="best", framealpha =0.0)
 
     # UI Extension (middle panel)
     axs[1].plot(
@@ -2220,8 +2222,8 @@ def plot_consumption_irfs_three_experiments(
     for i in range(3):
         axs[i].axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
         axs[i].tick_params(axis="both", labelsize=ticksize)
-        axs[i].set_ylabel("% Change in Consumption", fontsize=label_size)
-        axs[i].set_xlabel("Time (Quarters)", fontsize=label_size)
+        axs[i].set_ylabel("% Change in Consumption", fontsize=label_size,  labelpad=10) 
+        axs[i].set_xlabel("Time (Quarters)", fontsize=label_size,  labelpad=10) 
         axs[i].locator_params(axis="both", nbins=6)
         axs[i].grid(alpha=0.3, linewidth=0.5)
         axs[i].set_xlim(0.5, 12.5)
