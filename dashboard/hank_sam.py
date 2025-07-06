@@ -2073,7 +2073,7 @@ def plot_multipliers_three_experiments(
         axs[i].axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
         axs[i].tick_params(axis="both", labelsize=ticksize)
         axs[i].set_ylabel("Consumption Multiplier", fontsize=label_size, labelpad=10)  # Added labelpad
-        #axs[i].set_ylabel("% Change in Consumption", fontsize=label_size, labelpad=10)  # Added labelpad
+        
         axs[i].set_xlabel("Time (Quarters)", fontsize=label_size, labelpad=10)  # Added labelpad
         #axs[i].set_title("Consumption Multiplier", fontsize=fontsize, pad=10)  # Added pad
         axs[i].locator_params(axis="both", nbins=6)
