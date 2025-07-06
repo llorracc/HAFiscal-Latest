@@ -2014,7 +2014,7 @@ def plot_multipliers_three_experiments(
         color=colors["real"],
     )
     axs[0].set_title("Stimulus Check", fontsize=fontsize)
-    axs[0].legend(prop={"size": legend_size}, loc="upper left", framealpha =0.0)
+    axs[0].legend(prop={"size": legend_size}, loc="upper left", framealpha=0.0)
 
     # UI Extension - Middle panel
     axs[1].plot(
