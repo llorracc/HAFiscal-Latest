@@ -2222,8 +2222,8 @@ def plot_consumption_irfs_three_experiments(
     for i in range(3):
         axs[i].axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
         axs[i].tick_params(axis="both", labelsize=ticksize)
-        axs[i].set_ylabel("% Change in Consumption", fontsize=label_size,  labelpad=10) 
-        axs[i].set_xlabel("Time (Quarters)", fontsize=label_size,  labelpad=10) 
+        axs[i].set_ylabel("% Change in Consumption", fontsize=label_size, labelpad=10)
+        axs[i].set_xlabel("Time (Quarters)", fontsize=label_size, labelpad=10)
         axs[i].locator_params(axis="both", nbins=6)
         axs[i].grid(alpha=0.3, linewidth=0.5)
         axs[i].set_xlim(0.5, 12.5)
