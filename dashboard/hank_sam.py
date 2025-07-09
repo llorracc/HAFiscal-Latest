@@ -2164,7 +2164,7 @@ def plot_consumption_irfs_three_experiments(
         color=colors["real"],
     )
     axs[0].set_title("Stimulus Check", fontsize=fontsize)
-    axs[0].legend(prop={"size": legend_size}, loc="best", framealpha =0.0)
+    axs[0].legend(prop={"size": legend_size}, loc="best", framealpha=0.0)
 
     # UI Extension (middle panel)
     axs[1].plot(
