@@ -65,3 +65,10 @@ def compare_CJACs(shock, T_max=None):
     
 def compare_AJACs(shock, T_max=None):
     plot_SSJ([AJAC_MNW[shock], AJAC_WDu[shock]], S_set, "assets", shock, T_max)
+    
+###############################################################################
+
+if __name__ == "__main__":
+    
+    for var in shock_labels:
+        compare_CJACs(var, 150)
