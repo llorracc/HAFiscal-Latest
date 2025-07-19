@@ -27,18 +27,45 @@ if ! command -v latexmk >/dev/null 2>&1; then
     exit 1
 fi
 
-# Change to parent directory where the .tex files are located
-cd ..
+# Get the directory of this script and change to the project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+cd "$PROJECT_ROOT"
 
 # Use LATEX_OPTS for any additional latexmk options
 LATEXMK_OPTS="${LATEX_OPTS:-}"
+
+# Define default files to compile if none are specified
+DEFAULT_FILES="HAFiscal.tex HAFiscal-online-appendix.tex"
 
 # Triple compilation ensures all cross-references, citations, and table of contents are properly resolved
 echo "Starting document compilation with triple latexmk run..."
 
 latexmk -c
-latexmk $LATEXMK_OPTS
-latexmk $LATEXMK_OPTS  
-latexmk $LATEXMK_OPTS
+# Run latexmk on each document with multiple passes to resolve cross-references
+for doc in $DEFAULT_FILES; do
+    if [[ -f "$doc" ]]; then
+        echo "Compiling $doc..."
+        latexmk $LATEXMK_OPTS "$doc"
+    else
+        echo "Warning: $doc not found, skipping..."
+    fi
+done
+
+# Second pass to resolve cross-document references
+for doc in $DEFAULT_FILES; do
+    if [[ -f "$doc" ]]; then
+        echo "Second pass for $doc..."
+        latexmk $LATEXMK_OPTS "$doc"
+    fi
+done
+
+# Third pass to finalize all references
+for doc in $DEFAULT_FILES; do
+    if [[ -f "$doc" ]]; then
+        echo "Final pass for $doc..."
+        latexmk $LATEXMK_OPTS "$doc"
+    fi
+done
 
 echo "Document compilation completed."
