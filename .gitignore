@@ -365,3 +365,8 @@ version
 # Prompts
 prompts/
 prompts_local/
+# HTML conversion artifacts
+*.html
+*.css
+*.idv
+*.lg
