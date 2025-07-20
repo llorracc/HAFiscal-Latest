@@ -56,6 +56,13 @@ fi
 
 echo "Content mode: $CONTENT_MODE"
 
+# Detect whether latexmk is available on this system
+if command -v latexmk >/dev/null 2>&1; then
+    HAVE_LATEXMK=true
+else
+    HAVE_LATEXMK=false
+fi
+
 # =============================================================================
 # SMART EXECUTION FUNCTIONS
 # =============================================================================
@@ -132,14 +139,28 @@ compile_documents() {
     latexmk -c -r .latexmkrc-for-pdf 2>/dev/null || find . -maxdepth 1 \( -name '*.aux' -o -name '*.log' -o -name '*.out' -o -name '*.toc' -o -name '*.bbl' -o -name '*.blg' \) -delete
 }
 
-# =============================================================================
-# REPRODUCTION COMMANDS
-# =============================================================================
+# ---------------- HIGH-LEVEL REPRODUCTION COMMANDS (VISIBLE UP FRONT) ----------------
+reproduce_commands() {
+    echo "Starting PDF compilation..."
 
-echo "Starting PDF compilation..."
+    if $HAVE_LATEXMK; then
+        echo "latexmk detected – using fast build path"; echo "";
+        # Clean previous artifacts
+        latexmk -C >/dev/null 2>&1 || true
 
-# Execute compilation based on content mode
-compile_documents latexmk -c 2>/dev/null || true
-latexmk -f HAFiscal.tex
-latexmk -f HAFiscal-online-appendix.tex
-latexmk -f HAFiscal.tex
+        # Suppress cross-doc warning in .latexmkrc
+        export NO_HFISCAL_WARNING=1
+
+        # Build appendix first, then main paper (two passes for safety)
+        latexmk -f HAFiscal-online-appendix.tex
+        latexmk -f HAFiscal.tex
+        latexmk -f HAFiscal.tex   # extra pass to polish x-refs
+    else
+        echo "latexmk NOT found – falling back to manual pdflatex/bibtex cycle"; echo "";
+        compile_documents
+    fi
+}
+# =============================================================================
+# Execute the build
+# =============================================================================
+reproduce_commands
