@@ -1,0 +1,15 @@
+# Stata requirements for HAFiscal
+# Version requirements and packages
+
+# Required Stata version
+# MP/18.0 or compatible (as mentioned in README)
+
+# Required packages/commands (if any)
+# These would be installed via Stata's package manager
+# Currently no specific packages identified beyond base Stata
+
+# Data files required:
+# - rscfp2004.dta (Survey of Consumer Finances 2004)
+# - ccbal_answer.dta (Credit card balance data)
+# 
+# These are included in the repository in Code/Empirical/

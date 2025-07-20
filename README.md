@@ -11,7 +11,35 @@ date: 2025/05/16
 
 Using a heterogeneous agent model calibrated to match measured spending dynamics over four years following an income shock (Fagereng, Holm, and Natvik (2021)), we assess the effectiveness of three fiscal stimulus policies employed during recent recessions. Unemployment insurance (UI) extensions are the clear “bang for the buck” winner, especially when effectiveness is measured in utility terms. Stimulus checks are second best and have the advantage (over UI) of being scalable to any desired size. A temporary (two-year) cut in the rate of wage taxation is considerably less effective than the other policies and has negligible effects in the version of our model without a multiplier.
 
-## Replication from a unix (macOS/linux) command line
+## Replication Options
+
+### Option 1: Docker (Recommended for reproducibility)
+**Requirements**: Docker Engine 20.10.0+ (tested on 28.1.1), 32GB RAM recommended
+
+```bash
+# Build and run with Docker (with memory limits)
+docker build -t hafiscal .
+docker run -it --rm --memory=32g --memory-reservation=16g -v $(pwd):/home/hafiscal/hafiscal hafiscal
+
+# Or with docker-compose (includes memory limits)
+docker-compose up -d
+docker-compose exec hafiscal bash
+
+# Inside container, run any of the reproduction commands below
+```
+
+### Option 2: Native Unix Installation
+**Requirements**: Unix-like system (Linux, macOS, BSD)
+
+```bash
+# Quick setup
+./deps/setup.sh
+conda activate hafiscal
+
+# Then run any of the reproduction commands below
+```
+
+## Reproduction Commands
 
 To reproduce all the computational results of the paper (several days):
 
@@ -19,7 +47,7 @@ To reproduce all the computational results of the paper (several days):
     /bin/bash reproduce/reproduce_computed.sh
 ```
 
-To produce pdf version of the paper from a unix (macOS/linux) command line:
+To produce pdf version of the paper:
 
 ```
     /bin/bash reproduce/reproduce_document.sh
@@ -31,7 +59,7 @@ To reproduce both computational results and the paper:
     /bin/bash reproduce.sh
 ```
 
- To run a cut-down version of the results (\<1 hour):
+To run a cut-down version of the results (<1 hour):
 
 ```
    /bin/bash reproduce_min.sh
@@ -91,35 +119,18 @@ A current (2025) laptop or equivalent is sufficient to reproduce the results.
 
 ### Software Requirements
 
-- Stata (code was last run with version MP/18.0, but older versions should be fine too)
+- **Stata** (code was last run with version MP/18.0, but older versions should be fine too)
 
-- Python. The results of the paper come from running the Python scripts above in this environment:
-  channels:
-  
-  - conda-forge
-    dependencies:
-  
-  - python=3.11.7
-  
+- **Python 3.11.7** with the following packages:
   - econ-ark=0.14.1
-  
-  - numpy=1.26.4
-  
-  - matplotlib=3.8.0
-  
-  - scipy=1.11.4
-  
-  - pandas=2.1.4
-  
-  - numba=0.59.0
-  
-  - pip
-  
-  - pip:
-    
-    - sequence-jacobian
-  
-  - the file "`binder\environment.yml`" lists these dependencies
+  - numpy=1.26.4, matplotlib=3.8.0, scipy=1.11.4, pandas=2.1.4
+  - numba=0.59.0, sequence-jacobian
+
+- **LaTeX distribution** (TeX Live 2023+ or MiKTeX) with required packages
+
+**Quick Setup**: Run `./deps/setup.sh` for automated dependency installation.
+
+**Detailed Requirements**: See `deps/` directory for complete dependency specifications.
 
 ### Runtime Requirements
 

@@ -1,0 +1,39 @@
+name: hafiscal
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Core Python
+  - python=3.11.7
+  
+  # Scientific computing
+  - numpy=1.26.4
+  - scipy=1.11.4
+  - pandas=2.1.4
+  
+  # Visualization
+  - matplotlib=3.8.0
+  
+  # Jupyter ecosystem
+  - jupyter
+  - jupyterlab
+  - ipywidgets
+  - voila
+  
+  # Optimization and performance
+  - numba=0.59.0
+  
+  # Economics toolkit
+  - econ-ark=0.14.1
+  
+  # Testing
+  - pytest
+  - pytest-cov
+  
+  # Development tools
+  - pip
+  - pip:
+    # Additional packages that need pip
+    - sequence-jacobian
+    - runipy
+    - jupyter_contrib_nbextensions

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  hafiscal:
+    build: .
+    container_name: hafiscal-dev
+    volumes:
+      # Mount the repository for development
+      - .:/home/hafiscal/hafiscal
+      # Mount a volume for generated PDFs
+      - hafiscal-pdfs:/home/hafiscal/hafiscal/output
+    environment:
+      - PYTHONPATH=/home/hafiscal/hafiscal
+    working_dir: /home/hafiscal/hafiscal
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+    # Memory requirements for full reproduction
+    deploy:
+      resources:
+        limits:
+          memory: 32G
+        reservations:
+          memory: 16G
+    # Alternative: use mem_limit (older syntax)
+    # mem_limit: 32g
+    # mem_reservation: 16g
+
+volumes:
+  hafiscal-pdfs:

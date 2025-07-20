@@ -1,0 +1,38 @@
+# System-level requirements for HAFiscal
+
+# Operating System
+# - Unix-like systems (Linux, macOS, BSD)
+# - Tested on: macOS 10.15+ (darwin 24.4.0)
+# - Linux: Ubuntu 20.04+, CentOS 7+, RHEL 7+
+# - Windows: WSL2 recommended
+
+# System packages (Ubuntu/Debian)
+# sudo apt-get update
+# sudo apt-get install -y texlive-full texlive-extra-utils texlive-science texlive-publishers python3.11 python3.11-dev
+
+# System packages (CentOS/RHEL/Fedora)
+# sudo yum install -y texlive-scheme-full python3.11 python3.11-devel
+# # or for newer systems:
+# sudo dnf install -y texlive-scheme-full python3.11 python3.11-devel
+
+# System packages (macOS with Homebrew)
+# brew install --cask mactex
+# brew install python@3.11
+
+# System packages (FreeBSD)
+# pkg install texlive-full python311
+
+# Minimum hardware requirements
+# - RAM: 16GB (32GB+ recommended for full reproduction)
+# - Storage: 5GB free space (for LaTeX distribution + data)
+# - CPU: Modern multi-core processor (4+ cores recommended)
+
+# Required software
+# - Python 3.11.7
+# - LaTeX distribution (TeX Live 2023+ or MiKTeX)
+# - Stata MP/18.0+ (for empirical analysis)
+# - Git (for version control)
+
+# Optional but recommended
+# - conda or miniconda (for Python environment management)
+# - latexmk (for automated LaTeX compilation)

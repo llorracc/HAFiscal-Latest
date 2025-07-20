@@ -1,0 +1,78 @@
+name: CI Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install Python dependencies
+      run: |
+        pip install -r deps/requirements.txt
+    
+    - name: Set up LaTeX
+      uses: xu-cheng/latex-action@v3
+      with:
+        root_file: HAFiscal.tex
+        latexmk_use_xelatex: false
+        work_in_root_file_dir: true
+        args: >
+          --shell-escape
+          --interaction=nonstopmode
+          --halt-on-error
+    
+    - name: Install additional LaTeX packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y texlive-extra-utils texlive-science texlive-publishers
+    
+    - name: Run dependency check
+      run: |
+        chmod +x deps/setup.sh
+        ./deps/setup.sh
+    
+    - name: Run CI test
+      run: |
+        chmod +x reproduce_document_pdf_ci.sh
+        ./reproduce_document_pdf_ci.sh --ci-mode
+    
+    - name: Upload PDF artifacts
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: generated-pdfs
+        path: |
+          *.pdf
+        retention-days: 30
+    
+    - name: Check repository structure
+      run: |
+        echo "Checking essential files and directories..."
+        test -f HAFiscal.tex || exit 1
+        test -f HAFiscal-online-appendix.tex || exit 1
+        test -f references-paperpile.bib || exit 1
+        test -d Code || exit 1
+        test -d Figures || exit 1
+        test -d Tables || exit 1
+        echo "✓ Repository structure is valid"
+    
+    - name: Test Python environment
+      run: |
+        python -c "import numpy, scipy, pandas, matplotlib; print('Core packages imported successfully')"
+        if [ -f "Code/HA-Models/do_all.py" ]; then
+          echo "✓ Main Python script found"
+        else
+          echo "⚠ Main Python script not found"
+        fi

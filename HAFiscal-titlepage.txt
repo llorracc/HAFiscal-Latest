@@ -1,0 +1,49 @@
+Welfare and Spending Effects
+of Consumption Stimulus Policies
+2025-07-20
+
+Christopher D. Carroll1
+Edmund Crawley2
+William Du3
+Ivan Frankovic4
+Håkon Tretvoll5
+Using a heterogeneous agent model calibrated to match measured spending dynamics
+over four years following an income shock (Fagereng, Holm, and Natvik (2021)), we
+assess the effectiveness of three fiscal stimulus policies employed during recent recessions.
+Unemployment insurance (UI) extensions are the clear “bang for the buck” winner when
+effectiveness is measured in utility terms. Stimulus checks are second best and have
+two advantages (over UI): they arrive faster, and they are scalable to any desired size.
+A temporary (two-year) cut in the rate of wage taxation is considerably less effective
+than the other policies and has negligible effects in the version of our model without a
+multiplier.
+html:
+PDF:
+Slides:
+GitHub:
+
+https://llorracc.github.io/HAFiscal/
+HAFiscal.pdf
+https://llorracc.github.io/HAFiscal/HAFiscal-Slides.pdf
+https://github.com/llorracc/HAFiscal
+
+Forthcoming, Quantitative Economics
+
+The views expressed in this paper are those of the authors and do not necessarily represent those of the Federal Reserve
+Board, the Deutsche Bundesbank and the Eurosystem, or Statistics Norway. This project has received funding from the
+European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant
+agreement No. 851891) and from the Research Council of Norway (grant No. 326419).
+The authors would like to thank seminar participants at the Board of Governors of the Federal Reserve System, Deutsche
+Bundesbank, the European Central Bank, the Norwegian University of Science and Technology, Oslo Macro Group, the
+Society for Computational Economics in 2023 and 2024, Statistics Norway, the University of Pennsylvania, Vanderbilt
+University, and West Virginia University for valuable feedback. The authors would also like to thank Sasha Indarte,
+Adrian Monninger, Plutarchos Sakellaris, three anonymous referess, and the editor Morten Ravn for insightful comments
+on earlier versions of the paper.
+1 Carroll: Department of Economics, Johns Hopkins University, ccarroll@jhu.edu, and NBER
+
+.
+
+2 Crawley: Federal Reserve Board, edmund.s.crawley@frb.gov
+3 Du: Johns Hopkins University, wdu9@jhu.edu
+4 Frankovic: Deutsche Bundesbank, ivan.frankovic@bundesbank.de
+5 Tretvoll: Statistics Norway and HOFIMAR at BI Norwegian Business School, Hakon.Tretvoll@ssb.no
+

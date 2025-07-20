@@ -1,0 +1,60 @@
+# LaTeX packages required for HAFiscal
+# Install these packages in your LaTeX distribution
+
+# Core packages
+lmodern
+microtype
+pdforhtml
+scrlayer-scrpage
+caption
+endnotes
+
+# Mathematics and formatting
+amsmath
+amssymb
+amsthm
+mathtools
+dsfont
+bbm
+
+# Tables and figures
+booktabs
+multirow
+subfigure
+makecell
+floatrow
+graphicx
+epstopdf
+
+# Bibliography and citations
+natbib
+econark-bibfilesfind
+
+# Document structure
+appendix
+geometry
+setspace
+enumerate
+enumitem
+
+# Special formatting
+threeparttable
+rotating
+float
+tabulary
+ragged2e
+placeins
+pxfonts
+xcolor
+svg
+verbatim
+soul
+ulem
+pifont
+eurosym
+
+# Custom packages (may need manual installation)
+econark
+catchfile
+pdfsuppressruntime
+comment

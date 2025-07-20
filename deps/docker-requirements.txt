@@ -1,0 +1,34 @@
+# Docker requirements for HAFiscal
+# 
+# Minimum Docker version: 20.10.0
+# Recommended Docker version: 24.0.0+
+# 
+# Tested on: Docker version 28.1.1
+# 
+# Requirements:
+# - Docker Engine 20.10.0 or later
+# - Docker Compose 2.0.0 or later (optional, for docker-compose.yml)
+# - RAM: 32GB recommended for full reproduction (16GB minimum)
+# - Storage: 10GB disk space for image and container
+# - CPU: 4+ cores recommended
+# 
+# Installation:
+# - Linux: Follow official Docker installation guide
+# - macOS: Install Docker Desktop
+# - Windows: Install Docker Desktop with WSL2 backend
+# 
+# Usage:
+# 
+# Build and run with Docker (with memory limits):
+# docker build -t hafiscal .
+# docker run -it --rm --memory=32g --memory-reservation=16g -v $(pwd):/home/hafiscal/hafiscal hafiscal
+# 
+# Or with docker-compose (includes memory limits):
+# docker-compose up -d
+# docker-compose exec hafiscal bash
+# 
+# Inside container:
+# ./reproduce_document_pdf_ci.sh --ci-mode
+# 
+# Note: Stata is not included in the Docker image due to licensing restrictions.
+# For empirical analysis requiring Stata, use native installation.

@@ -1,0 +1,31 @@
+# Python dependencies for HAFiscal
+# This file is for pip-based installation (alternative to conda)
+
+# Core scientific computing
+numpy==1.26.4
+scipy==1.11.4
+pandas==2.1.4
+
+# Visualization
+matplotlib==3.8.0
+
+# Jupyter ecosystem
+jupyter
+jupyterlab
+ipywidgets
+voila
+
+# Optimization and performance
+numba==0.59.0
+
+# Economics toolkit
+econ-ark==0.14.1
+
+# Additional packages
+sequence-jacobian
+runipy
+jupyter_contrib_nbextensions
+
+# Testing
+pytest
+pytest-cov
