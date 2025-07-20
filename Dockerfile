@@ -54,7 +54,7 @@ ENV PATH="/home/hafiscal/hafiscal-env/bin:$PATH"
 # Install Python packages
 RUN pip install --upgrade pip && \
     pip install -r /tmp/requirements.txt && \
-    pip install econ-ark==0.14.1 --no-deps && \
+    pip install econ-ark==0.15.1 --no-deps && \
     pip install xarray joblib networkx quantecon seaborn interpolation
 
 # Copy repository files

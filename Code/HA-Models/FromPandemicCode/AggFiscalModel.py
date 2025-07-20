@@ -7,7 +7,9 @@ import scipy.sparse as sp
 from HARK.distribution import DiscreteDistribution, Uniform
 from HARK.ConsumptionSaving.ConsMarkovModel import MarkovConsumerType
 from HARK.ConsumptionSaving.ConsIndShockModel import ConsumerSolution
-from HARK.ConsumptionSaving.ConsAggShockModel import MargValueFunc2D, AggShockConsumerType
+import HARK.ConsumptionSaving.ConsAggShockModel as module
+MargValueFunc2D = module.MargValueFuncCRRA
+from HARK.ConsumptionSaving.ConsAggShockModel import AggShockConsumerType
 from HARK.interpolation import LinearInterp, BilinearInterp, VariableLowerBoundFunc2D, \
                                 LinearInterpOnInterp1D, LowerEnvelope2D, UpperEnvelope, ConstantFunction
 from HARK import Market
