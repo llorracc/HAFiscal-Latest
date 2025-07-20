@@ -370,3 +370,6 @@ prompts_local/
 *.css
 *.idv
 *.lg
+
+# Ignore files or directories that begin with the literal string ".BC"
+.BC*
