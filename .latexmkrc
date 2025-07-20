@@ -1,0 +1,1 @@
+.latexmkrc_for-projects-with-circular-crossrefs
