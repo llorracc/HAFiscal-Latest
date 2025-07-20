@@ -24,16 +24,16 @@ from builtins import exec
 
 
 print('Step 4: HANK Robustness Check\n')
-script_path = 'HA-Fiscal-HANK-SAM-to-python.py'
+script_path = 'FromPandemicCode/HA-Fiscal-HANK-SAM-to-python.py'
 os.system("python " + script_path)  
-os.chdir('../')
 print('Concluded Step 4. \n')
 
 
 print('Step 5: Comparing policies\n')
-script_path = "AggFiscalMAIN_reduced.py"
-os.chdir('./FromPandemicCode')
-exec(open(script_path).read())
+script_path = "FromPandemicCode/AggFiscalMAIN_reduced.py"
+# Change to the FromPandemicCode directory before executing
+os.chdir('FromPandemicCode')
+exec(open("../" + script_path).read())
 print('Concluded Step 5. \n')
 
 

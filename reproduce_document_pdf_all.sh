@@ -13,8 +13,9 @@ setup_latex_interaction
 # latexmk compiles .tex documents with automatic handling of bibliography and cross-references
 # Documentation: https://ctan.org/pkg/latexmk
 latexmk -c 2>/dev/null || true
+latexmk  "HAFiscal-online-appendix.tex"
+latexmk  "HAFiscal.tex"
 latexmk  "HAFiscal-Slides.tex"
 latexmk  "HAFiscal-titlepage.tex"
 latexmk  "HAFiscal.tex"
-latexmk  "HAFiscal-online-appendix.tex"
 latexmk -c 2>/dev/null || true

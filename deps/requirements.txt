@@ -16,10 +16,10 @@ ipywidgets
 voila
 
 # Optimization and performance
-numba==0.59.0
+numba==0.58.1
 
 # Economics toolkit
-econ-ark==0.14.1
+# Note: econ-ark will be installed separately with --no-deps to avoid conflicts
 
 # Additional packages
 sequence-jacobian

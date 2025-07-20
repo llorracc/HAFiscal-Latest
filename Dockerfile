@@ -53,13 +53,21 @@ ENV PATH="/home/hafiscal/hafiscal-env/bin:$PATH"
 
 # Install Python packages
 RUN pip install --upgrade pip && \
-    pip install -r /tmp/requirements.txt
+    pip install -r /tmp/requirements.txt && \
+    pip install econ-ark==0.14.1 --no-deps && \
+    pip install xarray joblib networkx quantecon seaborn interpolation
 
 # Copy repository files
 COPY --chown=hafiscal:hafiscal . /home/hafiscal/hafiscal
 
 # Set working directory
 WORKDIR /home/hafiscal/hafiscal
+
+# Copy external latexmk configuration files to resolve broken symlinks
+COPY --chown=hafiscal:hafiscal docker-build-resources/latexmkrc_for-projects-with-circular-crossrefs /home/hafiscal/hafiscal/.latexmkrc
+COPY --chown=hafiscal:hafiscal docker-build-resources/latexmkrc_using_bibtex_wrapper /home/hafiscal/hafiscal/.latexmkrc_using_bibtex_wrapper
+
+
 
 # Make scripts executable
 RUN chmod +x reproduce_document_pdf_ci.sh reproduce_document_pdf.sh deps/setup.sh

@@ -34,7 +34,7 @@ B.1 Matching the iMPCs without the splurge
 For the purpose of evaluating the results in the model without the splurge we do not
 require the reestimation of our Norwegian model, as the purpose of the latter is the
 estimation of the splurge. Nevertheless, we test how well the model can match the
-dynamics of spending after a temporary income shock as reported by Fagereng, Holm,
+dynamics of spending after a temporary income shock as reported by ? when the splurge
 1 Carroll: Department of Economics, Johns Hopkins University, ccarroll@jhu.edu, and NBER
 
 .
@@ -45,8 +45,8 @@ dynamics of spending after a temporary income shock as reported by Fagereng, Hol
 5 Tretvoll: Statistics Norway and HOFIMAR at BI Norwegian Business School, Hakon.Tretvoll@ssb.no
 
 Online Appendix
-and Natvik (2021) when the splurge is zero. Figure 1 illustrates the fit without the
-splurge and compares it to our baseline estimation.
+is zero. Figure 1 illustrates the fit without the splurge and compares it to our baseline
+estimation.
 
 1.0
 
@@ -109,9 +109,8 @@ Figure 1 Marginal propensity to consume over time and the liquid wealth
 distribution in the model with and without the splurge as well as in the
 data
 Note: Panel (a) shows the fit of the model to the dynamic consumption response estimated in
-Fagereng, Holm, and Natvik (2021); see their figure A5. Panel (b) shows the fit of the model to
-the distribution of liquid wealth (see Section 3.2 in the paper for the definition) from the 2004
-SCF.
+?; see their figure A5. Panel (b) shows the fit of the model to the distribution of liquid wealth
+(see Section 3.2 in the paper for the definition) from the 2004 SCF.
 
 While the splurge helps in matching the empirical evidence on the iMPC, the model
 without the splurge also performs relatively well. This is because the model without
@@ -127,6 +126,7 @@ model, and to the data, the model without a splurge generates a more unequal wea
 distribution.
 The reason for these two effects, becomes apparent when considering the crosssectional implications of the models with and without the splurge across different
 wealth quartiles. While the model with the splurge can account for the empiricallyobserved initial MPCs among the wealthiest, the model without the splurge exhibits
+much lower MPCs among that group, see Table 1. The wealthiest group will thus
 1 The model without the splurge implies there is a group of highly impatient households who have discount rates close
 to 0.8. While this is possible, such a discount rate implies these households care very little about their consumption even
 just a few years in the future.
@@ -180,7 +180,6 @@ Table 1 Marginal propensities to consume across wealth quartiles and the total
 population as well as the wealth to income ratio, in the model with and
 without the splurge and according to the data
 
-much lower MPCs among that group, see Table 1. The wealthiest group will thus
 be very patient and have low MPCs, which can explain why the wealth distribution
 becomes more unequal and doesn’t quite fit the targeted distribution in the data in the
 version of the model without the splurge.
@@ -208,6 +207,7 @@ While the consumption dynamics across the models with and without a splurge are 
 similar, the underlying drivers of the consumption drop upon expiry of unemployment
 benefits are different. In the model with the splurge, the drop in income translates
 directly into lower consumption via the splurge itself. In the model without the splurge
+it is the sharp rise in agents hitting the borrowing constraint which accounts for the
 2 Specifically, the Euclidean norm of the targeting error increases from 0.04 to 0.08 for the time-profile of the marginal
 propensity to consume when the splurge is removed, from 0.16 to 0.29 for the marginal propensity to consume across
 wealth quartiles and from 0.027 to 0.032 for the Lorentz curve.
@@ -299,7 +299,6 @@ percentile points of the Lorenz curve for liquid wealth for that group. The “P
 compares the wealth distribution that results from pooling the three groups in the model to the
 overall wealth distribution in the data. The model is reestimated when the splurge is set to 0.
 
-it is the sharp rise in agents hitting the borrowing constraint which accounts for the
 consumption drop after UI benefits expire. This is shown in the solid and dashed red
 lines in Figure 3b, and is due to the wider distribution of discount factors that is needed
 to match the wealth distributions in the model without the splurge. This leads to a
@@ -483,10 +482,9 @@ quarters since last period of employment
 
 Figure 3 Marginal propensity to consume over time and the spending upon expiry of
 UI benefits in the model
-Note: Panel (a) compares the dynamic consumption response in the model to the estimates
-in Fagereng, Holm, and Natvik (2021); see their Figure A5. Panel (b) shows the evolution of
-income and spending for households who remain unemployed long enough for UI benefits to
-expire; see Figure 2 in Ganong and Noel (2019).
+Note: Panel (a) compares the dynamic consumption response in the model to the estimates in
+?; see their Figure A5. Panel (b) shows the evolution of income and spending for households
+who remain unemployed long enough for UI benefits to expire; see Figure 2 in ?.
 
 6
 
@@ -554,16 +552,6 @@ Figure 4 Cumulative multiplier as a function of the horizon for the three polici
 with and without the splurge. Note: Policies are implemented during a
 recession with AD effect active.
 
-References
-Fagereng, Andreas, Martin B. Holm, and Gisle J. Natvik (2021):
-“MPC Heterogeneity and Household Balance Sheets,” American Economic Journal:
-Macroeconomics, 13(4), 1–54.
-Ganong, Peter, and Pascal Noel (2019): “Consumer Spending during
-Unemployment: Positive and Normative Implications,” American Economic Review,
-109(7), 2383–2424.
-
-8
-
 Stimulus check
 
 UI extension
@@ -581,5 +569,5 @@ without aggregate demand effects.
 Note: The values outside of the brackets capture the multipliers in the model without the
 splurge, while those inside the brackets are the corresponding mulitipliers with the splurge.
 
-9
+8
 
