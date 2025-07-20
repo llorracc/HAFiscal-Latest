@@ -149,7 +149,7 @@ reproduce_commands() {
         latexmk -C >/dev/null 2>&1 || true
 
         # Suppress cross-doc warning in .latexmkrc
-        export NO_HFISCAL_WARNING=1
+        export DO_NOT_WARN=1
 
         # Build appendix first, then main paper (two passes for safety)
         latexmk -f HAFiscal-online-appendix.tex
