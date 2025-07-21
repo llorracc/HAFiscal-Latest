@@ -250,7 +250,13 @@ class AggFiscalType(MarkovConsumerType):
         self.Rfree = np.array(num_mrkv_states*self.Rfree_base)
         
     def getRfree(self):
-        RfreeNow = self.Rfree[self.MrkvNow]*np.ones(self.AgentCount)
+        # Handle both scalar and array cases for MrkvNow
+        if np.isscalar(self.MrkvNow):
+            RfreeNow = self.Rfree[self.MrkvNow]*np.ones(self.AgentCount)
+        else:
+            # Ensure we don't index out of bounds
+            mrkv_indices = np.clip(self.MrkvNow, 0, len(self.Rfree)-1)
+            RfreeNow = self.Rfree[mrkv_indices]
         return RfreeNow
     
     def marketAction(self):

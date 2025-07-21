@@ -192,19 +192,19 @@ vals_d = vals_d.real
 vecs_d = vecs_d.real
 dist_d = np.abs(np.abs(vals_d) - 1.)
 idx_d = np.argmin(dist_d)
-init_mrkv_dist_d = vecs_d[:,idx_d].astype(float)/np.sum(vecs_d[:,idx_d].astype(float))
+init_mrkv_dist_d = vecs_d[:,idx_d].real/np.sum(vecs_d[:,idx_d].real)
 
 vals_h, vecs_h = np.linalg.eig(np.transpose(MrkvArray_base_h[0])) 
 vals_h = vals_h.real
 vecs_h = vecs_h.real
 dist_h = np.abs(np.abs(vals_h) - 1.)
 idx_h = np.argmin(dist_h)
-init_mrkv_dist_h = vecs_h[:,idx_h].astype(float)/np.sum(vecs_h[:,idx_h].astype(float))
+init_mrkv_dist_h = vecs_h[:,idx_h].real/np.sum(vecs_h[:,idx_h].real)
 
 vals_c, vecs_c = np.linalg.eig(np.transpose(MrkvArray_base_c[0])) 
 dist_c = np.abs(np.abs(vals_c) - 1.)
 idx_c = np.argmin(dist_c)
-init_mrkv_dist_c = vecs_c[:,idx_c].astype(float)/np.sum(vecs_c[:,idx_c].astype(float))
+init_mrkv_dist_c = vecs_c[:,idx_c].real/np.sum(vecs_c[:,idx_c].real)
 
 # Define a parameter dictionary for dropout type
 init_dropout = {"cycles": 0, # This will be overwritten at type construction
@@ -270,7 +270,9 @@ adj_highschool = {
     'pLvlInitStd': pLvlInitStd_h,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_h)),
     'Urate_normal' : Urate_normal_h,
-    'EducType' : 1}
+    'EducType' : 1,
+    "Rfree": np.array(num_base_MrkvStates*Rfree_base)
+}
 init_highschool = init_dropout.copy()
 init_highschool.update(adj_highschool)
 
@@ -285,7 +287,9 @@ adj_college = {
     'pLvlInitStd': pLvlInitStd_c,
     "MrkvPrbsInit" : np.array(list(init_mrkv_dist_c)),
     'Urate_normal' : Urate_normal_c,
-    'EducType' : 2}
+    'EducType' : 2,
+    "Rfree": np.array(num_base_MrkvStates*Rfree_base)
+}
 init_college = init_dropout.copy()
 init_college.update(adj_college)
 
@@ -319,5 +323,6 @@ init_ADEconomy = {'intercept_prev': intercept_prev,
                      "MrkvArray_base" : MrkvArray_base_h, 
                      'CgridBase' : CgridBase,
                      'EconomyMrkvNow_init': 0,
-                     'act_T' : 400
+                     'act_T' : 400,
+                     "Rfree": np.array(num_base_MrkvStates*Rfree_base)
                      }

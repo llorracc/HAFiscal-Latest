@@ -122,7 +122,7 @@ A current (2025) laptop or equivalent is sufficient to reproduce the results.
 - **Stata** (code was last run with version MP/18.0, but older versions should be fine too)
 
 - **Python 3.11.7** with the following packages:
-  - econ-ark=0.14.1
+  - econ-ark=0.15.1
   - numpy=1.26.4, matplotlib=3.8.0, scipy=1.11.4, pandas=2.1.4
   - numba=0.59.0, sequence-jacobian
 

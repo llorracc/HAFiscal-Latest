@@ -501,7 +501,9 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         "MrkvPrbsInit" : np.array(list(init_mrkv_dist_h)),
         'Urate_normal' : Urate_normal_h,
         'Urate_recession' : Urate_recession_h,
-        'EducType' : 1}
+            'EducType' : 1,
+    "Rfree": np.array(num_base_MrkvStates*Rfree_base)
+}
     init_highschool = init_dropout.copy()
     init_highschool.update(adj_highschool)
     
@@ -525,7 +527,9 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
         "MrkvPrbsInit" : np.array(list(init_mrkv_dist_c)),
         'Urate_normal' : Urate_normal_c,
         'Urate_recession' : Urate_recession_c,
-        'EducType' : 2}
+            'EducType' : 2,
+    "Rfree": np.array(num_base_MrkvStates*Rfree_base)
+}
     init_college = init_dropout.copy()
     init_college.update(adj_college)
     
@@ -603,8 +607,7 @@ def returnParameters(Parametrization='Baseline',OutputFor='_Main.py'):
                          'CgridBase' : CgridBase,
                          'EconomyMrkvNow_init': 0,
                          'act_T' : act_T,
-                         'TaxCutContinuationProb_Rec' : TaxCutContinuationProb_Rec,
-                         'TaxCutContinuationProb_Bas' : TaxCutContinuationProb_Bas
+                         "Rfree": np.array(num_base_MrkvStates*Rfree_base)
                          }
     
     if OutputFor=='_Main.py':

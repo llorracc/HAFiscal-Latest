@@ -73,7 +73,7 @@ conda activate hafiscal
 Conda environment with all Python packages:
 - numpy=1.26.4, scipy=1.11.4, pandas=2.1.4
 - matplotlib=3.8.0, jupyter, jupyterlab
-- numba=0.59.0, econ-ark=0.14.1
+- numba=0.59.0, econ-ark=0.15.1
 - sequence-jacobian (via pip)
 
 ### `deps/requirements.txt`
