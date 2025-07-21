@@ -1773,16 +1773,16 @@ def plot_single_multiplier_panel(
     ax.axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
 
     # Formatting with proper axis labels
-    ax.set_title(title, fontsize=fontsize, pad=8)
-    ax.tick_params(axis="both", labelsize=ticksize)
-    ax.set_ylabel("Consumption Multiplier", fontsize=label_size)
-    ax.set_xlabel("Time (Quarters)", fontsize=label_size)
+    ax.set_title(title, pad=8)
+    ax.tick_params(axis="both")
+    ax.set_ylabel("Consumption Multiplier")
+    ax.set_xlabel("Time (Quarters)")
     ax.locator_params(axis="both", nbins=6)
     ax.grid(alpha=0.3, linewidth=0.5)
     ax.set_xlim(0.5, 12.5)  # Focus on first 3 years
 
     if show_legend:
-        ax.legend(prop={"size": legend_size}, loc="upper left", framealpha=0.9)
+        ax.legend(framealpha=0.9)
 
 
 def plot_single_consumption_panel(
@@ -1850,15 +1850,15 @@ def plot_single_consumption_panel(
     ax.axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
 
     # Formatting with proper axis labels
-    ax.set_title(title, fontsize=fontsize, pad=8)
-    ax.tick_params(axis="both", labelsize=ticksize)
-    ax.set_ylabel("Consumption Response (%)", fontsize=label_size)
-    ax.set_xlabel("Time (Quarters)", fontsize=label_size)
+    ax.set_title(title, pad=8)
+    ax.tick_params(axis="both")
+    ax.set_ylabel("Consumption Response (%)")
+    ax.set_xlabel("Time (Quarters)")
     ax.locator_params(axis="both", nbins=6)
     ax.grid(alpha=0.3, linewidth=0.5)
 
     if show_legend:
-        ax.legend(prop={"size": legend_size}, loc="best", framealpha=0.9)
+        ax.legend(loc="best", framealpha=0.9)
 
 
 def create_dashboard_figure(multipliers, irfs, figsize=(12, 8), fontsize=10):
@@ -1982,10 +1982,10 @@ def plot_multipliers_three_experiments(
 
     horizon_length = min(20, len(multipliers_transfers))
     width = 2
-    fontsize = 10
-    label_size = 8
+    fontsize = 12  # Increased from 10
+    label_size = 14  # Increased from 8
     legend_size = 10
-    ticksize = 8
+    ticksize = 10  # Increased from 8
 
     x_axis = np.arange(horizon_length) + 1
 
@@ -2014,7 +2014,7 @@ def plot_multipliers_three_experiments(
         color=colors["real"],
     )
     axs[0].set_title("Stimulus Check", fontsize=fontsize)
-    axs[0].legend(prop={"size": legend_size}, loc="upper left")
+    axs[0].legend(prop={"size": legend_size}, loc="upper left", framealpha=0.0)
 
     # UI Extension - Middle panel
     axs[1].plot(
@@ -2072,8 +2072,10 @@ def plot_multipliers_three_experiments(
     for i in range(3):
         axs[i].axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
         axs[i].tick_params(axis="both", labelsize=ticksize)
-        axs[i].set_ylabel("Consumption Multiplier", fontsize=label_size)
-        axs[i].set_xlabel("Time (Quarters)", fontsize=label_size)
+        axs[i].set_ylabel("Consumption Multiplier", fontsize=label_size, labelpad=10)  # Added labelpad
+        
+        axs[i].set_xlabel("Time (Quarters)", fontsize=label_size, labelpad=10)  # Added labelpad
+        #axs[i].set_title("Consumption Multiplier", fontsize=fontsize, pad=10)  # Added pad
         axs[i].locator_params(axis="both", nbins=6)
         axs[i].grid(alpha=0.3, linewidth=0.5)
         axs[i].set_xlim(0.5, 12.5)
@@ -2130,10 +2132,10 @@ def plot_consumption_irfs_three_experiments(
 
     Length = 12  # 3 years
     width = 2
-    fontsize = 10
-    label_size = 8
+    fontsize = 12  # Increased from 10
+    label_size = 16  # Increased from 8
     legend_size = 10
-    ticksize = 8
+    ticksize = 10  # Increased from 8
 
     x_axis = np.arange(Length)
 
@@ -2162,7 +2164,7 @@ def plot_consumption_irfs_three_experiments(
         color=colors["real"],
     )
     axs[0].set_title("Stimulus Check", fontsize=fontsize)
-    axs[0].legend(prop={"size": legend_size}, loc="best")
+    axs[0].legend(prop={"size": legend_size}, loc="best", framealpha=0.0)
 
     # UI Extension (middle panel)
     axs[1].plot(
@@ -2220,10 +2222,11 @@ def plot_consumption_irfs_three_experiments(
     for i in range(3):
         axs[i].axhline(y=0, color="black", linewidth=0.8, alpha=0.7)
         axs[i].tick_params(axis="both", labelsize=ticksize)
-        axs[i].set_ylabel("Consumption Response (%)", fontsize=label_size)
-        axs[i].set_xlabel("Time (Quarters)", fontsize=label_size)
+        axs[i].set_ylabel("% Change in Consumption", fontsize=label_size, labelpad=10)
+        axs[i].set_xlabel("Time (Quarters)", fontsize=label_size, labelpad=10)
         axs[i].locator_params(axis="both", nbins=6)
         axs[i].grid(alpha=0.3, linewidth=0.5)
+        axs[i].set_xlim(0.5, 12.5)
 
     # Only show if standalone (not controlled by dashboard)
     if show_figure:
