@@ -1,0 +1,284 @@
+source_priority:
+- .md
+- .tex
+- .pdf
+- .ipynb
+- .py
+- .rst
+- .html
+- .txt
+- .yml
+- .yaml
+- .json
+ignore_patterns:
+- '*.pyc'
+- __pycache__/
+- '*.aux'
+- '*.log'
+- '*.out'
+- '*.toc'
+- '*.bbl'
+- '*.blg'
+- '*.fdb_latexmk'
+- '*.fls'
+- '*.synctex.gz'
+- build/
+- dist/
+- '*.egg-info/'
+- '*.egg'
+- '*.whl'
+- '*.tar.gz'
+- '*.zip'
+- .DS_Store
+- Thumbs.db
+- '*.swp'
+- '*.swo'
+- '*~'
+- '*.bak'
+- .vscode/
+- .idea/
+- .pytest_cache/
+- .coverage
+- '*.png'
+- '*.jpg'
+- '*.jpeg'
+- '*.gif'
+- '*.svg'
+- '*.mp3'
+- '*.mp4'
+- '*.avi'
+- '*.mov'
+- '*.wav'
+- .env
+- '*.key'
+- '*.pem'
+- secrets.*
+- TODO.md
+- notes.md
+- personal_*.md
+- private/
+- test_data/
+- sample_data/
+- mock_data/
+- tests/
+- test_*
+- '*_test.py'
+- _build/
+- _site/
+- .jekyll-cache/
+- docs/_build/
+- node_modules/
+- package-lock.json
+- yarn.lock
+- .git/
+- '*.log'
+- .gitignore
+- .gitmodules
+master_files:
+- README.md
+- '*.md'
+- '*.ipynb'
+- '*.py'
+- '*.yml'
+- '*.yaml'
+- pyproject.toml
+- setup.py
+- requirements.txt
+source_relationships:
+- source: '*.md'
+  generates:
+  - '*.pdf'
+  - '*.html'
+  - '*.docx'
+  - '*.tex'
+- source: '*.py'
+  generates:
+  - '*.pyc'
+  - __pycache__/*
+- source: '*.tex'
+  generates:
+  - '*.aux'
+  - '*.log'
+  - '*.out'
+  - '*.toc'
+  - '*.bbl'
+  - '*.blg'
+- source: '*.ipynb'
+  generates:
+  - '*.html'
+  - '*.pdf'
+  - '*.py'
+careful_processing:
+  config_files:
+    patterns:
+    - '*.yml'
+    - '*.yaml'
+    - '*.toml'
+    - '*.ini'
+    - '*.cfg'
+    - Dockerfile
+    - docker-compose.yml
+    - requirements.txt
+    - setup.py
+    - pyproject.toml
+    max_size_kb: 100
+  data_files:
+    patterns:
+    - '*.csv'
+    - '*.json'
+    - '*.xlsx'
+    - '*.xls'
+    max_size_kb: 50
+  code_files:
+    import_threshold: 0.8
+    skip_generated: true
+    skip_templates: false
+faiss:
+  chunk_size: 1000
+  chunk_overlap: 200
+  master_chunk_size: 500
+  master_chunk_overlap: 100
+  similarity_threshold: 0.7
+  max_search_results: 50
+  model_name: sentence-transformers/all-MiniLM-L6-v2
+  batch_size: 64
+  temp_dir: temp_build
+elasticsearch:
+  index:
+    name: econ-ark-rag
+    number_of_shards: 1
+    number_of_replicas: 0
+    settings:
+      analysis:
+        analyzer:
+          math_analyzer:
+            type: custom
+            tokenizer: standard
+            filter:
+            - lowercase
+            - math_symbols
+          code_analyzer:
+            type: custom
+            tokenizer: standard
+            filter:
+            - lowercase
+            - code_keywords
+        filter:
+          math_symbols:
+            type: pattern_replace
+            pattern: "([\u03B1-\u03C9\u0391-\u03A9\u2211\u220F\u222B\u2202\u2207\u2206\
+              \u221A\u221E\u2260\u2264\u2265\xB1\xD7\xF7])"
+            replacement: ' $1 '
+          latex_tokens:
+            type: pattern_replace
+            pattern: \\[a-zA-Z]+
+            replacement: ' $0 '
+          code_keywords:
+            type: pattern_replace
+            pattern: (def|class|import|from|if|else|for|while|return)
+            replacement: ' $1 '
+    mappings:
+      properties:
+        content:
+          type: text
+          analyzer: math_analyzer
+          fields:
+            keyword:
+              type: keyword
+            code:
+              type: text
+              analyzer: code_analyzer
+        file_path:
+          type: keyword
+        file_extension:
+          type: keyword
+        priority_score:
+          type: integer
+        is_master_file:
+          type: boolean
+        chunk_size:
+          type: integer
+        repository:
+          type: keyword
+        file_size:
+          type: long
+        import_ratio:
+          type: float
+        content_type:
+          type: keyword
+        chunk_index:
+          type: integer
+        total_chunks:
+          type: integer
+  ingest:
+    pipeline:
+      id: rag_processing
+      description: RAG content processing pipeline
+      processors:
+      - script:
+          source: "def ignore_patterns = [\n  \"*.pyc\", \"__pycache__/\", \"*.aux\"\
+            , \"*.log\", \"*.out\", \"*.toc\",\n  \"*.bbl\", \"*.blg\", \"*.fdb_latexmk\"\
+            , \"*.fls\", \"*.synctex.gz\",\n  \"build/\", \"dist/\", \"*.egg-info/\"\
+            , \"*.egg\", \"*.whl\", \"*.tar.gz\",\n  \"*.zip\", \".DS_Store\", \"\
+            Thumbs.db\", \"*.swp\", \"*.swo\", \"*~\",\n  \"*.bak\", \".vscode/\"\
+            , \".idea/\", \".pytest_cache/\", \".coverage\",\n  \"*.png\", \"*.jpg\"\
+            , \"*.jpeg\", \"*.gif\", \"*.svg\", \"*.mp3\", \"*.mp4\",\n  \"*.avi\"\
+            , \"*.mov\", \"*.wav\", \".env\", \"*.key\", \"*.pem\", \"secrets.*\"\
+            ,\n  \"TODO.md\", \"notes.md\", \"personal_*.md\", \"private/\", \"test_data/\"\
+            ,\n  \"sample_data/\", \"mock_data/\", \"tests/\", \"test_*\", \"*_test.py\"\
+            ,\n  \"_build/\", \"_site/\", \".jekyll-cache/\", \"docs/_build/\",\n\
+            \  \"node_modules/\", \"package-lock.json\", \"yarn.lock\", \".git/\"\
+            ,\n  \"*.log\", \".gitignore\", \".gitmodules\"\n];\n\ndef should_ignore\
+            \ = ignore_patterns.any { pattern ->\n  def regex = pattern.replace(\"\
+            *\", \".*\").replace(\"?\", \"\\\\?\");\n  ctx.file_path.matches(regex);\n\
+            };\n\nif (should_ignore) {\n  ctx.remove = true;\n}\n"
+      - script:
+          source: "def priorities = [\n  \".md\": 10, \".ipynb\": 9, \".py\": 8, \"\
+            .tex\": 7, \".html\": 6,\n  \".txt\": 5, \".yml\": 4, \".yaml\": 4, \"\
+            .rst\": 3, \".json\": 2\n];\nctx.priority_score = priorities.get(ctx.file_extension,\
+            \ 1);\n"
+      - script:
+          source: "def master_patterns = [\n  \"README.md\", \"*.md\", \"*.ipynb\"\
+            , \"*.py\", \"*.yml\", \"*.yaml\",\n  \"pyproject.toml\", \"setup.py\"\
+            , \"requirements.txt\"\n];\n\nctx.is_master_file = master_patterns.any\
+            \ { pattern ->\n  def regex = pattern.replace(\"*\", \".*\").replace(\"\
+            ?\", \"\\\\?\");\n  ctx.file_path.matches(regex);\n};\n"
+      - script:
+          source: "if (ctx.is_master_file) {\n  ctx.chunk_size = 500;\n} else {\n\
+            \  ctx.chunk_size = 1000;\n}\n"
+      - script:
+          source: "// Config files with size limits\ndef config_patterns = [\n  \"\
+            .*\\\\.yml$\", \".*\\\\.yaml$\", \".*\\\\.toml$\", \".*\\\\.ini$\",\n\
+            \  \".*\\\\.cfg$\", \"Dockerfile\", \"docker-compose\\\\.yml$\",\n  \"\
+            requirements\\\\.txt$\", \"setup\\\\.py$\", \"pyproject\\\\.toml$\"\n\
+            ];\n\ndef is_config_file = config_patterns.any { pattern ->\n  ctx.file_path.matches(pattern);\n\
+            };\n\nif (is_config_file && ctx.file_size > 100000) {\n  ctx.remove =\
+            \ true;\n}\n\n// Data files with size limits\ndef data_patterns = [\"\
+            .*\\\\.csv$\", \".*\\\\.json$\", \".*\\\\.xlsx$\", \".*\\\\.xls$\"];\n\
+            def is_data_file = data_patterns.any { pattern ->\n  ctx.file_path.matches(pattern);\n\
+            };\n\nif (is_data_file && ctx.file_size > 50000) {\n  ctx.remove = true;\n\
+            }\n\n// Import-heavy code files (this would need pre-processing)\nif (ctx.file_extension\
+            \ == \".py\" && ctx.import_ratio > 0.8) {\n  ctx.remove = true;\n}\n"
+metadata:
+  version: 1.0.0
+  created: '2025-01-22'
+  description: Single Source of Truth RAG configuration for Econ-ARK repositories
+  compatible_backends:
+  - faiss
+  - elasticsearch
+  validation:
+    required_sections:
+    - source_priority
+    - ignore_patterns
+    - master_files
+    max_priority_score: 10
+    min_priority_score: 1
+  migration:
+    notes: This is the canonical SST configuration format
+  repository:
+    name: HAFiscal-Latest
+    type: research
+    priority: 2
+    description: The latest developments in the Heterogeneous Agent Fiscal Policy
+      Model
+    customized_on: '2025-07-23T02:19:09.990080'
